@@ -1,0 +1,41 @@
+# Dependances
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Environnement — ne JAMAIS committer de secret
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editeurs
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+.DS_Store
+Thumbs.db
+
+# Tests / outils
+.nyc_output/
+.eslintcache
+playwright-report/
+test-results/
+
+# Docker / volumes locaux
+docker/data/

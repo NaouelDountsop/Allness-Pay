@@ -1,0 +1,4 @@
+Gardes transverses (authentification, roles, limitation d'acces).
+
+Une garde propre a un seul module reste dans ce module ; on ne remonte ici que
+ce qui est reellement partage par plusieurs domaines.
