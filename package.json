@@ -1,0 +1,47 @@
+{
+  "name": "afrilinkpay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AfriLinkPay — plateforme de transfert d'argent avec portefeuille electronique",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "build:shared": "npm run build --workspace @afrilinkpay/shared",
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run start:dev --workspace @afrilinkpay/api",
+    "dev:web": "npm run dev --workspace @afrilinkpay/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:up": "docker compose up -d postgres redis",
+    "db:down": "docker compose down",
+    "migration:run": "npm run migration:run --workspace @afrilinkpay/api",
+    "migration:generate": "npm run migration:generate --workspace @afrilinkpay/api",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
+  }
+}
