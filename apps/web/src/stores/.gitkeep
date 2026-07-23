@@ -1,0 +1,2 @@
+Etat global d.interface uniquement (session, theme, langue) — Zustand.
+Les donnees serveur vivent dans le cache TanStack Query, jamais ici.
