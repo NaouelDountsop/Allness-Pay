@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { configurations, type ThrottleConfig } from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { DatabaseModule } from './database/database.module';
       },
     }),
     DatabaseModule,
+    UsersModule,
 
     // --- Modules metier ------------------------------------------------------
     // Chaque domaine s'ajoute ici, sous `src/modules/<domaine>/`, en respectant
