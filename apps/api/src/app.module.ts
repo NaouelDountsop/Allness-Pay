@@ -7,6 +7,8 @@ import { configurations, type ThrottleConfig } from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     DatabaseModule,
     UsersModule,
+    AuthModule,
+    OtpModule,
 
     // --- Modules metier ------------------------------------------------------
     // Chaque domaine s'ajoute ici, sous `src/modules/<domaine>/`, en respectant

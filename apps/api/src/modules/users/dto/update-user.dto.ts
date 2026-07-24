@@ -5,33 +5,34 @@ export class UpdateUserDto {
   @Length(3, 100)
   nom: string;
 
+  
   @IsString()
   @Length(3, 100)
   prenom: string;
 
   @IsDateString()
-  datenaissance: Date;
+  datenaissance?: Date;
 
   @IsString()
   @Length(1, 10)
-  sexe: string;
+  sexe?: string;
 
+
+  @IsOptional()
   @IsString()
   @Length(3, 100)
-  nationalite: string;
+  pays?: string;
 
+ 
   @IsString()
   @Length(3, 100)
-  pays: string;
+  ville?: string;
 
-  @IsString()
-  @Length(3, 100)
-  ville: string;
-
+ 
   @IsPhoneNumber()
   telephone: string;
 
-  @IsOptional()
+ 
   @IsString()
   @Length(3, 255)
   adresse?: string;

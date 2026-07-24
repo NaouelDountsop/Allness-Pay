@@ -5,27 +5,31 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RedisService } from '../otp/redis.service';
+
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
 
-    
     const existing = await this.usersRepository.findOne({
-        where: [{ email }, { telephone }],
+      where: [{ email }, { telephone }],
     });
-    
-    
+
     if (existing) {
-        throw new ConflictException('Email ou téléphone déjà utilisé, veuillez entrer un inexistant.');
+      throw new ConflictException('Email ou téléphone déjà utilisé, veuillez entrer un inexistant.');
     }
-    
+
     const user = this.usersRepository.create({
       ...rest,
       email,
@@ -33,9 +37,16 @@ export class UsersService {
       profession,
       datenaissance: new Date(datenaissance),
       motdepasse: await hash(motdepasse),
+      verificationotp: false,
     });
 
     const saved = await this.usersRepository.save(user);
+
+    const otpCode = generateOtp();
+    await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
+
+    // TODO: envoyer l'OTP par email via un service MailService
+
     return saved;
   }
 
@@ -71,5 +82,35 @@ export class UsersService {
 
     const valid = await verify(user.motdepasse, password);
     return valid ? user : null;
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable.');
+    }
+
+    const storedOtp = await this.redisService.get(`otp:email:${email}`);
+    if (!storedOtp || storedOtp !== otp) {
+      throw new ConflictException('Code OTP invalide ou expiré.');
+    }
+
+    user.verificationotp = true;
+    await this.redisService.del(`otp:email:${email}`);
+    return this.usersRepository.save(user);
+  }
+
+  async resendOtp(email: string) {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable.');
+    }
+
+    const otpCode = generateOtp();
+    await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
+
+    // TODO: envoyer l'OTP par email via un service MailService
+
+    return { message: 'OTP renvoyé, vérifiez votre email.' };
   }
 }
