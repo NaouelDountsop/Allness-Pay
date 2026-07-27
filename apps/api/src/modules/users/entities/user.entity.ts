@@ -23,9 +23,9 @@ export class User {
   @Column({ type: 'date' })
   datenaissance: Date;
 
-  @Column({ length: 10 })
+  @Column({ length:10 })
   sexe: string;
-/* 
+/*
   @Column({ length: 100 })
   nationalite: string; */
 
@@ -41,7 +41,7 @@ export class User {
   @Column({ length: 255 })
   adresse: string;
 
- 
+
   @Column({ unique: true })
   email: string;
 

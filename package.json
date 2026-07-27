@@ -43,5 +43,9 @@
     "*.{json,md,yml}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "ioredis": "^5.11.1",
+    "redis": "^5.12.1"
   }
 }
