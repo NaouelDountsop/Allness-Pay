@@ -18,10 +18,6 @@ export class CreateUserDto {
 
   @IsString()
   @Length(3, 100)
-  nationalite: string;
-
-  @IsString()
-  @Length(3, 100)
   pays: string;
 
   @IsString()
@@ -39,16 +35,12 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
+
   @IsString()
   @Length(6, 32)
   motdepasse: string;
 
-  @IsOptional()
-  @IsString()
-  @Length(4, 10)
-  pin?: string;
-
-    @IsString()
+      @IsString()
     @Length(3, 100)
     profession: string;
 }
