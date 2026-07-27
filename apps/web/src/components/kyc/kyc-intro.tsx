@@ -1,0 +1,73 @@
+import { IdCard, ScanFace, Home } from "lucide-react";
+
+interface KycIntroProps {
+  onStart: () => void;
+  onLater: () => void;
+}
+
+const requirements = [
+  {
+    icon: IdCard,
+    title: "Pièce d'identité valide",
+    description: "Passeport ou carte nationale d'identité en cours de validité.",
+  },
+  {
+    icon: ScanFace,
+    title: "Selfie clair",
+    description: "Une photo de votre visage pour confirmer que c'est bien vous.",
+  },
+  {
+    icon: Home,
+    title: "Justificatif de domicile",
+    description: "Facture de services publics ou relevé bancaire récent (< 3 mois).",
+  },
+];
+
+export function KycIntro({ onStart, onLater }: KycIntroProps) {
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-afrilink-dark mb-3">
+        Vérification d'identité
+      </h2>
+      <p className="text-sm text-gray-500 leading-relaxed mb-6 max-w-xl">
+        Pour garantir la sécurité de vos fonds et respecter les réglementations
+        bancaires internationales (KYC), nous devons confirmer votre identité. Ce
+        processus est rapide et entièrement sécurisé.
+      </p>
+
+      <p className="text-sm font-semibold text-afrilink-dark mb-3">Éléments requis :</p>
+
+      <div className="space-y-3 mb-8 max-w-xl">
+        {requirements.map(({ icon: Icon, title, description }) => (
+          <div
+            key={title}
+            className="flex items-start gap-3 rounded-xl border border-gray-100 p-4"
+          >
+            <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+              <Icon className="w-4 h-4 text-afrilink-green" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-800">{title}</p>
+              <p className="text-xs text-gray-500">{description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={onStart}
+          className="h-11 px-6 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+        >
+          Commencer la vérification →
+        </button>
+        <button
+          onClick={onLater}
+          className="h-11 px-6 rounded-lg border border-afrilink-orange text-afrilink-orange text-sm font-medium hover:bg-orange-50 transition-colors"
+        >
+          Plus tard
+        </button>
+      </div>
+    </div>
+  );
+}

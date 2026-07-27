@@ -1,0 +1,75 @@
+import { ReactNode } from "react";
+import { ShieldCheck, Zap } from "lucide-react";
+
+interface Feature {
+  icon: typeof ShieldCheck;
+  title: string;
+  description: string;
+}
+
+const features: Feature[] = [
+  {
+    icon: ShieldCheck,
+    title: "Sécurité de Niveau Bancaire",
+    description: "Vos données sont protégées par le plus haut standard de cryptage.",
+  },
+  {
+    icon: Zap,
+    title: "Transactions Instantanées",
+    description: "Gérez vos fonds en temps réel, sans friction.",
+  },
+];
+
+export function AuthLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+      <div className="w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden bg-white flex flex-col md:flex-row">
+        {/* Panneau gauche */}
+        <div className="hidden md:flex md:w-[42%] bg-gradient-to-b from-afrilink-dark to-afrilink-darker flex-col p-8 lg:p-10 text-white">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">
+              Afrilink<span className="text-afrilink-orange">Pay</span>
+            </h2>
+            <p className="text-sm text-white/70 leading-relaxed mb-8">
+              Le futur de la gestion de patrimoine d'entreprise, simplifié pour vous.
+            </p>
+
+            <div className="space-y-5">
+              {features.map(({ icon: Icon, title, description }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-md bg-afrilink-orange/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-afrilink-orange" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">{title}</p>
+                    <p className="text-xs text-white/60">{description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-6 mt-9 pt-10">
+            <img
+              src="/afrilinkpay_logo1.svg"
+              alt="AfrilinkPay"
+              className="w-70 h-70 object-contain"
+            />
+            <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative">
+              <p className="text-xs text-white/70 italic leading-relaxed">
+                "AfrilinkPay a transformé notre façon de gérer nos actifs internationaux.
+                Une interface d'une fluidité rare."
+              </p>
+              <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
+            </div>
+          </div>
+        </div>
+
+        {/* Panneau droit — formulaire */}
+        <div className="flex-1 w-full p-6 sm:p-8 lg:p-10 overflow-y-auto">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
