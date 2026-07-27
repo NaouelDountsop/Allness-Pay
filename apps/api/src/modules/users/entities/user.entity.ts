@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 
@@ -25,10 +26,6 @@ export class User {
 
   @Column({ length:10 })
   sexe: string;
-/*
-  @Column({ length: 100 })
-  nationalite: string; */
-
   @Column({ length: 100 })
   pays: string;
 
@@ -53,11 +50,14 @@ export class User {
   motdepasse: string;
 
 
-  @Column({
-    default: 'ACTIF'
-  })
+  @Column({ default: 'ACTIF' })
   statut: string;
 
+  @Column({ type: 'boolean', default: false })
+  verificationotp: boolean;
+
+  @UpdateDateColumn()
+  datemodification: Date;
 
   @CreateDateColumn()
   dateinscription: Date;

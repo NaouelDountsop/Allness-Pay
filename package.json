@@ -30,6 +30,7 @@
     "prepare": "husky || true"
   },
   "devDependencies": {
+    "@types/passport-local": "^1.0.38",
     "concurrently": "^9.1.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
@@ -47,5 +48,7 @@
   "dependencies": {
     "ioredis": "^5.11.1",
     "redis": "^5.12.1"
+    "nodemailer": "^9.0.3",
+    "passport-local": "^1.0.0"
   }
 }
