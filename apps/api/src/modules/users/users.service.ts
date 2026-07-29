@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
+import { MailService } from '../mail/mail.service';
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -17,6 +18,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -42,8 +44,12 @@ export class UsersService {
 
     const saved = await this.usersRepository.save(user);
 
+    // const otpCode = generateOtp();
+    // await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
+
     const otpCode = generateOtp();
-    await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
+    await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
+    await this.mailService.sendOtpEmail(email, otpCode);
 
     // TODO: envoyer l'OTP par email via un service MailService
 
@@ -109,7 +115,7 @@ export class UsersService {
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
 
-    // TODO: envoyer l'OTP par email via un service MailService
+    await this.mailService.sendOtpEmail(email, otpCode);
 
     return { message: 'OTP renvoyé, vérifiez votre email.' };
   }

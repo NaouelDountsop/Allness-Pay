@@ -14,6 +14,13 @@ export const envValidationSchema = Joi.object({
   API_VERSION: Joi.string().default('1'),
   CORS_ORIGINS: Joi.string().allow('').default(''),
 
+  SMTP_HOST: Joi.string().required(),
+SMTP_PORT: Joi.number().default(587),
+SMTP_USER: Joi.string().required(),
+SMTP_PASS: Joi.string().required(),
+SMTP_SECURE: Joi.boolean().default(false),
+SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
+
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().port().default(5432),
   DB_USERNAME: Joi.string().required(),

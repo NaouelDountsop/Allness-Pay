@@ -7,7 +7,6 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-afrilinkpay}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-afrilinkpay}
       POSTGRES_DB: ${DB_DATABASE:-afrilinkpay}
-      # Collation deterministe : indispensable pour la reproductibilite des tris
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
     ports:
       - '${DB_PORT:-5432}:5432'
@@ -34,7 +33,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Interface d'administration de la base — usage local uniquement
   adminer:
     image: adminer:latest
     container_name: afrilinkpay-adminer
@@ -46,6 +44,24 @@ services:
         condition: service_healthy
     profiles:
       - tools
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: afrilinkpay-api
+    restart: unless-stopped
+    ports:
+      - '${API_PORT:-3000}:3000'
+    env_file:
+      - ./apps/api/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/uploads:/app/uploads
 
 volumes:
   postgres_data:

@@ -1,55 +1,7 @@
-import { IsString, IsEmail, Length, IsDateString, IsOptional, IsPhoneNumber } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDto {
-  @IsString()
-  @Length(3, 100)
-  nom: string;
-
+export class UpdateUserDto extends PartialType(CreateUserDto) {
   
-  @IsString()
-  @Length(3, 100)
-  prenom: string;
-
-  @IsDateString()
-  datenaissance?: Date;
-
-  @IsString()
-  @Length(1, 10)
-  sexe?: string;
-
-
-  @IsOptional()
-  @IsString()
-  @Length(3, 100)
-  pays?: string;
-
- 
-  @IsString()
-  @Length(3, 100)
-  ville?: string;
-
- 
-  @IsPhoneNumber()
-  telephone: string;
-
- 
-  @IsString()
-  @Length(3, 255)
-  adresse?: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @Length(6, 32)
-  motdepasse: string;
-
-  @IsOptional()
-  @IsString()
-  @Length(4, 10)
-  pin?: string;
-
-    @IsString()
-    @Length(3, 100)
-    profession: string;
 }
+    

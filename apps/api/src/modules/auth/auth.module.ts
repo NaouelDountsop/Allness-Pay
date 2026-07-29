@@ -9,18 +9,26 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UsersModule } from '../users/users.module';
+import { OtpModule } from '../otp/otp.module';
 
 @Module({
   imports: [
     UsersModule,
+    OtpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+
     JwtModule.registerAsync({
       imports: [ConfigModule],
+
       inject: [ConfigService],
+
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('auth.accessSecret'),
-        signOptions: { expiresIn: '1h' },
-      }),
+
+       secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
+       signOptions: {
+       expiresIn: config.getOrThrow<number>('JWT_ACCESS_TTL'),
+      },
+      }), 
     }),
   ],
   controllers: [AuthController],

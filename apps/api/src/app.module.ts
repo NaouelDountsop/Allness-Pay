@@ -9,6 +9,13 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { MailService } from './modules/mail/mail.service';
+import { MailModule } from './modules/mail/mail.module';
+import { KycModule } from './modules/kyc/kyc.module';
+import { WalletsModule } from './modules/wallet/wallet.module';
+import { PinModule } from './modules/pin/pin.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+
 
 @Module({
   imports: [
@@ -31,12 +38,15 @@ import { OtpModule } from './modules/otp/otp.module';
     UsersModule,
     AuthModule,
     OtpModule,
+    MailModule,
+    KycModule,
+    WalletsModule,
+    PinModule,
+    TransactionsModule,
 
-    // --- Modules metier ------------------------------------------------------
-    // Chaque domaine s'ajoute ici, sous `src/modules/<domaine>/`, en respectant
-    // le decoupage Controller -> Service -> Repository decrit dans
+    
     // `src/modules/README.md`.
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }, MailService],
 })
 export class AppModule {}
