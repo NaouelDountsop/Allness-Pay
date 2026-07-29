@@ -60,6 +60,8 @@ export default function SignupPage() {
   const update = (field: keyof SignupForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
 
+
+
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -93,25 +95,31 @@ if (!cleanedPhone || !/^\+?\d{7,15}$/.test(cleanedPhone)) {
 }
 
   try {
-    setLoading(true);
-    await authService.register({
-      nom: form.lastName,
-      prenom: form.firstName,
-      datenaissance: form.birthDate,
-      sexe: form.gender,
-      nationalite: form.country, // pas de champ dédié dans le formulaire pour l'instant
-      pays: form.country,
-      ville: form.city,
-      telephone: cleanedPhone,
-      adresse: form.address || undefined,
-      email: form.email,
-      motdepasse: form.password,
-      profession: form.profession || "Non renseigné",
-    });
-    navigate("/verify-email", { state: { email: form.email } });
-  } catch (err: any) {
-    setError(err?.message ?? "Une erreur est survenue");
-  } finally {
+  const response = await authService.register({
+    fullName: form.lastName + " " + form.firstName,
+    email: form.email,
+    password: form.password,
+    phone: form.phone,
+    birthDate: form.birthDate,
+    city: form.city,
+  });
+
+  console.log("Inscription réussie :", response.data);
+  // ... ton code de succès (redirection, etc.)
+} catch (error: any) {
+  // === C’EST ICI QUE TU VAS VOIR L’ERREUR ===
+  console.error("===== ERREUR BACKEND =====");
+  console.error(error.response?.data);
+  console.error("==========================");
+
+  // Affiche aussi une alerte pour que ce soit bien visible
+  const messages = error.response?.data?.message;
+  if (Array.isArray(messages)) {
+    alert("Erreurs de validation :\n\n" + messages.join("\n"));
+  } else {
+    alert("Erreur : " + (error.response?.data?.message || error.message));
+  }
+} finally {
     setLoading(false);
   }
 };

@@ -10,7 +10,29 @@ import { mockTontines } from "@/lib/mock/tontines-data";
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const tontine = mockTontines.find((t) => t.id === id) ?? mockTontines[0];
+  const tontine = mockTontines.find((t) => t.id === id);
+
+  if (!tontine) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+        <div className="px-4 sm:px-8 pb-10">
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-700">
+            <p className="text-lg font-semibold">Tontine introuvable</p>
+            <p className="mt-2 text-sm text-gray-500">
+              Le groupe d'épargne demandé est introuvable. Retournez à la liste des tontines.
+            </p>
+            <button
+              onClick={() => navigate("/dashboard/tontines")}
+              className="mt-6 inline-flex items-center justify-center rounded-lg bg-afrilink-green px-4 py-2 text-sm font-medium text-white hover:bg-afrilink-greenHover"
+            >
+              Retour aux tontines
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
