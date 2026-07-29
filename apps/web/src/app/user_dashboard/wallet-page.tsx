@@ -7,6 +7,7 @@ import { QuickActionsGrid } from "@/components/user_dashboard/wallet/quick-actio
 import { MonthlySummary } from "@/components/user_dashboard/wallet/monthly-summary";
 import { SecurityCard } from "@/components/user_dashboard/wallet/security-card";
 import { mockWalletAccounts } from "@/lib/mock/wallet-data";
+import { Plus } from "lucide-react";
 
 export default function WalletPage() {
   const totalBalance = mockWalletAccounts.reduce((sum, acc) => sum + acc.balance, 0);
@@ -19,8 +20,9 @@ export default function WalletPage() {
         <div className="w-full max-w-[90vw]">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-lg font-semibold text-afrilink-dark">Portefeuille</h1>
-            <button className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors">
-              Créer un portefeuille
+            <button className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              <span className="hidden md:inline">Créer un portefeuille</span>
             </button>
           </div>
 

@@ -93,7 +93,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
-          <ShieldCheck className="w-4 h-4 text-afrilink-green mt-0.5 shrink-0" />
+          <ShieldCheck className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium text-gray-700">Fonds Protégés</p>
             <p className="text-[11px] text-gray-500">
@@ -103,7 +103,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
           </div>
         </div>
         <div className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
-          <Lock className="w-4 h-4 text-afrilink-green mt-0.5 shrink-0" />
+          <Lock className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium text-gray-700">Transaction Sécurisée</p>
             <p className="text-[11px] text-gray-500">

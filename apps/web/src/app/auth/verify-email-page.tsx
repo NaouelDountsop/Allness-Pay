@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
+import { authService } from "@/services/auth.service";
 
 const RESEND_DELAY = 58;
 
@@ -33,7 +33,10 @@ export default function VerifyEmailPage() {
     if (value && index < 5) inputsRef.current[index + 1]?.focus();
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
@@ -61,7 +64,11 @@ export default function VerifyEmailPage() {
       await authService.verifyEmail(email, fullCode);
       navigate("/login");
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? "Code invalide, veuillez réessayer");
+      const msg =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Code invalide, veuillez réessayer";
+      setError(Array.isArray(msg) ? msg.join(", ") : msg);
     } finally {
       setLoading(false);
     }
@@ -74,8 +81,12 @@ export default function VerifyEmailPage() {
       setCountdown(RESEND_DELAY);
       setCode(Array(6).fill(""));
       inputsRef.current[0]?.focus();
-    } catch {
-      setError("Impossible de renvoyer le code pour le moment");
+      setError("");
+    } catch (e: any) {
+      const msg =
+        e?.response?.data?.message ||
+        "Impossible de renvoyer le code pour le moment";
+      setError(Array.isArray(msg) ? msg.join(", ") : msg);
     }
   };
 
@@ -85,7 +96,11 @@ export default function VerifyEmailPage() {
         {/* Panneau gauche */}
         <div className="w-full md:w-[45%] bg-gradient-to-b from-afrilink-dark to-afrilink-darker text-white p-8 sm:p-10 flex flex-col">
           <div className="flex items-center gap-2 mb-10">
-            <img src="/afrilinkpay_logo1.svg" alt="" className="w-8 h-8 object-contain" />
+            <img
+              src="/afrilinkpay_logo1.svg"
+              alt=""
+              className="w-8 h-8 object-contain"
+            />
             <span className="text-lg font-bold">
               Afrilink<span className="text-afrilink-orange">Pay</span>
             </span>
@@ -96,12 +111,12 @@ export default function VerifyEmailPage() {
             <br />
             renforcée.
           </h1>
+
           <p className="text-sm text-white/70 leading-relaxed mb-10">
-            Votre sécurité est notre priorité absolue. Vérifiez votre identité pour accéder à
-            la gestion de vos finances mondiales.
+            Votre sécurité est notre priorité absolue. Vérifiez votre identité
+            pour accéder à la gestion de vos finances mondiales.
           </p>
 
-          {/* Badge de confiance */}
           <div className="mt-auto space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 rounded-full bg-afrilink-orange/15 flex items-center justify-center shrink-0">
@@ -110,36 +125,41 @@ export default function VerifyEmailPage() {
               <div>
                 <p className="text-sm font-semibold">Vérification en 2 étapes</p>
                 <p className="text-xs text-white/60">
-                  Une couche de sécurité supplémentaire pour protéger votre compte.
+                  Une couche de sécurité supplémentaire pour protéger votre
+                  compte.
                 </p>
               </div>
             </div>
 
             <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative">
               <p className="text-xs text-white/70 italic leading-relaxed">
-                "En quelques secondes, mon compte était vérifié. Simple, rapide et
-                rassurant."
+                "En quelques secondes, mon compte était vérifié. Simple, rapide
+                et rassurant."
               </p>
               <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
             </div>
           </div>
-</div>
+        </div>
+
         {/* Panneau droit */}
         <div className="flex-1 p-8 sm:p-10 flex flex-col justify-center">
           <h2 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-3">
             Vérifiez votre adresse e-mail
           </h2>
+
           <p className="text-sm text-gray-500 leading-relaxed mb-6">
             Nous avons envoyé un code de vérification à 6 chiffres à{" "}
-            <span className="font-medium text-gray-700">{email}</span>. Veuillez le saisir
-            ci-dessous pour continuer.
+            <span className="font-medium text-gray-700">{email}</span>.
+            Veuillez le saisir ci-dessous pour continuer.
           </p>
 
           <div className="flex gap-2 sm:gap-3 mb-2">
             {code.map((digit, i) => (
               <input
                 key={i}
-                ref={(el) => (inputsRef.current[i] = el)}
+                ref={(el) => {
+                  inputsRef.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -162,7 +182,10 @@ export default function VerifyEmailPage() {
 
           <p className="text-sm text-gray-500 mb-6">
             Ce n'est pas votre adresse ?{" "}
-            <a href="/signup" className="text-blue-600 font-medium hover:underline">
+            <a
+              href="/signup"
+              className="text-blue-600 font-medium hover:underline"
+            >
               Modifier l'e-mail
             </a>
           </p>
@@ -199,4 +222,3 @@ export default function VerifyEmailPage() {
     </div>
   );
 }
-

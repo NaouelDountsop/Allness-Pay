@@ -47,19 +47,23 @@ export default function SendMoneyPage() {
   };
 
   const handleFormSubmit = () => {
-    // Étape "Confirmation" : nécessite le PIN
-    if (!hasPin) {
-      setPendingAction("toReview");
-      setShowPinSetup(true);
-    } else {
-      setShowPinConfirm(true);
-      setPendingAction("toReview");
-    }
+    // Avancer vers l'étape "Révision" sans exiger le PIN.
+    setCompletedSteps((prev) => {
+      const updated = [...prev];
+      updated[2] = true; // confirmation
+      return updated;
+    });
+    setPhase("review");
   };
 
   const handleSendClick = () => {
+    // Lors de l'envoi, exiger le PIN (ou proposer de le créer si absent)
     setPendingAction("toSend");
-    setShowPinConfirm(true);
+    if (!hasPin) {
+      setShowPinSetup(true);
+    } else {
+      setShowPinConfirm(true);
+    }
   };
 
   const handlePinConfirm = (pin: string): boolean => {
@@ -162,3 +166,4 @@ export default function SendMoneyPage() {
     </DashboardLayout>
   );
 }
+

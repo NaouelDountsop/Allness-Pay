@@ -47,11 +47,10 @@
   },
   "dependencies": {
     "@nestjs/mapped-types": "*",
+    "ioredis": "^5.11.1",
+    "redis": "^5.12.1",
     "nodemailer": "^9.0.3",
     "passport-local": "^1.0.0"
-=========
-    "ioredis": "^5.11.1",
-    "redis": "^5.12.1"
->>>>>>>>> Temporary merge branch 2
+
   }
 }

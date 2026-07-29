@@ -27,9 +27,9 @@ export function BalanceCard({
           <p className="text-sm text-white/70">Solde total disponible</p>
           <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">
             {visible ? (
-              <Eye className="w-4 h-4 text-white/70" />
+              <Eye className="w-6 h-6 text-white/70" />
             ) : (
-              <EyeOff className="w-4 h-4 text-white/70" />
+              <EyeOff className="w-6 h-6 text-white/70" />
             )}
           </button>
         </div>

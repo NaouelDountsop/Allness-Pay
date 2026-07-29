@@ -15,7 +15,7 @@ import { AuthLayout } from "@/components/auth/auth-layout";
 import { AppInput } from "@/components/common/input";
 import { AppButton } from "@/components/common/button";
 import { SocialButtons } from "@/components/auth/social-buttons";
-import { authService } from "@/lib/api/auth.service";
+import { authService } from "@/services/auth.service";
 
 interface SignupForm {
   lastName: string;
@@ -60,6 +60,8 @@ export default function SignupPage() {
   const update = (field: keyof SignupForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
 
+
+
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -70,41 +72,57 @@ export default function SignupPage() {
     setStep(2);
   };
 
-  const handleStep2Submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+ const handleStep2Submit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
 
-    if (form.password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caractères");
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      return;
-    }
-    if (!accepted) {
-      setError("Vous devez accepter les conditions d'utilisation");
-      return;
-    }
+  if (form.password.length < 8) {
+    setError("Le mot de passe doit contenir au moins 8 caractères");
+    return;
+  }
+  if (form.password !== form.confirmPassword) {
+    setError("Les mots de passe ne correspondent pas");
+    return;
+  }
+  if (!accepted) {
+    setError("Vous devez accepter les conditions d'utilisation");
+    return;
+  }
+  const cleanedPhone = form.phone.replace(/[\s-]/g, ""); // retire espaces et tirets
+if (!cleanedPhone || !/^\+?\d{7,15}$/.test(cleanedPhone)) {
+  setError("Veuillez fournir un numéro de téléphone valide (ex: +2376...).");
+  return;
+}
 
-    try {
-      setLoading(true);
-      await authService.register({
-        companyName: `${form.firstName} ${form.lastName}`,
-        fullName: `${form.firstName} ${form.lastName}`,
-        email: form.email,
-        password: form.password,
-        phone: form.phone,
-        birthDate: form.birthDate,
-        city: form.city,
-      });
-      navigate("/verify-email", { state: { email: form.email } });
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Une erreur est survenue");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+  const response = await authService.register({
+    fullName: form.lastName + " " + form.firstName,
+    email: form.email,
+    password: form.password,
+    phone: form.phone,
+    birthDate: form.birthDate,
+    city: form.city,
+  });
+
+  console.log("Inscription réussie :", response.data);
+  // ... ton code de succès (redirection, etc.)
+} catch (error: any) {
+  // === C’EST ICI QUE TU VAS VOIR L’ERREUR ===
+  console.error("===== ERREUR BACKEND =====");
+  console.error(error.response?.data);
+  console.error("==========================");
+
+  // Affiche aussi une alerte pour que ce soit bien visible
+  const messages = error.response?.data?.message;
+  if (Array.isArray(messages)) {
+    alert("Erreurs de validation :\n\n" + messages.join("\n"));
+  } else {
+    alert("Erreur : " + (error.response?.data?.message || error.message));
+  }
+} finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthLayout>
@@ -132,7 +150,8 @@ export default function SignupPage() {
           <AppInput
             label="Date de naissance"
             icon={Calendar}
-            placeholder="01 - 01 - 1970"
+            type="date"
+            placeholder=""
             value={form.birthDate}
             onChange={(e) => update("birthDate", e.target.value)}
           />
@@ -181,7 +200,10 @@ export default function SignupPage() {
           <AppButton type="submit">Continuer →</AppButton>
 
           <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
-            <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-afrilink-green/10 accent-afrilink-green" />
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
+            />
             <span>
               J'accepte les{" "}
               <a href="/cgu" className="text-afrilink-green font-medium">
@@ -211,7 +233,7 @@ export default function SignupPage() {
           <AppInput
             label="Numéro de téléphone"
             icon={Phone}
-            placeholder="+33 6 00 00 00 00"
+            placeholder="+237 6 00 00 00 00"
             value={form.phone}
             onChange={(e) => update("phone", e.target.value)}
           />
@@ -239,7 +261,7 @@ export default function SignupPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-green focus:ring-1 focus:ring-afrilink-green"
+                className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
               />
@@ -287,7 +309,7 @@ export default function SignupPage() {
           <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-afrilink-green/10 accent-afrilink-green"
+              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
             />

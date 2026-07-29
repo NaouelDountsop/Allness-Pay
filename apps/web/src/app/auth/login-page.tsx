@@ -5,18 +5,20 @@ import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { AppButton } from "@/components/common/button";
-import { authService } from "@/lib/api/auth.service";
+import { authService } from "@/services/auth.service";
 
 const schema = z.object({
   email: z.string().min(1, "Ce champ est requis"),
   password: z.string().min(1, "Mot de passe requis"),
 });
+
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -29,13 +31,17 @@ export default function LoginPage() {
       await authService.login(data.email, data.password);
       navigate("/dashboard");
     } catch (e: any) {
-      setServerError(e?.response?.data?.message ?? "Identifiants incorrects");
+      const msg =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Identifiants incorrects";
+      setServerError(Array.isArray(msg) ? msg.join(", ") : msg);
     }
   };
 
   return (
     <div className="min-h-screen relative flex items-center justify-center bg-gray-50 overflow-hidden px-4">
-      {/* Logo en filigrane, arrière-plan */}
+      {/* Logo en filigrane */}
       <img
         src="/afrilinkpay_logo2.svg"
         alt=""
@@ -44,7 +50,6 @@ export default function LoginPage() {
       />
 
       <div className="relative w-full max-w-md">
-        {/* Logo + nom, au-dessus du formulaire */}
         <div className="flex flex-col items-center mb-6">
           <img
             src="/afrilinkpay_logo2.svg"
@@ -60,13 +65,14 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1">
             <label className="text-base font-semibold text-gray-700">
-              Nom complet ou Email
+              Email
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-orange" />
               <input
-                type="text"
+                type="email"
                 placeholder="jean.dupont@entreprise.com"
+                style={{ backgroundColor: "#ffffff" }}
                 className="w-full h-12 rounded-xl border border-afrilink-orange/40 pl-9 pr-3 text-base bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
                 {...register("email")}
               />
@@ -84,6 +90,7 @@ export default function LoginPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
               <input
                 type={showPassword ? "text" : "password"}
+                style={{ backgroundColor: "#ffffff" }}
                 className="w-full h-12 rounded-xl border border-gray-200 pl-9 pr-9 text-base bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-green"
                 {...register("password")}
               />
@@ -105,8 +112,8 @@ export default function LoginPage() {
           </div>
 
           <div className="text-right">
-
-             <a href="/forgot-password"
+            <a
+              href="/forgot-password"
               className="text-base text-afrilink-green font-semibold hover:underline"
             >
               Mot de passe oublié ?
