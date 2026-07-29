@@ -21,7 +21,7 @@ export function WalletBalanceCard({
     <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-6 relative overflow-hidden">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <img src="/afrilinkpay_logo2.svg" alt="" className="w-6 h-6 object-contain" />
+          <img src="/afrilinkpay_logo1.svg" alt="" className="w-9 h-9 object-contain" />
           <div>
             <p className="text-xs text-white/60 tracking-wide">AFRILINK WALLET</p>
             <p className="text-sm font-medium">{walletId}</p>
@@ -40,9 +40,9 @@ export function WalletBalanceCard({
         </p>
         <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">
           {visible ? (
-            <Eye className="w-4 h-4 text-white/60" />
+            <Eye className="w-6 h-6 text-white/60" />
           ) : (
-            <EyeOff className="w-4 h-4 text-white/60" />
+            <EyeOff className="w-6 h-6 text-white/60" />
           )}
         </button>
       </div>

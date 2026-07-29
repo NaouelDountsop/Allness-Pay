@@ -1,13 +1,13 @@
-import { Wallet, Smartphone, Landmark } from "lucide-react";
+import { Wallet, Landmark } from "lucide-react";
 import type { WalletAccount } from "@/lib/mock/wallet-data";
 
-const iconByType = {
+const fallbackIconByType = {
   wallet: Wallet,
-  mobile_money: Smartphone,
+  mobile_money: Wallet,
   bank: Landmark,
 };
 
-const colorByType = {
+const fallbackColorByType = {
   wallet: "bg-afrilink-dark",
   mobile_money: "bg-afrilink-orange",
   bank: "bg-blue-600",
@@ -23,15 +23,25 @@ export function AccountList({ accounts }: AccountListProps) {
       <h3 className="text-sm font-semibold text-gray-800 mb-4">Mes comptes</h3>
       <ul className="divide-y divide-gray-100">
         {accounts.map((acc) => {
-          const Icon = iconByType[acc.type];
+          const FallbackIcon = fallbackIconByType[acc.type];
           return (
             <li key={acc.id} className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <span
-                  className={`w-9 h-9 rounded-lg flex items-center justify-center text-white ${colorByType[acc.type]}`}
-                >
-                  <Icon className="w-4 h-4" />
-                </span>
+                {acc.logoUrl ? (
+                  <span className="w-9 h-9 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                    <img
+                      src={acc.logoUrl}
+                      alt={acc.label}
+                      className="w-full h-full object-contain p-1"
+                    />
+                  </span>
+                ) : (
+                  <span
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${fallbackColorByType[acc.type]}`}
+                  >
+                    <FallbackIcon className="w-4 h-4" />
+                  </span>
+                )}
                 <p className="text-sm text-gray-800">{acc.label}</p>
               </div>
               <span className="text-sm font-semibold text-gray-800">

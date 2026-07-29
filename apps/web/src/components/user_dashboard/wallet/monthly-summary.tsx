@@ -20,12 +20,12 @@ export function MonthlySummary({
 
       <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden flex mb-3">
         <div className="h-full bg-afrilink-green" style={{ width: `${incomePercent}%` }} />
-        <div className="h-full bg-afrilink-orange" style={{ width: `${expensePercent}%` }} />
+        <div className="h-full bg-gray-200" style={{ width: `${expensePercent}%` }} />
       </div>
 
       <div className="flex items-center justify-between text-xs mb-1">
         <span className="text-afrilink-green">+{incomePercent}%</span>
-        <span className="text-afrilink-orange">-{expensePercent}%</span>
+        <span className="text-gray-400">-{expensePercent}%</span>
       </div>
 
       <p className="text-sm font-semibold text-gray-800 mt-3">

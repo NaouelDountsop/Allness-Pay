@@ -32,10 +32,10 @@ export function WalletActions() {
             }}
             className="flex flex-col items-center gap-1.5"
           >
-            <span className="w-11 h-11 rounded-full bg-afrilink-dark text-white flex items-center justify-center">
+            <span className="w-11 h-11 rounded-full bg-afrilink-dark text-afrilink-orange flex items-center justify-center">
               <Icon className="w-4 h-4" />
             </span>
-            <span className="text-xs text-gray-600">{label}</span>
+            <span className="text-xs text-afrilink-dark">{label}</span>
           </button>
 
           {key === "transfer" && showTransferMenu && (

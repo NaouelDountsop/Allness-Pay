@@ -48,7 +48,7 @@ export function PinPad({ value, length = 4, onChange, error }: PinPadProps) {
               onClick={() => handlePress(key)}
               className="h-14 rounded-xl bg-afrilink-dark hover:bg-afrilink-darker text-white flex items-center justify-center text-lg font-medium transition-colors"
             >
-              {key === "del" ? <Delete className="w-4 h-4" /> : key}
+              {key === "del" ? <Delete className="w-4 h-4 text-afrilink-orange" /> : key}
             </button>
           )
         )}

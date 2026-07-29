@@ -19,8 +19,8 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
           )}
           <ShadInput
             ref={ref}
-            className={`${Icon ? "pl-9" : ""} h-11 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:border-afrilink-orange focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange ${
-              error ? "border-red-500" : ""
+            className={`${Icon ? "pl-9" : ""} h-11 rounded-lg border border-gray-200 text-sm text-gray-900 ${
+              error ? "!border-destructive" : ""
             } ${className}`}
             {...props}
           />

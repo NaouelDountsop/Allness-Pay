@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
+import { authService } from "@/services/auth.service";
 
 const RESEND_DELAY = 58;
 
@@ -61,7 +61,7 @@ export default function VerifyEmailPage() {
       await authService.verifyEmail(email, fullCode);
       navigate("/login");
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? "Code invalide, veuillez réessayer");
+      setError(e?.message ?? e?.response?.data?.message ?? "Code invalide, veuillez réessayer");
     } finally {
       setLoading(false);
     }

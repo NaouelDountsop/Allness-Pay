@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z } from "zod"; //validateur
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { AppButton } from "@/components/common/button";
-import { authService } from "@/lib/api/auth.service";
+import { authService } from "@/services/auth.service";
 
 const schema = z.object({
   email: z.string().min(1, "Ce champ est requis"),
@@ -26,10 +26,10 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setServerError("");
-      await authService.login(data.email, data.password);
+      await authService.login({ email: data.email, password: data.password });
       navigate("/dashboard");
     } catch (e: any) {
-      setServerError(e?.response?.data?.message ?? "Identifiants incorrects");
+      setServerError(e?.message ?? "Identifiants incorrects");
     }
   };
 
@@ -67,6 +67,7 @@ export default function LoginPage() {
               <input
                 type="text"
                 placeholder="jean.dupont@entreprise.com"
+                style={{ backgroundColor: "#ffffff" }}
                 className="w-full h-12 rounded-xl border border-afrilink-orange/40 pl-9 pr-3 text-base bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
                 {...register("email")}
               />
@@ -84,6 +85,7 @@ export default function LoginPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
               <input
                 type={showPassword ? "text" : "password"}
+                style={{ backgroundColor: "#ffffff" }}
                 className="w-full h-12 rounded-xl border border-gray-200 pl-9 pr-9 text-base bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-green"
                 {...register("password")}
               />

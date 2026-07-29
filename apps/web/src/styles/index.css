@@ -117,4 +117,20 @@
   * {
     @apply border-border outline-ring;
   }
+
+  input,
+  select,
+  textarea {
+    background-color: #ffffff !important;
+  }
+
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #000000 !important;
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+  }
 }
