@@ -3,19 +3,23 @@ import { useState } from "react";
 import {
   User,
   Calendar,
-  Globe,
-  MapPin,
-  Phone,
   Mail,
   Lock,
   Eye,
   EyeOff,
+  Briefcase,
+  ArrowLeft,
 } from "lucide-react";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AppInput } from "@/components/common/input";
 import { AppButton } from "@/components/common/button";
 import { SocialButtons } from "@/components/auth/social-buttons";
+import { CountrySelect } from "@/components/common/country-select";
+import { CitySelect } from "@/components/common/city-select";
+import { PhoneInput, validatePhone } from "@/components/common/phone-input";
+import { AddressInput } from "@/components/common/address-input";
 import { authService } from "@/services/auth.service";
+import { type Country, countries } from "@/data/countries";
 
 interface SignupForm {
   lastName: string;
@@ -37,7 +41,7 @@ const initialForm: SignupForm = {
   firstName: "",
   birthDate: "",
   gender: "",
-  country: "",
+  country: "CM",
   city: "",
   profession: "",
   phone: "",
@@ -56,6 +60,10 @@ export default function SignupPage() {
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  const selectedCountry: Country | null =
+    countries.find((c) => c.code === form.country) ?? null;
 
   const update = (field: keyof SignupForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -75,6 +83,7 @@ export default function SignupPage() {
  const handleStep2Submit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
+  setPhoneError("");
 
   if (form.password.length < 8) {
     setError("Le mot de passe doit contenir au moins 8 caractères");
@@ -88,48 +97,99 @@ export default function SignupPage() {
     setError("Vous devez accepter les conditions d'utilisation");
     return;
   }
-  const cleanedPhone = form.phone.replace(/[\s-]/g, ""); // retire espaces et tirets
-if (!cleanedPhone || !/^\+?\d{7,15}$/.test(cleanedPhone)) {
-  setError("Veuillez fournir un numéro de téléphone valide (ex: +2376...).");
-  return;
-}
+
+  const phoneErr = validatePhone(form.phone, selectedCountry);
+  if (phoneErr) {
+    setPhoneError(phoneErr);
+    return;
+  }
+
+  const cleanedPhone = form.phone.replace(/[\s-]/g, "");
+  const fullPhone = selectedCountry
+    ? selectedCountry.dialCode + cleanedPhone
+    : cleanedPhone;
 
   try {
-  const response = await authService.register({
-    fullName: form.lastName + " " + form.firstName,
-    email: form.email,
-    password: form.password,
-    phone: form.phone,
-    birthDate: form.birthDate,
-    city: form.city,
-  });
+    await authService.register({
+      fullName: form.lastName + " " + form.firstName,
+      email: form.email,
+      password: form.password,
+      phone: fullPhone,
+      birthDate: form.birthDate,
+      country: selectedCountry?.name ?? "",
+      city: form.city,
+      profession: form.profession,
+    });
 
-  console.log("Inscription réussie :", response.data);
-  // ... ton code de succès (redirection, etc.)
-} catch (error: any) {
-  // === C’EST ICI QUE TU VAS VOIR L’ERREUR ===
-  console.error("===== ERREUR BACKEND =====");
-  console.error(error.response?.data);
-  console.error("==========================");
-
-  // Affiche aussi une alerte pour que ce soit bien visible
-  const messages = error.response?.data?.message;
-  if (Array.isArray(messages)) {
-    alert("Erreurs de validation :\n\n" + messages.join("\n"));
-  } else {
-    alert("Erreur : " + (error.response?.data?.message || error.message));
-  }
-} finally {
+    navigate("/verify-email", {
+      state: { email: form.email.trim().toLowerCase() },
+    });
+  } catch (err: any) {
+    const message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Erreur lors de l'inscription";
+    setError(Array.isArray(message) ? message.join("\n") : message);
+  } finally {
     setLoading(false);
   }
 };
 
+
   return (
     <AuthLayout>
       <h1 className="text-xl font-semibold mb-1">Créer un compte</h1>
-      <p className="text-sm text-afrilink-gray mb-6">
+      <p className="text-sm text-afrilink-gray mb-4">
         Rejoignez l'écosystème financier de nouvelle génération
       </p>
+
+      {/* Indicateur d'étapes */}
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          type="button"
+          onClick={() => setStep(1)}
+          className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+            step === 1
+              ? "text-afrilink-green"
+              : "text-afrilink-gray hover:text-gray-900"
+          }`}
+        >
+          {step === 2 && (
+            <ArrowLeft className="w-3.5 h-3.5" />
+          )}
+          <span
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+              step === 1
+                ? "bg-afrilink-green text-white"
+                : "bg-afrilink-green text-white"
+            }`}
+          >
+            1
+          </span>
+          Informations
+        </button>
+
+        <div className={`flex-1 h-0.5 rounded-full ${step === 2 ? "bg-afrilink-green" : "bg-gray-200"}`} />
+
+        <span
+          className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+            step === 2
+              ? "text-afrilink-green"
+              : "text-afrilink-gray"
+          }`}
+        >
+          <span
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+              step === 2
+                ? "bg-afrilink-green text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            2
+          </span>
+          Sécurité
+        </span>
+      </div>
 
       {step === 1 && (
         <form onSubmit={handleStep1Submit} className="space-y-4">
@@ -179,20 +239,18 @@ if (!cleanedPhone || !/^\+?\d{7,15}$/.test(cleanedPhone)) {
             </div>
           </div>
 
-          <AppInput
-            label="Pays"
-            icon={Globe}
-            placeholder="Cameroun"
+          <CountrySelect
             value={form.country}
-            onChange={(e) => update("country", e.target.value)}
+            onChange={(c) => {
+              setForm((f) => ({ ...f, country: c.code, phone: "", city: "" }));
+              setPhoneError("");
+            }}
           />
 
-          <AppInput
-            label="Ville"
-            icon={MapPin}
-            placeholder="Votre ville"
+          <CitySelect
+            countryCode={form.country}
             value={form.city}
-            onChange={(e) => update("city", e.target.value)}
+            onChange={(c) => update("city", c)}
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
@@ -231,18 +289,26 @@ if (!cleanedPhone || !/^\+?\d{7,15}$/.test(cleanedPhone)) {
       {step === 2 && (
         <form onSubmit={handleStep2Submit} className="space-y-4">
           <AppInput
-            label="Numéro de téléphone"
-            icon={Phone}
-            placeholder="+237 6 00 00 00 00"
-            value={form.phone}
-            onChange={(e) => update("phone", e.target.value)}
+            label="Profession"
+            icon={Briefcase}
+            placeholder="Ex: Enseignant, Commerçant, Ingénieur..."
+            value={form.profession}
+            onChange={(e) => update("profession", e.target.value)}
           />
-          <AppInput
-            label="Adresse complète"
-            icon={MapPin}
-            placeholder="Rue de ..."
+          <PhoneInput
+            country={selectedCountry}
+            value={form.phone}
+            onChange={(v) => {
+              update("phone", v);
+              setPhoneError("");
+            }}
+            error={phoneError}
+          />
+          <AddressInput
+            countryCode={form.country}
+            city={form.city}
             value={form.address}
-            onChange={(e) => update("address", e.target.value)}
+            onChange={(v) => update("address", v)}
           />
           <AppInput
             label="Adresse email"

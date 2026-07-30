@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
 import { MailService } from '../mail/mail.service';
+import { MailService } from '../mail/mail.service';
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -51,7 +52,7 @@ export class UsersService {
     await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
     await this.mailService.sendOtpEmail(email, otpCode);
 
-    // TODO: envoyer l'OTP par email via un service MailService
+    await this.mailService.sendOtp(email, otpCode);
 
     return saved;
   }
@@ -119,7 +120,8 @@ export class UsersService {
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
 
-    await this.mailService.sendOtpEmail(email, otpCode);
+  
+    await this.mailService.sendOtp(email, otpCode);
 
     return { message: 'OTP renvoyé, vérifiez votre email.' };
   }

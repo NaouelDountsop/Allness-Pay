@@ -60,6 +60,13 @@ SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
   ORANGE_MONEY_CLIENT_ID: Joi.string().allow('').optional(),
   ORANGE_MONEY_CLIENT_SECRET: Joi.string().allow('').optional(),
 
+  SMTP_HOST: Joi.string().allow('').default(''),
+  SMTP_PORT: Joi.number().default(587),
+  SMTP_SECURE: Joi.boolean().default(false),
+  SMTP_USER: Joi.string().allow('').default(''),
+  SMTP_PASS: Joi.string().allow('').default(''),
+  SMTP_FROM: Joi.string().allow('').default('noreply@afrilinkpay.com'),
+
   LOG_LEVEL: Joi.string()
     .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal')
     .default('info'),

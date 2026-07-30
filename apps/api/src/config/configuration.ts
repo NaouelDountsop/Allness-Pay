@@ -62,13 +62,13 @@ export const providersConfig = registerAs('providers', () => ({
   },
 }));
 
-export const smtpConfig = registerAs('smtp', () => ({
-  host: process.env.SMTP_HOST,
+export const mailConfig = registerAs('mail', () => ({
+  host: process.env.SMTP_HOST ?? 'localhost',
   port: parseInt(process.env.SMTP_PORT ?? '587', 10),
-  user: process.env.SMTP_USER,
-  pass: process.env.SMTP_PASS,
   secure: process.env.SMTP_SECURE === 'true',
-  from: process.env.SMTP_FROM ?? '"AfriLinkPay" <no-reply@afrilinkpay.com>',
+  user: process.env.SMTP_USER ?? '',
+  pass: process.env.SMTP_PASS ?? '',
+  from: process.env.SMTP_FROM ?? 'noreply@afrilinkpay.com',
 }));
 
 export const configurations = [
@@ -78,7 +78,7 @@ export const configurations = [
   redisConfig,
   throttleConfig,
   providersConfig,
-  smtpConfig,
+  mailConfig,
 ];
 
 
@@ -88,3 +88,4 @@ export type AuthConfig = ReturnType<typeof authConfig>;
 export type RedisConfig = ReturnType<typeof redisConfig>;
 export type ThrottleConfig = ReturnType<typeof throttleConfig>;
 export type ProvidersConfig = ReturnType<typeof providersConfig>;
+export type MailConfig = ReturnType<typeof mailConfig>;
