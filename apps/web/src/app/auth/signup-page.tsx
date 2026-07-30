@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+//mport { useNavigate } from "react-router-dom";
 import {
   User,
   Calendar,
@@ -48,7 +48,7 @@ const initialForm: SignupForm = {
 };
 
 export default function SignupPage() {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<SignupForm>(initialForm);
   const [showPassword, setShowPassword] = useState(false);

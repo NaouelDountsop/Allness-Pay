@@ -17,41 +17,40 @@ export class WalletsService {
     private readonly walletRepo: Repository<Wallet>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    
   ) {}
 
 
-  async create(userId: string, dto: CreateWalletDto): Promise<Wallet> {
-    // Transaction + verrou pour éviter que deux créations concurrentes du
-    // premier wallet d'un utilisateur ne se retrouvent toutes les deux
-    // avec isPrimary = true.
+  async create(userId: number, dto: CreateWalletDto): Promise<Wallet> {
     return this.dataSource.transaction(async (manager) => {
-      const existingCount = await manager
-        .createQueryBuilder(Wallet, 'wallet')
-        .setLock('pessimistic_write')
-        .where('wallet.userId = :userId', { userId })
-        .getCount();
+      const existingWallets = await manager
+       .createQueryBuilder(Wallet, 'wallet')
+       .setLock('pessimistic_write')
+       .where('wallet.userId = :userId', { userId })
+       .getMany();
 
       const wallet = manager.create(Wallet, {
         userId,
         currency: dto.currency ?? 'XAF',
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
+        
         // Le premier wallet d'un utilisateur devient automatiquement son wallet principal.
-        isPrimary: existingCount === 0,
+        isPrimary: existingWallets.length === 0,
       });
 
       return manager.save(wallet);
     });
   }
 
-  async findAllForUser(userId: string): Promise<Wallet[]> {
+  async findAllForUser(userId: number): Promise<Wallet[]> {
     return this.walletRepo.find({
       where: { userId },
       order: { isPrimary: 'DESC', createdAt: 'ASC' },
     });
   }
 
-  async findOne(id: string, userId: string): Promise<Wallet> {
+  async findOne(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.walletRepo.findOne({ where: { id } });
     if (!wallet) {
       throw new NotFoundException('Wallet introuvable');
@@ -60,17 +59,17 @@ export class WalletsService {
     return wallet;
   }
 
-  async update(id: string, userId: string, dto: UpdateWalletDto): Promise<Wallet> {
+  async update(id: string, userId: number, dto: UpdateWalletDto): Promise<Wallet> {
     const wallet = await this.findOne(id, userId);
     Object.assign(wallet, dto);
     return this.walletRepo.save(wallet);
   }
 
   // Fermeture logique (soft) : jamais de suppression physique d'un walleT
-  async close(id: string, userId: string): Promise<Wallet> {
+  async close(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.findOne(id, userId);
 
-    if (Number(wallet.balance) !== 0) {
+    if (wallet.balance !== 0n) {
       throw new BadRequestException("Impossible de fermer un wallet dont le solde n'est pas nul");
     }
     if (wallet.isPrimary) {
@@ -83,7 +82,7 @@ export class WalletsService {
     return this.walletRepo.save(wallet);
   }
 
-  async setPrimary(id: string, userId: string): Promise<Wallet> {
+  async setPrimary(id: string, userId: number): Promise<Wallet> {
     return this.dataSource.transaction(async (manager) => {
       const target = await manager.findOne(Wallet, { where: { id } });
       if (!target) {
@@ -104,7 +103,7 @@ export class WalletsService {
   // garder l'atomicité (verrou + PIN + solde) d'un seul bloc.
 
 
-  assertOwnership(wallet: Wallet, userId: string): void {
+  assertOwnership(wallet: Wallet, userId: number): void {
     if (wallet.userId !== userId) {
       throw new ForbiddenException('Ce wallet ne vous appartient pas');
     }
@@ -117,8 +116,7 @@ export class WalletsService {
   }
 
   // SELECT ... FOR UPDATE : verrouille la ligne jusqu'à la fin de la
-  // transaction du manager fourni, pour empêcher toute lecture/écriture
-  // concurrente du même solde ou du même compteur de tentatives de PIN.
+
   async lockWalletForUpdate(
     manager: EntityManager,
     id: string,
@@ -129,8 +127,6 @@ export class WalletsService {
       .setLock('pessimistic_write')
       .where('wallet.id = :id', { id });
 
-    // pinHash est en select:false par défaut sur l'entité (bonne pratique de
-    // sécurité) : on doit le redemander explicitement quand on en a besoin.
     if (withPin) {
       qb.addSelect('wallet.pinHash');
     }

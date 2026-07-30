@@ -1,9 +1,13 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { KycStatus } from '../entities/kyc.entity';
+
+export enum KycReviewStatus {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
 
 export class ReviewKycDto {
-  @IsEnum(KycStatus)
-  status: KycStatus.APPROVED | KycStatus.REJECTED;
+  @IsEnum(KycReviewStatus)
+  status: KycReviewStatus;
 
   @IsString()
   @IsOptional()

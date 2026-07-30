@@ -26,8 +26,8 @@ export enum ProofOfAddressType {
 
 @Entity('kyc')
 export class Kyc {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'int' })
   userId: number;

@@ -83,7 +83,11 @@ export class UsersService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.motdepasse')
+      .where('user.email = :email', { email })
+      .getOne();
     if (!user) return null;
 
     const valid = await verify(user.motdepasse, password);

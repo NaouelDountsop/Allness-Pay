@@ -1,1 +1,1 @@
-export class Transaction {}
+export { WalletTransaction, WalletTransactionType } from './wallet-transaction.entity';

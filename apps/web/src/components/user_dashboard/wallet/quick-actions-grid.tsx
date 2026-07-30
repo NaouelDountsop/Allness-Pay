@@ -9,18 +9,18 @@ const quickActions = [
 
 export function QuickActionsGrid() {
   return (
-    <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-800 mb-4">Actions rapides</h3>
+    <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
+      <h3 className="text-sm font-semibold text-[#082B37] mb-4">Actions rapides</h3>
       <div className="grid grid-cols-2 gap-3">
         {quickActions.map(({ label, icon: Icon }) => (
           <button
             key={label}
-            className="flex flex-col items-center gap-2 rounded-xl border border-gray-100 p-3 hover:border-afrilink-green/40 transition-colors"
+            className="flex flex-col items-center gap-2 rounded-xl border border-[#082B37]/10 p-3 hover:border-[#D28E2F]/50 hover:bg-[#082B37]/[0.03] active:scale-[0.97] transition-all"
           >
-            <span className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center text-afrilink-dark">
+            <span className="w-9 h-9 rounded-lg bg-[#D28E2F]/10 flex items-center justify-center text-[#D28E2F]">
               <Icon className="w-4 h-4" />
             </span>
-            <span className="text-[11px] text-center text-gray-600 leading-tight">
+            <span className="text-[11px] text-center text-[#082B37]/70 leading-tight">
               {label}
             </span>
           </button>

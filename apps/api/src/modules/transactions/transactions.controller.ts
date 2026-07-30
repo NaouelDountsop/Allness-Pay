@@ -12,7 +12,7 @@ import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface AuthenticatedRequest extends Request {
-  user: { id: string };
+  user: { id: number};
 }
 
 @UseGuards(JwtAuthGuard)

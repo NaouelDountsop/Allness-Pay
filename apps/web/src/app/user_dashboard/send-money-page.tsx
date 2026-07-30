@@ -104,21 +104,24 @@ export default function SendMoneyPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="flex justify-center px-4 sm:px-8 pb-10">
+      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-5xl">
-          <h1 className="text-3xl md:text-4xl font-bold text-afrilink-dark mb-3">
+          <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
             Transfert vers le Cameroun
           </h1>
-          <p className="text-base md:text-lg text-gray-500 mb-8">
+          <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8">
             Vérifiez les détails de votre transaction avant de confirmer.
           </p>
 
-          <div className="rounded-3xl border border-gray-100 shadow-sm p-8">
-            <StepIndicator
-              steps={steps}
-              currentStep={currentStepIndex}
-              completedSteps={completedSteps}
-            />
+          <div className="rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 md:p-8">
+            {/* Le conteneur défile horizontalement sur mobile si les étapes dépassent la largeur */}
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 mb-4 sm:mb-6">
+              <StepIndicator
+                steps={steps}
+                currentStep={currentStepIndex}
+                completedSteps={completedSteps}
+              />
+            </div>
 
             {phase === "form" && (
               <BeneficiaryAmountForm
@@ -137,8 +140,8 @@ export default function SendMoneyPage() {
             )}
 
             {phase === "success" && (
-              <div className="text-center py-10">
-                <h2 className="text-lg font-bold text-afrilink-green mb-2">
+              <div className="text-center py-8 sm:py-10 px-2">
+                <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
                   Transfert envoyé avec succès !
                 </h2>
                 <p className="text-sm text-gray-500">
@@ -166,4 +169,3 @@ export default function SendMoneyPage() {
     </DashboardLayout>
   );
 }
-

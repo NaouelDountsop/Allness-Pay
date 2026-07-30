@@ -1,64 +1,79 @@
 import { useState } from "react";
-import { Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
-interface BalanceCardProps {
+interface WalletBalanceCardProps {
+  walletId: string;
   balance: number;
   currency: string;
-  ownerName: string;
-  incomeToday: number;
-  expenseToday: number;
+  status?: string;
 }
 
-export function BalanceCard({
+export function WalletBalanceCard({
+  walletId,
   balance,
   currency,
-  ownerName,
-  incomeToday,
-  expenseToday,
-}: BalanceCardProps) {
+  status = "Actif",
+}: WalletBalanceCardProps) {
   const [visible, setVisible] = useState(true);
-
   const formatted = new Intl.NumberFormat("fr-FR").format(balance);
 
   return (
-    <div className="space-y-3">
-      <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-6 relative overflow-hidden">
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-white/70">Solde total disponible</p>
-          <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">
-            {visible ? (
-              <Eye className="w-6 h-6 text-white/70" />
-            ) : (
-              <EyeOff className="w-6 h-6 text-white/70" />
-            )}
-          </button>
+    <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-6 relative overflow-hidden">
+      {/* Watermark carte du monde en points - couvre toute la carte */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: "url(/word.png)",
+          backgroundSize: "130%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          filter: "brightness(1.4)",
+        }}
+      />
+
+      {/* Watermark logo en dégradé blanc/orange (masque CSS sur le SVG) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+        style={{
+          WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
+          WebkitMaskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskImage: "url(/afrilinkpay_logo1.svg)",
+          maskSize: "contain",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+        }}
+      />
+
+      <div className="flex items-center justify-between mb-6 relative z-10">
+        <div className="flex items-center gap-2">
+          <img src="/afrilinkpay_logo1.svg" alt="" className="w-9 h-9 object-contain" />
+          <div>
+            <p className="text-xs text-white/60 tracking-wide">AFRILINK WALLET</p>
+            <p className="text-sm font-medium">{walletId}</p>
+          </div>
         </div>
-
-        <p className="text-3xl font-bold mb-1">
-          {visible ? `${formatted} ${currency}` : "•••••••"}
-        </p>
-        <p className="text-sm text-white/60">{ownerName}</p>
-
-        <div className="absolute right-4 bottom-4 w-16 h-10 rounded-md bg-white/10 border border-white/10" />
+        <span className="text-[11px] font-medium bg-white/10 text-green-300 px-2.5 py-1 rounded-full">
+          {status}
+        </span>
       </div>
 
-      <div className="flex gap-3">
-        <div className="flex-1 rounded-xl bg-green-50 px-4 py-3 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-afrilink-green" />
-          <div>
-            <p className="text-[11px] text-gray-500">ENTRÉES</p>
-            <p className="text-sm font-semibold text-afrilink-green">
-              +{incomeToday.toFixed(2)}
-            </p>
-          </div>
-        </div>
-        <div className="flex-1 rounded-xl bg-red-50 px-4 py-3 flex items-center gap-2">
-          <TrendingDown className="w-4 h-4 text-red-500" />
-          <div>
-            <p className="text-[11px] text-gray-500">SORTIES</p>
-            <p className="text-sm font-semibold text-red-500">{expenseToday.toFixed(2)}</p>
-          </div>
-        </div>
+      <p className="text-xs text-white/60 mb-1 relative z-10">Solde Total</p>
+      <div className="flex items-center gap-3 relative z-10">
+        <p className="text-3xl font-bold">
+          {visible ? formatted : "•••••••"}{" "}
+          <span className="text-base font-medium text-afrilink-orange">{currency}</span>
+        </p>
+        <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">
+          {visible ? (
+            <Eye className="w-6 h-6 text-white/60" />
+          ) : (
+            <EyeOff className="w-6 h-6 text-white/60" />
+          )}
+        </button>
       </div>
     </div>
   );

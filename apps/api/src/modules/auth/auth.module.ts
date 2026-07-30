@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -10,10 +11,12 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { OtpModule } from '../otp/otp.module';
+import { Administrateur } from '../role/entities/administrateur.entity';
 
 @Module({
   imports: [
-    UsersModule,
+    TypeOrmModule.forFeature([Administrateur]),
+    forwardRef(() => UsersModule),
     OtpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
 
@@ -33,6 +36,6 @@ import { OtpModule } from '../otp/otp.module';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy, JwtAuthGuard, LocalAuthGuard],
-  exports: [AuthService],
+  exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

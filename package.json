@@ -27,7 +27,8 @@
     "db:down": "docker compose down",
     "migration:run": "npm run migration:run --workspace @afrilinkpay/api",
     "migration:generate": "npm run migration:generate --workspace @afrilinkpay/api",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "seed:permissions": "ts-node src/database/seed-permissions.ts"
   },
   "devDependencies": {
     "@types/passport-local": "^1.0.38",

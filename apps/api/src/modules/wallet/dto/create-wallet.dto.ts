@@ -3,8 +3,7 @@ import { IsString, IsOptional, Length, IsIn } from 'class-validator';
 // Devises supportées par la plateforme. À adapter selon vos besoins réels.
 export const SUPPORTED_CURRENCIES = ['XAF', 'USD', 'EUR'] as const;
 
-// Le PIN n'est plus créé ici : il est géré exclusivement par le module `pin`,
-// via un flow dédié déclenché à la première ouverture du wallet.
+
 export class CreateWalletDto {
   @IsOptional()
   @IsString()

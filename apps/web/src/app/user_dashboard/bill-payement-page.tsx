@@ -37,19 +37,19 @@ export default function BillPaymentPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-8 pb-10 max-w-4xl">
+      <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10 max-w-4xl">
         <button
           onClick={() => navigate("/dashboard/payments")}
-          className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-1"
+          className="flex items-center gap-2 text-base sm:text-lg font-semibold text-afrilink-dark mb-1"
         >
           <ArrowLeft className="w-5 h-5" />
           {title}
         </button>
         <p className="text-sm text-gray-500 mb-6">
-          Réglez vos factures d'électricité en toute simplicité.
+          Réglez vos factures en toute simplicité.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <BillerLookupForm
             supplier={supplier}
             reference={reference}

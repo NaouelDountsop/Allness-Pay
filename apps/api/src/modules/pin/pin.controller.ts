@@ -16,7 +16,7 @@ import { CreatePinDto, ChangePinDto, ForgotPinDto, ResetPinDto, VerifyPinDto } f
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface AuthenticatedRequest extends Request {
-  user: { id: string };
+  user: { id: number };
 }
 
 @UseGuards(JwtAuthGuard)

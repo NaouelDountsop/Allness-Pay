@@ -17,44 +17,44 @@ export default function PaymentsPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-8 pb-10">
+      <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-          <div>
+          <div className="min-w-0">
             <h1 className="text-lg font-semibold text-afrilink-dark">
               Paiements &amp; Services
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 line-clamp-2">
               Réglez vos factures, achetez du crédit et accédez à une multitude de
               services en quelques clics, en toute sécurité.
             </p>
           </div>
           <div className="flex gap-2 shrink-0">
-            <button className="h-9 px-4 rounded-lg border border-gray-200 text-sm text-gray-600 flex items-center gap-2">
+            <button className="h-9 px-3 sm:px-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-600 flex items-center gap-1.5 sm:gap-2">
               <Star className="w-4 h-4" />
-              Favoris
+              <span className="hidden sm:inline">Favoris</span>
             </button>
-            <button className="h-9 px-4 rounded-lg border border-afrilink-orange text-afrilink-orange text-sm flex items-center gap-2">
+            <button className="h-9 px-3 sm:px-4 rounded-lg border border-afrilink-orange text-afrilink-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2">
               <History className="w-4 h-4" />
-              Historique
+              <span className="hidden sm:inline">Historique</span>
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           <div className="lg:col-span-2">
             <QrCodePanel onScanClick={() => navigate("/dashboard/payments/scan")} />
           </div>
           <HowToPay />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           <div className="lg:col-span-2">
             <ServiceCategoriesGrid categories={serviceCategories} />
           </div>
           <WhyChooseCard />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <RecentPaymentsList payments={mockRecentPayments} />
           <ScheduledPaymentsBanner />
         </div>

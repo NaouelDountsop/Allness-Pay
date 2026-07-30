@@ -11,32 +11,34 @@ import {
 } from '@nestjs/common';
 import { WalletsService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
-
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateWalletDto } from './dto/update-wallet.dto';import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 interface AuthenticatedRequest extends Request {
-  user: { id: string };
+  user: {
+    idutilisateur: number;
+  };
 }
 
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @Controller('wallets')
 export class WalletsController {
   constructor(private readonly walletsService: WalletsService) {}
 
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateWalletDto) {
-    return this.walletsService.create(req.user.id, dto);
+    return this.walletsService.create(req.user.idutilisateur, dto);
   }
 
   @Get()
   findAll(@Req() req: AuthenticatedRequest) {
-    return this.walletsService.findAllForUser(req.user.id);
+    return this.walletsService.findAllForUser(req.user.idutilisateur);
   }
 
   @Get(':id')
   findOne(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.findOne(id, req.user.id);
+    return this.walletsService.findOne(id, req.user.idutilisateur);
   }
 
   @Patch(':id')
@@ -45,16 +47,16 @@ export class WalletsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateWalletDto,
   ) {
-    return this.walletsService.update(id, req.user.id, dto);
+    return this.walletsService.update(id, req.user.idutilisateur, dto);
   }
 
   @Patch(':id/close')
   close(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.close(id, req.user.id);
+    return this.walletsService.close(id, req.user.idutilisateur);
   }
 
   @Patch(':id/set-primary')
   setPrimary(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.setPrimary(id, req.user.id);
+    return this.walletsService.setPrimary(id, req.user.idutilisateur);
   }
 }

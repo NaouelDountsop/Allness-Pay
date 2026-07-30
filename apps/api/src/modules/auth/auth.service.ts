@@ -1,8 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { verify } from 'argon2';
 import { UsersService } from '../users/users.service';
 import { RedisService } from '../otp/redis.service';
+import { Administrateur, AdministrateurStatut } from '../role/entities/administrateur.entity';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +14,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
+    @InjectRepository(Administrateur)
+    private readonly adminRepo: Repository<Administrateur>,
   ) {}
 
   async validateUser(email: string, motdepasse: string) {
@@ -25,6 +31,54 @@ export class AuthService {
 
   async login(user: { idutilisateur: number; email: string }) {
     return this.issueTokens(user);
+  }
+
+  async validateAdmin(email: string, motdepasse: string): Promise<Administrateur> {
+    const admin = await this.adminRepo.findOne({
+      where: { email },
+      select: ['id', 'nom', 'email', 'motdepasse', 'statut'],
+    });
+    if (!admin) {
+      throw new UnauthorizedException('Email ou mot de passe invalide');
+    }
+
+    if (admin.statut !== AdministrateurStatut.ACTIF) {
+      throw new ForbiddenException('Compte administrateur suspendu');
+    }
+
+    const valid = await verify(admin.motdepasse, motdepasse);
+    if (!valid) {
+      throw new UnauthorizedException('Email ou mot de passe invalide');
+    }
+
+    return admin;
+  }
+
+  async loginAdmin(admin: { id: number; email: string }) {
+    return this.issueAdminTokens(admin);
+  }
+
+  private async issueAdminTokens(admin: { id: number; email: string }) {
+    const payload = { sub: admin.id, email: admin.email, role: 'admin' };
+
+    const access_token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: this.parseTtlToSeconds(process.env.JWT_ACCESS_TTL ?? '15m'),
+    });
+
+    const jti = randomUUID();
+    const refresh_token = this.jwtService.sign(
+      { sub: admin.id, jti, role: 'admin' },
+      {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: this.parseTtlToSeconds(process.env.JWT_REFRESH_TTL ?? '30d'),
+      },
+    );
+
+    const ttlSeconds = this.parseTtlToSeconds(process.env.JWT_REFRESH_TTL ?? '30d');
+    await this.redisService.set(`refresh:admin:${admin.id}`, jti, ttlSeconds);
+
+    return { access_token, refresh_token };
   }
 
   // Génère un access + refresh token, stocke le refresh token en Redis

@@ -26,10 +26,10 @@ export default function QrPaymentPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-8 pb-10 max-w-3xl">
+      <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10 max-w-3xl">
         <button
           onClick={() => navigate("/dashboard/payments")}
-          className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-1"
+          className="flex items-center gap-2 text-base sm:text-lg font-semibold text-afrilink-dark mb-1"
         >
           <ArrowLeft className="w-5 h-5" />
           Paiement par QR Code
@@ -39,11 +39,11 @@ export default function QrPaymentPage() {
         </p>
 
         <div className="flex justify-center mb-6">
-          <div className="w-56 h-40 rounded-xl border-2 border-afrilink-orange p-4 flex items-center justify-center">
+          <div className="w-44 h-32 sm:w-56 sm:h-40 rounded-xl border-2 border-afrilink-orange p-3 sm:p-4 flex items-center justify-center">
             <img
               src="/socadel.svg"
               alt={merchant}
-              className="max-h-28 object-contain"
+              className="max-h-20 sm:max-h-28 object-contain"
             />
           </div>
         </div>

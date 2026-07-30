@@ -10,6 +10,8 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
+  ParseIntPipe,
   BadRequestException,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -25,6 +27,8 @@ import { CreateKycDto } from './dto/create-kyc.dto';
 import { UpdateKycDto } from './dto/update-kyc.dto';
 import { ReviewKycDto } from './dto/review-kyc.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../role/guards/permissions.guards';
+import { RequirePermissions } from '../role/decorators/permissions.decorator';
 import { kycMulterConfig } from '../../common/config/multer.config';
 import { Request } from 'express';
 
@@ -127,18 +131,19 @@ export class KycController {
   //   return this.kycService.findByUser(user.idutilisateur);
   // }
 
-  // TODO: restreindre aux admins une fois le système de rôles en place
+  // Routes admin : restreintes aux administrateurs avec la permission kyc:review
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('kyc:review')
   @ApiBearerAuth('access-token')
-  findAll() {
-    return this.kycService.findAll();
+  findAll(@Query('status') status?: string) {
+    return this.kycService.findAll(status);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  findOne(@Param('id') id: string, @Req() req: Request) {
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.kycService.findOneForUser(id, user.idutilisateur);
   }
@@ -147,7 +152,7 @@ export class KycController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateKycDto: UpdateKycDto,
     @Req() req: Request,
   ) {
@@ -155,23 +160,23 @@ export class KycController {
     return this.kycService.update(id, updateKycDto, user.idutilisateur);
   }
 
-  // TODO: restreindre aux admins une fois le système de rôles en place
   @Patch(':id/review')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('kyc:review')
   @ApiBearerAuth('access-token')
   review(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() reviewKycDto: ReviewKycDto,
     @Req() req: Request,
   ) {
-    const admin = req.user as { idutilisateur: number };
-    return this.kycService.review(id, reviewKycDto, admin.idutilisateur);
+    const admin = req.user as { id: number };
+    return this.kycService.review(id, reviewKycDto, admin.id);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  remove(@Param('id') id: string, @Req() req: Request) {
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.kycService.remove(id, user.idutilisateur);
   }

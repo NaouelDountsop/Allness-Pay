@@ -30,7 +30,7 @@ function generateOtp(): string {
   return crypto.randomInt(100000, 1000000).toString();
 }
 
-function otpKey(userId: string, walletId: string): string {
+function otpKey(userId: number, walletId: string): string {
   return `${OTP_PREFIX}:${userId}:${walletId}`;
 }
 
@@ -47,7 +47,7 @@ export class PinService {
   ) {}
 
   
-  async getPinStatus(id: string, userId: string): Promise<{ hasPin: boolean }> {
+  async getPinStatus(id: string, userId: number): Promise<{ hasPin: boolean }> {
     const wallet = await this.walletRepo.findOne({
       where: { id },
       select: ['id', 'userId', 'pinHash'],
@@ -60,7 +60,7 @@ export class PinService {
   }
 
   // Première création du PIN (première ouverture du wallet).
-  async createPin(id: string, userId: string, dto: CreatePinDto): Promise<void> {
+  async createPin(id: string, userId: number, dto: CreatePinDto): Promise<void> {
     if (dto.pin !== dto.pinConfirmation) {
       throw new BadRequestException('Le PIN et sa confirmation ne correspondent pas');
     }
@@ -81,7 +81,7 @@ export class PinService {
   }
 
   // Changement volontaire (Paramètres > Sécurité > Modifier le PIN).
-  async changePin(id: string, userId: string, dto: ChangePinDto): Promise<void> {
+  async changePin(id: string, userId: number, dto: ChangePinDto): Promise<void> {
     if (dto.newPin !== dto.newPinConfirmation) {
       throw new BadRequestException('Le nouveau PIN et sa confirmation ne correspondent pas');
     }
@@ -99,7 +99,7 @@ export class PinService {
 
   // Déclenche l'envoi d'un OTP pour permettre un reset de PIN sans connaître l'ancien.
 
-  async requestPinReset(id: string, userId: string, _dto: ForgotPinDto): Promise<void> {
+  async requestPinReset(id: string, userId: number, _dto: ForgotPinDto): Promise<void> {
     const wallet = await this.walletRepo.findOne({
       where: { id },
       relations: ['user'],
@@ -124,7 +124,7 @@ export class PinService {
     // Note: dto.channel ('sms'|'email') n'est pas encore exploité — seul  l'email est câblé pour l'instant.
   }
 
-  async resetPin(id: string, userId: string, dto: ResetPinDto): Promise<void> {
+  async resetPin(id: string, userId: number, dto: ResetPinDto): Promise<void> {
     if (dto.newPin !== dto.newPinConfirmation) {
       throw new BadRequestException('Le nouveau PIN et sa confirmation ne correspondent pas');
     }
@@ -150,28 +150,18 @@ export class PinService {
     );
   }
 
-  // Vérification ponctuelle, sans opération métier associée (ex: avant d'afficher
-  // un écran sensible côté front). Passe par le même compteur d'échecs / verrou
-  // que les opérations financières, donc compte aussi comme tentative.
-  async verifyPin(id: string, userId: string, dto: VerifyPinDto): Promise<{ valid: true }> {
+  async verifyPin(id: string, userId: number, dto: VerifyPinDto): Promise<{ valid: true }> {
     await this.dataSource.transaction((manager) =>
       this.verifyPinWithManager(manager, id, userId, dto.pin),
     );
     return { valid: true };
   }
 
-  // Coeur de la logique de sécurité du PIN : verrouille la ligne, vérifie le
-  // verrou temporel, compare le PIN via Argon2, incrémente ou réinitialise le
-  // compteur d'échecs, et déclenche un verrouillage temporaire au 5e échec.
-  //
-  // Publique et acceptant un `manager` fourni par l'appelant : ceci permet à
-  // TransactionsService de l'appeler DANS SA PROPRE transaction (retrait,
-  // transfert), pour garder verrou + PIN + solde atomiques d'un seul bloc,
-  // sans avoir besoin d'un `assertPinValid` séparé et non composable.
+
   async verifyPinWithManager(
     manager: EntityManager,
     id: string,
-    userId: string,
+    userId: number,
     pin: string,
   ): Promise<Wallet> {
     const wallet = await this.walletsService.lockWalletForUpdate(manager, id, true);

@@ -39,3 +39,6 @@ test-results/
 
 # Docker / volumes locaux
 docker/data/
+
+# Agent instruction files
+AGENTS.md

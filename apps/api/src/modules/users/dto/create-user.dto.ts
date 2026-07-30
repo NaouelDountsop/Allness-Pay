@@ -40,7 +40,7 @@ export class CreateUserDto {
   @Length(6, 32)
   motdepasse: string;
 
-      @IsString()
-    @Length(3, 100)
-    profession: string;
+  @IsString()
+  @Length(3, 100)
+  profession: string;
 }

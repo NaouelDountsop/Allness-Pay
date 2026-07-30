@@ -32,24 +32,24 @@ export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps
       <h3 className="text-base font-semibold text-afrilink-dark mb-4">
         Catégories de services
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         {categories.map((cat) => {
           const Icon = iconMap[cat.icon];
           return (
             <button
               key={cat.key}
               onClick={() => navigate(`/dashboard/payments/${cat.key}`)}
-              className="relative rounded-xl border border-gray-100 bg-white p-5 flex flex-col items-center gap-3 hover:border-afrilink-green/40 hover:shadow-sm transition-all"
+              className="relative rounded-xl border border-gray-100 bg-white p-3 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 hover:border-afrilink-green/40 hover:shadow-sm transition-all"
             >
               {cat.favorite && (
-                <Star className="w-3.5 h-3.5 text-afrilink-orange fill-afrilink-orange absolute top-3 right-3" />
+                <Star className="w-3.5 h-3.5 text-afrilink-orange fill-afrilink-orange absolute top-2 sm:top-3 right-2 sm:right-3" />
               )}
               <span
-                className={`w-11 h-11 rounded-xl flex items-center justify-center ${colorMap[cat.icon]}`}
+                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${colorMap[cat.icon]}`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </span>
-              <span className="text-sm font-medium text-gray-700">{cat.label}</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 text-center leading-tight">{cat.label}</span>
             </button>
           );
         })}

@@ -41,11 +41,18 @@ export class KycService {
     return this.kycRepository.save(kyc);
   }
 
-  findAll() {
-    return this.kycRepository.find();
+  findAll(status?: string) {
+    if (status) {
+      const validStatuses = Object.values(KycStatus);
+      if (!validStatuses.includes(status as KycStatus)) {
+        throw new BadRequestException(`Statut invalide. Valeurs autorisées : ${validStatuses.join(', ')}`);
+      }
+      return this.kycRepository.find({ where: { status: status as KycStatus }, order: { createdAt: 'DESC' } });
+    }
+    return this.kycRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const kyc = await this.kycRepository.findOne({ where: { id } });
     if (!kyc) {
       throw new NotFoundException('Dossier KYC introuvable.');
@@ -53,7 +60,7 @@ export class KycService {
     return kyc;
   }
 
-  async findOneForUser(id: string, userId: number) {
+  async findOneForUser(id: number, userId: number) {
     const kyc = await this.findOne(id);
     if (kyc.userId !== userId) {
       throw new ForbiddenException('Accès non autorisé à ce dossier KYC.');
@@ -69,7 +76,7 @@ export class KycService {
     return kyc;
   }
 
-  async update(id: string, updateKycDto: UpdateKycDto, userId: number) {
+  async update(id: number, updateKycDto: UpdateKycDto, userId: number) {
     const kyc = await this.findOne(id);
 
     if (kyc.userId !== userId) {
@@ -83,22 +90,27 @@ export class KycService {
     return this.kycRepository.save(kyc);
   }
 
-  async review(id: string, reviewKycDto: ReviewKycDto, adminId: number) {
+  async review(id: number, reviewKycDto: ReviewKycDto, adminId: number) {
     const kyc = await this.findOne(id);
 
     if (kyc.status !== KycStatus.PENDING) {
       throw new BadRequestException('Ce dossier a déjà été traité.');
     }
 
-    kyc.status = reviewKycDto.status;
+    kyc.status = reviewKycDto.status as unknown as KycStatus;
     kyc.reviewComment = reviewKycDto.reviewComment;
     kyc.verifiedBy = adminId;
     kyc.verifiedAt = new Date();
 
-    return this.kycRepository.save(kyc);
+    const saved = await this.kycRepository.save(kyc);
+
+    return {
+      status: saved.status,
+      reviewComment: saved.reviewComment,
+    };
   }
 
-  async remove(id: string, userId: number) {
+  async remove(id: number, userId: number) {
     const kyc = await this.findOne(id);
     if (kyc.userId !== userId) {
       throw new ForbiddenException('Accès non autorisé à ce dossier KYC.');

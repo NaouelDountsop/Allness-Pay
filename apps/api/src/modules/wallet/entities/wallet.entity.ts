@@ -12,6 +12,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
+import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
 
 export enum WalletStatus {
   ACTIVE = 'active',
@@ -34,11 +35,11 @@ export class Wallet {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ insert: false, update: false })
-  userId: string;
+  @Column()
+  userId: number;
 
-  @Column({ type: 'decimal', precision: 14, scale: 2, default: 0 })
-  balance: string;
+  @Column({ type: 'bigint', default: 0, transformer: bigintTransformer })
+  balance: bigint;
 
   @Column({ default: 'XAF' })
   currency: string;

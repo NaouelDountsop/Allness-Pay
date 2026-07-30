@@ -50,7 +50,7 @@ export class User {
   profession: string;
 
 
-  @Column({ length: 255 })
+   @Column({ length: 255, select: false })
   motdepasse: string;
 
 

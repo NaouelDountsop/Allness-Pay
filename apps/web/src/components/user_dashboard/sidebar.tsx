@@ -26,17 +26,23 @@ const navItems = [
 
 export function Sidebar() {
   return (
-      <aside className="hidden md:flex inset-y-0 left-0 z-50 w-72 max-w-full bg-afrilink-dark text-white flex-col">
-        <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
-          <div className="flex items-center gap-2">
-            <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-12 h-17 object-contain" />
-            <span className="font-bold text-md">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
-            </span>
-          </div>
+    // sticky (pas fixed) : la sidebar reste "clouée" à l'écran pendant le scroll,
+    // mais reste dans le flux normal du layout. Résultat : aucune page n'a besoin
+    // d'un padding/margin compensatoire, contrairement à une sidebar en "fixed".
+    // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
+    // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
+    // presque toujours le cas pour un layout sidebar+contenu classique.
+    <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
+      <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
+        <div className="flex items-center gap-2">
+          <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-12 h-17 object-contain" />
+          <span className="font-bold text-md">
+            Afrilink<span className="text-afrilink-orange">Pay</span>
+          </span>
         </div>
+      </div>
 
-        <nav className="flex-1 px-3 space-y-3 overflow-y-auto pb-6">
+      <nav className="flex-1 px-3 space-y-3 overflow-y-auto pb-6">
         {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -46,7 +52,7 @@ export function Sidebar() {
               `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
                   ? "bg-white text-afrilink-orange font-medium"
-                  : "text-white/70 hover:bg-white/5 hover:text-white"
+                  : "text-white hover:bg-white/5"
               }`
             }
           >
@@ -57,7 +63,7 @@ export function Sidebar() {
       </nav>
 
       <div className="p-3">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors">
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>
