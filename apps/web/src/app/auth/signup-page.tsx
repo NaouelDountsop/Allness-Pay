@@ -1,5 +1,5 @@
 import { useState } from "react";
-//mport { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   Calendar,
@@ -52,7 +52,7 @@ const initialForm: SignupForm = {
 };
 
 export default function SignupPage() {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<SignupForm>(initialForm);
   const [showPassword, setShowPassword] = useState(false);
@@ -110,6 +110,7 @@ export default function SignupPage() {
     : cleanedPhone;
 
   try {
+    setLoading(true);
     await authService.register({
       fullName: form.lastName + " " + form.firstName,
       email: form.email,

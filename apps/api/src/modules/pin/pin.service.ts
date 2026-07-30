@@ -119,7 +119,7 @@ export class PinService {
 
     const otpCode = generateOtp();
     await this.redisService.set(otpKey(userId, id), otpCode, OTP_TTL_SECONDS);
-    await this.mailService.sendOtpEmail(wallet.user.email, otpCode);
+    await this.mailService.sendOtp(wallet.user.email, otpCode);
 
     // Note: dto.channel ('sms'|'email') n'est pas encore exploité — seul  l'email est câblé pour l'instant.
   }
