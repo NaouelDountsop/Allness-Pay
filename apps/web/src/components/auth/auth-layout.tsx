@@ -55,7 +55,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
               alt="AfrilinkPay"
               className="w-70 h-70 object-contain"
             />
-            <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative">
+            <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative mb-[15px]">
               <p className="text-xs text-white/70 italic leading-relaxed">
                 "AfrilinkPay a transformé notre façon de gérer nos actifs internationaux.
                 Une interface d'une fluidité rare."
@@ -67,6 +67,17 @@ export function AuthLayout({ children }: { children: ReactNode }) {
 
         {/* Panneau droit — formulaire */}
         <div className="flex-1 w-full p-6 sm:p-8 lg:p-10 overflow-y-auto">
+          {/* Branding mobile — visible uniquement sur petit écran */}
+          <div className="md:hidden flex items-center gap-2 mb-6 bg-afrilink-dark px-4 py-3 rounded-t-xl">
+            <img
+              src="/afrilinkpay_logo1.svg"
+              alt="AfrilinkPay"
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-bold text-white">
+              Afrilink<span className="text-afrilink-orange">Pay</span>
+            </span>
+          </div>
           {children}
         </div>
       </div>

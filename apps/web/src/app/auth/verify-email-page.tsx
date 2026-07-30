@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { authService } from "@/services/auth.service";
 
+
 const RESEND_DELAY = 58;
 
 export default function VerifyEmailPage() {
@@ -89,6 +90,15 @@ export default function VerifyEmailPage() {
       setError(Array.isArray(msg) ? msg.join(", ") : msg);
     }
   };
+
+  const location = useLocation();
+
+  const emailFromState = (location.state as { email?: string })?.email || "";
+
+  // Si quelqu'un arrive directement sur /verify-email sans email → on le renvoie
+  if (!emailFromState) {
+    navigate("/register");
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">

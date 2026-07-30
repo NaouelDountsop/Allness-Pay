@@ -39,3 +39,6 @@ test-results/
 
 # Docker / volumes locaux
 docker/data/
+
+# AI / agents
+AGENTS.md
