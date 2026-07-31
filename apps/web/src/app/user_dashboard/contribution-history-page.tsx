@@ -11,7 +11,7 @@ import { mockContributions, mockCycles } from "@/lib/mock/tontines-data";
 export default function ContributionHistoryPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [selectedCycle, setSelectedCycle] = useState(mockCycles[0].id);
+  const [selectedCycle, setSelectedCycle] = useState(mockCycles[0]?.id ?? "");
 
   return (
     <DashboardLayout>

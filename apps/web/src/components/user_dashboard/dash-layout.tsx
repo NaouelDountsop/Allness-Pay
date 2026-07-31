@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Sidebar } from "@/components/user_dashboard/sidebar";
 import { BottomNav } from "@/components/user_dashboard/bottom-nav";
 

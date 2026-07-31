@@ -1,5 +1,5 @@
-import { useState } from "react";
-//mport { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   User,
   Calendar,
@@ -19,6 +19,7 @@ import { CitySelect } from "@/components/common/city-select";
 import { PhoneInput, validatePhone } from "@/components/common/phone-input";
 import { AddressInput } from "@/components/common/address-input";
 import { authService } from "@/services/auth.service";
+import { authStorage } from "@/lib/auth-storage";
 import { type Country, countries } from "@/data/countries";
 
 interface SignupForm {
@@ -52,9 +53,12 @@ const initialForm: SignupForm = {
 };
 
 export default function SignupPage() {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<SignupForm>(initialForm);
+  const [googleId, setGoogleId] = useState<string | null>(null); // stocké en mémoire, jamais affiché
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [accepted, setAccepted] = useState(false);
@@ -65,10 +69,28 @@ export default function SignupPage() {
   const selectedCountry: Country | null =
     countries.find((c) => c.code === form.country) ?? null;
 
+  const isFromGoogle = !!googleId;
+
+  // Pré-remplir le formulaire avec les données Google
+  useEffect(() => {
+    const gId = searchParams.get("google_id");
+    const email = searchParams.get("email");
+    const prenom = searchParams.get("prenom");
+    const nom = searchParams.get("nom");
+
+    if (gId) {
+      setGoogleId(gId);
+      setForm((prev) => ({
+        ...prev,
+        email: email || prev.email,
+        firstName: prenom || prev.firstName,
+        lastName: nom || prev.lastName,
+      }));
+    }
+  }, [searchParams]);
+
   const update = (field: keyof SignupForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
-
-
 
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,67 +102,89 @@ export default function SignupPage() {
     setStep(2);
   };
 
- const handleStep2Submit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setPhoneError("");
+  const handleStep2Submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setPhoneError("");
+    setLoading(true);
 
-  if (form.password.length < 8) {
-    setError("Le mot de passe doit contenir au moins 8 caractères");
-    return;
-  }
-  if (form.password !== form.confirmPassword) {
-    setError("Les mots de passe ne correspondent pas");
-    return;
-  }
-  if (!accepted) {
-    setError("Vous devez accepter les conditions d'utilisation");
-    return;
-  }
+    if (!isFromGoogle) {
+      if (form.password.length < 8) {
+        setError("Le mot de passe doit contenir au moins 8 caractères");
+        setLoading(false);
+        return;
+      }
+      if (form.password !== form.confirmPassword) {
+        setError("Les mots de passe ne correspondent pas");
+        setLoading(false);
+        return;
+      }
+    }
+    if (!accepted) {
+      setError("Vous devez accepter les conditions d'utilisation");
+      setLoading(false);
+      return;
+    }
 
-  const phoneErr = validatePhone(form.phone, selectedCountry);
-  if (phoneErr) {
-    setPhoneError(phoneErr);
-    return;
-  }
+    const phoneErr = validatePhone(form.phone, selectedCountry);
+    if (phoneErr) {
+      setPhoneError(phoneErr);
+      setLoading(false);
+      return;
+    }
 
-  const cleanedPhone = form.phone.replace(/[\s-]/g, "");
-  const fullPhone = selectedCountry
-    ? selectedCountry.dialCode + cleanedPhone
-    : cleanedPhone;
+    const cleanedPhone = form.phone.replace(/[\s-]/g, "");
+    const fullPhone = selectedCountry
+      ? selectedCountry.dialCode + cleanedPhone
+      : cleanedPhone;
 
-  try {
-    await authService.register({
-      fullName: form.lastName + " " + form.firstName,
-      email: form.email,
-      password: form.password,
-      phone: fullPhone,
-      birthDate: form.birthDate,
-      country: selectedCountry?.name ?? "",
-      city: form.city,
-      profession: form.profession,
-    });
+    try {
+      const response = await authService.register({
+        fullName: form.lastName + " " + form.firstName,
+        email: form.email,
+        password: isFromGoogle ? undefined : form.password,
+        phone: fullPhone,
+        birthDate: form.birthDate,
+        country: selectedCountry?.name ?? "",
+        city: form.city,
+        profession: form.profession,
+        googleId: googleId || undefined,
+      });
 
-    navigate("/verify-email", {
-      state: { email: form.email.trim().toLowerCase() },
-    });
-  } catch (err: any) {
-    const message =
-      err.response?.data?.message ||
-      err.response?.data?.error ||
-      "Erreur lors de l'inscription";
-    setError(Array.isArray(message) ? message.join("\n") : message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      if (isFromGoogle && response.data.access_token) {
+        // Compte Google : connexion directe vers le dashboard
+        authStorage.setToken(response.data.access_token);
+        if (response.data.refresh_token) {
+          authStorage.setRefreshToken(response.data.refresh_token);
+        }
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Inscription classique : vérification OTP
+        navigate("/verify-email", {
+          state: { email: form.email.trim().toLowerCase() },
+        });
+      }
+    } catch (err: unknown) {
+      const e = err as {
+        response?: { data?: { message?: string | string[]; error?: string } };
+      };
+      const message =
+        e.response?.data?.message ||
+        e.response?.data?.error ||
+        "Erreur lors de l'inscription";
+      setError(Array.isArray(message) ? message.join("\n") : message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthLayout>
       <h1 className="text-xl font-semibold mb-1">Créer un compte</h1>
       <p className="text-sm text-afrilink-gray mb-4">
-        Rejoignez l'écosystème financier de nouvelle génération
+        {isFromGoogle
+          ? "Finalisez votre inscription avec Google"
+          : "Rejoignez l'écosystème financier de nouvelle génération"}
       </p>
 
       {/* Indicateur d'étapes */}
@@ -154,9 +198,7 @@ export default function SignupPage() {
               : "text-afrilink-gray hover:text-gray-900"
           }`}
         >
-          {step === 2 && (
-            <ArrowLeft className="w-3.5 h-3.5" />
-          )}
+          {step === 2 && <ArrowLeft className="w-3.5 h-3.5" />}
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
               step === 1
@@ -169,13 +211,15 @@ export default function SignupPage() {
           Informations
         </button>
 
-        <div className={`flex-1 h-0.5 rounded-full ${step === 2 ? "bg-afrilink-green" : "bg-gray-200"}`} />
+        <div
+          className={`flex-1 h-0.5 rounded-full ${
+            step === 2 ? "bg-afrilink-green" : "bg-gray-200"
+          }`}
+        />
 
         <span
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 2
-              ? "text-afrilink-green"
-              : "text-afrilink-gray"
+            step === 2 ? "text-afrilink-green" : "text-afrilink-gray"
           }`}
         >
           <span
@@ -234,7 +278,12 @@ export default function SignupPage() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -257,32 +306,39 @@ export default function SignupPage() {
 
           <AppButton type="submit">Continuer →</AppButton>
 
-          <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
-            <input
-              type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
-            />
-            <span>
-              J'accepte les{" "}
-              <a href="/cgu" className="text-afrilink-green font-medium">
-                Conditions d'utilisation
-              </a>{" "}
-              et la{" "}
-              <a href="/confidentialite" className="text-afrilink-green font-medium">
-                Politique de confidentialité
-              </a>{" "}
-              de AfrilinkPay.
-            </span>
-          </label>
+          {!isFromGoogle && (
+            <>
+              <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
+                />
+                <span>
+                  J'accepte les{" "}
+                  <a href="/cgu" className="text-afrilink-green font-medium">
+                    Conditions d'utilisation
+                  </a>{" "}
+                  et la{" "}
+                  <a
+                    href="/confidentialite"
+                    className="text-afrilink-green font-medium"
+                  >
+                    Politique de confidentialité
+                  </a>{" "}
+                  de AfrilinkPay.
+                </span>
+              </label>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Déjà inscrit ?{" "}
-            <a href="/login" className="text-afrilink-green font-medium">
-              Se connecter
-            </a>
-          </p>
+              <p className="text-center text-sm text-gray-500 mt-4">
+                Déjà inscrit ?{" "}
+                <a href="/login" className="text-afrilink-green font-medium">
+                  Se connecter
+                </a>
+              </p>
 
-          <SocialButtons />
+              <SocialButtons />
+            </>
+          )}
         </form>
       )}
 
@@ -310,6 +366,8 @@ export default function SignupPage() {
             value={form.address}
             onChange={(v) => update("address", v)}
           />
+
+          {/* Email pré-rempli et en lecture seule si vient de Google */}
           <AppInput
             label="Adresse email"
             icon={Mail}
@@ -317,54 +375,67 @@ export default function SignupPage() {
             placeholder="jean.dupont@entreprise.com"
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
+            disabled={isFromGoogle}
           />
 
-          <div className="w-full space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              Créer un mot de passe
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
-              <input
-                type={showPassword ? "text" : "password"}
-                className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-xs text-gray-400">
-              Minimum 8 caractères, incluant un chiffre et un symbole.
-            </p>
-          </div>
+          {!isFromGoogle && (
+            <>
+              <div className="w-full space-y-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Créer un mot de passe
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    value={form.password}
+                    onChange={(e) => update("password", e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Minimum 8 caractères, incluant un chiffre et un symbole.
+                </p>
+              </div>
 
-          <div className="w-full space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              Confirmer le mot de passe
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
-              <input
-                type={showConfirm ? "text" : "password"}
-                className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
-                value={form.confirmPassword}
-                onChange={(e) => update("confirmPassword", e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
-              >
-                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
+              <div className="w-full space-y-1">
+                <label className="text-sm font-medium text-gray-700">
+                  Confirmer le mot de passe
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    value={form.confirmPassword}
+                    onChange={(e) => update("confirmPassword", e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+                  >
+                    {showConfirm ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
@@ -385,21 +456,27 @@ export default function SignupPage() {
                 Conditions d'utilisation
               </a>{" "}
               et la{" "}
-              <a href="/confidentialite" className="text-afrilink-green font-medium">
+              <a
+                href="/confidentialite"
+                className="text-afrilink-green font-medium"
+              >
                 Politique de confidentialité
               </a>{" "}
               de AfrilinkPay.
             </span>
           </label>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Déjà inscrit ?{" "}
-            <a href="/login" className="text-afrilink-green font-medium">
-              Se connecter
-            </a>
-          </p>
-
-          <SocialButtons />
+          {!isFromGoogle && (
+            <>
+              <p className="text-center text-sm text-gray-500 mt-4">
+                Déjà inscrit ?{" "}
+                <a href="/login" className="text-afrilink-green font-medium">
+                  Se connecter
+                </a>
+              </p>
+              <SocialButtons />
+            </>
+          )}
         </form>
       )}
     </AuthLayout>

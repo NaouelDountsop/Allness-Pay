@@ -7,6 +7,8 @@ import { verify } from 'argon2';
 import { UsersService } from '../users/users.service';
 import { RedisService } from '../otp/redis.service';
 import { Administrateur, AdministrateurStatut } from '../role/entities/administrateur.entity';
+import { User } from '../users/entities/user.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,8 @@ export class AuthService {
     private readonly redisService: RedisService,
     @InjectRepository(Administrateur)
     private readonly adminRepo: Repository<Administrateur>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {}
 
   async validateUser(email: string, motdepasse: string) {
@@ -81,7 +85,6 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
-  // Génère un access + refresh token, stocke le refresh token en Redis
   private async issueTokens(user: { idutilisateur: number; email: string }) {
     const payload = { sub: user.idutilisateur, email: user.email };
 
@@ -90,7 +93,6 @@ export class AuthService {
       expiresIn: this.parseTtlToSeconds(process.env.JWT_ACCESS_TTL ?? '15m'),
     });
 
-    // jti = identifiant unique du refresh token, utile pour la révocation ciblée
     const jti = randomUUID();
     const refresh_token = this.jwtService.sign(
       { sub: user.idutilisateur, jti },
@@ -101,7 +103,6 @@ export class AuthService {
     );
 
     const ttlSeconds = this.parseTtlToSeconds(process.env.JWT_REFRESH_TTL ?? '30d');
-    // On stocke le jti courant : un seul refresh token valide à la fois par utilisateur
     await this.redisService.set(`refresh:${user.idutilisateur}`, jti, ttlSeconds);
 
     return { access_token, refresh_token };
@@ -124,7 +125,6 @@ export class AuthService {
 
     const user = await this.usersService.findOne(decoded.sub);
 
-    // Rotation : on invalide l'ancien et on émet une nouvelle paire
     return this.issueTokens({ idutilisateur: user.idutilisateur, email: user.email });
   }
 
@@ -141,13 +141,78 @@ export class AuthService {
     return this.usersService.resendOtp(email);
   }
 
+  
   private parseTtlToSeconds(ttl: string): number {
     const match = ttl.match(/^(\d+)([smhd])$/);
-    if (!match) return 30 * 24 * 60 * 60; // fallback 30 jours
+    if (!match) return 30 * 24 * 60 * 60;
     const value = parseInt(match[1], 10);
     const unit = match[2];
     const multipliers: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 };
     return value * multipliers[unit];
   }
 
+
+
+  // Cherche un compte lié à ce googleId, sinon par email (et lie le googleId si trouvé par email)
+async resolveGoogleUser(googleId: string, email: string): Promise<User | null> {
+  let user = await this.userRepo.findOne({ where: { googleId } });
+  if (user) return user;
+
+  user = await this.userRepo.findOne({ where: { email } });
+  if (user) {
+    user.googleId = googleId;
+    await this.userRepo.save(user);
+    return user;
+  }
+
+  return null;
+}
+
+// Stocke le profil Google vérifié en attendant que l'utilisateur complète le formulaire
+async createGooglePendingSignup(profile: {
+  googleId: string;
+  email: string;
+  prenom: string;
+  nom: string;
+}): Promise<string> {
+  const token = randomUUID();
+  await this.redisService.set(`google_pending:${token}`, JSON.stringify(profile), 15 * 60);
+  return token;
+}
+
+// Relit le profil en attente (utilisé par le front pour préremplir le formulaire)
+async getGooglePendingSignup(token: string) {
+  const raw = await this.redisService.get(`google_pending:${token}`);
+  if (!raw) {
+    throw new UnauthorizedException("Session d'inscription Google expirée, veuillez recommencer.");
+  }
+  return JSON.parse(raw) as { googleId: string; email: string; prenom: string; nom: string };
+}
+
+// Finalise l'inscription : fusionne le profil Google + le formulaire, crée le user, envoie l'OTP
+async completeGoogleSignup(token: string, dto: CreateUserDto) {
+  const pending = await this.getGooglePendingSignup(token);
+
+  const user = await this.usersService.create({
+    nom: pending.nom,
+    prenom: pending.prenom,
+    email: pending.email,
+    googleId: pending.googleId,
+    datenaissance: dto.datenaissance,
+    sexe: dto.sexe,
+    pays: dto.pays,
+    ville: dto.ville,
+    telephone: dto.telephone,
+    adresse: dto.adresse,
+    profession: dto.profession,
+    motdepasse: dto.motdepasse,
+  });
+
+  await this.redisService.del(`google_pending:${token}`);
+
+  return {
+    message: 'Compte créé. Un code de vérification a été envoyé à votre email.',
+    email: user.email,
+  };
+}
 }

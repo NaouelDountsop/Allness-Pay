@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, CircleCheck } from "lucide-react";
 
 interface KycFacialStepProps {
-  onNext: () => void;
+  onNext: (selfie: File) => void;
 }
 
 const instructions = [
@@ -39,7 +39,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
         videoRef.current.srcObject = mediaStream;
         await videoRef.current.play();
       }
-    } catch (err) {
+    } catch {
       setError("Impossible d'accéder à la caméra. Vérifiez les autorisations.");
     }
   };
@@ -59,10 +59,18 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
+
+      const blob = await new Promise<Blob>((resolve) =>
+        canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.9),
+      );
+      const file = new File([blob], `selfie-${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
       setCaptured(true);
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
-      setTimeout(onNext, 800);
+      setTimeout(() => onNext(file), 800);
     }
   };
 

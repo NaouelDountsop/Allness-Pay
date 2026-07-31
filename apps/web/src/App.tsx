@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "@/app/landing-page";
 import SignupPage from "@/app/auth/signup-page";
 import VerifyEmailPage from "@/app/auth/verify-email-page";
 import LoginPage from "@/app/auth/login-page";
-import DashboardPage from "@/app/user_dashboard/dashboard-page";
+import AuthCallbackPage from "@/app/auth/auth-callback-page";
+import DashboardPage from "@/app/user_dashboard/u-dashboard-page";
 import KycPage from "@/app/user_dashboard/kyc-page";
 import WalletPage from "@/app/user_dashboard/wallet-page";
 import SendMoneyPage from "@/app/user_dashboard/send-money-page";
@@ -17,6 +18,19 @@ import TontineDetailPage from "@/app/user_dashboard/tontine-detail-page";
 import ContributionHistoryPage from "@/app/user_dashboard/contribution-history-page";
 import MakeContributionPage from "@/app/user_dashboard/make-contribution-page";
 import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
+import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
+import UsersListPage from "@/app/admin-dashboard/users-list-page";
+import TontinesSupervisionPage from "@/app/admin-dashboard/tontines-supervision-page";
+import MerchantsListPage from "@/app/admin-dashboard/merchant-list-page";
+import MerchantDetailPage from "@/app/admin-dashboard/merchant-detail-page";
+import AddMerchantPage from "@/app/admin-dashboard/add-merchant-page";
+import KycListPage from "@/app/admin-dashboard/kyc-list-page";
+import KycDetailPage from "@/app/admin-dashboard/kyc-details-page";
+import ExchangeRatesListPage from "@/app/admin-dashboard/exchange-rate-list-page";
+import EditExchangeRatePage from "@/app/admin-dashboard/edit-exchange-rate-page";
+import AddExchangeRatePage from "@/app/admin-dashboard/add-exchange-rate-page";
+import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history-page";
+import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settings-page";
 
 export function App() {
   return (
@@ -26,6 +40,7 @@ export function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/kyc" element={<KycPage />} />
         <Route path="/dashboard/wallet" element={<WalletPage />} />
@@ -40,6 +55,19 @@ export function App() {
         <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
         <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
         <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/utilisateurs" element={<UsersListPage />} />
+        <Route path="/admin/tontines" element={<TontinesSupervisionPage />} />
+        <Route path="/admin/marchands" element={<MerchantsListPage />} />
+        <Route path="/admin/marchands/nouveau" element={<AddMerchantPage />} />
+        <Route path="/admin/marchands/:id" element={<MerchantDetailPage />} />
+        <Route path="/admin/kyc" element={<KycListPage />} />
+        <Route path="/admin/kyc/:id" element={<KycDetailPage />} />
+        <Route path="/admin/taux-de-change" element={<ExchangeRatesListPage />} />
+        <Route path="/admin/taux-de-change/nouveau" element={<AddExchangeRatePage />} />
+        <Route path="/admin/taux-de-change/historique" element={<ExchangeRateHistoryPage />} />
+        <Route path="/admin/taux-de-change/parametres" element={<ExchangeRateSettingsPage />} />
+        <Route path="/admin/taux-de-change/:id/modifier" element={<EditExchangeRatePage />} />
       </Routes>
     </BrowserRouter>
   );

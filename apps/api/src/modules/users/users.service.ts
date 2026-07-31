@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { hash, verify } from 'argon2';
+import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
-import { MailService } from '../mail/mail.service';
 import { MailService } from '../mail/mail.service';
 
 function generateOtp() {
@@ -23,39 +23,42 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
+  const { email, telephone, motdepasse, datenaissance, profession, googleId, ...rest } = createUserDto;
 
-    const existing = await this.usersRepository.findOne({
-      where: [{ email }, { telephone }],
-    });
+  const existing = await this.usersRepository.findOne({
+    where: [
+      { email },
+      { telephone },
+      ...(googleId ? [{ googleId }] : []),
+    ],
+  });
 
-    if (existing) {
-      throw new ConflictException('Email ou téléphone déjà utilisé, veuillez entrer un inexistant.');
-    }
-
-    const user = this.usersRepository.create({
-      ...rest,
-      email,
-      telephone,
-      profession,
-      datenaissance: new Date(datenaissance),
-      motdepasse: await hash(motdepasse),
-      verificationotp: false,
-    });
-
-    const saved = await this.usersRepository.save(user);
-
-    // const otpCode = generateOtp();
-    // await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
-
-    const otpCode = generateOtp();
-    await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
-    await this.mailService.sendOtpEmail(email, otpCode);
-
-    await this.mailService.sendOtp(email, otpCode);
-
-    return saved;
+  if (existing) {
+    throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
   }
+
+  const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
+
+  const user = this.usersRepository.create({
+    ...rest,
+    email,
+    telephone,
+    profession,
+    datenaissance: new Date(datenaissance),
+    motdepasse: hashedPassword,
+    verificationotp: false, // toujours false à la création, Google ou pas
+    googleId: googleId || undefined,
+  });
+
+  const saved = await this.usersRepository.save(user);
+
+  // OTP systématique, y compris pour les comptes Google
+  const otpCode = generateOtp();
+  await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
+  await this.mailService.sendOtp(email, otpCode);
+
+  return saved;
+}
 
   findAll() : Promise<User []> {
     return this.usersRepository.find();
@@ -67,6 +70,18 @@ export class UsersService {
       throw new NotFoundException('Utilisateur introuvable.');
     }
     return user;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { googleId } });
+  }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

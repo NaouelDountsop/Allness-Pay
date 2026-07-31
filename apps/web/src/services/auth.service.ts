@@ -20,12 +20,13 @@ export const api = axios.create({
 export interface RegisterPayload {
   fullName: string;
   email: string;
-  password: string;
+  password?: string;
   phone?: string;
   birthDate?: string;
   country?: string;
   city?: string;
   profession?: string;
+  googleId?: string;
 }
 
 export const authService = {
@@ -55,7 +56,7 @@ export const authService = {
     const pays = (data.country ?? "").trim() || "Cameroun";
     const profession = (data.profession ?? "").trim() || "Etudiant";
 
-    const payload = {
+    const payload: Record<string, string> = {
       nom,
       prenom,
       datenaissance,
@@ -65,9 +66,13 @@ export const authService = {
       telephone,
       adresse: city || "N/A",
       email: (data.email ?? "").trim().toLowerCase(),
-      motdepasse: data.password,
+      motdepasse: data.password || "google-oauth",
       profession,
     };
+
+    if (data.googleId) {
+      payload.googleId = data.googleId;
+    }
 
     return api.post("/users", payload);
   },
@@ -77,6 +82,17 @@ export const authService = {
       email: email.trim().toLowerCase(),
       motdepasse: password,
     }),
+
+  logout: () => {
+    const token = localStorage.getItem("afrilink_access_token");
+    return api.post(
+      "/auth/logout",
+      {},
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
+    );
+  },
 
   verifyEmail: (email: string, code: string) =>
     api.post("/auth/verify-otp", {

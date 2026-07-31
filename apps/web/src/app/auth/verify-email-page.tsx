@@ -64,10 +64,11 @@ export default function VerifyEmailPage() {
       setError("");
       await authService.verifyEmail(email, fullCode);
       navigate("/login");
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string | string[] } }; message?: string };
       const msg =
-        e?.response?.data?.message ||
-        e?.message ||
+        err?.response?.data?.message ||
+        err?.message ||
         "Code invalide, veuillez réessayer";
       setError(Array.isArray(msg) ? msg.join(", ") : msg);
     } finally {
@@ -83,9 +84,10 @@ export default function VerifyEmailPage() {
       setCode(Array(6).fill(""));
       inputsRef.current[0]?.focus();
       setError("");
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string | string[] } } };
       const msg =
-        e?.response?.data?.message ||
+        err?.response?.data?.message ||
         "Impossible de renvoyer le code pour le moment";
       setError(Array.isArray(msg) ? msg.join(", ") : msg);
     }

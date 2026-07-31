@@ -123,13 +123,13 @@ export class KycController {
   }
 
   // Doit être déclaré AVANT ':id'
-  // @Get('me')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth('access-token')
-  // findMine(@Req() req: Request) {
-  //   const user = req.user as { idutilisateur: number };
-  //   return this.kycService.findByUser(user.idutilisateur);
-  // }
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  findMine(@Req() req: Request) {
+    const user = req.user as { idutilisateur: number };
+    return this.kycService.findByUser(user.idutilisateur);
+  }
 
   // Routes admin : restreintes aux administrateurs avec la permission kyc:review
   @Get()

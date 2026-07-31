@@ -9,6 +9,7 @@ import { AppInput } from "@/components/common/input";
 import { AppButton } from "@/components/common/button";
 import { SocialButtons } from "@/components/auth/social-buttons";
 import { authService } from "@/services/auth.service";
+import { authStorage } from "@/lib/auth-storage";
 
 const schema = z.object({
   email: z.string().min(1, "Ce champ est requis"),
@@ -31,12 +32,20 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setServerError("");
-      await authService.login(data.email, data.password);
+      const response = await authService.login(data.email, data.password);
+      const { access_token, refresh_token } = response.data;
+      if (access_token) {
+        authStorage.setToken(access_token);
+      }
+      if (refresh_token) {
+        authStorage.setRefreshToken(refresh_token);
+      }
       navigate("/dashboard");
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string | string[] } }; message?: string };
       const msg =
-        e?.response?.data?.message ||
-        e?.message ||
+        err?.response?.data?.message ||
+        err?.message ||
         "Identifiants incorrects";
       setServerError(Array.isArray(msg) ? msg.join(", ") : msg);
     }
