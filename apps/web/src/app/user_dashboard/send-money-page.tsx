@@ -24,6 +24,7 @@ export default function SendMoneyPage() {
     senderCountry: "CA",
     country: "CM",
     amount: "",
+    receptionMode: "wallet" as string,
   });
 
   const [completedSteps, setCompletedSteps] = useState([false, false, false, false, false]);
@@ -33,16 +34,17 @@ export default function SendMoneyPage() {
   const [pendingAction, setPendingAction] = useState<"toReview" | "toSend" | null>(null);
 
   const handleChange = (field: keyof typeof form, value: string) => {
-    const next = { ...form, [field]: value };
-    setForm(next);
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
 
-    // Coche l'étape "Bénéficiaire" dès que le contact est rempli
-    // Coche l'étape "Montant" dès qu'un montant valide est saisi
-    setCompletedSteps((prev) => {
-      const updated = [...prev];
-      updated[0] = !!next.beneficiaryContact;
-      updated[1] = parseFloat(next.amount) > 0;
-      return updated;
+      setCompletedSteps((s) => {
+        const updated = [...s];
+        updated[0] = !!next.beneficiaryContact;
+        updated[1] = parseFloat(next.amount) > 0;
+        return updated;
+      });
+
+      return next;
     });
   };
 
@@ -105,7 +107,7 @@ export default function SendMoneyPage() {
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-7xl">
           <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
             Transfert vers le Cameroun
           </h1>
@@ -113,42 +115,75 @@ export default function SendMoneyPage() {
             Vérifiez les détails de votre transaction avant de confirmer.
           </p>
 
-          <div className="rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 md:p-8">
-            {/* Le conteneur défile horizontalement sur mobile si les étapes dépassent la largeur */}
-            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 mb-4 sm:mb-6">
+          {/* Bloc Step Indicator : fond marine plein */}
+          <div
+            className="rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-4 sm:mb-6"
+            style={{
+              backgroundColor: "#082B37",
+              boxShadow:
+                "0 1px 2px rgba(8,43,55,0.15), 0 8px 20px -6px rgba(8,43,55,0.35)",
+            }}
+          >
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
               <StepIndicator
                 steps={steps}
                 currentStep={currentStepIndex}
                 completedSteps={completedSteps}
               />
             </div>
+          </div>
 
-            {phase === "form" && (
-              <BeneficiaryAmountForm
-                form={form}
-                onChange={handleChange}
-                onSubmit={handleFormSubmit}
-              />
-            )}
-
-            {phase === "review" && (
-              <ReviewStep
-                beneficiaryContact={form.beneficiaryContact}
-                amount={parseFloat(form.amount) || 0}
-                onSend={handleSendClick}
-              />
-            )}
-
-            {phase === "success" && (
-              <div className="text-center py-8 sm:py-10 px-2">
-                <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
-                  Transfert envoyé avec succès !
-                </h2>
-                <p className="text-sm text-gray-500">
-                  Le bénéficiaire recevra les fonds sous quelques minutes.
-                </p>
+          {/* Bloc formulaire : carte distincte */}
+          <div className="relative rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm overflow-hidden bg-white">
+            <div className="p-4 sm:p-6 md:p-8">
+              {/* Petit en-tête de section pour ancrer visuellement l'étape en cours */}
+              <div className="flex items-center gap-2 mb-5 sm:mb-6">
+                <span
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: "#D28E2F" }}
+                />
+                <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-gray-400">
+                  {steps[currentStepIndex]?.label}
+                </span>
               </div>
-            )}
+
+              {phase === "form" && (
+                <BeneficiaryAmountForm
+                  form={form}
+                  onChange={handleChange}
+                  onSubmit={handleFormSubmit}
+                />
+              )}
+
+              {phase === "review" && (
+                <ReviewStep
+                  beneficiaryContact={form.beneficiaryContact}
+                  senderCountryCode={form.senderCountry}
+                  countryCode={form.country}
+                  receptionMode={form.receptionMode}
+                  amount={parseFloat(form.amount) || 0}
+                  onSend={handleSendClick}
+                  onBack={() => setPhase("form")}
+                />  
+              )}
+
+              {phase === "success" && (
+                <div className="text-center py-8 sm:py-10 px-2">
+                  <div
+                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+                    style={{ backgroundColor: "rgba(210,142,47,0.12)" }}
+                  >
+                    <span className="text-2xl" style={{ color: "#D28E2F" }}>✓</span>
+                  </div>
+                  <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
+                    Transfert envoyé avec succès !
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Le bénéficiaire recevra les fonds sous quelques minutes.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

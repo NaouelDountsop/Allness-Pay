@@ -35,7 +35,7 @@ export function KycAddressStep({ onNext }: KycAddressStepProps) {
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm text-center transition-colors ${
               docType === value
-                ? "bg-afrilink-dark text-white border-afrilink-dark"
+                ? "bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange"
                 : "border-gray-200 text-gray-600 hover:border-gray-300"
             }`}
           >

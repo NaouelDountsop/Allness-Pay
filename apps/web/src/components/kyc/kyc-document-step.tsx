@@ -21,9 +21,9 @@ export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-afrilink-dark mb-1">
+      {/* <h2 className="text-xl font-bold text-afrilink-dark mb-1">
         Téléverser votre document
-      </h2>
+      </h2> */}
       <p className="text-sm text-gray-500 mb-5">
         Veuillez sélectionner le type de document que vous souhaitez utiliser pour
         confirmer votre identité.
@@ -36,7 +36,7 @@ export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm transition-colors ${
               docType === value
-                ? "bg-afrilink-dark text-white border-afrilink-dark"
+                ? "bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange"
                 : "border-gray-200 text-gray-600 hover:border-gray-300"
             }`}
           >
