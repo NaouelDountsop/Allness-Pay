@@ -1,5 +1,4 @@
-import { Trophy, Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Trophy } from "lucide-react";
 import type { Tontine } from "@/lib/mock/tontines-data";
 
 interface TontineDetailHeaderProps {
@@ -7,8 +6,6 @@ interface TontineDetailHeaderProps {
 }
 
 export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
-  const navigate = useNavigate();
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
       <div className="rounded-xl border border-gray-100 bg-white p-5">

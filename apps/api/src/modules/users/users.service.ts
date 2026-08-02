@@ -1,14 +1,13 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, DataSource } from 'typeorm';
 import { hash, verify } from 'argon2';
+import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
 import { MailService } from '../mail/mail.service';
-import { WalletsService } from '../wallet/wallet.service';
-import { getCurrencyByCountry } from '../../config/country-currency.config';
 
 
 function generateOtp() {
@@ -27,16 +26,32 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, telephone, motdepasse, datenaissance, profession, pays, ...rest } = createUserDto;
+    const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
 
-    const existing = await this.usersRepository.findOne({
-      where: [{ email }, { telephone }],
-    });
+  const existing = await this.usersRepository.findOne({
+    where: [
+      { email },
+      { telephone },
+      ...(googleId ? [{ googleId }] : []),
+    ],
+  });
 
-    if (existing) {
-      throw new ConflictException('Email ou téléphone déjà utilisé, veuillez entrer un inexistant.');
-    }
+  if (existing) {
+    throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
+  }
 
+  const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
+
+  const user = this.usersRepository.create({
+    ...rest,
+    email,
+    telephone,
+    profession,
+    datenaissance: new Date(datenaissance),
+    motdepasse: hashedPassword,
+    verificationotp: false, // toujours false à la création, Google ou pas
+    googleId: googleId || undefined,
+  });
     // Transaction atomique : user + wallet échouent ou réussissent ensemble
     const savedUser = await this.dataSource.transaction(async (manager) => {
       const user = manager.create(User, {
@@ -50,21 +65,18 @@ export class UsersService {
         verificationotp: false,
       });
 
-      const saved = await manager.save(user);
+    const saved = await this.usersRepository.save(user);
 
-      // Création du wallet principal selon le pays (même transaction)
-      const currency = getCurrencyByCountry(pays);
-      await this.walletsService.create(saved.idutilisateur, { currency }, manager);
+    // const otpCode = generateOtp();
+    // await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
 
-      return saved;
-    });
-
-    // OTP en dehors de la transaction (Redis + email, pas critique)
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
+    await this.mailService.sendOtpEmail(email, otpCode);
+
     await this.mailService.sendOtp(email, otpCode);
 
-    return savedUser;
+    return saved;
   }
 
   findAll() : Promise<User []> {
@@ -77,6 +89,18 @@ export class UsersService {
       throw new NotFoundException('Utilisateur introuvable.');
     }
     return user;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { googleId } });
+  }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

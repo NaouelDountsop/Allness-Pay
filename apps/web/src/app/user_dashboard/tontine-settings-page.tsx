@@ -19,12 +19,12 @@ export default function TontineSettingsPage() {
   const navigate = useNavigate();
   const tontine = mockTontines.find((t) => t.id === id) ?? mockTontines[0];
   const [showCalendar, setShowCalendar] = useState(false);
-  const [name, setName] = useState(tontine.name);
-  const [potAmount, setPotAmount] = useState(String(tontine.potAmount / 1000));
+  const [name, setName] = useState(tontine?.name ?? "");
+  const [potAmount, setPotAmount] = useState(String(tontine ? tontine.potAmount / 1000 : 0));
   const [contribution, setContribution] = useState("1000");
 
   // Garde-fou : seul l'administrateur (créateur) accède à cette page.
-  if (!tontine.isAdmin) {
+  if (!tontine?.isAdmin) {
     return (
       <DashboardLayout>
         <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />

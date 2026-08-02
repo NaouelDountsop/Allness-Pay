@@ -60,6 +60,10 @@ SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
   ORANGE_MONEY_CLIENT_ID: Joi.string().allow('').optional(),
   ORANGE_MONEY_CLIENT_SECRET: Joi.string().allow('').optional(),
 
+  GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
+  GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),
+  GOOGLE_CALLBACK_URL: Joi.string().uri().allow('').optional(),
+
   LOG_LEVEL: Joi.string()
     .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal')
     .default('info'),

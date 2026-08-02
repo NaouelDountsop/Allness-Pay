@@ -6,11 +6,24 @@
  *
  * Toute modification ici est une modification de contrat : elle impacte les
  * deux applications et doit etre versionnee comme telle.
- *
- * Organisation prevue :
- *   src/enums/       enumerations partagees (statuts, roles, devises…)
- *   src/contracts/   schemas de validation et types d'echange, par domaine
- *   src/utils/       utilitaires communs (montants, formatage…)
  */
 
-export {};
+export {
+  KycStatusEnum,
+  IdentityDocumentTypeEnum,
+  ProofOfAddressTypeEnum,
+  KycReviewStatusEnum,
+  CreateKycSchema,
+  ReviewKycSchema,
+} from './contracts/kyc';
+
+export type {
+  KycStatus,
+  IdentityDocumentType,
+  ProofOfAddressType,
+  KycReviewStatus,
+  CreateKycDto,
+  ReviewKycDto,
+  KycRecord,
+  KycReviewResult,
+} from './contracts/kyc';

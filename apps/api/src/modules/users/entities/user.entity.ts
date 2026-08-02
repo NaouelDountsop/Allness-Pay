@@ -53,6 +53,8 @@ export class User {
    @Column({ length: 255, select: false })
   motdepasse: string;
 
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  googleId: string | null;
 
   @Column({ default: 'ACTIF' })
   statut: string;

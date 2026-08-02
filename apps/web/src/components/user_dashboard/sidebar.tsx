@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Send,
@@ -11,6 +11,8 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { authService } from "@/services/auth.service";
+import { authStorage } from "@/lib/auth-storage";
 
 const navItems = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, end: true },
@@ -25,6 +27,19 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Même si l'appel échoue, on déconnecte côté client
+    } finally {
+      authStorage.clearAll();
+      navigate("/login", { replace: true });
+    }
+  };
+
   return (
     // sticky (pas fixed) : la sidebar reste "clouée" à l'écran pendant le scroll,
     // mais reste dans le flux normal du layout. Résultat : aucune page n'a besoin
@@ -63,7 +78,10 @@ export function Sidebar() {
       </nav>
 
       <div className="p-3">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>

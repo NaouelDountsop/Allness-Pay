@@ -70,9 +70,6 @@ export class KycService {
 
   async findByUser(userId: number) {
     const kyc = await this.kycRepository.findOne({ where: { userId } });
-    if (!kyc) {
-      throw new NotFoundException('Aucun dossier KYC trouvé pour cet utilisateur.');
-    }
     return kyc;
   }
 

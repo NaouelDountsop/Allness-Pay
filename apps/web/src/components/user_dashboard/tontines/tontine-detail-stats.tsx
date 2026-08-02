@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Users, Repeat } from "lucide-react";
 import type { Tontine } from "@/lib/mock/tontines-data";
 
@@ -7,8 +6,6 @@ interface TontineDetailStatsProps {
 }
 
 export function TontineDetailStats({ tontine }: TontineDetailStatsProps) {
-  const navigate = useNavigate();
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
       <div className="rounded-xl border border-gray-100 bg-white p-4 flex items-center gap-3">
