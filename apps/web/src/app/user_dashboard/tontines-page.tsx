@@ -6,10 +6,10 @@ import { TontinesEmptyState } from "@/components/user_dashboard/tontines/tontine
 import { TontinesStats } from "@/components/user_dashboard/tontines/tontines-stats";
 import { TontineCard } from "@/components/user_dashboard/tontines/tontine-card";
 import { NewInitiativeCard } from "@/components/user_dashboard/tontines/new-initiative-card";
-import { InvitationsList } from "@/components/user_dashboard/tontines/invitations-list";
+import { InvitationCard } from "@/components/user_dashboard/tontines/invitations-list";
 import { mockTontines, mockInvitations } from "@/lib/mock/tontines-data";
 
-const HAS_TONTINES = mockTontines.length > 0; // à remplacer par un vrai état backend
+const HAS_TONTINES = mockTontines.length > 0;
 
 export default function TontinesPage() {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function TontinesPage() {
           <>
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h1 className="text-lg font-semibold text-afrilink-dark">Tontines</h1>
+                <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark">Tontines</h1>
                 <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
               </div>
               <button
@@ -60,7 +60,12 @@ export default function TontinesPage() {
               <NewInitiativeCard />
             </div>
 
-            <InvitationsList invitations={mockInvitations} />
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Invitations</h3>
+            <div className="space-y-3">
+              {mockInvitations.map((inv) => (
+                <InvitationCard key={inv.id} invitation={inv} />
+              ))}
+            </div>
           </>
         )}
       </div>

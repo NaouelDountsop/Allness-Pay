@@ -19,7 +19,7 @@ export default function WalletPage() {
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-7xl">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-lg font-semibold text-afrilink-dark">Portefeuille</h1>
+            <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark">Portefeuille</h1>
             <button className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2">
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Créer un portefeuille</span>

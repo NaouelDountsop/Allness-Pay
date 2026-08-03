@@ -61,7 +61,7 @@ export const authService = {
       payload.googleId = data.googleId;
     }
 
-    return api.post("/users", payload);
+    return apiClient.post("/users", payload);
   },
 
   login: (email: string, password: string) =>
@@ -72,7 +72,7 @@ export const authService = {
 
   logout: () => {
     const token = localStorage.getItem("afrilink_access_token");
-    return api.post(
+    return apiClient.post(
       "/auth/logout",
       {},
       {

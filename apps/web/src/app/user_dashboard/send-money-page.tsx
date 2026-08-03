@@ -59,7 +59,7 @@ export default function SendMoneyPage() {
   };
 
   const handleSendClick = () => {
-    // Lors de l'envoi, exiger le PIN (ou proposer de le créer si absent)
+    
     setPendingAction("toSend");
     if (!hasPin) {
       setShowPinSetup(true);
@@ -169,12 +169,21 @@ export default function SendMoneyPage() {
 
               {phase === "success" && (
                 <div className="text-center py-8 sm:py-10 px-2">
-                  <div
+                  {/* <div
                     className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
                     style={{ backgroundColor: "rgba(210,142,47,0.12)" }}
                   >
                     <span className="text-2xl" style={{ color: "#D28E2F" }}>✓</span>
+                  </div> */}
+ 
+                  <div className="flex w-96 mx-auto justify-center mb-4">
+                    <img
+                       src="/fleche.svg"
+                       alt="Illustration vérification"
+                       className="w-full h-auto"
+                   />
                   </div>
+                  
                   <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
                     Transfert envoyé avec succès !
                   </h2>

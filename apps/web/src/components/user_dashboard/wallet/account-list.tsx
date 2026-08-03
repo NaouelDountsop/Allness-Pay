@@ -29,11 +29,11 @@ export function AccountList({ accounts }: AccountListProps) {
               <li key={acc.id} className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-3">
                   {acc.logoUrl ? (
-                    <span className="w-9 h-9 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                    <span className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
                       <img
                         src={acc.logoUrl}
                         alt={acc.label}
-                        className="w-full h-full object-contain p-1"
+                        className="w-full h-full object-contain p-1.5"
                       />
                     </span>
                   ) : (
