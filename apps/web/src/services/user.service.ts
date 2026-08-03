@@ -10,7 +10,7 @@ export const UserService = {
     return Api.get(`/users/${id}`);
   },
 
-  update(id: string, dto: any) {
+  update(id: string, dto: Record<string, unknown>) {
     return Api.patch(
       `/users/${id}`,
       dto

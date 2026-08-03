@@ -1,18 +1,34 @@
-// ⚠️ Implémentation temporaire en localStorage.
-// À remplacer par des appels réels à ton backend NestJS
-// (ex: POST /auth/pin/setup, POST /auth/pin/verify), le PIN
-// ne devant jamais être stocké en clair côté client en production.
+import { apiClient } from "@/lib/api-client";
 
-const PIN_KEY = "afrilink_transaction_pin";
+export interface PinStatus {
+  hasPin: boolean;
+  createdAt: string | null;
+}
 
 export const pinService = {
-  hasPin: (): boolean => {
-    return !!localStorage.getItem(PIN_KEY);
+  getStatus: async (walletId: string): Promise<PinStatus> => {
+    const res = await apiClient.get<PinStatus>(`/wallets/${walletId}/pin/status`);
+    return res.data;
   },
-  setPin: (pin: string) => {
-    localStorage.setItem(PIN_KEY, pin);
+
+  create: async (walletId: string, pin: string): Promise<void> => {
+    await apiClient.post(`/wallets/${walletId}/pin`, { pin });
   },
-  verifyPin: (pin: string): boolean => {
-    return localStorage.getItem(PIN_KEY) === pin;
+
+  verify: async (walletId: string, pin: string): Promise<boolean> => {
+    const res = await apiClient.post<{ valid: boolean }>(`/wallets/${walletId}/pin/verify`, { pin });
+    return res.data.valid;
+  },
+
+  update: async (walletId: string, currentPin: string, newPin: string): Promise<void> => {
+    await apiClient.patch(`/wallets/${walletId}/pin`, { currentPin, newPin });
+  },
+
+  forgot: async (walletId: string): Promise<void> => {
+    await apiClient.post(`/wallets/${walletId}/pin/forgot`);
+  },
+
+  reset: async (walletId: string, resetToken: string, newPin: string): Promise<void> => {
+    await apiClient.post(`/wallets/${walletId}/pin/reset`, { resetToken, newPin });
   },
 };

@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { WalletBalanceCard } from "@/components/user_dashboard/wallet/wallet-balance-card";
@@ -6,15 +7,42 @@ import { AccountList } from "@/components/user_dashboard/wallet/account-list";
 import { QuickActionsGrid } from "@/components/user_dashboard/wallet/quick-actions-grid";
 import { MonthlySummary } from "@/components/user_dashboard/wallet/monthly-summary";
 import { SecurityCard } from "@/components/user_dashboard/wallet/security-card";
-import { mockWalletAccounts } from "@/lib/mock/wallet-data";
+import { walletService } from "@/lib/api/wallet.service";
+import { userService } from "@/lib/api/user.service";
 import { Plus } from "lucide-react";
 
 export default function WalletPage() {
-  const totalBalance = mockWalletAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+  const { data: wallets = [], isLoading: walletsLoading } = useQuery({
+    queryKey: ["wallets"],
+    queryFn: walletService.list,
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: userService.getProfile,
+  });
+
+  const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
+  const totalBalance = wallets.reduce((sum, w) => sum + w.balance, 0);
+
+  if (walletsLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader firstName="" userName="Chargement..." memberLabel="" />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-400 text-sm">Chargement des portefeuilles...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader
+        firstName={profile?.prenom ?? ""}
+        userName={`${profile?.prenom ?? ""} ${profile?.nom ?? ""}`}
+        memberLabel="Premium Member"
+      />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-7xl">
@@ -30,13 +58,14 @@ export default function WalletPage() {
             <div className="lg:col-span-2 space-y-6">
               <div>
                 <WalletBalanceCard
-                  walletId="WAL-00001258"
+                  walletId={primaryWallet?.walletNumber ?? "—"}
                   balance={totalBalance}
-                  currency="FCFA"
+                  currency={primaryWallet?.currency ?? "FCFA"}
+                  status={primaryWallet?.status === "active" ? "Actif" : primaryWallet?.status ?? "Actif"}
                 />
                 <WalletActions />
               </div>
-              <AccountList accounts={mockWalletAccounts} />
+              <AccountList wallets={wallets} />
             </div>
 
             <div className="space-y-6">
@@ -45,13 +74,8 @@ export default function WalletPage() {
                 month="Juin 2026"
                 incomePercent={65}
                 expensePercent={35}
-                netAmount={1780000}
-                data={[
-                  { label: "Mars", revenus: 950000, depenses: 620000, epargne: 180000, solde: 330000 },
-                  { label: "Avr", revenus: 1020000, depenses: 640000, epargne: 210000, solde: 380000 },
-                  { label: "Mai", revenus: 1150000, depenses: 700000, epargne: 260000, solde: 450000 },
-                  { label: "Juin", revenus: 1780000, depenses: 900000, epargne: 340000, solde: 880000 },
-                ]}
+                netAmount={totalBalance}
+                data={[]}
               />
               <SecurityCard />
             </div>

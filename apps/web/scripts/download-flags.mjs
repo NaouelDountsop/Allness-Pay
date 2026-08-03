@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-undef, no-console */
 
 /**
  * Download country flag images from flagcdn.com into public/flags/.

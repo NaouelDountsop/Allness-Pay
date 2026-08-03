@@ -17,7 +17,7 @@ const steps = [
 ];
 
 export default function SendMoneyPage() {
-  const { hasPin, createPin, verifyPin } = usePin();
+  const { hasPin, createPin, verifyPin } = usePin(null);
 
   const [form, setForm] = useState({
     beneficiaryContact: "",

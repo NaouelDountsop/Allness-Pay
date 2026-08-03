@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Download, ArrowLeftRight, Upload, CreditCard, Wallet, Send } from "lucide-react";
 
 const actions = [
@@ -9,6 +10,7 @@ const actions = [
 ] as const;
 
 export function WalletActions() {
+  const navigate = useNavigate();
   const [showTransferMenu, setShowTransferMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +30,8 @@ export function WalletActions() {
         <div key={key} className="relative">
           <button
             onClick={() => {
-              if (key === "transfer") setShowTransferMenu((v) => !v);
+              if (key === "deposit") navigate("/deposit");
+              else if (key === "transfer") setShowTransferMenu((v) => !v);
             }}
             className="flex flex-col items-center gap-1.5"
           >
