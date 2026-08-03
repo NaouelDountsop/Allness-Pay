@@ -16,14 +16,14 @@ import { Administrateur } from './administrateur.entity';
 @Entity('admin_roles')
 @Unique(['adminId', 'roleId'])
 export class AdminRole {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   adminId: number;
 
   @Column()
-  roleId: string;
+  roleId: number;
 
   @ManyToOne(() => Administrateur, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'adminId' })

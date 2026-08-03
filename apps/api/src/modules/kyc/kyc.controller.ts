@@ -13,6 +13,7 @@ import {
   Query,
   ParseIntPipe,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
@@ -91,7 +92,11 @@ export class KycController {
     },
     @Req() req: Request,
   ) {
-    const user = req.user as { idutilisateur: number };
+    const user = req.user as { idutilisateur?: number };
+
+    if (!user.idutilisateur) {
+      throw new ForbiddenException('Seuls les utilisateurs clients peuvent soumettre un dossier KYC.');
+    }
 
     if (
       !files.documentFront?.[0] ||

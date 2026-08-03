@@ -7,6 +7,8 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
 import { MailService } from '../mail/mail.service';
+import { WalletsService } from '../wallet/wallet.service';
+import { WalletStatus } from '../wallet/entities/wallet.entity';
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -20,6 +22,7 @@ export class UsersService {
     private readonly redisService: RedisService,
     private readonly mailService: MailService,
     private readonly dataSource: DataSource,
+    private readonly walletsService: WalletsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -39,7 +42,7 @@ export class UsersService {
       throw new ConflictException('Le mot de passe est obligatoire.');
     }
 
-    // Transaction atomique : user + OTP échouent ou réussissent ensemble
+    // Transaction atomique : user + wallet + OTP échouent ou réussissent ensemble
     const savedUser = await this.dataSource.transaction(async (manager) => {
       const hashedPassword = motdepasse ? await hash(motdepasse) : '';
 
@@ -54,6 +57,14 @@ export class UsersService {
       });
 
       const saved = await manager.save(user);
+
+      // Créer un wallet par défaut avec statut INACTIVE
+      await this.walletsService.create(
+        saved.idutilisateur,
+        { currency: 'XAF' },
+        manager,
+        WalletStatus.INACTIVE,
+      );
 
       // OTP systématique
       const otpCode = generateOtp();
