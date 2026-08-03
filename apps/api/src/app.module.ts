@@ -17,6 +17,7 @@ import { PinModule } from './modules/pin/pin.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
+import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 
 
 @Module({
@@ -47,6 +48,7 @@ import { TontineModule } from './modules/tontine/tontine.module';
     TransactionsModule,
     RolesModule,
     TontineModule,
+    LinkedAccountModule,
 
     
     // `src/modules/README.md`.
