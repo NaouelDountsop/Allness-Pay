@@ -28,7 +28,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
+  const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } = createUserDto;
 
   const existing = await this.usersRepository.findOne({
     where: [
@@ -44,28 +44,34 @@ export class UsersService {
 
   const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
 
-    const user = this.usersRepository.create({
-      ...rest,
-      email,
-      telephone,
-      profession,
-      datenaissance: new Date(datenaissance),
-      motdepasse: await hash(motdepasse),
-      verificationotp: false,
+    // Transaction atomique : user + wallet échouent ou réussissent ensemble
+    const savedUser = await this.dataSource.transaction(async (manager) => {
+      const user = manager.create(User, {
+        ...rest,
+        email,
+        telephone,
+        pays,
+        profession,
+        datenaissance: new Date(datenaissance),
+        motdepasse: hashedPassword,
+        verificationotp: false,
+      });
+
+      const saved = await manager.save(user);
+
+      // Création du wallet principal selon le pays (même transaction)
+      const currency = getCurrencyByCountry(pays);
+      await this.walletsService.create(saved.idutilisateur, { currency }, manager);
+
+      return saved;
     });
 
-    const saved = await this.usersRepository.save(user);
-
-    // const otpCode = generateOtp();
-    // await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
-
+    // OTP en dehors de la transaction (Redis + email, pas critique)
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
-    await this.mailService.sendOtpEmail(email, otpCode);
-
     await this.mailService.sendOtp(email, otpCode);
 
-    return saved;
+    return savedUser;
   }
 
   findAll() : Promise<User []> {

@@ -57,10 +57,6 @@ export const authService = {
       payload.googleId = data.googleId;
     }
 
-    if (data.googleId) {
-      payload.googleId = data.googleId;
-    }
-
     return apiClient.post("/users", payload);
   },
 
@@ -72,13 +68,9 @@ export const authService = {
 
   logout: () => {
     const token = localStorage.getItem("afrilink_access_token");
-    return api.post(
-      "/auth/logout",
-      {},
-      {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      },
-    );
+    return apiClient.post("/auth/logout", {}, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
   },
 
   verifyEmail: (email: string, code: string) =>

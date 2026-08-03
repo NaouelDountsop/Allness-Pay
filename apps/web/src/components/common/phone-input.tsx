@@ -58,6 +58,7 @@ export function PhoneInput({ country, value, onChange, error }: PhoneInputProps)
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function validatePhone(phone: string, country: Country | null): string | null {
   if (!country) return "Sélectionnez un pays";
   const cleaned = phone.replace(/\D/g, "");

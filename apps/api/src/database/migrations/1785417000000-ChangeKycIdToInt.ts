@@ -9,7 +9,7 @@ export class ChangeKycIdToInt1785417000000 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "kyc" (
             "id" SERIAL NOT NULL,
             "userId" integer NOT NULL,
-            "IdentityDocumentType" "public"."kyc_documenttype_enum" NOT NULL,
+            "IdentityDocumentType" "public"."kyc_identitydocumenttype_enum" NOT NULL,
             "proofOfAddressType" "public"."kyc_proofofaddresstype_enum" NOT NULL,
             "documentFrontUrl" character varying(2048) NOT NULL,
             "documentBackUrl" character varying(2048),

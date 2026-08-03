@@ -32,6 +32,14 @@ import AddExchangeRatePage from "@/app/admin-dashboard/add-exchange-rate-page";
 import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history-page";
 import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settings-page";
 
+import { DepositFlowProvider } from "./context/deposit-flow-context";
+import InitiateDepositPage from "@/app/user_dashboard/initiate-deposit-page";
+import RequestSentPage from "@/app/user_dashboard/request-sent-page";
+import PhoneConfirmationPage from "@/app/user_dashboard/phone-confirmation-page";
+import ProcessingPage from "@/app/user_dashboard/processing-page";
+import DepositSuccessPage from "@/app/user_dashboard/deposit-success-page";
+
+
 export function App() {
   return (
     <BrowserRouter>
@@ -68,6 +76,12 @@ export function App() {
         <Route path="/admin/taux-de-change/historique" element={<ExchangeRateHistoryPage />} />
         <Route path="/admin/taux-de-change/parametres" element={<ExchangeRateSettingsPage />} />
         <Route path="/admin/taux-de-change/:id/modifier" element={<EditExchangeRatePage />} />
+
+        <Route path="/deposit" element={<DepositFlowProvider><InitiateDepositPage /></DepositFlowProvider>} />
+        <Route path="/deposit/request-sent" element={<DepositFlowProvider><RequestSentPage /></DepositFlowProvider>} />
+        <Route path="/deposit/confirm" element={<DepositFlowProvider><PhoneConfirmationPage /></DepositFlowProvider>} />
+        <Route path="/deposit/processing" element={<DepositFlowProvider><ProcessingPage /></DepositFlowProvider>} />
+        <Route path="/deposit/success" element={<DepositFlowProvider><DepositSuccessPage /></DepositFlowProvider>} />
       </Routes>
     </BrowserRouter>
   );

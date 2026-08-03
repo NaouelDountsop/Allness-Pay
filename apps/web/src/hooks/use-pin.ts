@@ -1,17 +1,35 @@
 import { useState, useCallback } from "react";
 import { pinService } from "@/lib/api/pin.service";
 
-export function usePin() {
-  const [hasPin, setHasPin] = useState(pinService.hasPin());
+export function usePin(walletId: string | null) {
+  const [hasPin, setHasPin] = useState(false);
 
-  const createPin = useCallback((pin: string) => {
-    pinService.setPin(pin);
-    setHasPin(true);
-  }, []);
+  const checkPinStatus = useCallback(async () => {
+    if (!walletId) return;
+    try {
+      const status = await pinService.getStatus(walletId);
+      setHasPin(status.hasPin);
+    } catch {
+      setHasPin(false);
+    }
+  }, [walletId]);
 
-  const verifyPin = useCallback((pin: string) => {
-    return pinService.verifyPin(pin);
-  }, []);
+  const createPin = useCallback(
+    async (pin: string) => {
+      if (!walletId) throw new Error("Aucun portefeuille sélectionné");
+      await pinService.create(walletId, pin);
+      setHasPin(true);
+    },
+    [walletId],
+  );
 
-  return { hasPin, createPin, verifyPin };
+  const verifyPin = useCallback(
+    async (pin: string): Promise<boolean> => {
+      if (!walletId) return false;
+      return pinService.verify(walletId, pin);
+    },
+    [walletId],
+  );
+
+  return { hasPin, createPin, verifyPin, checkPinStatus };
 }

@@ -10,10 +10,6 @@ import { KycFacialStep } from "@/components/kyc/kyc-facial-step";
 import { KycAddressStep } from "@/components/kyc/kyc-address-step";
 import { KycProcessing } from "@/components/kyc/kyc-processing";
 import { kycService } from "@/lib/api/kyc.service";
-import type {
-  IdentityDocumentType,
-  ProofOfAddressType,
-} from "@afrilinkpay/shared";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
@@ -27,11 +23,32 @@ const stepMeta: Record<Step, { title: string }> = {
 
 const stepLabels = ["Document", "Visage", "Adresse", "Validation"];
 
+const DOC_TYPE_MAP: Record<string, string> = {
+  passport: "PASSPORT",
+  national_id: "NATIONAL_ID",
+  license: "DRIVER_LICENSE",
+};
+
+const ADDRESS_DOC_MAP: Record<string, string> = {
+  utility_bill: "UTILITY_BILL",
+  bank_statement: "BANK_STATEMENT",
+  residence_certificate: "RESIDENCE_CERTIFICATE",
+};
+
+interface KycFormData {
+  docType: string;
+  front: File | null;
+  back: File | null;
+  selfie: File | null;
+  addressDocType: string;
+  addressFile: File | null;
+}
+
 export default function KycPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState<KycFormData>({
     docType: "passport",
     front: null,
@@ -46,7 +63,7 @@ export default function KycPage() {
     else setStep((s) => (s - 1) as Step);
   };
 
-  const handleDocumentStep = (data: {
+  const handleDocumentNext = (data: {
     docType: string;
     front: File | null;
     back: File | null;
@@ -55,37 +72,34 @@ export default function KycPage() {
     setStep(2);
   };
 
-  const handleFacialStep = (selfie: File) => {
+  const handleFacialNext = (selfie: File) => {
     setFormData((prev) => ({ ...prev, selfie }));
     setStep(3);
   };
 
-  const handleAddressStep = (data: {
+  const handleAddressNext = async (data: {
     docType: string;
     file: File | null;
   }) => {
     const updated = { ...formData, addressDocType: data.docType, addressFile: data.file };
     setFormData(updated);
-    submitKyc(updated);
-  };
 
-  const submitKyc = async (data: KycFormData) => {
-    if (!data.front || !data.selfie || !data.addressFile) {
-      setError("Tous les documents sont requis.");
+    if (!updated.front || !updated.selfie || !updated.addressFile) {
+      setSubmitError("Tous les documents sont requis.");
       return;
     }
 
-    setIsSubmitting(true);
-    setError(null);
+    setSubmitting(true);
+    setSubmitError(null);
 
     try {
       await kycService.submit({
-        IdentityDocumentType: DOC_TYPE_MAP[data.docType] || "PASSPORT",
-        proofOfAddressType: ADDRESS_DOC_MAP[data.addressDocType] || "UTILITY_BILL",
-        documentFront: data.front,
-        documentBack: data.back,
-        selfie: data.selfie,
-        proofOfAddress: data.addressFile,
+        IdentityDocumentType: DOC_TYPE_MAP[updated.docType] as "PASSPORT" | "NATIONAL_ID" | "DRIVER_LICENSE",
+        proofOfAddressType: ADDRESS_DOC_MAP[updated.addressDocType] as "UTILITY_BILL" | "BANK_STATEMENT" | "RESIDENCE_CERTIFICATE",
+        documentFront: updated.front,
+        documentBack: updated.back,
+        selfie: updated.selfie,
+        proofOfAddress: updated.addressFile,
       });
       setStep(4);
     } catch (err: unknown) {
@@ -93,8 +107,8 @@ export default function KycPage() {
         err && typeof err === "object" && "message" in err
           ? String((err as { message: unknown }).message)
           : "Une erreur est survenue lors de la soumission.";
-      setError(message);
-      setIsSubmitting(false);
+      setSubmitError(message);
+      setSubmitting(false);
     }
   };
 
@@ -183,11 +197,23 @@ export default function KycPage() {
                 {step === 0 && (
                   <KycIntro onStart={() => setStep(1)} onLater={() => navigate("/dashboard")} />
                 )}
-                {step === 1 && <KycDocumentStep onNext={() => setStep(2)} />}
-                {step === 2 && <KycFacialStep onNext={() => setStep(3)} />}
-                {step === 3 && <KycAddressStep onNext={() => setStep(4)} />}
+                {step === 1 && <KycDocumentStep onNext={handleDocumentNext} />}
+                {step === 2 && <KycFacialStep onNext={handleFacialNext} />}
+                {step === 3 && !submitting && <KycAddressStep onNext={handleAddressNext} />}
+                {step === 3 && submitting && (
+                  <div className="flex flex-col items-center py-10">
+                    <div className="w-8 h-8 border-4 border-afrilink-green border-t-transparent rounded-full animate-spin mb-4" />
+                    <p className="text-sm text-gray-500">Soumission en cours...</p>
+                  </div>
+                )}
                 {step === 4 && <KycProcessing />}
               </div>
+
+              {submitError && (
+                <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+                  {submitError}
+                </div>
+              )}
             </div>
           </div>
         </div>

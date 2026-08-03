@@ -1,60 +1,46 @@
-import { Wallet, Landmark, Sparkles, ArrowRight } from "lucide-react";
-import type { WalletAccount } from "@/lib/mock/wallet-data";
-
-const fallbackIconByType = {
-  wallet: Wallet,
-  mobile_money: Wallet,
-  bank: Landmark,
-};
-
-const fallbackColorByType = {
-  wallet: "bg-afrilink-dark",
-  mobile_money: "bg-afrilink-orange",
-  bank: "bg-blue-600",
-};
+import { Wallet, Sparkles, ArrowRight } from "lucide-react";
+import type { Wallet as ApiWallet } from "@afrilinkpay/shared";
 
 interface AccountListProps {
-  accounts: WalletAccount[];
+  wallets: ApiWallet[];
 }
 
-export function AccountList({ accounts }: AccountListProps) {
+export function AccountList({ wallets }: AccountListProps) {
   return (
     <div className="space-y-3">
       <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
         <h3 className="text-sm font-semibold text-gray-800 mb-4">Mes comptes</h3>
         <ul className="divide-y divide-gray-100">
-          {accounts.map((acc) => {
-            const FallbackIcon = fallbackIconByType[acc.type];
-            return (
-              <li key={acc.id} className="flex items-center justify-between py-3">
+          {wallets.map((w) => (
+              <li key={w.id} className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-3">
-                  {acc.logoUrl ? (
-                    <span className="w-9 h-9 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
-                      <img
-                        src={acc.logoUrl}
-                        alt={acc.label}
-                        className="w-full h-full object-contain p-1"
-                      />
-                    </span>
-                  ) : (
-                    <span
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${fallbackColorByType[acc.type]}`}
-                    >
-                      <FallbackIcon className="w-4 h-4" />
-                    </span>
-                  )}
-                  <p className="text-sm text-gray-800">{acc.label}</p>
+                  <span
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${
+                      w.isPrimary ? "bg-afrilink-dark" : "bg-afrilink-orange"
+                    }`}
+                  >
+                    <Wallet className="w-4 h-4" />
+                  </span>
+                  <div>
+                    <p className="text-sm text-gray-800">{w.label ?? w.walletNumber}</p>
+                    {w.isPrimary && (
+                      <span className="text-[10px] text-afrilink-green font-medium">Principal</span>
+                    )}
+                  </div>
                 </div>
                 <span className="text-sm font-semibold text-gray-800">
-                  {new Intl.NumberFormat("fr-FR").format(acc.balance)} FCFA
+                  {new Intl.NumberFormat("fr-FR").format(w.balance)} {w.currency}
                 </span>
               </li>
-            );
-          })}
+          ))}
+          {wallets.length === 0 && (
+            <li className="py-6 text-center text-sm text-gray-400">
+              Aucun portefeuille trouvé
+            </li>
+          )}
         </ul>
       </div>
 
-      {/* Encart promo - ajouter un compte Afrilink */}
       <button className="w-full text-left rounded-2xl border border-afrilink-orange/20 bg-gradient-to-br from-afrilink-orange via-afrilink-dark to-afrilink-darker shadow-sm p-5 flex items-center justify-between gap-3 transition hover:shadow-md hover:border-afrilink-orange/50">
         <div className="flex items-center gap-3">
           <span className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0">

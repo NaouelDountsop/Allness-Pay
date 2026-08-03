@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { Loader2 } from "lucide-react";
 
 interface AppButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
