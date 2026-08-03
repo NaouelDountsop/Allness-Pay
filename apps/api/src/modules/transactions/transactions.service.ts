@@ -141,6 +141,15 @@ export class TransactionsService {
    * Recalcule le solde d'un wallet en sommant les écritures du ledger.
    * deposits + transfer_in - withdrawals - transfer_out
    */
+  async listByWallet(walletId: string): Promise<WalletTransaction[]> {
+    return this.dataSource
+      .getRepository(WalletTransaction)
+      .createQueryBuilder('wt')
+      .where('wt.walletId = :walletId', { walletId })
+      .orderBy('wt.createdAt', 'DESC')
+      .getMany();
+  }
+
   private async recalculateBalance(
     manager: EntityManager,
     walletId: string,

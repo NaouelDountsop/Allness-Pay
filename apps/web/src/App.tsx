@@ -31,6 +31,8 @@ import EditExchangeRatePage from "@/app/admin-dashboard/edit-exchange-rate-page"
 import AddExchangeRatePage from "@/app/admin-dashboard/add-exchange-rate-page";
 import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history-page";
 import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settings-page";
+import TransactionsPage from "@/app/user_dashboard/transaction-page";
+import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
 
 import { DepositFlowProvider } from "./context/deposit-flow-context";
 import InitiateDepositPage from "@/app/user_dashboard/initiate-deposit-page";
@@ -63,8 +65,10 @@ export function App() {
         <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
         <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
         <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
+        <Route path="/dashboard/transactions" element={<TransactionsPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/utilisateurs" element={<UsersListPage />} />
+        <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
         <Route path="/admin/tontines" element={<TontinesSupervisionPage />} />
         <Route path="/admin/marchands" element={<MerchantsListPage />} />
         <Route path="/admin/marchands/nouveau" element={<AddMerchantPage />} />
