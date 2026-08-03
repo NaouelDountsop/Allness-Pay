@@ -1,7 +1,10 @@
 import { IsString, IsOptional, Length, IsIn } from 'class-validator';
 
-// Devises supportées par la plateforme. À adapter selon vos besoins réels.
-export const SUPPORTED_CURRENCIES = ['XAF', 'USD', 'EUR'] as const;
+// Devises supportées par la plateforme — couvre les 20 pays du frontend.
+export const SUPPORTED_CURRENCIES = [
+  'XAF', 'XOF', 'CDF', 'GNF', 'RWF', 'KES',
+  'GHS', 'NGN', 'ZAR', 'EUR', 'CAD', 'USD',
+] as const;
 
 
 export class CreateWalletDto {

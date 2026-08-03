@@ -1,21 +1,4 @@
-import axios from "axios";
-
-const rawBase = import.meta.env.VITE_API_URL || "http://localhost:3000";
-const baseURL =
-  rawBase.replace(/\/$/, "") +
-  (rawBase.includes("/api/v1")
-    ? ""
-    : rawBase.includes("/api")
-      ? "/v1"
-      : "/api/v1");
-
-export const api = axios.create({
-  baseURL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { apiClient } from "@/lib/api-client";
 
 export interface RegisterPayload {
   fullName: string;
@@ -74,11 +57,15 @@ export const authService = {
       payload.googleId = data.googleId;
     }
 
-    return api.post("/users", payload);
+    if (data.googleId) {
+      payload.googleId = data.googleId;
+    }
+
+    return apiClient.post("/users", payload);
   },
 
   login: (email: string, password: string) =>
-    api.post("/auth/login", {
+    apiClient.post("/auth/login", {
       email: email.trim().toLowerCase(),
       motdepasse: password,
     }),
@@ -95,13 +82,13 @@ export const authService = {
   },
 
   verifyEmail: (email: string, code: string) =>
-    api.post("/auth/verify-otp", {
+    apiClient.post("/auth/verify-otp", {
       email: email.trim().toLowerCase(),
       otp: code.trim(),
     }),
 
   resendCode: (email: string) =>
-    api.post("/auth/resend-otp", {
+    apiClient.post("/auth/resend-otp", {
       email: email.trim().toLowerCase(),
     }),
 };

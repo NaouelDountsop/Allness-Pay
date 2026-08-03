@@ -1,10 +1,16 @@
-import { ShieldCheck, Lock, Phone, Globe, Banknote, ArrowRight } from "lucide-react";
+import { useState, useMemo, useRef } from "react";
+import { ShieldCheck, Lock, Banknote, ArrowRight, AlertCircle, Wallet, Building2, Smartphone } from "lucide-react";
 import { EXCHANGE_RATE_CAD_XAF } from "@/lib/mock/send-money-data";
+import { CountrySelect } from "@/components/common/country-select";
+import { getCountryByCode, getFlagUrl, type Country } from "@/data/countries";
+
+export type ReceptionMode = "wallet" | "mtn" | "orange" | "bank";
 
 interface FormState {
   beneficiaryContact: string;
   country: string;
   amount: string;
+  receptionMode: string;
 }
 
 interface BeneficiaryAmountFormProps {
@@ -13,9 +19,82 @@ interface BeneficiaryAmountFormProps {
   onSubmit: () => void;
 }
 
+const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; icon: typeof Wallet; color: string }[] = [
+  { id: "wallet", label: "Wallet AfriLinkPay", icon: Wallet, color: "text-afrilink-green" },
+  { id: "mtn", label: "MTN Mobile Money", icon: Smartphone, color: "text-yellow-500" },
+  { id: "orange", label: "Orange Money", icon: Smartphone, color: "text-orange-500" },
+  { id: "bank", label: "Compte bancaire", icon: Building2, color: "text-blue-600" },
+];
+
+// Découpe le placeholder du pays (ex. "6XX XXX XXX") en groupes de longueurs [3, 3, 3]
+// On compte la longueur totale de chaque groupe (chiffres ET "X"), pas seulement les vrais
+// chiffres qu'il contient, car un pays peut avoir un chiffre fixe en tête (ex. le "6" du
+// Cameroun) sans que ça réduise le nombre total de chiffres attendus.
+function getGroupLengths(placeholder: string): number[] {
+  return placeholder.split(" ").map((group) => group.length);
+}
+
+// Formate une suite de chiffres bruts selon les groupes du pays (ex. "612345678" -> "612 345 678")
+function formatDigitsToPattern(digits: string, groupLengths: number[]): string {
+  const parts: string[] = [];
+  let cursor = 0;
+  for (const len of groupLengths) {
+    if (cursor >= digits.length) break;
+    parts.push(digits.slice(cursor, cursor + len));
+    cursor += len;
+  }
+  return parts.join(" ");
+}
+
 export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryAmountFormProps) {
   const amountNumber = parseFloat(form.amount) || 0;
   const received = amountNumber * EXCHANGE_RATE_CAD_XAF;
+
+  const selectedCountry = useMemo(
+    () => getCountryByCode(form.country) ?? getCountryByCode("CM")!,
+    [form.country],
+  );
+  const [touched, setTouched] = useState(false);
+  const [walletMode, setWalletMode] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const groupLengths = useMemo(
+    () => getGroupLengths(selectedCountry.phonePlaceholder),
+    [selectedCountry],
+  );
+  const expectedDigitCount = useMemo(
+    () => groupLengths.reduce((sum, n) => sum + n, 0),
+    [groupLengths],
+  );
+
+  const localDigits = form.beneficiaryContact.replace(/\D/g, "");
+  const isComplete = walletMode
+    ? form.beneficiaryContact.length > 0
+    : localDigits.length === expectedDigitCount;
+
+  const isPhoneValid =
+    form.beneficiaryContact.length === 0 ||
+    (walletMode && form.beneficiaryContact.length > 0) ||
+    localDigits.length === expectedDigitCount;
+
+  const showPhoneError = touched && !walletMode && form.beneficiaryContact.length > 0 && !isPhoneValid;
+
+  const handleCountryChange = (country: Country) => {
+    onChange("country", country.code);
+    onChange("beneficiaryContact", "");
+    setWalletMode(false);
+    setTouched(false);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const handleContactChange = (raw: string) => {
+    if (walletMode) {
+      onChange("beneficiaryContact", raw);
+      return;
+    }
+    const digitsOnly = raw.replace(/\D/g, "").slice(0, expectedDigitCount);
+    onChange("beneficiaryContact", formatDigitsToPattern(digitsOnly, groupLengths));
+  };
 
   return (
     <div className="text-base">
@@ -36,46 +115,124 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
           </p>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
-              Téléphone ou wallet
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-orange" />
-              <input
-                type="text"
-                placeholder="+237 6 00 00 00 00"
-                value={form.beneficiaryContact}
-                onChange={(e) => onChange("beneficiaryContact", e.target.value)}
-                className="w-full h-12 rounded-xl border border-gray-200 pl-11 pr-4 text-sm sm:text-base bg-white text-afrilink-dark placeholder:text-gray-400 focus:outline-none focus:border-afrilink-green focus:ring-2 focus:ring-afrilink-green/30 transition-colors"
+            <div className="space-y-1.5">
+              <CountrySelect
+                value={form.country}
+                onChange={handleCountryChange}
               />
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
-              Pays de destination
-            </label>
-            <div className="relative">
-              <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-orange pointer-events-none" />
-              <select
-                value={form.country}
-                onChange={(e) => onChange("country", e.target.value)}
-                className="w-full h-12 rounded-xl border border-gray-200 pl-11 pr-9 text-sm sm:text-base bg-white text-afrilink-dark appearance-none focus:outline-none focus:border-afrilink-green focus:ring-2 focus:ring-afrilink-green/30 transition-colors"
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex flex-1 border-b border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWalletMode(false);
+                      onChange("beneficiaryContact", "");
+                      setTouched(false);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition-colors border-b-2 -mb-[2px] ${
+                      !walletMode
+                        ? "border-afrilink-green text-afrilink-green"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    Téléphone
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWalletMode(true);
+                      onChange("beneficiaryContact", "");
+                      setTouched(false);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition-colors border-b-2 -mb-[2px] ${
+                      walletMode
+                        ? "border-afrilink-green text-afrilink-green"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    <Wallet className="w-3.5 h-3.5" />
+                    Wallet
+                  </button>
+                </div>
+              </div>
+              <div
+                className={`flex items-center w-full h-12 rounded-xl border bg-white overflow-hidden focus-within:ring-2 transition-colors ${
+                  showPhoneError
+                    ? "border-red-300 focus-within:border-red-400 focus-within:ring-red-200"
+                    : isComplete
+                    ? "border-afrilink-green focus-within:ring-afrilink-green/30"
+                    : "border-gray-200 focus-within:border-afrilink-green focus-within:ring-afrilink-green/30"
+                }`}
               >
-                <option value="CM">Cameroun (XAF)</option>
-                <option value="SN">Sénégal (XOF)</option>
-                <option value="CI">Côte d'Ivoire (XOF)</option>
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+                {!walletMode && (
+                  <span className="flex items-center gap-1.5 h-full pl-4 pr-2 shrink-0 border-r border-gray-100 bg-gray-50/80 text-sm sm:text-base font-medium text-afrilink-dark select-none">
+                    <img
+                      src={getFlagUrl(selectedCountry.code)}
+                      alt={selectedCountry.name}
+                      className="w-5 h-auto rounded-sm object-cover"
+                    />
+                    {selectedCountry.dialCode}
+                  </span>
+                )}
+                <input
+                  ref={inputRef}
+                  type={walletMode ? "text" : "tel"}
+                  inputMode={walletMode ? "text" : "numeric"}
+                  placeholder={walletMode ? "Identifiant wallet" : selectedCountry.phonePlaceholder}
+                  value={form.beneficiaryContact}
+                  onChange={(e) => handleContactChange(e.target.value)}
+                  onBlur={() => setTouched(true)}
+                  className="flex-1 min-w-0 h-full px-3 text-sm sm:text-base bg-white text-afrilink-dark placeholder:text-gray-400 focus:outline-none"
+                />
+              </div>
+              {showPhoneError && (
+                <div className="flex items-start gap-1.5 mt-1.5 text-xs text-red-600">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>
+                    Le numéro doit contenir {expectedDigitCount} chiffres pour{" "}
+                    {selectedCountry.name} (ex. {selectedCountry.dialCode}{" "}
+                    {selectedCountry.phonePlaceholder}).
+                  </span>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mode de réception */}
+      <div className="mb-6">
+        <p className="text-sm font-semibold text-gray-700 mb-3">Mode de réception</p>
+        <div className="grid grid-cols-2 gap-3">
+          {RECEPTION_OPTIONS.map((option) => {
+            const Icon = option.icon;
+            const isSelected = form.receptionMode === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onChange("receptionMode", option.id)}
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                  isSelected
+                    ? "border-afrilink-green bg-afrilink-green/[0.05] shadow-sm"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  isSelected ? "bg-afrilink-green/10" : "bg-gray-100"
+                }`}>
+                  <Icon className={`w-5 h-5 ${isSelected ? option.color : "text-gray-400"}`} />
+                </div>
+                <span className={`text-sm font-medium ${isSelected ? "text-afrilink-dark" : "text-gray-600"}`}>
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -120,8 +277,13 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
       </div>
 
       <button
-        onClick={onSubmit}
-        disabled={!form.beneficiaryContact || amountNumber <= 0}
+        onClick={() => {
+          setTouched(true);
+          if (form.beneficiaryContact && amountNumber > 0 && isPhoneValid) {
+            onSubmit();
+          }
+        }}
+        disabled={!form.beneficiaryContact || amountNumber <= 0 || !isPhoneValid}
         className="w-full h-14 rounded-2xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
       >
         Confirmer

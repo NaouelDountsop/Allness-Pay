@@ -21,8 +21,16 @@ export class WalletsService {
   ) {}
 
 
-  async create(userId: number, dto: CreateWalletDto): Promise<Wallet> {
-    return this.dataSource.transaction(async (manager) => {
+  /**
+   * @param externalManager - Si fourni, réutilise la transaction existante
+   *                          (appel depuis UsersService.create).
+   */
+  async create(
+    userId: number,
+    dto: CreateWalletDto,
+    externalManager?: EntityManager,
+  ): Promise<Wallet> {
+    const run = async (manager: EntityManager) => {
       const existingWallets = await manager
        .createQueryBuilder(Wallet, 'wallet')
        .setLock('pessimistic_write')
@@ -31,16 +39,23 @@ export class WalletsService {
 
       const wallet = manager.create(Wallet, {
         userId,
+        balance: 0n,
         currency: dto.currency ?? 'XAF',
+        status: WalletStatus.ACTIVE,
+        failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
-        
+
         // Le premier wallet d'un utilisateur devient automatiquement son wallet principal.
         isPrimary: existingWallets.length === 0,
       });
 
       return manager.save(wallet);
-    });
+    };
+
+    return externalManager
+      ? run(externalManager)
+      : this.dataSource.transaction(run);
   }
 
   async findAllForUser(userId: number): Promise<Wallet[]> {

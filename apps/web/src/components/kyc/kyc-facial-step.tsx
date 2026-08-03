@@ -76,16 +76,16 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-afrilink-dark mb-1">
+      {/* <h2 className="text-xl font-bold text-afrilink-dark mb-1">
         Vérification Faciale
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
+      </h2> */}
+      {/* <p className="text-sm text-gray-500 mb-6">
         Pour sécuriser votre compte, nous devons confirmer votre identité par un
         selfie biométrique.
-      </p>
+      </p> */}
 
-      <div className="rounded-2xl bg-blue-50/60 border border-blue-100 p-6 flex flex-col sm:flex-row items-center gap-8">
-        <div className="w-full sm:w-40 h-40 rounded-3xl border-4 border-dashed border-blue-200 flex items-center justify-center relative shrink-0 bg-black overflow-hidden">
+      <div className="rounded-2xl bg-afrilink-dark/5 border border-afrilink-dark/10 p-6 flex flex-col sm:flex-row items-center gap-8">
+        <div className="w-full sm:w-40 h-40 rounded-3xl border-4 border-dashed border-afrilink-dark/20 flex items-center justify-center relative shrink-0 bg-black overflow-hidden">
           {captured ? (
             <CircleCheck className="w-10 h-10 text-afrilink-green" />
           ) : stream ? (

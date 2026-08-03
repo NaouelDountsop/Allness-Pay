@@ -11,7 +11,7 @@ export default function CreateTontinePage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-8 pb-10 max-w-4xl">
+      <div className="px-4 sm:px-8 pb-10 max-w-7xl">
         <button
           onClick={() => navigate("/dashboard/tontines")}
           className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-6"

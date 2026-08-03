@@ -76,9 +76,9 @@ export function WalletBalanceCard({
 
       <p className="text-xs text-white/60 mb-1 relative z-10">Solde Total</p>
       <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-        <p className="text-2xl sm:text-3xl font-bold truncate">
+        <p className="text-3xl sm:text-4xl font-bold truncate">
           {visible ? formatted : "•••••••"}{" "}
-          <span className="text-sm sm:text-base font-medium text-afrilink-orange">{currency}</span>
+          <span className="text-base sm:text-lg font-medium text-afrilink-orange">{currency}</span>
         </p>
         <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde" className="shrink-0">
           {visible ? (

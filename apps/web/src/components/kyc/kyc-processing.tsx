@@ -6,12 +6,12 @@ export function KycProcessing() {
 
   return (
     <div className="flex flex-col items-center text-center max-w-md mx-auto pt-4">
-      <div className="rounded-2xl border border-gray-100 shadow-sm p-8 w-full">
+      <div className="w-full">
         <div className="relative w-14 h-14 mx-auto mb-4">
-          <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-afrilink-green/10 flex items-center justify-center">
             <FileText className="w-6 h-6 text-afrilink-green" />
           </div>
-          <span className="absolute -bottom-1 -right-3 text-[10px] font-medium bg-orange-100 text-afrilink-orange px-2 py-0.5 rounded-full">
+          <span className="absolute -bottom-1 -right-3 text-[10px] font-medium bg-afrilink-orange/10 text-afrilink-orange px-2 py-0.5 rounded-full">
             En cours
           </span>
         </div>
@@ -25,7 +25,7 @@ export function KycProcessing() {
         </p>
 
         <div className="grid grid-cols-2 gap-3 mb-6 text-left">
-          <div className="rounded-xl bg-gray-50 p-3">
+          <div className="rounded-xl bg-afrilink-dark/5 p-3">
             <ShieldCheck className="w-4 h-4 text-afrilink-green mb-1" />
             <p className="text-xs font-medium text-gray-700">Sécurité</p>
             <p className="text-[11px] text-gray-500">
@@ -33,7 +33,7 @@ export function KycProcessing() {
               stricts.
             </p>
           </div>
-          <div className="rounded-xl bg-gray-50 p-3">
+          <div className="rounded-xl bg-afrilink-dark/5 p-3">
             <Bell className="w-4 h-4 text-afrilink-green mb-1" />
             <p className="text-xs font-medium text-gray-700">Notification</p>
             <p className="text-[11px] text-gray-500">
@@ -53,11 +53,11 @@ export function KycProcessing() {
         </a>
       </div>
 
-      <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-4 mt-4 w-full text-left">
-        <Lightbulb className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
+      <div className="flex items-start gap-2 rounded-xl bg-afrilink-green/5 border border-afrilink-green/10 p-4 mt-4 w-full text-left">
+        <Lightbulb className="w-4 h-4 shrink-0 mt-0.5 text-afrilink-green" />
         <div>
-          <p className="text-xs font-medium text-blue-700">Le saviez-vous ?</p>
-          <p className="text-xs text-blue-600">
+          <p className="text-xs font-medium text-afrilink-dark">Le saviez-vous ?</p>
+          <p className="text-xs text-gray-500">
             Vous pouvez déjà explorer nos guides de gestion de patrimoine en attendant
             la validation.
           </p>
