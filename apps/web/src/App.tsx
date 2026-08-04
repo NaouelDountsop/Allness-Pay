@@ -40,6 +40,7 @@ import RequestSentPage from "@/app/user_dashboard/request-sent-page";
 import PhoneConfirmationPage from "@/app/user_dashboard/phone-confirmation-page";
 import ProcessingPage from "@/app/user_dashboard/processing-page";
 import DepositSuccessPage from "@/app/user_dashboard/deposit-success-page";
+import BeneficiariesPage from "./app/user_dashboard/beneficiary-page";
 
 
 export function App() {
@@ -66,6 +67,7 @@ export function App() {
         <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
         <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
         <Route path="/dashboard/transactions" element={<TransactionsPage />} />
+        <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/utilisateurs" element={<UsersListPage />} />
         <Route path="/admin/transactions" element={<AdminTransactionsPage />} />

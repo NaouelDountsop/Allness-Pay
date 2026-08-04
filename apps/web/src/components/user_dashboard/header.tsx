@@ -1,4 +1,4 @@
-import { Bell, HelpCircle, Sparkles } from "lucide-react";
+import { Bell, HelpCircle } from "lucide-react";
 
 interface HeaderProps {
   firstName: string;
@@ -20,8 +20,8 @@ export function DashboardHeader({
       rounded-b-[1.5rem] sm:rounded-b-[2rem] shadow-sm sm:rounded-none"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <h1 className="text-sm sm:text-lg font-semibold text-white sm:text-afrilink-dark flex items-center gap-1.5 truncate">
-          Bonjour, {firstName} <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-afrilink-orange shrink-0" />
+        <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-1.5 truncate">
+          Bonjour, {firstName}
         </h1>
       </div>
 
