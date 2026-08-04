@@ -1,4 +1,5 @@
 import { MoreVertical } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { TontineMember } from "@/lib/mock/tontines-data";
 
 const statusStyles: Record<TontineMember["status"], { label: string; className: string }> = {
@@ -9,16 +10,28 @@ const statusStyles: Record<TontineMember["status"], { label: string; className: 
 
 interface MembersTableProps {
   members: TontineMember[];
+  tontineId?: string;
 }
 
-export function MembersTable({ members }: MembersTableProps) {
+export function MembersTable({ members, tontineId }: MembersTableProps) {
+  const navigate = useNavigate();
+
+  const handleViewAll = () => {
+    if (!tontineId) return;
+    navigate(`/dashboard/tontines/${tontineId}/members`);
+  };
+
   return (
     <div className="rounded-xl border border-gray-100 bg-white overflow-hidden">
       <div className="flex items-center justify-between p-4 pb-2">
         <h3 className="text-sm font-semibold text-gray-900">Membres</h3>
-        <a href="#" className="text-xs text-afrilink-green font-medium">
-          Voir plus →
-        </a>
+        <button
+          type="button"
+          onClick={handleViewAll}
+          className="text-xs text-afrilink-green font-medium"
+        >
+          Voir tout →
+        </button>
       </div>
 
       <table className="w-full text-sm">

@@ -9,6 +9,7 @@ export interface RegisterPayload {
   country?: string;
   city?: string;
   profession?: string;
+  address?: string;
   googleId?: string;
 }
 
@@ -58,6 +59,32 @@ export const authService = {
     }
 
     return apiClient.post("/users", payload);
+  },
+
+  getGooglePending: (token: string) =>
+    apiClient.get<{ email: string; nom: string; prenom: string }>(
+      `/auth/google/pending/${token}`,
+    ),
+
+  completeGoogleSignup: (
+    token: string,
+    data: Omit<RegisterPayload, 'fullName' | 'password'> & { gender: string },
+  ) => {
+    const telephone = (data.phone ?? "").trim().replace(/\s+/g, "");
+    const city = (data.city ?? "").trim();
+    const pays = (data.country ?? "").trim() || "Cameroun";
+    const profession = (data.profession ?? "").trim() || "Etudiant";
+
+    return apiClient.post(`/auth/google/complete-signup/${token}`, {
+      datenaissance: data.birthDate,
+      sexe: data.gender,
+      pays,
+      ville: city || "N/A",
+      telephone,
+      adresse: data.address || city || "N/A",
+      email: (data.email ?? "").trim().toLowerCase(),
+      profession,
+    });
   },
 
   login: (email: string, password: string) =>

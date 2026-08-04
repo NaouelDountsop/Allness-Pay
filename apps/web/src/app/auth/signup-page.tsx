@@ -19,7 +19,6 @@ import { CitySelect } from "@/components/common/city-select";
 import { PhoneInput, validatePhone } from "@/components/common/phone-input";
 import { AddressInput } from "@/components/common/address-input";
 import { authService } from "@/services/auth.service";
-import { authStorage } from "@/lib/auth-storage";
 import { type Country, countries } from "@/data/countries";
 
 interface SignupForm {
@@ -58,35 +57,44 @@ export default function SignupPage() {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<SignupForm>(initialForm);
-  const [googleId, setGoogleId] = useState<string | null>(null); // stocké en mémoire, jamais affiché
+  const [pendingToken, setPendingToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [pendingLoading, setPendingLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [accepted, setAccepted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [phoneError, setPhoneError] = useState("");
 
   const selectedCountry: Country | null =
     countries.find((c) => c.code === form.country) ?? null;
 
-  const isFromGoogle = !!googleId;
+  const isFromGoogle = !!pendingToken;
 
-  // Pré-remplir le formulaire avec les données Google
+  // Pré-remplir le formulaire avec le profil Google pending
   useEffect(() => {
-    const gId = searchParams.get("google_id");
-    const email = searchParams.get("email");
-    const prenom = searchParams.get("prenom");
-    const nom = searchParams.get("nom");
+    const token = searchParams.get("token");
+    if (!token) return;
 
-    if (gId) {
-      setGoogleId(gId);
-      setForm((prev) => ({
-        ...prev,
-        email: email || prev.email,
-        firstName: prenom || prev.firstName,
-        lastName: nom || prev.lastName,
-      }));
-    }
+    setPendingToken(token);
+    setPendingLoading(true);
+
+    authService
+      .getGooglePending(token)
+      .then((response) => {
+        setForm((prev) => ({
+          ...prev,
+          email: response.data.email,
+          firstName: response.data.prenom,
+          lastName: response.data.nom,
+        }));
+      })
+      .catch(() => {
+        setError(
+          "Le lien d'inscription Google a expiré ou est invalide. Veuillez recommencer.",
+        );
+      })
+      .finally(() => setPendingLoading(false));
   }, [searchParams]);
 
   const update = (field: keyof SignupForm, value: string) =>
@@ -102,24 +110,22 @@ export default function SignupPage() {
     setStep(2);
   };
 
+  if (pendingLoading) {
+    return (
+      <AuthLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-sm text-gray-500">Chargement des informations Google...</p>
+        </div>
+      </AuthLayout>
+    );
+  }
+
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setPhoneError("");
     setLoading(true);
 
-    if (!isFromGoogle) {
-      if (form.password.length < 8) {
-        setError("Le mot de passe doit contenir au moins 8 caractères");
-        setLoading(false);
-        return;
-      }
-      if (form.password !== form.confirmPassword) {
-        setError("Les mots de passe ne correspondent pas");
-        setLoading(false);
-        return;
-      }
-    }
     if (!accepted) {
       setError("Vous devez accepter les conditions d'utilisation");
       setLoading(false);
@@ -139,27 +145,33 @@ export default function SignupPage() {
       : cleanedPhone;
 
     try {
-      const response = await authService.register({
-        fullName: form.lastName + " " + form.firstName,
-        email: form.email,
-        password: isFromGoogle ? undefined : form.password,
-        phone: fullPhone,
-        birthDate: form.birthDate,
-        country: selectedCountry?.name ?? "",
-        city: form.city,
-        profession: form.profession,
-        googleId: googleId || undefined,
-      });
+      if (isFromGoogle && pendingToken) {
+        await authService.completeGoogleSignup(pendingToken, {
+          email: form.email,
+          phone: fullPhone,
+          birthDate: form.birthDate,
+          country: selectedCountry?.name ?? "",
+          city: form.city,
+          profession: form.profession,
+          address: form.address || form.city,
+          gender: form.gender,
+        });
 
-      if (isFromGoogle && response.data.access_token) {
-        // Compte Google : connexion directe vers le dashboard
-        authStorage.setToken(response.data.access_token);
-        if (response.data.refresh_token) {
-          authStorage.setRefreshToken(response.data.refresh_token);
-        }
-        navigate("/dashboard", { replace: true });
+        navigate("/verify-email", {
+          state: { email: form.email.trim().toLowerCase() },
+        });
       } else {
-        // Inscription classique : vérification OTP
+        await authService.register({
+          fullName: form.lastName + " " + form.firstName,
+          email: form.email,
+          password: form.password,
+          phone: fullPhone,
+          birthDate: form.birthDate,
+          country: selectedCountry?.name ?? "",
+          city: form.city,
+          profession: form.profession,
+        });
+
         navigate("/verify-email", {
           state: { email: form.email.trim().toLowerCase() },
         });
@@ -243,6 +255,7 @@ export default function SignupPage() {
             placeholder="Dupont"
             value={form.lastName}
             onChange={(e) => update("lastName", e.target.value)}
+            disabled={isFromGoogle}
           />
           <AppInput
             label="Prénom"
@@ -250,6 +263,7 @@ export default function SignupPage() {
             placeholder="Jean"
             value={form.firstName}
             onChange={(e) => update("firstName", e.target.value)}
+            disabled={isFromGoogle}
           />
           <AppInput
             label="Date de naissance"
