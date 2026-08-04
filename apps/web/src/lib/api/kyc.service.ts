@@ -52,14 +52,6 @@ export const kycService = {
   },
 
   /**
-   * Récupérer un dossier KYC par ID pour l'admin.
-   */
-  getAdminById: async (id: number): Promise<KycRecord> => {
-    const res = await apiClient.get<KycRecord>(`/admin/kyc/${id}`);
-    return res.data;
-  },
-
-  /**
    * Lister tous les dossiers KYC (admin).
    * @param status - Filtrer par statut optionnel
    */
