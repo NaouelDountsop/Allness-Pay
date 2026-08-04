@@ -19,6 +19,7 @@ const ICON_BG: Record<BadgeTone, string> = {
   blue: "bg-blue-50 text-blue-600",
   gray: "bg-gray-100 text-gray-500",
   purple: "bg-purple-50 text-purple-600",
+  amber: "bg-amber-50 text-amber-600",
 };
 
 export function StatCard({

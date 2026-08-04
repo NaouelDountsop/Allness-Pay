@@ -23,6 +23,9 @@ export function AccountList({ wallets }: AccountListProps) {
                   </span>
                   <div>
                     <p className="text-sm text-gray-800">{w.label ?? w.walletNumber}</p>
+                    {w.label && (
+                      <p className="text-[11px] text-gray-400">{w.walletNumber}</p>
+                    )}
                     {w.isPrimary && (
                       <span className="text-[10px] text-afrilink-green font-medium">Principal</span>
                     )}

@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 // ── Enums ──────────────────────────────────────────────────────────────
 
-export const KycStatusEnum = z.enum(['PENDING', 'APPROVED', 'REJECTED']);
+export const KycStatusEnum = z.enum([
+  'PENDING',
+  'UNDER_REVIEW',
+  'APPROVED',
+  'REJECTED',
+  'REQUIRES_ADDITIONAL_INFO',
+]);
 export type KycStatus = z.infer<typeof KycStatusEnum>;
 
 export const IdentityDocumentTypeEnum = z.enum([
@@ -19,7 +25,12 @@ export const ProofOfAddressTypeEnum = z.enum([
 ]);
 export type ProofOfAddressType = z.infer<typeof ProofOfAddressTypeEnum>;
 
-export const KycReviewStatusEnum = z.enum(['APPROVED', 'REJECTED']);
+export const KycReviewStatusEnum = z.enum([
+  'UNDER_REVIEW',
+  'APPROVED',
+  'REJECTED',
+  'REQUIRES_ADDITIONAL_INFO',
+]);
 export type KycReviewStatus = z.infer<typeof KycReviewStatusEnum>;
 
 // ── DTOs (validation) ──────────────────────────────────────────────────

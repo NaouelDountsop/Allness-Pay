@@ -8,8 +8,10 @@ import {
 
 export enum KycStatus {
   PENDING = 'PENDING',
+  UNDER_REVIEW = 'UNDER_REVIEW',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+  REQUIRES_ADDITIONAL_INFO = 'REQUIRES_ADDITIONAL_INFO',
 }
 
 export enum IdentityDocumentType {

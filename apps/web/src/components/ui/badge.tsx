@@ -7,6 +7,7 @@ const TONE_STYLES: Record<BadgeTone, string> = {
   blue: "bg-blue-50 text-blue-600",
   gray: "bg-gray-100 text-gray-500",
   purple: "bg-purple-50 text-purple-600",
+  amber: "bg-amber-50 text-amber-600",
 };
 
 const DOT_STYLES: Record<BadgeTone, string> = {
@@ -16,6 +17,7 @@ const DOT_STYLES: Record<BadgeTone, string> = {
   blue: "bg-blue-500",
   gray: "bg-gray-400",
   purple: "bg-purple-500",
+  amber: "bg-amber-500",
 };
 
 export function Badge({

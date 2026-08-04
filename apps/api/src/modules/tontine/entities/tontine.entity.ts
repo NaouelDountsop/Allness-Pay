@@ -9,17 +9,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { TontineMember } from './tontine-member.entity';
 
 export enum TontineFrequency {
-  WEEKLY = 'Hebdomadaire',
-  MONTHLY = 'Mensuelle',
+  WEEKLY = 'WEEKLY',
+  BIWEEKLY = 'BIWEEKLY',
+  MONTHLY = 'MONTHLY',
 }
 
 export enum TontineStatus {
-  ACTIVE = 'active',
-  PAUSED = 'paused',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  CLOSED = 'CLOSED',
 }
 
 @Entity('tontines')
@@ -34,7 +35,7 @@ export class Tontine {
   description: string;
 
   @Column({ type: 'bigint' })
-  montantCotisation: number;
+  montantCotisation: string;
 
   @Column({ type: 'enum', enum: TontineFrequency, default: TontineFrequency.MONTHLY })
   frequence: TontineFrequency;
@@ -42,7 +43,7 @@ export class Tontine {
   @Column({ default: 12 })
   nombreMembres: number;
 
-  @Column({ type: 'enum', enum: TontineStatus, default: TontineStatus.ACTIVE })
+  @Column({ type: 'enum', enum: TontineStatus, default: TontineStatus.DRAFT })
   statut: TontineStatus;
 
   @Column({ default: 0 })
@@ -69,33 +70,4 @@ export class Tontine {
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-@Entity('tontine_members')
-export class TontineMember {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @ManyToOne(() => Tontine, (t) => t.membres, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'tontineId' })
-  tontine: Tontine;
-
-  @Column()
-  tontineId: number;
-
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
-  user: User;
-
-  @Column()
-  userId: number;
-
-  @Column({ default: 0 })
-  tourOrdre: number;
-
-  @Column({ default: false })
-  aPayeTourActuel: boolean;
-
-  @CreateDateColumn()
-  dateRejoint: Date;
 }

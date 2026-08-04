@@ -21,10 +21,12 @@ const ADDRESS_DOC_LABELS: Record<string, string> = {
   RESIDENCE_CERTIFICATE: "Certificat de résidence",
 };
 
-const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red"; label: string }> = {
+const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
   APPROVED: { tone: "green", label: "Validé" },
   PENDING: { tone: "orange", label: "En attente" },
   REJECTED: { tone: "red", label: "Rejeté" },
+  UNDER_REVIEW: { tone: "blue", label: "En cours d'examen" },
+  REQUIRES_ADDITIONAL_INFO: { tone: "amber", label: "Infos requises" },
 };
 
 function formatDate(iso: string) {
@@ -62,7 +64,7 @@ export default function KycDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleReview = async (status: "APPROVED" | "REJECTED") => {
+  const handleReview = async (status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "REQUIRES_ADDITIONAL_INFO") => {
     if (!record) return;
     setIsReviewing(true);
     setError(null);
@@ -74,6 +76,7 @@ export default function KycDetailPage() {
       setRecord((prev) =>
         prev ? { ...prev, status: result.status, reviewComment: result.reviewComment } : prev,
       );
+      setReviewComment("");
     } catch {
       setError("Erreur lors de la soumission de la décision.");
     } finally {
@@ -190,6 +193,14 @@ export default function KycDetailPage() {
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange resize-none mb-4"
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => handleReview("REQUIRES_ADDITIONAL_INFO")}
+                    disabled={isReviewing}
+                    className="h-10 px-5 rounded-lg bg-orange-500 text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Demander des infos
+                  </button>
                   <button
                     onClick={() => handleReview("REJECTED")}
                     disabled={isReviewing}

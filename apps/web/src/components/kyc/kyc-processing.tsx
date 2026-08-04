@@ -1,46 +1,143 @@
-import { FileText, ShieldCheck, Bell, Lightbulb } from "lucide-react";
+import {
+  Eye,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ShieldCheck,
+  Bell,
+  Lightbulb,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export function KycProcessing() {
+type KycStatus =
+  | "PENDING"
+  | "UNDER_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "REQUIRES_ADDITIONAL_INFO";
+
+interface KycProcessingProps {
+  status?: KycStatus;
+  reviewComment?: string;
+}
+
+const statusContent: Record<
+  KycStatus,
+  {
+    icon: typeof FileText;
+    title: string;
+    message: string;
+    step: string;
+  }
+> = {
+  PENDING: {
+    icon: FileText,
+    title: "Dossier soumis",
+    message:
+      "Votre dossier a bien été reçu. Nos équipes le vérifieront dans les plus brefs délais. Cela prend généralement moins de 24 heures.",
+    step: "Etape 1/3 — Documents reçus",
+  },
+  UNDER_REVIEW: {
+    icon: Eye,
+    title: "Vérification en cours",
+    message:
+      "Votre dossier est en cours de traitement par nos équipes. Vous recevrez une notification une fois la vérification terminée.",
+    step: "Etape 2/3 — En cours de vérification",
+  },
+  APPROVED: {
+    icon: CheckCircle,
+    title: "Dossier approuvé",
+    message:
+      "Félicitations ! Votre identité a été vérifiée. Vous avez maintenant accès à toutes les fonctionnalités d'AfrilinkPay.",
+    step: "Etape 3/3 — KYC validé",
+  },
+  REJECTED: {
+    icon: XCircle,
+    title: "Dossier refusé",
+    message:
+      "Votre dossier n'a pas pu être validé. Vous pouvez soumettre un nouveau dossier en corrigeant les points mentionnés ci-dessous.",
+    step: "Dossier refusé",
+  },
+  REQUIRES_ADDITIONAL_INFO: {
+    icon: AlertCircle,
+    title: "Informations complémentaires",
+    message:
+      "Nous avons besoin d'informations supplémentaires pour traiter votre dossier. Veuillez le mettre à jour avec les éléments demandés.",
+    step: "Informations requises",
+  },
+};
+
+export function KycProcessing({
+  status = "PENDING",
+  reviewComment,
+}: KycProcessingProps) {
   const navigate = useNavigate();
+  const content = statusContent[status];
+  const Icon = content.icon;
 
   return (
     <div className="flex flex-col items-center text-center max-w-md mx-auto pt-4">
       <div className="w-full">
-        <div className="relative w-14 h-14 mx-auto mb-4">
-          <div className="w-14 h-14 rounded-full bg-afrilink-green/10 flex items-center justify-center">
-            <FileText className="w-6 h-6 text-afrilink-green" />
+        {/* Carte verte indiquant le niveau */}
+        <div className="rounded-xl bg-green-50 border border-green-300 p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+              <Icon className="w-5 h-5 text-green-600" />
+            </div>
+            <div className="text-left">
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+                {content.step}
+              </p>
+              <p className="text-sm font-bold text-green-900">
+                {content.title}
+              </p>
+            </div>
           </div>
-          <span className="absolute -bottom-1 -right-3 text-[10px] font-medium bg-afrilink-orange/10 text-afrilink-orange px-2 py-0.5 rounded-full">
-            En cours
-          </span>
         </div>
 
-        <h2 className="text-lg font-bold text-afrilink-dark mb-2">
-          Validation en cours
-        </h2>
         <p className="text-sm text-gray-500 leading-relaxed mb-6">
-          Nos équipes vérifient vos informations. Cela prend généralement moins de
-          24 heures.
+          {content.message}
         </p>
+
+        {reviewComment && (
+          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 mb-6 text-left">
+            <p className="text-xs font-medium text-gray-500 mb-1">
+              Commentaire de l&apos;équipe :
+            </p>
+            <p className="text-sm text-gray-700">{reviewComment}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3 mb-6 text-left">
           <div className="rounded-xl bg-afrilink-dark/5 p-3">
             <ShieldCheck className="w-4 h-4 text-afrilink-green mb-1" />
             <p className="text-xs font-medium text-gray-700">Sécurité</p>
             <p className="text-[11px] text-gray-500">
-              Vos données sont chiffrées selon les standards bancaires les plus
-              stricts.
+              Vos données sont chiffrées selon les standards bancaires.
             </p>
           </div>
           <div className="rounded-xl bg-afrilink-dark/5 p-3">
             <Bell className="w-4 h-4 text-afrilink-green mb-1" />
             <p className="text-xs font-medium text-gray-700">Notification</p>
             <p className="text-[11px] text-gray-500">
-              Vous recevrez un e-mail dès que votre compte sera prêt à l'emploi.
+              Vous recevrez un e-mail dès que votre dossier sera traité.
             </p>
           </div>
         </div>
+
+        {(status === "REJECTED" || status === "REQUIRES_ADDITIONAL_INFO") && (
+          <button
+            onClick={() => navigate("/dashboard/kyc")}
+            className="w-full h-11 rounded-lg bg-afrilink-orange hover:bg-afrilink-orangeHover text-white text-sm font-medium transition-colors mb-3 flex items-center justify-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            {status === "REJECTED"
+              ? "Soumettre un nouveau dossier"
+              : "Mettre à jour le dossier"}
+          </button>
+        )}
 
         <button
           onClick={() => navigate("/dashboard")}
@@ -58,8 +155,9 @@ export function KycProcessing() {
         <div>
           <p className="text-xs font-medium text-afrilink-dark">Le saviez-vous ?</p>
           <p className="text-xs text-gray-500">
-            Vous pouvez déjà explorer nos guides de gestion de patrimoine en attendant
-            la validation.
+            {status === "APPROVED"
+              ? "Vous pouvez maintenant effectuer des virements et gérer votre portefeuille."
+              : "Vous pouvez déjà explorer nos guides de gestion de patrimoine en attendant la validation."}
           </p>
         </div>
       </div>
