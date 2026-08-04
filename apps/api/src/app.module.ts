@@ -18,6 +18,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
+import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
 
 
 @Module({
@@ -49,6 +50,7 @@ import { LinkedAccountModule } from './modules/linked-account/linked-account.mod
     RolesModule,
     TontineModule,
     LinkedAccountModule,
+    BeneficiaireModule,
 
     
     // `src/modules/README.md`.

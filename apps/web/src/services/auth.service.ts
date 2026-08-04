@@ -57,10 +57,6 @@ export const authService = {
       payload.googleId = data.googleId;
     }
 
-    if (data.googleId) {
-      payload.googleId = data.googleId;
-    }
-
     return apiClient.post("/users", payload);
   },
 

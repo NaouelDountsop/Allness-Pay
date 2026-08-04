@@ -10,6 +10,7 @@ import { KycFacialStep } from "@/components/kyc/kyc-facial-step";
 import { KycAddressStep } from "@/components/kyc/kyc-address-step";
 import { KycProcessing } from "@/components/kyc/kyc-processing";
 import { kycService } from "@/lib/api/kyc.service";
+import type { IdentityDocumentType } from "@afrilinkpay/shared";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
@@ -165,18 +166,18 @@ export default function KycPage() {
                     </span>
                   </div>
 
-                  {step === 1 && <KycDocumentStep onNext={handleDocumentStep} />}
+                  {step === 1 && <KycDocumentStep onNext={handleDocumentNext} />}
 
-                  {step === 2 && <KycFacialStep onNext={handleFacialStep} />}
+                  {step === 2 && <KycFacialStep onNext={handleFacialNext} />}
 
                   {step === 3 && (
-                    isSubmitting ? (
+                    submitting ? (
                       <div className="flex flex-col items-center py-10">
                         <div className="w-8 h-8 border-4 border-afrilink-green border-t-transparent rounded-full animate-spin mb-4" />
                         <p className="text-sm text-gray-500">Soumission en cours...</p>
                       </div>
                     ) : (
-                      <KycAddressStep onNext={handleAddressStep} />
+                      <KycAddressStep onNext={handleAddressNext} />
                     )
                   )}
                 </div>
@@ -186,9 +187,9 @@ export default function KycPage() {
 
           {step === 4 && <KycProcessing />}
 
-          {error && (
+          {submitError && (
             <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
-              {error}
+              {submitError}
             </div>
           )}
         </div>
