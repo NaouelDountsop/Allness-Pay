@@ -6,19 +6,23 @@ import { StatCard, Badge, Tabs } from "../../components/ui";
 import { kycService } from "../../lib/api/kyc.service";
 import type { KycRecord, KycStatus } from "@afrilinkpay/shared";
 
-const STATUS_TABS = ["Tous", "Validés", "En attente", "Rejetés"];
+const STATUS_TABS = ["Tous", "Validés", "En attente", "En cours", "Rejetés", "Infos requises"];
 
 const STATUS_FILTER_MAP: Record<string, string | undefined> = {
   Tous: undefined,
   "Validés": "APPROVED",
   "En attente": "PENDING",
+  "En cours": "UNDER_REVIEW",
   Rejetés: "REJECTED",
+  "Infos requises": "REQUIRES_ADDITIONAL_INFO",
 };
 
-const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red"; label: string }> = {
+const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
   APPROVED: { tone: "green", label: "Validé" },
   PENDING: { tone: "orange", label: "En attente" },
   REJECTED: { tone: "red", label: "Rejeté" },
+  UNDER_REVIEW: { tone: "blue", label: "En cours d'examen" },
+  REQUIRES_ADDITIONAL_INFO: { tone: "amber", label: "Infos requises" },
 };
 
 const DOC_LABELS: Record<string, string> = {
@@ -60,7 +64,9 @@ export default function KycListPage() {
     total: records.length,
     approved: records.filter((r) => r.status === "APPROVED").length,
     pending: records.filter((r) => r.status === "PENDING").length,
+    underReview: records.filter((r) => r.status === "UNDER_REVIEW").length,
     rejected: records.filter((r) => r.status === "REJECTED").length,
+    requiresInfo: records.filter((r) => r.status === "REQUIRES_ADDITIONAL_INFO").length,
   };
 
   const filtered = tab === "Tous"
@@ -78,6 +84,7 @@ export default function KycListPage() {
         <StatCard icon={Files} label="Total Dossiers" value={String(counts.total)} />
         <StatCard icon={CheckCircle2} label="Validés" value={String(counts.approved)} />
         <StatCard icon={Clock} iconTone="orange" label="En attente" value={String(counts.pending)} />
+        <StatCard icon={Clock} iconTone="blue" label="En cours" value={String(counts.underReview)} />
         <StatCard icon={XCircle} iconTone="red" label="Rejetés" value={String(counts.rejected)} />
       </div>
 

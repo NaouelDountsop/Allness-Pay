@@ -158,6 +158,13 @@ export function CreateTontineForm() {
 function FinancesTab({ onNext }: { onNext: () => void }) {
   return (
     <div>
+      <div className="mb-6 flex justify-center">
+        <img
+          src="/Finance app-cuate.svg"
+          alt="Finance app"
+          className="w-full max-w-[360px] object-contain"
+        />
+      </div>
       <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-4 mb-6 text-xs text-blue-700">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
@@ -180,6 +187,13 @@ function FinancesTab({ onNext }: { onNext: () => void }) {
 function ReglesTab({ onNext }: { onNext: () => void }) {
   return (
     <div>
+      <div className="mb-6 flex justify-center">
+        <img
+          src="/Accept terms-cuate.svg"
+          alt="Accept terms"
+          className="w-full max-w-[360px] object-contain"
+        />
+      </div>
       <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-afrilink-orange">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
@@ -201,6 +215,13 @@ function ReglesTab({ onNext }: { onNext: () => void }) {
 function MembresTab({ onSubmit }: { onSubmit: () => void }) {
   return (
     <div>
+      <div className="mb-6 flex justify-center">
+        <img
+          src="/New team members-pana.svg"
+          alt="New team members"
+          className="w-full max-w-[360px] object-contain"
+        />
+      </div>
       <p className="text-sm text-gray-500 mb-6">
         Ajoutez les membres qui participeront à cette tontine. Vous pourrez aussi inviter des
         personnes après la création.

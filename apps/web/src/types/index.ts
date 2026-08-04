@@ -1,4 +1,4 @@
-export type BadgeTone = "green" | "orange" | "red" | "blue" | "gray" | "purple";
+export type BadgeTone = "green" | "orange" | "red" | "blue" | "gray" | "purple" | "amber";
 
 export type AdminRole = "admin" | "super-admin";
 

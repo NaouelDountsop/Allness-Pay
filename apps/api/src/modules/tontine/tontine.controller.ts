@@ -1,28 +1,33 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AddMemberDto } from './dto/add-member.dto';
+import { TontineStatus } from './entities/tontine.entity';
 
 interface AuthenticatedRequest extends Request {
   user: { sub: number; email: string };
 }
 
-@ApiTags('tontine')
-@UseGuards(JwtAuthGuard)
+@ApiTags('Tontines')
 @ApiBearerAuth('access-token')
-@Controller('tontine')
+@UseGuards(JwtAuthGuard)
+@Controller('tontines')
 export class TontineController {
   constructor(private readonly tontineService: TontineService) {}
 
@@ -35,34 +40,74 @@ export class TontineController {
   @Get()
   @ApiOperation({ summary: 'Lister les tontines de l\'utilisateur' })
   findAll(@Req() req: AuthenticatedRequest) {
-    return this.tontineService.findByUser(req.user.sub);
+    return this.tontineService.findAll(req.user.sub);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Détail d\'une tontine' })
-  findOne(@Param('id') id: string) {
-    return this.tontineService.findOne(+id);
+  @ApiOperation({ summary: 'Obtenir une tontine par ID' })
+  @ApiParam({ name: 'id', type: Number })
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest) {
+    return this.tontineService.findOne(id, req.user.sub);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Modifier une tontine' })
+  @ApiOperation({ summary: 'Modifier une tontine (DRAFT uniquement)' })
+  @ApiParam({ name: 'id', type: Number })
   update(
+    @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
     @Body() dto: UpdateTontineDto,
   ) {
-    return this.tontineService.update(+id, dto, req.user.sub);
+    return this.tontineService.update(id, dto, req.user.sub);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Changer le statut d\'une tontine' })
+  @ApiParam({ name: 'id', type: Number })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+    @Body('status') status: TontineStatus,
+  ) {
+    return this.tontineService.updateStatus(id, req.user.sub, status);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Supprimer une tontine' })
-  remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
-    return this.tontineService.remove(+id, req.user.sub);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Supprimer une tontine (DRAFT uniquement)' })
+  @ApiParam({ name: 'id', type: Number })
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest) {
+    return this.tontineService.remove(id, req.user.sub);
+  }
+
+  @Post(':id/members')
+  @ApiOperation({ summary: 'Ajouter un membre à la tontine' })
+  @ApiParam({ name: 'id', type: Number })
+  addMember(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: AddMemberDto,
+  ) {
+    return this.tontineService.addMember(id, req.user.sub, dto.userId);
+  }
+
+  @Delete(':id/members/:memberId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Retirer un membre de la tontine' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'memberId', type: Number })
+  removeMember(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('memberId', ParseIntPipe) memberId: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.tontineService.removeMember(id, req.user.sub, memberId);
   }
 
   @Post(':id/join')
   @ApiOperation({ summary: 'Rejoindre une tontine' })
-  join(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
-    return this.tontineService.join(+id, req.user.sub);
+  @ApiParam({ name: 'id', type: Number })
+  join(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
+    return this.tontineService.join(id, req.user.sub);
   }
 }

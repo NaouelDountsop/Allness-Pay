@@ -18,6 +18,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
 
 
 @Module({
@@ -49,6 +50,7 @@ import { AdminModule } from './modules/admin/admin.module';
     RolesModule,
     TontineModule,
     AdminModule,
+    BeneficiaireModule,
 
     
     // `src/modules/README.md`.
