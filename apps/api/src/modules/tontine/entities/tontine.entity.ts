@@ -1,78 +1,101 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  CreateDateColumn,
   UpdateDateColumn,
-  VersionColumn,
 } from 'typeorm';
-import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
-import { TontineFrequency } from '../enums/tontine-frequency.enum';
-import { TontineStatus } from '../enums/tontine-status.enum';
-import { TontineMember } from './tontine-member.entity';
-import { TontineCycle } from './tontine-cycle.entity';
-import { Wallet } from '../../wallet/entities/wallet.entity';
+import { User } from '../../users/entities/user.entity';
+
+export enum TontineFrequency {
+  WEEKLY = 'Hebdomadaire',
+  MONTHLY = 'Mensuelle',
+}
+
+export enum TontineStatus {
+  ACTIVE = 'active',
+  PAUSED = 'paused',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+}
 
 @Entity('tontines')
 export class Tontine {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ type: 'varchar', length: 120 })
+  @Column({ length: 100 })
   name: string;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  description?: string;
+  @Column({ length: 255, nullable: true })
+  description: string;
 
-  @Column({ type: 'bigint', transformer: bigintTransformer })
-  targetAmount: string;
+  @Column({ type: 'bigint' })
+  montantCotisation: number;
 
-  @Column({ type: 'bigint', transformer: bigintTransformer })
-  contributionAmount: string;
+  @Column({ type: 'enum', enum: TontineFrequency, default: TontineFrequency.MONTHLY })
+  frequence: TontineFrequency;
 
-  @Column({ type: 'int' })
-  memberLimit: number;
+  @Column({ default: 12 })
+  nombreMembres: number;
 
-  @Column({ type: 'varchar', length: 10, default: 'XAF' })
-  currency: string;
+  @Column({ type: 'enum', enum: TontineStatus, default: TontineStatus.ACTIVE })
+  statut: TontineStatus;
 
-  @Column({ type: 'enum', enum: TontineFrequency })
-  frequency: TontineFrequency;
+  @Column({ default: 0 })
+  tourActuel: number;
 
-  @Column({ type: 'enum', enum: TontineStatus, default: TontineStatus.DRAFT })
-  status: TontineStatus;
+  @Column({ default: 'XAF' })
+  devise: string;
 
-  @Column({ type: 'int', default: 0 })
-  currentCycle: number;
+  @Column({ nullable: true })
+  lieu: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
-  nextContributionAt?: Date;
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'createurId' })
+  createur: User;
 
-  @Column({ type: 'int' })
-  creatorId: number;
+  @Column()
+  createurId: number;
 
-  @Column({ type: 'uuid' })
-  walletId: string;
+  @OneToMany(() => TontineMember, (m) => m.tontine, { cascade: true })
+  membres: TontineMember[];
 
-  @OneToOne(() => Wallet, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'walletId' })
-  wallet: Wallet;
-
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
+}
 
-  @VersionColumn()
-  version: number;
+@Entity('tontine_members')
+export class TontineMember {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @OneToMany(() => TontineMember, (member) => member.tontine, { cascade: true })
-  members: TontineMember[];
+  @ManyToOne(() => Tontine, (t) => t.membres, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'tontineId' })
+  tontine: Tontine;
 
-  @OneToMany(() => TontineCycle, (cycle) => cycle.tontine, { cascade: true })
-  cycles: TontineCycle[];
+  @Column()
+  tontineId: number;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column()
+  userId: number;
+
+  @Column({ default: 0 })
+  tourOrdre: number;
+
+  @Column({ default: false })
+  aPayeTourActuel: boolean;
+
+  @CreateDateColumn()
+  dateRejoint: Date;
 }

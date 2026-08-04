@@ -46,7 +46,7 @@ export class RolesService {
     return this.roleRepo.save(role);
   }
 
-  async updateRole(id: number, dto: UpdateRoleDto): Promise<Role> {
+  async updateRole(id: string, dto: UpdateRoleDto): Promise<Role> {
     const role = await this.findRoleById(id);
 
     if (dto.description !== undefined) {
@@ -63,7 +63,7 @@ export class RolesService {
     return this.roleRepo.find({ relations: ['permissions'] });
   }
 
-  async findRoleById(id: number): Promise<Role> {
+  async findRoleById(id: string): Promise<Role> {
     const role = await this.roleRepo.findOne({ where: { id }, relations: ['permissions'] });
     if (!role) {
       throw new NotFoundException('Rôle introuvable');
@@ -73,7 +73,7 @@ export class RolesService {
 
   // --- Attribution aux administrateurs ---
 
-  async assignRole(adminId: number, roleId: number, assignedBy: number): Promise<AdminRole> {
+  async assignRole(adminId: number, roleId: string, assignedBy: number): Promise<AdminRole> {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (!role) {
       throw new NotFoundException('Rôle introuvable');
@@ -88,7 +88,7 @@ export class RolesService {
     return this.adminRoleRepo.save(adminRole);
   }
 
-  async revokeRole(adminId: number, roleId: number): Promise<void> {
+  async revokeRole(adminId: number, roleId: string): Promise<void> {
     const result = await this.adminRoleRepo.delete({ adminId, roleId });
     if (result.affected === 0) {
       throw new NotFoundException("Cet administrateur n'a pas ce rôle");
@@ -121,7 +121,7 @@ export class RolesService {
     return required.every((permission) => owned.includes(permission));
   }
 
-  private async resolvePermissions(permissionIds?: number[]): Promise<Permission[]> {
+  private async resolvePermissions(permissionIds?: string[]): Promise<Permission[]> {
     if (!permissionIds || permissionIds.length === 0) {
       return [];
     }

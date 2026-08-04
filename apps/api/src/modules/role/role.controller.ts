@@ -8,6 +8,7 @@ import {
   Body,
   Req,
   UseGuards,
+  ParseUUIDPipe,
   ParseIntPipe,
   HttpCode,
   HttpStatus,
@@ -43,7 +44,7 @@ export class RolesController {
   }
 
   @Patch(':id')
-  updateRole(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateRoleDto) {
+  updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateRoleDto) {
     return this.rolesService.updateRole(id, dto);
   }
 
@@ -70,7 +71,7 @@ export class RolesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   revokeRole(
     @Param('adminId', ParseIntPipe) adminId: number,
-    @Param('roleId', ParseIntPipe) roleId: number,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
   ) {
     return this.rolesService.revokeRole(adminId, roleId);
   }

@@ -10,7 +10,6 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestContextInterceptor } from './common/interceptors/request-context.interceptor';
-import { BigIntSerializerInterceptor } from './common/interceptors/bigint-serializer.interceptor';
 import type { AppConfig } from './config/configuration';
 
 async function bootstrap(): Promise<void> {
@@ -52,7 +51,7 @@ async function bootstrap(): Promise<void> {
   );
 
   // --- Interception --------------------------------------------------------
-  app.useGlobalInterceptors(new RequestContextInterceptor(), new LoggingInterceptor(), new BigIntSerializerInterceptor());
+  app.useGlobalInterceptors(new RequestContextInterceptor(), new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Documentation -------------------------------------------------------

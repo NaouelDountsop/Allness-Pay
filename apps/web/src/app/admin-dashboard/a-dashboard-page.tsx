@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Users,
   ShieldAlert,
@@ -8,11 +8,9 @@ import {
   UserPlus,
   AlertTriangle,
   CheckCircle2,
-  Loader2,
 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
 import { StatCard, Badge } from "../../components/ui";
-import { adminService, type AdminDashboardStats } from "@/lib/api/admin.service";
 
 const ACTIVITIES = [
   {
@@ -79,43 +77,6 @@ const CHART_VALUES = [40, 55, 70, 90, 65, 50, 78];
 
 export default function DashboardPage() {
   const [period, setPeriod] = useState<"7j" | "30j">("7j");
-  const [stats, setStats] = useState<AdminDashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadStats = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await adminService.getDashboardStats();
-        if (isMounted) {
-          setStats(data);
-        }
-      } catch {
-        if (isMounted) {
-          setError("Impossible de charger les statistiques du dashboard.");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadStats();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const totalUsers = stats?.totalUsers ?? "—";
-  const totalKycPending = stats?.kyc.pending ?? "—";
-  const monthlyVolume = stats?.monthlyVolume != null ? `€${stats.monthlyVolume.toLocaleString("fr-FR")}` : "—";
-  const totalLiquidity = stats?.totalLiquidity != null ? `€${stats.totalLiquidity.toLocaleString("fr-FR")}` : "—";
 
   return (
     <AdminLayout active="dashboard">
@@ -125,72 +86,61 @@ export default function DashboardPage() {
       </p>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Users} label="Utilisateurs Totaux" value={String(totalUsers)} />
+        <StatCard icon={Users} label="Utilisateurs Totaux" value="128,430" />
         <StatCard
           icon={ShieldAlert}
           iconTone="red"
           label="KYC en Attente"
-          value={String(totalKycPending)}
+          value="452"
           tag={{ label: "Urgent", tone: "red" }}
         />
-        <StatCard icon={TrendingUp} label="Volume Mensuel" value={monthlyVolume} />
+        <StatCard icon={TrendingUp} label="Volume Mensuel" value="€4.4M" />
         <StatCard
           icon={Wallet}
           label="Liquidité Système"
-          value={totalLiquidity}
+          value="€18.7M"
           hint="Seuil: Optimal"
           hintTone="green"
         />
       </div>
 
-      {loading ? (
-        <div className="rounded-xl bg-white border border-gray-100 shadow-sm p-6 text-center">
-          <Loader2 className="mx-auto mb-3 h-6 w-6 text-afrilink-orange animate-spin" />
-          <p className="text-sm text-gray-500">Chargement des statistiques...</p>
-        </div>
-      ) : error ? (
-        <div className="rounded-xl bg-red-50 border border-red-200 shadow-sm p-6 text-center">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-            <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-sm font-semibold text-afrilink-dark">Croissance des Transactions</p>
-                <div className="flex items-center bg-gray-50 rounded-lg p-0.5 text-xs">
-                  <button
-                    onClick={() => setPeriod("7j")}
-                    className={`px-3 py-1 rounded-md transition-colors ${
-                      period === "7j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
-                    }`}
-                  >
-                    7 Jours
-                  </button>
-                  <button
-                    onClick={() => setPeriod("30j")}
-                    className={`px-3 py-1 rounded-md transition-colors ${
-                      period === "30j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
-                    }`}
-                  >
-                    30 Jours
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-end gap-3 h-40">
-                {CHART_VALUES.map((v, i) => (
-                  <div
-                    key={i}
-                    className={`flex-1 rounded-t-md ${
-                      i === CHART_VALUES.length - 2 ? "bg-afrilink-green" : "bg-afrilink-green/40"
-                    }`}
-                    style={{ height: `${v}%` }}
-                  />
-                ))}
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm font-semibold text-afrilink-dark">Croissance des Transactions</p>
+            <div className="flex items-center bg-gray-50 rounded-lg p-0.5 text-xs">
+              <button
+                onClick={() => setPeriod("7j")}
+                className={`px-3 py-1 rounded-md transition-colors ${
+                  period === "7j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
+                }`}
+              >
+                7 Jours
+              </button>
+              <button
+                onClick={() => setPeriod("30j")}
+                className={`px-3 py-1 rounded-md transition-colors ${
+                  period === "30j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
+                }`}
+              >
+                30 Jours
+              </button>
             </div>
+          </div>
+          <div className="flex items-end gap-3 h-40">
+            {CHART_VALUES.map((v, i) => (
+              <div
+                key={i}
+                className={`flex-1 rounded-t-md ${
+                  i === CHART_VALUES.length - 2 ? "bg-afrilink-green" : "bg-afrilink-green/40"
+                }`}
+                style={{ height: `${v}%` }}
+              />
+            ))}
+          </div>
+        </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col">
           <p className="text-sm font-semibold text-afrilink-dark mb-4">Activités Récentes</p>
           <div className="flex flex-col gap-4 flex-1">
             {ACTIVITIES.map((a, i) => {
@@ -213,15 +163,13 @@ export default function DashboardPage() {
             Voir tout l'historique
           </button>
         </div>
-        </div>
-      </>
-      )}
+      </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-semibold text-afrilink-dark">Approbations KYC Urgentes</p>
           <a href="#" className="text-xs text-afrilink-green font-medium hover:underline">
-            Voir les dossiers KYC
+            Voir les 452 dossiers
           </a>
         </div>
         <table className="w-full text-sm">

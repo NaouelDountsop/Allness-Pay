@@ -7,55 +7,39 @@ interface PaymentMethodsGridProps {
   onSelect: (method: PaymentMethod) => void;
 }
 
-const methods: {
-  key: PaymentMethod;
-  label: string;
-  icon: typeof Wallet;
-  logo?: string;
-  color: string;
-}[] = [
-  { key: "wallet", label: "Portefeuille", icon: Wallet, logo: "/afrilinkpay_logo2.svg", color: "text-afrilink-dark" },
-  { key: "card", label: "Carte Bancaire", icon: CreditCard, logo: "/bank.png", color: "text-blue-600" },
-  { key: "mobile_money", label: "Mobile Money", icon: Smartphone, logo: "/mtn-momo.png", color: "text-yellow-600" },
-  { key: "bank_transfer", label: "Virement", icon: Landmark, logo: "/orange-money.png", color: "text-orange-500" },
+const methods: { key: PaymentMethod; label: string; icon: typeof Wallet }[] = [
+  { key: "wallet", label: "Portefeuille Afrilink Pay", icon: Wallet },
+  { key: "card", label: "Carte Bancaire", icon: CreditCard },
+  { key: "mobile_money", label: "Mobile Money", icon: Smartphone },
+  { key: "bank_transfer", label: "Virement Bancaire", icon: Landmark },
 ];
 
 export function PaymentMethodsGrid({ selected, onSelect }: PaymentMethodsGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      {methods.map(({ key, label, icon: Icon, logo, color }) => {
+      {methods.map(({ key, label, icon: Icon }) => {
         const isSelected = selected === key;
         return (
           <button
             key={key}
             onClick={() => onSelect(key)}
-            className={`relative h-28 rounded-2xl border-2 p-4 flex flex-col items-center justify-center gap-2.5 text-center transition-all ${
+            className={`h-24 rounded-xl border-2 p-3 flex flex-col items-center justify-center gap-2 text-center transition-colors ${
               isSelected
-                ? "border-afrilink-green bg-green-50/50 shadow-sm"
-                : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
+                ? "border-afrilink-green bg-green-50/40"
+                : "border-gray-200 bg-white hover:border-gray-300"
             }`}
           >
-            {isSelected && (
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-afrilink-green" />
-            )}
-
-            {logo ? (
-              <span className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
-                <img src={logo} alt={label} className="w-full h-full object-contain p-1.5" />
-              </span>
-            ) : (
-              <span className={`w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center ${color}`}>
-                <Icon className="w-5 h-5" />
-              </span>
-            )}
-
+            <Icon className={`w-5 h-5 ${isSelected ? "text-afrilink-green" : "text-gray-500"}`} />
             <span
-              className={`text-xs leading-tight font-medium ${
-                isSelected ? "text-afrilink-green" : "text-gray-700"
+              className={`text-xs leading-tight ${
+                isSelected ? "text-afrilink-green font-medium" : "text-gray-700"
               }`}
             >
               {label}
             </span>
+            {isSelected && (
+              <span className="text-[10px] font-medium text-afrilink-green">SÉLECTIONNÉ</span>
+            )}
           </button>
         );
       })}

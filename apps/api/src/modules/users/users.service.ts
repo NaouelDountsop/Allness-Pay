@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, DataSource } from 'typeorm';
 import { hash, verify } from 'argon2';
+import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -8,7 +9,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
 import { MailService } from '../mail/mail.service';
 import { WalletsService } from '../wallet/wallet.service';
-import { WalletStatus } from '../wallet/entities/wallet.entity';
+import { getCurrencyByCountry } from '../../config/country-currency.config';
+
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -21,35 +23,34 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     private readonly redisService: RedisService,
     private readonly mailService: MailService,
-    private readonly dataSource: DataSource,
     private readonly walletsService: WalletsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
+  const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } = createUserDto;
 
-    // Vérifier que l'email ou le téléphone n'existe pas
-    const existing = await this.usersRepository.findOne({
-      where: [{ email }, { telephone }],
-    });
+  const existing = await this.usersRepository.findOne({
+    where: [
+      { email },
+      { telephone },
+      ...(googleId ? [{ googleId }] : []),
+    ],
+  });
 
-    if (existing) {
-      throw new ConflictException('Email ou téléphone déjà utilisé.');
-    }
+  if (existing) {
+    throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
+  }
 
-    // Vérifier que le mot de passe est fourni (sauf pour Google)
-    if (!motdepasse && !createUserDto.googleId) {
-      throw new ConflictException('Le mot de passe est obligatoire.');
-    }
+  const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
 
-    // Transaction atomique : user + wallet + OTP échouent ou réussissent ensemble
+    // Transaction atomique : user + wallet échouent ou réussissent ensemble
     const savedUser = await this.dataSource.transaction(async (manager) => {
-      const hashedPassword = motdepasse ? await hash(motdepasse) : '';
-
       const user = manager.create(User, {
         ...rest,
         email,
         telephone,
+        pays,
         profession,
         datenaissance: new Date(datenaissance),
         motdepasse: hashedPassword,
@@ -58,26 +59,22 @@ export class UsersService {
 
       const saved = await manager.save(user);
 
-      // Créer un wallet par défaut avec statut INACTIVE
-      await this.walletsService.create(
-        saved.idutilisateur,
-        { currency: 'XAF' },
-        manager,
-        WalletStatus.INACTIVE,
-      );
-
-      // OTP systématique
-      const otpCode = generateOtp();
-      await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
-      await this.mailService.sendOtp(email, otpCode);
+      // Création du wallet principal selon le pays (même transaction)
+      const currency = getCurrencyByCountry(pays);
+      await this.walletsService.create(saved.idutilisateur, { currency }, manager);
 
       return saved;
     });
 
+    // OTP en dehors de la transaction (Redis + email, pas critique)
+    const otpCode = generateOtp();
+    await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
+    await this.mailService.sendOtp(email, otpCode);
+
     return savedUser;
   }
 
-  findAll(): Promise<User[]> {
+  findAll() : Promise<User []> {
     return this.usersRepository.find();
   }
 
@@ -150,7 +147,6 @@ export class UsersService {
     }
 
     const otpCode = generateOtp();
-
     await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
 
   

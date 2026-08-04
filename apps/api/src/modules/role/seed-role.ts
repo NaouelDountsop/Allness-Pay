@@ -28,7 +28,7 @@ async function seed() {
   });
 
   await dataSource.initialize();
-  console.warn('Connecté à la base de données');
+  console.log('Connecté à la base de données');
 
   // 1. Permissions
   const permRepo = dataSource.getRepository(Permission);
@@ -37,9 +37,9 @@ async function seed() {
     let perm = await permRepo.findOne({ where: { name: p.name } });
     if (!perm) {
       perm = await permRepo.save(permRepo.create(p));
-      console.warn(`Permission "${p.name}" créée`);
+      console.log(`Permission "${p.name}" créée`);
     } else {
-      console.warn(`Permission "${p.name}" existe déjà`);
+      console.log(`Permission "${p.name}" existe déjà`);
     }
     createdPermissions.push(perm);
   }
@@ -55,19 +55,17 @@ async function seed() {
           permissions: createdPermissions,
         }),
       );
-      console.warn(` Rôle "${r.name}" créé avec ${createdPermissions.length} permissions`);
+      console.log(` Rôle "${r.name}" créé avec ${createdPermissions.length} permissions`);
     } else {
-
       // Mettre à jour les permissions du rôle existant
       role.permissions = createdPermissions;
       await roleRepo.save(role);
-      console.warn(` Rôle "${r.name}" mis à jour avec ${createdPermissions.length} permissions`);
+      console.log(` Rôle "${r.name}" mis à jour avec ${createdPermissions.length} permissions`);
     }
-    
   }
 
   await dataSource.destroy();
-  console.warn('Seed terminé');
+  console.log('Seed terminé');
 }
 
 seed().catch((err) => {

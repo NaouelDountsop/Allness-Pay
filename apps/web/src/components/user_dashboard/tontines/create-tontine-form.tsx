@@ -4,14 +4,12 @@ import { Info, AlertTriangle } from "lucide-react";
 
 type Tab = "general" | "finances" | "regles" | "membres";
 
-const tabs: { key: Tab; label: string }[] = [
-  { key: "general", label: "Général" },
-  { key: "finances", label: "Finances" },
-  { key: "regles", label: "Règles" },
-  { key: "membres", label: "Membres" },
+const tabs: { key: Tab; label: string; icon: string }[] = [
+  { key: "general", label: "Général", icon: "①" },
+  { key: "finances", label: "Finances", icon: "💰" },
+  { key: "regles", label: "Règles", icon: "📋" },
+  { key: "membres", label: "Membres", icon: "👥" },
 ];
-
-const tabOrder: Tab[] = ["general", "finances", "regles", "membres"];
 
 export function CreateTontineForm() {
   const navigate = useNavigate();
@@ -23,7 +21,6 @@ export function CreateTontineForm() {
   const [frequency, setFrequency] = useState("Mensuelle");
 
   const estimatedPot = (parseFloat(contribution) || 0) * 12;
-  const currentIndex = tabOrder.indexOf(activeTab);
 
   const handleInitialize = () => {
     navigate("/dashboard/tontines");
@@ -31,8 +28,7 @@ export function CreateTontineForm() {
 
   return (
     <div>
-      {/* Desktop : onglets texte */}
-      <div className="hidden sm:flex gap-2 mb-6 border-b border-gray-200">
+      <div className="flex gap-2 mb-6 border-b border-gray-100">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -48,40 +44,16 @@ export function CreateTontineForm() {
         ))}
       </div>
 
-      {/* Mobile : points indicateurs */}
-      <div className="flex sm:hidden items-center justify-center gap-3 mb-6 pb-4 border-b border-gray-200">
-        {tabs.map((tab, i) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className="flex items-center gap-1.5"
-          >
-            <span
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                i < currentIndex
-                  ? "bg-afrilink-green"
-                  : i === currentIndex
-                    ? "bg-afrilink-orange"
-                    : "bg-gray-300"
-              }`}
-            />
-            {i === currentIndex && (
-              <span className="text-[11px] font-medium text-afrilink-dark">{tab.label}</span>
-            )}
-          </button>
-        ))}
-      </div>
-
       {activeTab === "general" && (
         <div>
           <div className="flex items-center gap-2 mb-4">
             <span className="w-5 h-5 rounded-full bg-afrilink-orange text-white text-[10px] font-semibold flex items-center justify-center">
               1
             </span>
-            <p className="text-xs sm:text-sm font-semibold text-gray-800">Informations Générales</p>
+            <p className="text-sm font-semibold text-gray-800">Informations Générales</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="text-xs font-medium text-gray-500">Nom de la tontine</label>
               <input
@@ -89,7 +61,7 @@ export function CreateTontineForm() {
                 placeholder="ex: Épargne Exécutive T4"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full h-11 rounded-xl border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
               />
             </div>
             <div>
@@ -97,7 +69,7 @@ export function CreateTontineForm() {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full h-11 rounded-xl border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
               >
                 <option value="USD">USD - Dollar US</option>
                 <option value="CFA">CFA - Franc CFA</option>
@@ -106,14 +78,14 @@ export function CreateTontineForm() {
             </div>
           </div>
 
-          <div className="mb-5 sm:mb-6">
+          <div className="mb-6">
             <label className="text-xs font-medium text-gray-500">Description</label>
             <textarea
               rows={3}
               placeholder="Décrivez brièvement le but de ce cercle d'épargne..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange resize-none"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange resize-none"
             />
           </div>
 
@@ -121,13 +93,13 @@ export function CreateTontineForm() {
             <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-[10px] font-semibold flex items-center justify-center">
               ?
             </span>
-            <p className="text-xs sm:text-sm font-semibold text-gray-800">Paramètres Financiers</p>
+            <p className="text-sm font-semibold text-gray-800">Paramètres Financiers</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
             <div>
               <label className="text-xs font-medium text-gray-500">Montant de la contribution</label>
-              <div className="flex items-center h-11 rounded-xl border border-gray-200 mt-1 px-3">
+              <div className="flex items-center h-11 rounded-lg border border-gray-200 mt-1 px-3">
                 <span className="text-sm text-gray-500 mr-1">$</span>
                 <input
                   type="number"
@@ -142,7 +114,7 @@ export function CreateTontineForm() {
               <select
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
-                className="w-full h-11 rounded-xl border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
               >
                 <option value="Mensuelle">Mensuelle</option>
                 <option value="Hebdomadaire">Hebdomadaire</option>
@@ -150,21 +122,21 @@ export function CreateTontineForm() {
             </div>
           </div>
 
-          <div className="rounded-xl bg-afrilink-dark text-white p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-5 sm:mb-6">
+          <div className="rounded-xl bg-afrilink-dark text-white p-4 flex items-center justify-between mb-6">
             <div>
               <p className="text-[11px] text-white/60">POT TOTAL ESTIMÉ</p>
               <p className="text-[10px] text-white/40">Basé sur 12 cycles et 12 membres</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold">${estimatedPot.toFixed(2)}</p>
+            <p className="text-2xl font-bold">${estimatedPot.toFixed(2)}</p>
           </div>
 
-          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
-            <button className="h-10 px-5 rounded-xl border border-gray-200 text-sm text-gray-600">
+          <div className="flex justify-end gap-3">
+            <button className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
               Enregistrer le brouillon
             </button>
             <button
               onClick={() => setActiveTab("finances")}
-              className="h-10 px-5 rounded-xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+              className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
             >
               Suivant
             </button>
@@ -186,24 +158,17 @@ export function CreateTontineForm() {
 function FinancesTab({ onNext }: { onNext: () => void }) {
   return (
     <div>
-      <div className="flex items-start gap-2 rounded-2xl bg-blue-50 p-3 sm:p-4 mb-5 sm:mb-6 text-xs text-blue-700">
+      <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-4 mb-6 text-xs text-blue-700">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
           Les fonds seront transférés automatiquement vers le compte du bénéficiaire selon
           l'ordre de passage défini à l'étape suivante.
         </p>
       </div>
-      <div className="flex justify-center mb-5 sm:mb-6">
-        <img
-          src="/Finance app-cuate.svg"
-          alt="Illustration Finance"
-          className="w-52 h-52 sm:w-80 sm:h-80 object-contain"
-        />
-      </div>
       <div className="flex justify-end">
         <button
           onClick={onNext}
-          className="h-10 px-5 rounded-xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
         >
           Suivant
         </button>
@@ -215,23 +180,16 @@ function FinancesTab({ onNext }: { onNext: () => void }) {
 function ReglesTab({ onNext }: { onNext: () => void }) {
   return (
     <div>
-      <div className="flex items-start gap-2 rounded-2xl bg-orange-50 p-3 sm:p-4 mb-5 sm:mb-6 text-xs text-afrilink-orange">
+      <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-afrilink-orange">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
           Des frais de retard de 5% s'appliquent automatiquement après le délai de grâce.
         </p>
       </div>
-      <div className="flex justify-center mb-5 sm:mb-6">
-        <img
-          src="/Accept terms-cuate.svg"
-          alt="Illustration Règles"
-          className="w-52 h-52 sm:w-80 sm:h-80 object-contain"
-        />
-      </div>
       <div className="flex justify-end">
         <button
           onClick={onNext}
-          className="h-10 px-5 rounded-xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
         >
           Suivant
         </button>
@@ -243,24 +201,17 @@ function ReglesTab({ onNext }: { onNext: () => void }) {
 function MembresTab({ onSubmit }: { onSubmit: () => void }) {
   return (
     <div>
-      <p className="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6">
+      <p className="text-sm text-gray-500 mb-6">
         Ajoutez les membres qui participeront à cette tontine. Vous pourrez aussi inviter des
         personnes après la création.
       </p>
-      <div className="flex justify-center mb-5 sm:mb-6">
-        <img
-          src="/New team members-pana.svg"
-          alt="Illustration Membres"
-          className="w-52 h-52 sm:w-80 sm:h-80 object-contain"
-        />
-      </div>
-      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
-        <button className="h-10 px-5 rounded-xl border border-gray-200 text-sm text-gray-600">
+      <div className="flex justify-end gap-3">
+        <button className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
           Enregistrer le brouillon
         </button>
         <button
           onClick={onSubmit}
-          className="h-10 px-5 rounded-xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
         >
           Initialiser la Tontine
         </button>

@@ -56,7 +56,7 @@ export default function KycDetailPage() {
     if (!id) return;
     setLoading(true);
     kycService
-      .getAdminById(Number(id))
+      .getById(Number(id))
       .then(setRecord)
       .catch(() => setError("Dossier KYC introuvable."))
       .finally(() => setLoading(false));
