@@ -17,8 +17,7 @@ import { PinModule } from './modules/pin/pin.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
-import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
-import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 
 @Module({
@@ -49,8 +48,7 @@ import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
     TransactionsModule,
     RolesModule,
     TontineModule,
-    LinkedAccountModule,
-    BeneficiaireModule,
+    AdminModule,
 
     
     // `src/modules/README.md`.
