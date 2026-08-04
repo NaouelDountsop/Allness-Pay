@@ -18,7 +18,7 @@ export default function TontinesPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-8 pb-10">
+      <div>
         {!HAS_TONTINES ? (
           <TontinesEmptyState
             onCreate={() => navigate("/dashboard/tontines/create")}
@@ -28,7 +28,7 @@ export default function TontinesPage() {
           <>
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h1 className="text-lg font-semibold text-afrilink-dark">Tontines</h1>
+                <h1 className="text-2xl font-semibold text-afrilink-dark">Tontines</h1>
                 <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
               </div>
               <button

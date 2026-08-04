@@ -3,19 +3,31 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { authService } from "@/services/auth.service";
 
-
 const RESEND_DELAY = 58;
 
 export default function VerifyEmailPage() {
-  const { state } = useLocation() as { state?: { email: string } };
+  const location = useLocation();
   const navigate = useNavigate();
-  const email = state?.email ?? "votre email";
+  const [email, setEmail] = useState<string>("");
 
   const [code, setCode] = useState<string[]>(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(RESEND_DELAY);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    const emailFromState = (location.state as { email?: string })?.email || "";
+    const queryEmail = new URLSearchParams(location.search).get("email") || "";
+    const resolvedEmail = emailFromState || queryEmail;
+
+    if (!resolvedEmail) {
+      navigate("/signup", { replace: true });
+      return;
+    }
+
+    setEmail(resolvedEmail);
+  }, [location.search, location.state, navigate]);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -93,14 +105,17 @@ export default function VerifyEmailPage() {
     }
   };
 
-  const location = useLocation();
+ 
+  useEffect(() => {
+    const emailFromState = (location.state as { email?: string })?.email || "";
 
-  const emailFromState = (location.state as { email?: string })?.email || "";
+    if (!emailFromState) {
+      navigate("/signup", { replace: true });
+      return;
+    }
 
-  // Si quelqu'un arrive directement sur /verify-email sans email → on le renvoie
-  if (!emailFromState) {
-    navigate("/register");
-  }
+    setEmail(emailFromState);
+  }, [location.state, navigate]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">

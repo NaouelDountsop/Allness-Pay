@@ -10,6 +10,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { OtpModule } from '../otp/otp.module';
 import { Administrateur } from '../role/entities/administrateur.entity';
@@ -37,7 +38,7 @@ import { User } from '../users/entities/user.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, GoogleStrategy, JwtAuthGuard, LocalAuthGuard],
+  providers: [AuthService, JwtStrategy, LocalStrategy, GoogleStrategy, JwtAuthGuard, LocalAuthGuard, GoogleAuthGuard],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

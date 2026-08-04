@@ -15,9 +15,12 @@ import QrScanPage from "@/app/user_dashboard/qr-scan-page";
 import TontinesPage from "@/app/user_dashboard/tontines-page";
 import CreateTontinePage from "@/app/user_dashboard/create-tontine-page";
 import TontineDetailPage from "@/app/user_dashboard/tontine-detail-page";
+import TontineMembersPage from "@/app/user_dashboard/tontine-members-page";
 import ContributionHistoryPage from "@/app/user_dashboard/contribution-history-page";
 import MakeContributionPage from "@/app/user_dashboard/make-contribution-page";
 import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
+import ProfilePage from "@/app/user_dashboard/profile-page";
+import SettingsPage from "@/app/user_dashboard/settings-page";
 import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
 import UsersListPage from "@/app/admin-dashboard/users-list-page";
 import TontinesSupervisionPage from "@/app/admin-dashboard/tontines-supervision-page";
@@ -63,11 +66,14 @@ export function App() {
         <Route path="/dashboard/tontines" element={<TontinesPage />} />
         <Route path="/dashboard/tontines/create" element={<CreateTontinePage />} />
         <Route path="/dashboard/tontines/:id" element={<TontineDetailPage />} />
+        <Route path="/dashboard/tontines/:id/members" element={<TontineMembersPage />} />
         <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
         <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
         <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
         <Route path="/dashboard/transactions" element={<TransactionsPage />} />
         <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
+        <Route path="/dashboard/profile" element={<ProfilePage />} />
+        <Route path="/dashboard/settings" element={<SettingsPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/utilisateurs" element={<UsersListPage />} />
         <Route path="/admin/transactions" element={<AdminTransactionsPage />} />

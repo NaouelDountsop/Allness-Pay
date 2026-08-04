@@ -39,16 +39,25 @@ export default function TontineDetailPage() {
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
       <div className="px-4 sm:px-8 pb-10">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => navigate("/dashboard/tontines")}
-            className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Tontine {tontine.name}
-          </button>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div>
+            <button
+              onClick={() => navigate("/dashboard/tontines")}
+              className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Tontine {tontine.name}
+            </button>
+            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequency}</p>
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap gap-3 items-center">
+            <button
+              onClick={() => navigate(`/dashboard/tontines/${tontine.id}/history`)}
+              className="h-10 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-sm font-medium hover:bg-afrilink-green/10 transition"
+            >
+              Historique des versements
+            </button>
             {tontine.isAdmin && (
               <button
                 onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
@@ -63,7 +72,7 @@ export default function TontineDetailPage() {
               className="h-10 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <Send className="w-4 h-4" />
-              <span className="hidden md:inline">Send Contribution</span>
+              <span className="hidden md:inline">Nouveau versement</span>
             </button>
           </div>
         </div>
@@ -74,7 +83,7 @@ export default function TontineDetailPage() {
 
         <TontineDetailHeader tontine={tontine} />
         <TontineDetailStats tontine={tontine} />
-        <MembersTable members={tontine.members} />
+        <MembersTable members={tontine.members} tontineId={tontine.id} />
 
         <button
           aria-label="Support"

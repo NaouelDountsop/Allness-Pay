@@ -108,7 +108,7 @@ export default function SendMoneyPage() {
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-7xl">
-          <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
+          <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
             Transfert vers le Cameroun
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8">

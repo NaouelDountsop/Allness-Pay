@@ -37,10 +37,10 @@ export default function BillPaymentPage() {
     <DashboardLayout>
       <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10 max-w-4xl">
+      <div className="max-w-4xl">
         <button
           onClick={() => navigate("/dashboard/payments")}
-          className="flex items-center gap-2 text-base sm:text-lg font-semibold text-afrilink-dark mb-1"
+          className="flex items-center gap-2 text-2xl font-semibold text-afrilink-dark mb-1"
         >
           <ArrowLeft className="w-5 h-5" />
           {title}

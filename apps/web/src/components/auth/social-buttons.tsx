@@ -11,7 +11,7 @@ const apiBase =
 
 export function SocialButtons() {
   const handleGoogleLogin = () => {
-    window.location.href = `${apiBase}/auth/google`;
+    window.location.href = `${apiBase}/auth/google?prompt=select_account`;
   };
 
   return (

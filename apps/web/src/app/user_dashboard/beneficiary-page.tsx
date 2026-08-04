@@ -101,7 +101,7 @@ function NetworkBadge({ network }: { network: Beneficiary["network"] }) {
     <div className="flex items-center gap-2">
       <span
         className={`w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold shrink-0 ${
-          isMtn ? "bg-yellow-400 text-afrilink-dark" : "bg-afrilink-orange text-white"
+          isMtn ? "bg-yellow-400 text-afrilink-dark" : "bg-orange text-white"
         }`}
       >
         {isMtn ? "MTN" : "OM"}
@@ -118,7 +118,7 @@ export default function BeneficiariesPage() {
     <DashboardLayout>
       <DashboardHeader firstName="" userName="Bénéficiaires" memberLabel="Portefeuille" />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
+      <div className="flex justify-center">
         <div className="w-full max-w-5xl">
           <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
             <div>
