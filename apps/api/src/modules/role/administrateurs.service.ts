@@ -34,7 +34,8 @@ export class AdministrateursService {
     });
 
     const saved = await this.adminRepo.save(admin);
-    return this.toSafeAdmin(saved);
+    const { motdepasse: _, ...result } = saved as Administrateur & { motdepasse: string };
+    return result;
   }
 
   async findAll(): Promise<AdminWithoutPassword[]> {
@@ -71,7 +72,8 @@ export class AdministrateursService {
 
     Object.assign(admin, dto);
     const saved = await this.adminRepo.save(admin);
-    return this.toSafeAdmin(saved);
+    const { motdepasse: _, ...result } = saved as Administrateur & { motdepasse: string };
+    return result;
   }
 
   async remove(id: number): Promise<void> {
@@ -80,11 +82,5 @@ export class AdministrateursService {
       throw new NotFoundException('Administrateur introuvable');
     }
     await this.adminRepo.remove(admin);
-  }
-
-  private toSafeAdmin(admin: Administrateur): AdminWithoutPassword {
-    const record = admin as unknown as Record<string, unknown>;
-    delete record.motdepasse;
-    return admin as AdminWithoutPassword;
   }
 }

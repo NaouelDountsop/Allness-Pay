@@ -1,47 +1,52 @@
 import { X, Check } from "lucide-react";
 import type { TontineInvitation } from "@/lib/mock/tontines-data";
 
-interface InvitationCardProps {
-  invitation: TontineInvitation;
-  onAccept?: (id: string) => void;
-  onDecline?: (id: string) => void;
+interface InvitationsListProps {
+  invitations: TontineInvitation[];
 }
 
-export function InvitationCard({ invitation, onAccept, onDecline }: InvitationCardProps) {
+export function InvitationsList({ invitations }: InvitationsListProps) {
   return (
-    <div className="rounded-xl border border-red-200 bg-red-50 p-4 flex items-center justify-between gap-3">
-      {/* Avatar + infos */}
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-sm font-semibold text-gray-500">
-          {invitation.name.charAt(0).toUpperCase()}
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-gray-900 truncate">
-            {invitation.name}
-          </p>
-          <p className="text-xs text-gray-500 mt-0.5 truncate">
-            {invitation.subtitle}
-          </p>
-        </div>
-      </div>
+    <div>
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">
+        Tontines en Attente &amp; Invitations
+      </h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {invitations.map((inv) => (
+          <div
+            key={inv.id}
+            className="rounded-xl border border-gray-100 bg-white p-4 flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 text-gray-400 text-xs font-medium">
+                {inv.name.charAt(0)}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{inv.name}</p>
+                <p className="text-[11px] text-gray-400 truncate">{inv.subtitle}</p>
+              </div>
+            </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button
-          onClick={() => onDecline?.(invitation.id)}
-          className="w-9 h-9 rounded-full bg-red-100 hover:bg-red-200 flex items-center justify-center transition-colors"
-          aria-label="Refuser"
-        >
-          <X className="w-4 h-4 text-red-500" />
-        </button>
-        <button
-          onClick={() => onAccept?.(invitation.id)}
-          className="h-9 px-4 rounded-full bg-afrilink-dark hover:opacity-90 text-white text-sm font-medium flex items-center gap-1.5 transition-opacity"
-          style={{ backgroundColor: "#0B4D3B" }}
-        >
-          <Check className="w-4 h-4" />
-          Accepter
-        </button>
+            {inv.status === "invitation" ? (
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  aria-label="Refuser"
+                  className="w-7 h-7 rounded-full bg-red-50 text-red-500 flex items-center justify-center"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                <button className="h-7 px-3 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  Accepter
+                </button>
+              </div>
+            ) : (
+              <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-afrilink-orange px-2.5 py-1 rounded-full">
+                En attente
+              </span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

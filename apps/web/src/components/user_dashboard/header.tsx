@@ -15,8 +15,8 @@ export function DashboardHeader({
 }: HeaderProps) {
   return (
     <header
-      className="fixed top-0 left-0 right-0 md:left-72 z-[100] flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-afrilink-dark sm:bg-white border-b border-gray-100
+      className="sticky top-0 z-[100] flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
+      bg-white mb-4 sm:mb-6 border-b border-gray-100
       rounded-b-[1.5rem] sm:rounded-b-[2rem] shadow-sm sm:rounded-none"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -33,7 +33,7 @@ export function DashboardHeader({
           <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 sm:bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {avatarUrl ? (
               <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
             ) : (
@@ -41,8 +41,8 @@ export function DashboardHeader({
             )}
           </div>
           <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium text-white sm:text-afrilink-dark leading-tight">{userName}</p>
-            <p className="text-xs text-white/60 sm:text-gray-500 leading-tight">{memberLabel}</p>
+            <p className="text-sm font-medium text-afrilink-dark leading-tight">{userName}</p>
+            <p className="text-xs text-gray-500 leading-tight">{memberLabel}</p>
           </div>
         </div>
       </div>

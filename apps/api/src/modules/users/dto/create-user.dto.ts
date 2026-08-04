@@ -1,4 +1,4 @@
-import { IsString, IsEmail, Length, IsDateString, IsOptional, Matches } from 'class-validator';
+import { IsString, IsEmail, Length, IsDateString, IsOptional, IsPhoneNumber } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -24,8 +24,7 @@ export class CreateUserDto {
   @Length(3, 100)
   ville: string;
 
-  @IsString()
-  @Matches(/^\+?[1-9]\d{6,14}$/, { message: 'Numéro de téléphone invalide' })
+  @IsPhoneNumber()
   telephone: string;
 
   @IsOptional()
