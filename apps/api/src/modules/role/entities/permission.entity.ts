@@ -3,8 +3,8 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 // Convention de nommage: 'ressource:action', ex: 'kyc:validate', 'roles:manage'.
 @Entity('permissions')
 export class Permission {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ unique: true })
   name: string;

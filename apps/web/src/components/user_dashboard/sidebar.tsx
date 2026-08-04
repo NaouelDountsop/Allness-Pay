@@ -47,7 +47,7 @@ export function Sidebar() {
     // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
     // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
     // presque toujours le cas pour un layout sidebar+contenu classique.
-    <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
+    <aside className="hidden md:flex fixed top-0 left-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col z-50">
       <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
         <div className="flex items-center gap-2">
           <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-12 h-17 object-contain" />

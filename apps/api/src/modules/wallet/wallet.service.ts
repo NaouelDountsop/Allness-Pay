@@ -29,6 +29,7 @@ export class WalletsService {
     userId: number,
     dto: CreateWalletDto,
     externalManager?: EntityManager,
+    status: WalletStatus = WalletStatus.ACTIVE,
   ): Promise<Wallet> {
     const run = async (manager: EntityManager) => {
       const existingWallets = await manager
@@ -41,7 +42,7 @@ export class WalletsService {
         userId,
         balance: 0n,
         currency: dto.currency ?? 'XAF',
-        status: WalletStatus.ACTIVE,
+        status,
         failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),

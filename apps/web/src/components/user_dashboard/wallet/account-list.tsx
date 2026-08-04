@@ -5,6 +5,12 @@ interface AccountListProps {
   wallets: ApiWallet[];
 }
 
+const WALLET_COLORS: Record<string, string> = {
+  XAF: "bg-afrilink-green",
+  EUR: "bg-blue-500",
+  USD: "bg-emerald-600",
+};
+
 export function AccountList({ wallets }: AccountListProps) {
   return (
     <div className="space-y-3">
@@ -15,17 +21,13 @@ export function AccountList({ wallets }: AccountListProps) {
               <li key={w.id} className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${
-                      w.isPrimary ? "bg-afrilink-dark" : "bg-afrilink-orange"
-                    }`}
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${WALLET_COLORS[w.currency] || "bg-gray-500"}`}
                   >
                     <Wallet className="w-4 h-4" />
                   </span>
                   <div>
-                    <p className="text-sm text-gray-800">{w.label ?? w.walletNumber}</p>
-                    {w.isPrimary && (
-                      <span className="text-[10px] text-afrilink-green font-medium">Principal</span>
-                    )}
+                    <p className="text-sm text-gray-800">{w.label || w.walletNumber}</p>
+                    <p className="text-xs text-gray-400">{w.currency}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-gray-800">

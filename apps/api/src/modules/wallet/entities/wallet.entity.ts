@@ -15,6 +15,7 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
 
 export enum WalletStatus {
+  INACTIVE = 'inactive',
   ACTIVE = 'active',
   SUSPENDED = 'suspended',
   CLOSED = 'closed',

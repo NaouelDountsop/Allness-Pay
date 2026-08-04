@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from "react";
-import { ShieldCheck, Lock, Banknote, ArrowRight, AlertCircle, Wallet, Building2, Smartphone } from "lucide-react";
+import { ShieldCheck, Lock, Banknote, ArrowRight, AlertCircle, Wallet, Smartphone } from "lucide-react";
 import { EXCHANGE_RATE_CAD_XAF } from "@/lib/mock/send-money-data";
 import { CountrySelect } from "@/components/common/country-select";
 import { getCountryByCode, getFlagUrl, type Country } from "@/data/countries";
@@ -19,11 +19,11 @@ interface BeneficiaryAmountFormProps {
   onSubmit: () => void;
 }
 
-const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; icon: typeof Wallet; color: string }[] = [
-  { id: "wallet", label: "Wallet AfriLinkPay", icon: Wallet, color: "text-afrilink-green" },
-  { id: "mtn", label: "MTN Mobile Money", icon: Smartphone, color: "text-yellow-500" },
-  { id: "orange", label: "Orange Money", icon: Smartphone, color: "text-orange-500" },
-  { id: "bank", label: "Compte bancaire", icon: Building2, color: "text-blue-600" },
+const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; logoUrl: string; fallbackColor: string }[] = [
+  { id: "wallet", label: "Wallet AfriLinkPay", logoUrl: "/afrilinkpay_logo2.svg", fallbackColor: "bg-afrilink-dark" },
+  { id: "mtn", label: "MTN Mobile Money", logoUrl: "/mtn-momo.png", fallbackColor: "bg-yellow-500" },
+  { id: "orange", label: "Orange Money", logoUrl: "/orange-money.png", fallbackColor: "bg-orange-500" },
+  { id: "bank", label: "Compte bancaire", logoUrl: "/bank.png", fallbackColor: "bg-blue-600" },
 ];
 
 // Découpe le placeholder du pays (ex. "6XX XXX XXX") en groupes de longueurs [3, 3, 3]
@@ -209,7 +209,6 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
         <p className="text-sm font-semibold text-gray-700 mb-3">Mode de réception</p>
         <div className="grid grid-cols-2 gap-3">
           {RECEPTION_OPTIONS.map((option) => {
-            const Icon = option.icon;
             const isSelected = form.receptionMode === option.id;
             return (
               <button
@@ -222,11 +221,15 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                     : "border-gray-200 bg-white hover:border-gray-300"
                 }`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  isSelected ? "bg-afrilink-green/10" : "bg-gray-100"
+                <span className={`w-12 h-12 rounded-xl border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 ${
+                  isSelected ? "bg-afrilink-green/10" : "bg-gray-50"
                 }`}>
-                  <Icon className={`w-5 h-5 ${isSelected ? option.color : "text-gray-400"}`} />
-                </div>
+                  <img
+                    src={option.logoUrl}
+                    alt={option.label}
+                    className="w-full h-full object-contain p-1.5"
+                  />
+                </span>
                 <span className={`text-sm font-medium ${isSelected ? "text-afrilink-dark" : "text-gray-600"}`}>
                   {option.label}
                 </span>
