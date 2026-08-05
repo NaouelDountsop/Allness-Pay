@@ -24,7 +24,7 @@ export default function QrPaymentPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10 max-w-3xl">
         <button

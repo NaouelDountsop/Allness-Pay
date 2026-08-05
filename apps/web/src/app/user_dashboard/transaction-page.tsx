@@ -110,10 +110,9 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="" userName="Transactions" memberLabel="Portefeuille" />
+      <DashboardHeader />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-        <div className="w-full max-w-5xl">
+      <div>
           <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-1">Transactions</h1>
           <p className="text-sm text-gray-400 mb-6">
             Consultez l'historique de vos transactions.
@@ -223,7 +222,6 @@ export default function TransactionsPage() {
               </div>
             </div>
           </div>
-        </div>
       </div>
 
       {selected && (

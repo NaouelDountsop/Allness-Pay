@@ -19,10 +19,10 @@ interface BeneficiaryAmountFormProps {
   onSubmit: () => void;
 }
 
-const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; icon: typeof Wallet; color: string }[] = [
-  { id: "wallet", label: "Wallet AfriLinkPay", icon: Wallet, color: "text-afrilink-green" },
-  { id: "mtn", label: "MTN Mobile Money", icon: Smartphone, color: "text-yellow-500" },
-  { id: "orange", label: "Orange Money", icon: Smartphone, color: "text-orange-500" },
+const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; image?: string; icon: typeof Wallet; color: string }[] = [
+  { id: "wallet", label: "Wallet AfriLinkPay", image: "/afrilinkpay_logo1.svg", icon: Wallet, color: "text-afrilink-green" },
+  { id: "mtn", label: "MTN Mobile Money", image: "/mtn-momo.png", icon: Smartphone, color: "text-yellow-500" },
+  { id: "orange", label: "Orange Money", image: "/orange-money.png", icon: Smartphone, color: "text-orange-500" },
   { id: "bank", label: "Compte bancaire", icon: Building2, color: "text-blue-600" },
 ];
 
@@ -225,7 +225,11 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   isSelected ? "bg-afrilink-green/10" : "bg-gray-100"
                 }`}>
-                  <Icon className={`w-5 h-5 ${isSelected ? option.color : "text-gray-400"}`} />
+                  {option.image ? (
+                    <img src={option.image} alt={option.label} className="w-6 h-6 object-contain" />
+                  ) : (
+                    <Icon className={`w-5 h-5 ${isSelected ? option.color : "text-gray-400"}`} />
+                  )}
                 </div>
                 <span className={`text-sm font-medium ${isSelected ? "text-afrilink-dark" : "text-gray-600"}`}>
                   {option.label}

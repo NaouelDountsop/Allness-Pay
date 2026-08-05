@@ -66,14 +66,14 @@ export class AuthController {
   }
 
   @Get('google')
-  @UseGuards(GoogleAuthGuard)
+  @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Initier la connexion Google OAuth' })
   googleAuth() {
     // Passport redirige automatiquement vers Google
   }
 
   @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
+  @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Callback Google OAuth' })
   async googleAuthCallback(@Req() req: ExpressRequest, @Res() res: Response) {
   const googleUser = req.user as {

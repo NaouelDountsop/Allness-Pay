@@ -19,9 +19,9 @@ export const appConfig = registerAs('app', () => ({
 export const databaseConfig = registerAs('database', () => ({
   host: process.env.DB_HOST ?? 'localhost',
   port: parseInt(process.env.DB_PORT ?? '5432', 10),
-  username: process.env.DB_USERNAME ?? 'afrilinkpay',
-  password: process.env.DB_PASSWORD ?? 'afrilinkpay',
-  database: process.env.DB_DATABASE ?? 'afrilinkpay',
+  username: (process.env.DB_USERNAME ?? 'afrilinkpay').trim(),
+  password: (process.env.DB_PASSWORD ?? 'afrilinkpay').trim(),
+  database: (process.env.DB_DATABASE ?? 'afrilinkpay').trim(),
   ssl: process.env.DB_SSL === 'true',
   // Volontairement non configurable a `true` ailleurs qu'en test : le schema
   // de production est pilote exclusivement par les migrations.

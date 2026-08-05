@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 
 const RESEND_DELAY = 58;
 

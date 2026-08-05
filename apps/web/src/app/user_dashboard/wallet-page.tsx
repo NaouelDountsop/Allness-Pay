@@ -8,7 +8,6 @@ import { QuickActionsGrid } from "@/components/user_dashboard/wallet/quick-actio
 import { MonthlySummary } from "@/components/user_dashboard/wallet/monthly-summary";
 import { SecurityCard } from "@/components/user_dashboard/wallet/security-card";
 import { walletService } from "@/lib/api/wallet.service";
-import { userService } from "@/lib/api/user.service";
 import { Plus } from "lucide-react";
 
 export default function WalletPage() {
@@ -17,18 +16,13 @@ export default function WalletPage() {
     queryFn: walletService.list,
   });
 
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: userService.getProfile,
-  });
-
   const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
   const totalBalance = wallets.reduce((sum, w) => sum + w.balance, 0);
 
   if (walletsLoading) {
     return (
       <DashboardLayout>
-        <DashboardHeader firstName="" userName="Chargement..." memberLabel="" />
+        <DashboardHeader />
         <div className="flex justify-center items-center h-64">
           <div className="text-gray-400 text-sm">Chargement des portefeuilles...</div>
         </div>
@@ -38,14 +32,9 @@ export default function WalletPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader
-        firstName={profile?.prenom ?? ""}
-        userName={`${profile?.prenom ?? ""} ${profile?.nom ?? ""}`}
-        memberLabel="Premium Member"
-      />
+      <DashboardHeader />
 
-      <div className="flex justify-center">
-        <div className="w-full max-w-7xl">
+      <div>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-afrilink-dark">Portefeuille</h1>
             <button className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2">
@@ -80,7 +69,6 @@ export default function WalletPage() {
               <SecurityCard />
             </div>
           </div>
-        </div>
       </div>
     </DashboardLayout>
   );

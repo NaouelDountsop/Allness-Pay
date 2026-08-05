@@ -35,7 +35,7 @@ export default function BillPaymentPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="max-w-4xl">
         <button

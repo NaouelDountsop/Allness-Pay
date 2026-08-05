@@ -1,23 +1,22 @@
+﻿import { useQuery } from "@tanstack/react-query";
 import { Bell, HelpCircle } from "lucide-react";
+import { userService } from "@/lib/api/user.service";
 
-interface HeaderProps {
-  firstName: string;
-  userName: string;
-  memberLabel?: string;
-  avatarUrl?: string;
-}
+export function DashboardHeader() {
+  const { data: user } = useQuery({
+    queryKey: ["profile"],
+    queryFn: userService.getProfile,
+  });
 
-export function DashboardHeader({
-  firstName,
-  userName,
-  memberLabel = "Premium Member",
-  avatarUrl,
-}: HeaderProps) {
+  const firstName = user?.prenom ?? "";
+  const userName = user ? `${user.prenom} ${user.nom}` : "";
+  const memberLabel = user?.profession || "Membre";
+
   return (
     <header
-      className="sticky top-0 z-[100] flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-white mb-4 sm:mb-6 border-b border-gray-100
-      rounded-b-[1.5rem] sm:rounded-b-[2rem] shadow-sm sm:rounded-none"
+      className="fixed top-0 left-0 md:left-72 right-0 z-[100] flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
+      bg-white mb-0 border-b border-gray-100
+      rounded-b-[1.5rem] sm:rounded-b-[2rem] shadow-sm"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-1.5 truncate">
@@ -34,11 +33,7 @@ export function DashboardHeader({
         </button>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-            ) : (
-              userName.charAt(0)
-            )}
+            {userName.charAt(0)}
           </div>
           <div className="hidden sm:block text-right">
             <p className="text-sm font-medium text-afrilink-dark leading-tight">{userName}</p>

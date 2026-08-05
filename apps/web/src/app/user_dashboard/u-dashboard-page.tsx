@@ -9,18 +9,12 @@ import { MonthlySummary } from "@/components/user_dashboard/spending-charts";
 import { mockMonthlyTrend, mockMonthlySummaryHeader } from "@/components/user_dashboard//mock-monthly-trend";
 import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 import { mockContacts } from "@/lib/mock/dashboard-data";
-import { userService } from "@/lib/api/user.service";
 import { walletService } from "@/lib/api/wallet.service";
 import { kycService } from "@/lib/api/kyc.service";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
 
 export default function DashboardPage() {
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: userService.getProfile,
-  });
-
   const { data: wallet, isLoading: walletLoading } = useQuery({
     queryKey: ["wallet-primary"],
     queryFn: walletService.getPrimary,
@@ -32,9 +26,7 @@ export default function DashboardPage() {
     retry: false,
   });
 
-  const isLoading = userLoading || walletLoading;
-
-  if (isLoading) {
+  if (walletLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
@@ -44,8 +36,6 @@ export default function DashboardPage() {
     );
   }
 
-  const firstName = user?.prenom || "Utilisateur";
-  const fullName = user ? `${user.prenom} ${user.nom}` : "Utilisateur";
   const balance = wallet?.balance ?? 0;
   const currency = wallet?.currency ?? "XAF";
   const walletNumber = wallet?.walletNumber ?? "---";
@@ -53,15 +43,12 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader
-        firstName={firstName}
-        userName={fullName}
-        memberLabel={user?.profession || "Membre"}
-      />
-      <KycBanner status={kyc?.status ?? null} />
+      <DashboardHeader />
 
-      <div className="relative isolate z-0 overflow-x-hidden flex justify-center px-4 sm:px-6 lg:px-8 pb-10">
-        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div>
+          <KycBanner status={kyc?.status ?? null} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="space-y-3">
               <WalletBalanceCard

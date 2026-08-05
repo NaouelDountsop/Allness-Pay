@@ -15,7 +15,7 @@ export default function TontineDetailPage() {
   if (!tontine) {
     return (
       <DashboardLayout>
-        <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+        <DashboardHeader />
         <div className="px-4 sm:px-8 pb-10">
           <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-700">
             <p className="text-lg font-semibold">Tontine introuvable</p>
@@ -36,7 +36,7 @@ export default function TontineDetailPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="px-4 sm:px-8 pb-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">

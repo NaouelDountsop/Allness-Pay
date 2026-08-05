@@ -22,7 +22,7 @@ export default function PhoneConfirmationPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="" userName="Dépôt" memberLabel="Portefeuille" />
+      <DashboardHeader />
       <DepositStepper current={3} />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">

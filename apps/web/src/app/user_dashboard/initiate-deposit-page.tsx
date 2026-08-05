@@ -6,9 +6,9 @@ import { DepositStepper } from "../../components/ui/deposit-stepper";
 import { useDepositFlow, type MobileMoneyOperator  } from "../../context/deposit-flow-context";
 
 
-const OPERATORS: { key: MobileMoneyOperator; label: string; badgeClass: string }[] = [
-  { key: "mtn", label: "MTN Mobile Money", badgeClass: "bg-yellow-400 text-afrilink-dark" },
-  { key: "orange", label: "Orange Money", badgeClass: "bg-afrilink-orange text-white" },
+const OPERATORS: { key: MobileMoneyOperator; label: string; image: string }[] = [
+  { key: "mtn", label: "MTN Mobile Money", image: "/mtn-momo.png" },
+  { key: "orange", label: "Orange Money", image: "/orange-money.png" },
 ];
 
 export default function InitiateDepositPage() {
@@ -27,7 +27,7 @@ export default function InitiateDepositPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="" userName="Dépôt" memberLabel="Portefeuille" />
+      <DashboardHeader />
       <DepositStepper current={1} />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
@@ -53,9 +53,7 @@ export default function InitiateDepositPage() {
                         : "border-gray-100 hover:border-gray-200"
                     }`}
                   >
-                    <span className={`w-7 h-7 rounded-md flex items-center justify-center text-[9px] font-bold ${op.badgeClass}`}>
-                      {op.key === "mtn" ? "MTN" : "OM"}
-                    </span>
+                    <img src={op.image} alt={op.label} className="w-7 h-7 object-contain" />
                     <span className="text-xs font-medium text-afrilink-dark">{op.label}</span>
                     {deposit.operator === op.key && (
                       <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-afrilink-green" />
