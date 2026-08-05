@@ -12,7 +12,7 @@ import {
   TrendingUp,
   LogOut,
 } from "lucide-react";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 import { authStorage } from "@/lib/auth-storage";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };

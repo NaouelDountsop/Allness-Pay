@@ -7,7 +7,7 @@ import {
   Store,
   LogOut,
 } from "lucide-react";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 import { authStorage } from "@/lib/auth-storage";
 
 const tabs = [

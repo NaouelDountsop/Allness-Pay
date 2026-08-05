@@ -5,6 +5,8 @@ import { DocumentDropzone } from "./document-dropzone";
 type AddressDocType = "utility_bill" | "bank_statement" | "residence_certificate";
 
 interface KycAddressStepProps {
+  initialDocType?: AddressDocType;
+  initialFile?: File | null;
   onNext: (data: { docType: AddressDocType; file: File | null }) => void;
 }
 
@@ -14,9 +16,9 @@ const docTypes: { value: AddressDocType; label: string; icon: typeof Zap }[] = [
   { value: "residence_certificate", label: "Certificat de résidence", icon: MapPin },
 ];
 
-export function KycAddressStep({ onNext }: KycAddressStepProps) {
-  const [docType, setDocType] = useState<AddressDocType>("utility_bill");
-  const [file, setFile] = useState<File | null>(null);
+export function KycAddressStep({ initialDocType = "utility_bill", initialFile = null, onNext }: KycAddressStepProps) {
+  const [docType, setDocType] = useState<AddressDocType>(initialDocType);
+  const [file, setFile] = useState<File | null>(initialFile);
 
   return (
     <div>

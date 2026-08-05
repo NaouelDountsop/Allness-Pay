@@ -8,7 +8,8 @@ import { AuthLayout } from "@/components/auth/auth-layout";
 import { AppInput } from "@/components/common/input";
 import { AppButton } from "@/components/common/button";
 import { SocialButtons } from "@/components/auth/social-buttons";
-import { authService } from "@/services/auth.service";
+//import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 import { authStorage } from "@/lib/auth-storage";
 
 const schema = z.object({

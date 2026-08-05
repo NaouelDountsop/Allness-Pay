@@ -5,6 +5,9 @@ import { DocumentDropzone } from "./document-dropzone";
 type DocType = "passport" | "national_id" | "license";
 
 interface KycDocumentStepProps {
+  initialDocType?: DocType;
+  initialFront?: File | null;
+  initialBack?: File | null;
   onNext: (data: { docType: DocType; front: File | null; back: File | null }) => void;
 }
 
@@ -14,10 +17,10 @@ const docTypes: { value: DocType; label: string; icon: typeof Globe }[] = [
   { value: "license", label: "Permis de conduire", icon: Car },
 ];
 
-export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
-  const [docType, setDocType] = useState<DocType>("passport");
-  const [front, setFront] = useState<File | null>(null);
-  const [back, setBack] = useState<File | null>(null);
+export function KycDocumentStep({ initialDocType = "passport", initialFront = null, initialBack = null, onNext }: KycDocumentStepProps) {
+  const [docType, setDocType] = useState<DocType>(initialDocType);
+  const [front, setFront] = useState<File | null>(initialFront);
+  const [back, setBack] = useState<File | null>(initialBack);
 
   return (
     <div>

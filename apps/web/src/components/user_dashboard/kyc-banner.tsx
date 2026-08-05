@@ -26,7 +26,7 @@ export function KycBanner({ status }: KycBannerProps) {
 
   if (!status) {
     return (
-      <div className="mx-4 sm:mx-8 mb-6 rounded-xl bg-red-200 border border-red-400 text-red-900 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="mb-4 sm:mb-6 rounded-xl bg-red-200 border border-red-400 text-red-900 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-start sm:items-center gap-3">
           <p className="text-sm leading-snug font-medium">
             Attention ! Complétez votre KYC avant de pouvoir effectuer des transactions
@@ -48,7 +48,7 @@ export function KycBanner({ status }: KycBannerProps) {
   }
 
   return (
-    <div className="mx-4 sm:mx-8 mb-6 rounded-xl bg-green-50 border border-green-300 px-4 py-3 sm:px-5">
+    <div className="mb-4 sm:mb-6 rounded-xl bg-green-50 border border-green-300 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
       <p className="text-sm font-medium text-green-900">
         {statusLabel[status]}
       </p>

@@ -5,7 +5,6 @@ import { Tontine, TontineStatus } from './entities/tontine.entity';
 import { TontineMember, TontineMemberRole, TontineMemberStatus } from './entities/tontine-member.entity';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
-
 @Injectable()
 export class TontineService {
   constructor(

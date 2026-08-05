@@ -118,8 +118,7 @@ export default function BeneficiariesPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="flex justify-center">
-        <div className="w-full max-w-5xl">
+      <div>
           <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold text-afrilink-dark mb-1">Gestion des Bénéficiaires</h1>
@@ -333,7 +332,6 @@ export default function BeneficiariesPage() {
               </div>
             </div>
           </div>
-        </div>
       </div>
     </DashboardLayout>
   );

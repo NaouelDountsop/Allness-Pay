@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Bell } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { KycHeader } from "@/components/kyc/kyc-header";
@@ -47,7 +47,6 @@ interface KycFormData {
 export default function KycPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(0);
-  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState<KycFormData>({
     docType: "passport",
@@ -89,8 +88,7 @@ export default function KycPage() {
       return;
     }
 
-    setSubmitting(true);
-    setSubmitError(null);
+    setStep(4);
 
     try {
       await kycService.submit({
@@ -101,14 +99,12 @@ export default function KycPage() {
         selfie: updated.selfie,
         proofOfAddress: updated.addressFile,
       });
-      setStep(4);
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "message" in err
           ? String((err as { message: unknown }).message)
           : "Une erreur est survenue lors de la soumission.";
       setSubmitError(message);
-      setSubmitting(false);
     }
   };
 
@@ -116,8 +112,7 @@ export default function KycPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-        <div className="w-full max-w-7xl">
+      <div>
           <h1 className="flex items-center gap-3 text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
             <button
               onClick={handleBack}
@@ -131,10 +126,22 @@ export default function KycPage() {
             Pour avoir accès à plus de fonctionnalités
           </p>
 
+          {step === 4 && (
+            <div className="w-full rounded-xl bg-green-50 border border-green-300 p-4 mb-5 flex items-start gap-3">
+              <Bell className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <div className="text-left">
+                <p className="text-sm font-medium text-green-800">Etape suivante</p>
+                <p className="text-xs text-green-600">
+                  Vous recevrez un e-mail dès que votre dossier aura été vérifié. Cela prend généralement moins de 24 heures.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Carte principale */}
           <div className="relative rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm overflow-hidden bg-white">
             <div className="p-4 sm:p-6 md:p-8 space-y-6">
-              {step >= 1 && step <= 3 && (
+              {step >= 1 && step <= 4 && (
                 <div>
                   <KycHeader title={stepMeta[step].title} />
                   {/* Indicateur d'étapes — même style que le transfert */}
@@ -146,11 +153,11 @@ export default function KycPage() {
                     }}
                   >
                     <div className="flex items-center min-w-max sm:min-w-0">
-                      {stepLabels.slice(0, 3).map((label, i) => {
+                      {stepLabels.map((label, i) => {
                         const idx = (i + 1) as Step;
                         const isDone = idx < step;
                         const isActive = idx === step;
-                        const isLast = i === 2;
+                        const isLast = i === 3;
                         return (
                           <div key={label} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
                             <div className="flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[56px] sm:min-w-[84px]">
@@ -197,14 +204,21 @@ export default function KycPage() {
                 {step === 0 && (
                   <KycIntro onStart={() => setStep(1)} onLater={() => navigate("/dashboard")} />
                 )}
-                {step === 1 && <KycDocumentStep onNext={handleDocumentNext} />}
+                {step === 1 && (
+                  <KycDocumentStep
+                    initialDocType={formData.docType as "passport" | "national_id" | "license"}
+                    initialFront={formData.front}
+                    initialBack={formData.back}
+                    onNext={handleDocumentNext}
+                  />
+                )}
                 {step === 2 && <KycFacialStep onNext={handleFacialNext} />}
-                {step === 3 && !submitting && <KycAddressStep onNext={handleAddressNext} />}
-                {step === 3 && submitting && (
-                  <div className="flex flex-col items-center py-10">
-                    <div className="w-8 h-8 border-4 border-afrilink-green border-t-transparent rounded-full animate-spin mb-4" />
-                    <p className="text-sm text-gray-500">Soumission en cours...</p>
-                  </div>
+                {step === 3 && (
+                  <KycAddressStep
+                    initialDocType={formData.addressDocType as "utility_bill" | "bank_statement" | "residence_certificate"}
+                    initialFile={formData.addressFile}
+                    onNext={handleAddressNext}
+                  />
                 )}
                 {step === 4 && <KycProcessing />}
               </div>
@@ -216,7 +230,6 @@ export default function KycPage() {
               )}
             </div>
           </div>
-        </div>
       </div>
     </DashboardLayout>
   );

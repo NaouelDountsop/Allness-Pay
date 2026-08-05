@@ -106,8 +106,7 @@ export default function SendMoneyPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-        <div className="w-full max-w-7xl">
+      <div>
           <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
             Transfert vers le Cameroun
           </h1>
@@ -185,7 +184,6 @@ export default function SendMoneyPage() {
               )}
             </div>
           </div>
-        </div>
       </div>
 
       {showPinSetup && (

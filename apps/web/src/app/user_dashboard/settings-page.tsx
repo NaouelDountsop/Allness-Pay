@@ -45,11 +45,7 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader
-        firstName={profile?.prenom ?? "Utilisateur"}
-        userName={fullName}
-        memberLabel="Premium Member"
-      />
+      <DashboardHeader />
 
       <div>
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start">

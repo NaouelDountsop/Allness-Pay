@@ -34,8 +34,7 @@ export default function WalletPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="flex justify-center">
-        <div className="w-full max-w-7xl">
+      <div>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-afrilink-dark">Portefeuille</h1>
             <button className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2">
@@ -70,7 +69,6 @@ export default function WalletPage() {
               <SecurityCard />
             </div>
           </div>
-        </div>
       </div>
     </DashboardLayout>
   );

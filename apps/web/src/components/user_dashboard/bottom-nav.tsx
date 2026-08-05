@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Home, Wallet, Send, PiggyBank, CreditCard, LogOut } from "lucide-react";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 import { authStorage } from "@/lib/auth-storage";
 
 const tabs = [
