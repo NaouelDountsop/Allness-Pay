@@ -16,7 +16,7 @@ export default function TontinesPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div>
         {!HAS_TONTINES ? (

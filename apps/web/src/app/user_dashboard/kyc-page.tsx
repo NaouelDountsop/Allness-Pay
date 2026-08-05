@@ -114,7 +114,7 @@ export default function KycPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-7xl">

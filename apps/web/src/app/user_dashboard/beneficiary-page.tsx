@@ -116,7 +116,7 @@ export default function BeneficiariesPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="" userName="Bénéficiaires" memberLabel="Portefeuille" />
+      <DashboardHeader />
 
       <div className="flex justify-center">
         <div className="w-full max-w-5xl">

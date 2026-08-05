@@ -147,6 +147,8 @@ export default function SignupPage() {
     try {
       if (isFromGoogle && pendingToken) {
         await authService.completeGoogleSignup(pendingToken, {
+          nom: form.lastName,
+          prenom: form.firstName,
           email: form.email,
           phone: fullPhone,
           birthDate: form.birthDate,
@@ -162,7 +164,7 @@ export default function SignupPage() {
         });
       } else {
         await authService.register({
-          fullName: form.lastName + " " + form.firstName,
+          fullName: form.lastName+ " " + form.firstName,
           email: form.email,
           password: form.password,
           phone: fullPhone,
@@ -255,7 +257,7 @@ export default function SignupPage() {
             placeholder="Dupont"
             value={form.lastName}
             onChange={(e) => update("lastName", e.target.value)}
-            disabled={isFromGoogle}
+            //disabled={isFromGoogle}
           />
           <AppInput
             label="Prénom"
@@ -263,7 +265,7 @@ export default function SignupPage() {
             placeholder="Jean"
             value={form.firstName}
             onChange={(e) => update("firstName", e.target.value)}
-            disabled={isFromGoogle}
+            //disabled={isFromGoogle}
           />
           <AppInput
             label="Date de naissance"
@@ -392,7 +394,7 @@ export default function SignupPage() {
             disabled={isFromGoogle}
           />
 
-          {!isFromGoogle && (
+          {//!isFromGoogle && (
             <>
               <div className="w-full space-y-1">
                 <label className="text-sm font-medium text-gray-700">
@@ -449,7 +451,7 @@ export default function SignupPage() {
                 </div>
               </div>
             </>
-          )}
+          }
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 

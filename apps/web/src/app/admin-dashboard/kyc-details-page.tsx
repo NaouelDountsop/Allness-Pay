@@ -21,12 +21,12 @@ const ADDRESS_DOC_LABELS: Record<string, string> = {
   RESIDENCE_CERTIFICATE: "Certificat de résidence",
 };
 
-const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
+const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red" ; label: string }> = {
   APPROVED: { tone: "green", label: "Validé" },
   PENDING: { tone: "orange", label: "En attente" },
   REJECTED: { tone: "red", label: "Rejeté" },
-  UNDER_REVIEW: { tone: "blue", label: "En cours d'examen" },
-  REQUIRES_ADDITIONAL_INFO: { tone: "amber", label: "Infos requises" },
+  //UNDER_REVIEW: { tone: "blue", label: "En cours d'examen" },
+  //REQUIRES_ADDITIONAL_INFO: { tone: "amber", label: "Infos requises" },
 };
 
 function formatDate(iso: string) {
@@ -64,7 +64,7 @@ export default function KycDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleReview = async (status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "REQUIRES_ADDITIONAL_INFO") => {
+  const handleReview = async (status:  "APPROVED" | "REJECTED" | "PENDING", reviewComment?: string) => {
     if (!record) return;
     setIsReviewing(true);
     setError(null);

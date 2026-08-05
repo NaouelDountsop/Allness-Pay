@@ -15,7 +15,7 @@ export default function PaymentsPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">

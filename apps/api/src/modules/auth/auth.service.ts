@@ -194,8 +194,8 @@ async completeGoogleSignup(token: string, dto: CreateUserDto) {
   const pending = await this.getGooglePendingSignup(token);
 
   const user = await this.usersService.create({
-    nom: pending.nom,
-    prenom: pending.prenom,
+    nom: pending.nom ?? dto.nom,
+    prenom: pending.prenom ?? dto.prenom,
     email: pending.email,
     googleId: pending.googleId,
     datenaissance: dto.datenaissance,

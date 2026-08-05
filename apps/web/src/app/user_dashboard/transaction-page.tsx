@@ -110,7 +110,7 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="" userName="Transactions" memberLabel="Portefeuille" />
+      <DashboardHeader />
 
       <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
         <div className="w-full max-w-5xl">

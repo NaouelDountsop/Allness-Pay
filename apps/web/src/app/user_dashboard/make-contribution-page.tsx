@@ -18,7 +18,7 @@ export default function MakeContributionPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="px-4 sm:px-8 pb-10">
         <button

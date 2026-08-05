@@ -76,12 +76,14 @@ export const authService = {
     const profession = (data.profession ?? "").trim() || "Etudiant";
 
     return apiClient.post(`/auth/google/complete-signup/${token}`, {
+      nom: data.nom,
+      prenom: data.prenom,
       datenaissance: data.birthDate,
       sexe: data.gender,
       pays,
       ville: city || "N/A",
       telephone,
-      adresse: data.address || city || "N/A",
+      adresse: data.address || city || "A",
       email: (data.email ?? "").trim().toLowerCase(),
       profession,
     });

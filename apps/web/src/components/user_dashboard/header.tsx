@@ -1,8 +1,11 @@
 import { Bell, HelpCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import type { UserProfile } from "@afrilinkpay/shared";
+import { userService } from "@/lib/api/user.service";
 
 interface HeaderProps {
-  firstName: string;
-  userName: string;
+  firstName?: string;
+  userName?: string;
   memberLabel?: string;
   avatarUrl?: string;
 }
@@ -10,9 +13,19 @@ interface HeaderProps {
 export function DashboardHeader({
   firstName,
   userName,
-  memberLabel = "Premium Member",
+  memberLabel,
   avatarUrl,
 }: HeaderProps) {
+  const { data: user } = useQuery<UserProfile>({
+    queryKey: ["profile"],
+    queryFn: userService.getProfile,
+    retry: false,
+  });
+
+  const resolvedFirstName = firstName ?? user?.prenom ?? "Utilisateur";
+  const resolvedUserName = userName ?? (user ? `${user.prenom} ${user.nom}` : "Utilisateur Afrilink");
+  const resolvedMemberLabel = memberLabel ?? user?.profession ?? "Membre";
+
   return (
     <header
       className="sticky top-0 z-[100] flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
@@ -21,7 +34,7 @@ export function DashboardHeader({
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-1.5 truncate">
-          Bonjour, {firstName}
+          Bonjour, {resolvedFirstName}
         </h1>
       </div>
 
@@ -35,14 +48,14 @@ export function DashboardHeader({
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {avatarUrl ? (
-              <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+              <img src={avatarUrl} alt={resolvedUserName} className="w-full h-full object-cover" />
             ) : (
-              userName.charAt(0)
+              resolvedUserName.charAt(0)
             )}
           </div>
           <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium text-afrilink-dark leading-tight">{userName}</p>
-            <p className="text-xs text-gray-500 leading-tight">{memberLabel}</p>
+            <p className="text-sm font-medium text-afrilink-dark leading-tight">{resolvedUserName}</p>
+            <p className="text-xs text-gray-500 leading-tight">{resolvedMemberLabel}</p>
           </div>
         </div>
       </div>

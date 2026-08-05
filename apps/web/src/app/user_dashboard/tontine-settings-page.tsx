@@ -27,7 +27,7 @@ export default function TontineSettingsPage() {
   if (!tontine?.isAdmin) {
     return (
       <DashboardLayout>
-        <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+        <DashboardHeader />
         <div className="px-4 sm:px-8 pb-10">
           <p className="text-sm text-gray-500">
             Vous n'avez pas les droits d'administrateur sur cette tontine.
@@ -39,7 +39,7 @@ export default function TontineSettingsPage() {
 
   return (
     <DashboardLayout>
-      <DashboardHeader firstName="Jean" userName="Alex Sterling" memberLabel="Premium Member" />
+      <DashboardHeader />
 
       <div className="px-4 sm:px-8 pb-10">
         <button
