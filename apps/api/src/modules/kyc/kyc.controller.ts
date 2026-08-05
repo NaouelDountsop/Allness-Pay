@@ -27,8 +27,8 @@ import { CreateKycDto } from './dto/create-kyc.dto';
 import { UpdateKycDto } from './dto/update-kyc.dto';
 import { ReviewKycDto } from './dto/review-kyc.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '../role/guards/permissions.guards';
-import { RequirePermissions } from '../role/decorators/permissions.decorator';
+//import { PermissionsGuard } from '../role/guards/permissions.guards';
+//import { RequirePermissions } from '../role/decorators/permissions.decorator';
 import { kycMulterConfig } from '../../common/config/multer.config';
 import { Request } from 'express';
 
@@ -133,24 +133,24 @@ export class KycController {
 
   // Routes admin : restreintes aux administrateurs avec la permission kyc:review
   @Get()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('kyc:review')
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard, PermissionsGuard)
+  //@RequirePermissions('kyc:review')
+  //@ApiBearerAuth('access-token')
   findAll(@Query('status') status?: string) {
     return this.kycService.findAll(status);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard)
+ // @ApiBearerAuth('access-token')
   findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.kycService.findOneForUser(id, user.idutilisateur);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access-token')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateKycDto: UpdateKycDto,
@@ -161,9 +161,9 @@ export class KycController {
   }
 
   @Patch(':id/review')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('kyc:review')
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard, PermissionsGuard)
+  //@RequirePermissions('kyc:review')
+  //@ApiBearerAuth('access-token')
   review(
     @Param('id', ParseIntPipe) id: number,
     @Body() reviewKycDto: ReviewKycDto,

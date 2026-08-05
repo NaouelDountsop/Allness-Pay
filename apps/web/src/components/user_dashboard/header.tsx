@@ -9,7 +9,7 @@ export function DashboardHeader() {
   });
 
   const firstName = user?.prenom ?? "";
-  const userName = user ? `${user.prenom} ${user.nom}` : "";
+  const userName = user ? `${firstName} ${user.nom}` : "";
   const memberLabel = user?.profession || "Membre";
 
   return (
@@ -20,7 +20,7 @@ export function DashboardHeader() {
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-1.5 truncate">
-          Bonjour, {resolvedFirstName}
+          Bonjour, {firstName}
         </h1>
       </div>
 
@@ -36,8 +36,8 @@ export function DashboardHeader() {
             {userName.charAt(0)}
           </div>
           <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium text-afrilink-dark leading-tight">{resolvedUserName}</p>
-            <p className="text-xs text-gray-500 leading-tight">{resolvedMemberLabel}</p>
+            <p className="text-sm font-medium text-afrilink-dark leading-tight">{userName}</p>
+            <p className="text-xs text-gray-500 leading-tight">{memberLabel}</p>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
-import { verify } from 'argon2';
+import { hash, verify } from 'argon2';
 import { UsersService } from '../users/users.service';
 import { RedisService } from '../otp/redis.service';
 import { Administrateur, AdministrateurStatut } from '../role/entities/administrateur.entity';
@@ -50,9 +50,23 @@ export class AuthService {
       throw new ForbiddenException('Compte administrateur suspendu');
     }
 
-    const valid = await verify(admin.motdepasse, motdepasse);
+    let valid = false;
+    try {
+      valid = await verify(admin.motdepasse, motdepasse);
+    } catch {
+      // Si le mot de passe stocké n'est pas un hash Argon2 valide,
+      // on compare en clair pour assurer la compatibilité.
+      valid = admin.motdepasse === motdepasse;
+    }
+
     if (!valid) {
       throw new UnauthorizedException('Email ou mot de passe invalide');
+    }
+
+    // Si le mot de passe était en clair, on le remplace par un hash sécurisé.
+    if (!admin.motdepasse.startsWith('$')) {
+      admin.motdepasse = await hash(motdepasse);
+      await this.adminRepo.save(admin);
     }
 
     return admin;
@@ -141,7 +155,7 @@ export class AuthService {
     return this.usersService.resendOtp(email);
   }
 
-  
+
   private parseTtlToSeconds(ttl: string): number {
     const match = ttl.match(/^(\d+)([smhd])$/);
     if (!match) return 30 * 24 * 60 * 60;

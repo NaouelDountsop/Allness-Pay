@@ -33,15 +33,15 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setServerError("");
-      const response = await authService.login(data.email, data.password);
-      const { access_token, refresh_token } = response.data;
+      const response = await authService.loginOrAdmin(data.email, data.password);
+      const { access_token, refresh_token, role } = response.data;
       if (access_token) {
         authStorage.setToken(access_token);
       }
       if (refresh_token) {
         authStorage.setRefreshToken(refresh_token);
       }
-      navigate("/dashboard");
+      navigate(role === "admin" ? "/admin" : "/dashboard");
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string | string[] } }; message?: string };
       const msg =

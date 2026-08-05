@@ -5,6 +5,11 @@ interface Suggestion {
   display_name: string;
   lat: string;
   lon: string;
+  address?: {
+    neighbourhood?: string;
+    suburb?: string;
+    quarter?: string;
+  };
 }
 
 interface AddressInputProps {
@@ -64,11 +69,18 @@ export function AddressInput({
     }, 300);
   };
 
-  const handleSelect = (s: Suggestion) => {
-    onChange(s.display_name);
-    setOpen(false);
-    setSuggestions([]);
-  };
+ const handleSelect = (s: Suggestion) => {
+  const quartier =
+    s.address?.neighbourhood ||
+    s.address?.suburb ||
+    s.address?.quarter ||
+    "";
+
+  onChange(quartier);
+
+  setOpen(false);
+  setSuggestions([]);
+};
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -120,7 +132,13 @@ export function AddressInput({
                   className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors flex items-start gap-2"
                 >
                   <MapPin className="w-3.5 h-3.5 text-afrilink-gray mt-0.5 shrink-0" />
-                  <span className="text-gray-700 line-clamp-2">{s.display_name}</span>
+                  <span className="text-gray-700 line-clamp-2">
+                  {
+                    s.address?.neighbourhood ||
+                    s.address?.suburb ||
+                    s.address?.quarter
+                  }
+                </span>
                 </button>
               ))}
           </div>
