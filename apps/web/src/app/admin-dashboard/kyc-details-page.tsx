@@ -116,8 +116,8 @@ export default function KycDetailPage() {
               <Avatar initials={`U${record.userId}`} size="lg" />
               <p className="text-sm font-bold text-afrilink-dark mt-3">Utilisateur #{record.userId}</p>
               <p className="text-[11px] text-gray-400 mb-2">Dossier #{record.id}</p>
-              <Badge tone={STATUS_BADGE[record.status].tone}>
-                {STATUS_BADGE[record.status].label}
+              <Badge tone={STATUS_BADGE[record.status as KycStatus]?.tone ?? "orange"}>
+                {STATUS_BADGE[record.status as KycStatus]?.label ?? record.status}
               </Badge>
             </div>
           </div>

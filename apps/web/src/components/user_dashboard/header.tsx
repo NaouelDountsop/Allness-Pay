@@ -9,7 +9,7 @@ export function DashboardHeader() {
   });
 
   const firstName = user?.prenom ?? "";
-  const userName = user ? `${user.prenom} ${user.nom}` : "";
+  const userName = user ? `${firstName} ${user.nom}` : "";
   const memberLabel = user?.profession || "Membre";
 
   return (

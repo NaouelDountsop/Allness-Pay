@@ -134,9 +134,9 @@ export class KycController {
 
   // Routes admin : restreintes aux administrateurs avec la permission kyc:review
   @Get()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('kyc:review')
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard, PermissionsGuard)
+  //@RequirePermissions('kyc:review')
+  //@ApiBearerAuth('access-token')
   findAll(@Query('status') status?: string) {
     return this.kycService.findAll(status);
   }
@@ -163,9 +163,9 @@ findOne(@Param('id', ParseIntPipe) id: number) {
   }
 
   @Patch(':id/review')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('kyc:review')
-  @ApiBearerAuth('access-token')
+  //@UseGuards(JwtAuthGuard, PermissionsGuard)
+  //@RequirePermissions('kyc:review')
+  //@ApiBearerAuth('access-token')
   review(
     @Param('id', ParseIntPipe) id: number,
     @Body() reviewKycDto: ReviewKycDto,

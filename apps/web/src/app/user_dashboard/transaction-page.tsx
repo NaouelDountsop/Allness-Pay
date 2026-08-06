@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Wallet,
   ShieldCheck,
-  ShieldAlert,
+  CheckCircle,
   ChevronDown,
   Download,
   Eye,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { DashboardLayout } from "../../components/user_dashboard/dash-layout";
 import { DashboardHeader } from "../../components/user_dashboard/header";
-import { StatCard, Badge } from "../../components/ui";
+import { Badge } from "../../components/ui";
 import { TransactionDetailModal } from "./transaction-detail-modal";
 import type { WalletTransaction } from "../../lib/api/transaction.service";
 
@@ -118,10 +118,39 @@ export default function TransactionsPage() {
             Consultez l'historique de vos transactions.
           </p>
 
-          <div className="flex flex-wrap gap-4 mb-6">
-            <StatCard icon={Wallet} label="Volume total" value={`${new Intl.NumberFormat("fr-FR").format(totalVolume)} XAF`} />
-            <StatCard icon={ShieldCheck} label="Transactions" value={`${TRANSACTIONS.length}`} />
-            <StatCard icon={ShieldAlert} label="Complétées" value={`${TRANSACTIONS.filter((t) => t.status === "Complété").length}`} />
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-green-400" />
+                </span>
+                <span className="text-sm text-gray-300">Volume total</span>
+              </div>
+              <p className="text-2xl font-bold text-white mb-2">{new Intl.NumberFormat("fr-FR").format(totalVolume)} XAF</p>
+              <p className="text-xs text-green-400">↗ Solde net</p>
+            </div>
+
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-blue-400" />
+                </span>
+                <span className="text-sm text-gray-300">Transactions</span>
+              </div>
+              <p className="text-2xl font-bold text-white mb-2">{TRANSACTIONS.length}</p>
+              <p className="text-xs text-gray-400">Depuis la création</p>
+            </div>
+
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </span>
+                <span className="text-sm text-gray-300">Complétées</span>
+              </div>
+              <p className="text-2xl font-bold text-white mb-2">{TRANSACTIONS.filter((t) => t.status === "Complété").length}</p>
+              <p className="text-xs text-green-400">↗ Réussites</p>
+            </div>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 mb-5">

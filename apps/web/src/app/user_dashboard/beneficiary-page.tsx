@@ -101,7 +101,7 @@ function NetworkBadge({ network }: { network: Beneficiary["network"] }) {
     <div className="flex items-center gap-2">
       <span
         className={`w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold shrink-0 ${
-          isMtn ? "bg-yellow-400 text-afrilink-dark" : "bg-orange text-white"
+          isMtn ? "bg-yellow-400 text-afrilink-dark" : "bg-afrilink-orange text-white"
         }`}
       >
         {isMtn ? "MTN" : "OM"}
@@ -138,40 +138,49 @@ export default function BeneficiariesPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wide">TOTAL BÉNÉFICIAIRES</p>
-                <Users className="w-4.5 h-4.5 text-blue-400" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-blue-400" />
+                </span>
+                <span className="text-sm text-gray-300">Total bénéficiaires</span>
               </div>
-              <p className="text-2xl font-bold text-afrilink-dark mb-1">24</p>
-              <p className="text-[11px] text-afrilink-green font-medium">+12% ce mois</p>
+              <p className="text-2xl font-bold text-white mb-2">24</p>
+              <p className="text-xs text-green-400">↗ 12% ce mois</p>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wide">BÉNÉFICIAIRES VÉRIFIÉS</p>
-                <ShieldCheck className="w-4.5 h-4.5 text-afrilink-green" />
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-green-400" />
+                </span>
+                <span className="text-sm text-gray-300">Bénéficiaires vérifiés</span>
               </div>
-              <p className="text-2xl font-bold text-afrilink-dark mb-1">20</p>
-              <p className="text-[11px] text-afrilink-green font-medium">83% du total</p>
+              <p className="text-2xl font-bold text-white mb-2">20</p>
+              <p className="text-xs text-orange-400">83% du total</p>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wide">TRANSFERTS CE MOIS</p>
-                <Send className="w-4.5 h-4.5 text-blue-400" />
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <Send className="w-5 h-5 text-green-400" />
+                </span>
+                <span className="text-sm text-gray-300">Transferts ce mois</span>
               </div>
-              <p className="text-2xl font-bold text-afrilink-dark mb-1">42</p>
-              <p className="text-[11px] text-gray-400">1 245 000 FCFA</p>
+              <p className="text-2xl font-bold text-white mb-2">42</p>
+              <p className="text-xs text-gray-400">1 245 000 FCFA</p>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wide">BÉNÉFICIAIRES FAVORIS</p>
-                <Star className="w-4.5 h-4.5 text-yellow-400" />
+            <div className="bg-afrilink-dark rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <Star className="w-5 h-5 text-amber-400" />
+                </span>
+                <span className="text-sm text-gray-300">Bénéficiaires favoris</span>
               </div>
-              <p className="text-2xl font-bold text-afrilink-dark">8</p>
+              <p className="text-2xl font-bold text-white mb-2">8</p>
+              <p className="text-xs text-gray-400">Depuis la création</p>
             </div>
           </div>
 

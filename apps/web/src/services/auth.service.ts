@@ -44,11 +44,11 @@ export const authService = {
       nom,
       prenom,
       datenaissance,
-      sexe: "N/A",
+      sexe: "M",
       pays,
       ville: city || "N/A",
       telephone,
-      adresse: data.address || "N/A",
+      adresse: city || "N/A",
       email: (data.email ?? "").trim().toLowerCase(),
       motdepasse: data.password || "google-oauth",
       profession,
@@ -68,7 +68,7 @@ export const authService = {
 
   completeGoogleSignup: (
     token: string,
-    data: Omit<RegisterPayload, 'fullName' | 'password'> & { gender: string, nom?: string, prenom?: string },
+    data: Omit<RegisterPayload, 'fullName' | 'password'> & { gender: string },
   ) => {
     const telephone = (data.phone ?? "").trim().replace(/\s+/g, "");
     const city = (data.city ?? "").trim();
@@ -76,12 +76,14 @@ export const authService = {
     const profession = (data.profession ?? "").trim() || "Etudiant";
 
     return apiClient.post(`/auth/google/complete-signup/${token}`, {
+      nom: data.nom,
+      prenom: data.prenom,
       datenaissance: data.birthDate,
       sexe: data.gender,
       pays,
       ville: city || "N/A",
       telephone,
-      adresse: data.address || city || "N/A",
+      adresse: data.address || city || "A",
       email: (data.email ?? "").trim().toLowerCase(),
       profession,
     });
@@ -92,45 +94,6 @@ export const authService = {
       email: email.trim().toLowerCase(),
       motdepasse: password,
     }),
-
-    loginAdmin: (email: string, password: string) =>
-    apiClient.post("/auth/login-admin", {
-      email: email.trim().toLowerCase(),
-      motdepasse: password,
-    }),
-
-  loginOrAdmin: async (email: string, password: string) => {
-    try {
-      const response = await apiClient.post("/auth/login-admin", {
-        email: email.trim().toLowerCase(),
-        motdepasse: password,
-      });
-      return {
-        ...response,
-        data: {
-          ...response.data,
-          role: "admin",
-        },
-      };
-    } catch (error: unknown) {
-      const err = error as { statusCode?: number };
-      if (err?.statusCode === 401) {
-        const response = await apiClient.post("/auth/login", {
-          email: email.trim().toLowerCase(),
-          motdepasse: password,
-        });
-        return {
-          ...response,
-          data: {
-            ...response.data,
-            role: "user",
-          },
-        };
-      }
-      throw error;
-    }
-  },
-  
 
   logout: () => {
     const token = localStorage.getItem("afrilink_access_token");

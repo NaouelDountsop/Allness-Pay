@@ -105,7 +105,7 @@ export default function VerifyEmailPage() {
     }
   };
 
- 
+
   useEffect(() => {
     const emailFromState = (location.state as { email?: string })?.email || "";
 

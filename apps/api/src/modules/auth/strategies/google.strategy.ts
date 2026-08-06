@@ -2,19 +2,25 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
+import { StrategyOptions } from 'passport-google-oauth20';
 
+type GoogleStrategyOptions = StrategyOptions & {
+  prompt?: 'select_account' | 'consent' | 'none';
+  accessType?: 'online' | 'offline';
+};
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   private readonly logger = new Logger(GoogleStrategy.name);
 
-  constructor(configService: ConfigService) {
-    super({
-      clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
-      clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
-      callbackURL: configService.getOrThrow<string>('GOOGLE_CALLBACK_URL'),
-      scope: ['email', 'profile'],
-    });
-  }
+ constructor(configService: ConfigService) {
+  super({
+    clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+    clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
+    callbackURL: configService.getOrThrow<string>('GOOGLE_CALLBACK_URL'),
+    scope: ['email', 'profile'],
+    prompt: 'select_account',
+  } as GoogleStrategyOptions);
+}
 
   async validate(
     _accessToken: string,
