@@ -24,31 +24,29 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: number; email: string; role?: string }) {
-    this.logger.debug(`JWT validate — sub: ${payload.sub}, email: ${payload.email}, role: ${payload.role ?? '(none)'}`);
+ async validate(payload: { sub: number; email: string; role?: string }) {
+  this.logger.debug(`JWT validate — sub: ${payload.sub}, email: ${payload.email}, role: ${payload.role ?? '(none)'}`);
 
-    // Token admin : chercher dans la table administrateurs
-    if (payload.role === 'admin') {
-      const admin = await this.adminRepo.findOne({
-        where: { id: payload.sub },
-        select: ['id', 'nom', 'email', 'statut'],
-      });
-      if (!admin) {
-        this.logger.warn(`Admin not found — id: ${payload.sub}`);
-        throw new UnauthorizedException('Administrateur introuvable');
-      }
-      return admin;
+  if (payload.role === 'admin') {
+    const admin = await this.adminRepo.findOne({
+      where: { id: payload.sub },
+      select: ['id', 'nom', 'email', 'statut'],
+    });
+    if (!admin) {
+      this.logger.warn(`Admin not found — id: ${payload.sub}`);
+      throw new UnauthorizedException('Administrateur introuvable');
     }
-
-    // Token client : chercher dans la table utilisateur
-    try {
-      const user = await this.usersService.findOne(payload.sub);
-      return user;
-    } catch (err) {
-      this.logger.warn(`User not found for sub: ${payload.sub} — ${err instanceof Error ? err.message : String(err)}`);
-      throw new UnauthorizedException('Utilisateur introuvable');
-    }
+    return { sub: admin.id, email: admin.email, role: 'admin' };
   }
+
+  try {
+    const user = await this.usersService.findOne(payload.sub);
+    return { sub: user.idutilisateur, email: user.email, role: payload.role };
+  } catch (err) {
+    this.logger.warn(`User not found for sub: ${payload.sub} — ${err instanceof Error ? err.message : String(err)}`);
+    throw new UnauthorizedException('Utilisateur introuvable');
+  }
+}
 }
 
 

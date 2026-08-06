@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Info, AlertTriangle } from "lucide-react";
+import { tontineService } from "@/lib/api/tontine.service";
 
 type Tab = "general" | "finances" | "regles" | "membres";
 
@@ -19,11 +20,33 @@ export function CreateTontineForm() {
   const [description, setDescription] = useState("");
   const [contribution, setContribution] = useState("500");
   const [frequency, setFrequency] = useState("Mensuelle");
+  const [nombreMembres, setNombreMembres] = useState("12");
+  //const [lieu] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const estimatedPot = (parseFloat(contribution) || 0) * 12;
 
-  const handleInitialize = () => {
-    navigate("/dashboard/tontines");
+  const handleInitialize = async () => {
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      await tontineService.create({
+        name,
+        description,
+        montantCotisation: Number(contribution),
+        frequence: frequency,
+        nombreMembres: Number(nombreMembres),
+        devise: currency,
+      });
+      navigate("/dashboard/tontines");
+    } catch (createError) {
+      setError("Impossible de créer la tontine. Merci de réessayer.");
+      console.error(createError);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -87,6 +110,7 @@ export function CreateTontineForm() {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full rounded-lg border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange resize-none"
             />
+
           </div>
 
           <div className="flex items-center gap-2 mb-4">
@@ -96,7 +120,7 @@ export function CreateTontineForm() {
             <p className="text-sm font-semibold text-gray-800">Paramètres Financiers</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
             <div>
               <label className="text-xs font-medium text-gray-500">Montant de la contribution</label>
               <div className="flex items-center h-11 rounded-lg border border-gray-200 mt-1 px-3">
@@ -119,6 +143,17 @@ export function CreateTontineForm() {
                 <option value="Mensuelle">Mensuelle</option>
                 <option value="Hebdomadaire">Hebdomadaire</option>
               </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-500">Nombre de membres de la tontine</label>
+              <input
+                type="number"
+                min={2}
+                placeholder="ex: 25"
+                value={nombreMembres}
+                onChange={(e) => setNombreMembres(e.target.value)}
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+              />
             </div>
           </div>
 
@@ -150,7 +185,13 @@ export function CreateTontineForm() {
 
       {activeTab === "regles" && <ReglesTab onNext={() => setActiveTab("membres")} />}
 
-      {activeTab === "membres" && <MembresTab onSubmit={handleInitialize} />}
+      {activeTab === "membres" && (
+        <MembresTab
+          onSubmit={handleInitialize}
+          isSubmitting={isSubmitting}
+          error={error}
+        />
+      )}
     </div>
   );
 }
@@ -212,7 +253,15 @@ function ReglesTab({ onNext }: { onNext: () => void }) {
   );
 }
 
-function MembresTab({ onSubmit }: { onSubmit: () => void }) {
+function MembresTab({
+  onSubmit,
+  isSubmitting,
+  error,
+}: {
+  onSubmit: () => void;
+  isSubmitting: boolean;
+  error: string | null;
+}) {
   return (
     <div>
       <div className="mb-6 flex justify-center">
@@ -226,15 +275,21 @@ function MembresTab({ onSubmit }: { onSubmit: () => void }) {
         Ajoutez les membres qui participeront à cette tontine. Vous pourrez aussi inviter des
         personnes après la création.
       </p>
+      {error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
       <div className="flex justify-end gap-3">
         <button className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
           Enregistrer le brouillon
         </button>
         <button
           onClick={onSubmit}
-          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          disabled={isSubmitting}
+          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium"
         >
-          Initialiser la Tontine
+          {isSubmitting ? "Création en cours..." : "Initialiser la Tontine"}
         </button>
       </div>
     </div>

@@ -11,9 +11,9 @@ export class CreateTontineDto {
   @Length(0, 255)
   description?: string;
 
-  @IsString()
-  @Min(1)
-  montantCotisation: string;
+  @IsInt()
+  @Min(500)
+  montantCotisation: number;
 
   @IsEnum(TontineFrequency)
   frequence: TontineFrequency;
@@ -28,7 +28,7 @@ export class CreateTontineDto {
   @Length(3, 10)
   devise?: string;
 
-  @IsOptional()
-  @IsString()
-  lieu?: string;
+  //@IsOptional()
+  //@IsString()
+  //lieu?: string;
 }

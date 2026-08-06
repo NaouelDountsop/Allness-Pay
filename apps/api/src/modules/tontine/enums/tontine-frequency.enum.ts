@@ -1,5 +1,5 @@
 export enum TontineFrequency {
-  WEEKLY = 'WEEKLY',
-  BIWEEKLY = 'BIWEEKLY',
-  MONTHLY = 'MONTHLY',
+  WEEKLY = 'Hebdomadaire',
+  BIWEEKLY = 'Bimensuelle',
+  MONTHLY = 'Mensuelle',
 }

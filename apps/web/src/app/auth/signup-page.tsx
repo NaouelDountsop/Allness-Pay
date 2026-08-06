@@ -18,7 +18,7 @@ import { CountrySelect } from "@/components/common/country-select";
 import { CitySelect } from "@/components/common/city-select";
 import { PhoneInput, validatePhone } from "@/components/common/phone-input";
 import { AddressInput } from "@/components/common/address-input";
-import { authService } from "@/services/auth.service";
+import { authService } from "@/lib/api/auth.service";
 import { type Country, countries } from "@/data/countries";
 
 interface SignupForm {

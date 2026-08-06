@@ -99,7 +99,7 @@ export const authService = {
       motdepasse: password,
     }),
 
-  loginOrAdmin: async (email: string, password: string) => {
+   loginOrAdmin: async (email: string, password: string) => {
     try {
       const response = await apiClient.post("/auth/login-admin", {
         email: email.trim().toLowerCase(),

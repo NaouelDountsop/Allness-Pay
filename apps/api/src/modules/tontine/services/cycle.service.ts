@@ -67,7 +67,7 @@ export class CycleService {
         manager.create(TontineContribution, {
           cycleId: savedCycle.id,
           memberId: member.id,
-          amount: tontine.montantCotisation,
+          amount: tontine.montantCotisation.toString(),
           status: TontineContributionStatus.PENDING,
           dueDate,
         }),
@@ -142,13 +142,13 @@ export class CycleService {
     const offset = cycleNumber - 1;
 
     switch (frequency) {
-      case 'WEEKLY':
+      case 'Hebdomadaire':
         now.setDate(now.getDate() + offset * 7);
         break;
-      case 'BIWEEKLY':
+      case 'Bimensuelle':
         now.setDate(now.getDate() + offset * 14);
         break;
-      case 'MONTHLY':
+      case 'Mensuelle':
       default:
         now.setMonth(now.getMonth() + offset);
         break;

@@ -12,9 +12,9 @@ import { User } from '../../users/entities/user.entity';
 import { TontineMember } from './tontine-member.entity';
 
 export enum TontineFrequency {
-  WEEKLY = 'WEEKLY',
-  BIWEEKLY = 'BIWEEKLY',
-  MONTHLY = 'MONTHLY',
+  WEEKLY = 'Hebdomadaire',
+  BIWEEKLY = 'Bimensuelle',
+  MONTHLY = 'Mensuelle',
 }
 
 export enum TontineStatus {
@@ -35,7 +35,7 @@ export class Tontine {
   description: string;
 
   @Column({ type: 'bigint' })
-  montantCotisation: string;
+  montantCotisation: number;
 
   @Column({ type: 'enum', enum: TontineFrequency, default: TontineFrequency.MONTHLY })
   frequence: TontineFrequency;
@@ -52,8 +52,6 @@ export class Tontine {
   @Column({ default: 'XAF' })
   devise: string;
 
-  @Column({ nullable: true })
-  lieu: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createurId' })

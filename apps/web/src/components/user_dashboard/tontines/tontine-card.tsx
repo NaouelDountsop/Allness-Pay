@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Users, Wallet } from "lucide-react";
+import { Users } from "lucide-react";
 import type { Tontine } from "@/lib/mock/tontines-data";
 
 interface TontineCardProps {
@@ -29,21 +29,59 @@ export function TontineCard({ tontine }: TontineCardProps) {
         </span>
       </div>
 
-      {/* Cagnotte — fond sombre personnalisé */}
-      <div
-        className="flex items-center gap-3 mb-6 rounded-lg p-5"
-        style={{ backgroundColor: "#082B37" }}
-      >
-        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-          <Wallet className="w-4 h-4 text-afrilink-green" />
+      {/* Cagnotte — style wallet */}
+      <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-5 relative overflow-hidden mb-6">
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute -top-4 -right-2 w-32 h-32 opacity-60"
+          viewBox="0 0 200 200"
+          fill="none"
+        >
+          <defs>
+            <linearGradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+              <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" stroke="url(#globeGradient)" strokeWidth="1.5" />
+          <ellipse cx="100" cy="100" rx="35" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="65" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="90" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="55" rx="90" ry="25" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="90" ry="8" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="145" rx="90" ry="25" stroke="url(#globeGradient)" strokeWidth="1" />
+        </svg>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+          style={{
+            WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
+            WebkitMaskSize: "contain",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
+            maskImage: "url(/afrilinkpay_logo1.svg)",
+            maskSize: "contain",
+            maskRepeat: "no-repeat",
+            maskPosition: "center",
+          }}
+        />
+
+        <div className="flex items-center justify-between mb-3 relative z-10">
+          <div className="flex items-center gap-2">
+            <img src="/afrilinkpay_logo1.svg" alt="" className="w-7 h-7 object-contain" />
+            <p className="text-xs text-white/60 tracking-wide">CAGNOTTE</p>
+          </div>
+          <span className="text-[10px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">
+            {tontine.frequency}
+          </span>
         </div>
-        <div>
-          <p className="text-[11px] text-white/60 leading-none mb-1">Cagnotte</p>
-          <p className="text-xl font-bold text-white leading-none">
-            {new Intl.NumberFormat("fr-FR").format(tontine.potAmount)}{" "}
-            <span className="text-xs font-normal text-white/60">{tontine.currency}</span>
-          </p>
-        </div>
+
+        <p className="text-2xl font-bold relative z-10">
+          {new Intl.NumberFormat("fr-FR").format(tontine.potAmount)}{" "}
+          <span className="text-sm font-medium text-afrilink-orange">{tontine.currency}</span>
+        </p>
       </div>
 
       {/* Participants */}

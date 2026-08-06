@@ -1,41 +1,72 @@
-import { Trophy, Wallet, Calendar, Repeat, Crown } from "lucide-react";
+import { Trophy, Crown } from "lucide-react";
 import type { Tontine } from "@/lib/mock/tontines-data";
 
 interface TontineDetailHeaderProps {
   tontine: Tontine;
-  adminName?: string; // à passer depuis la page (ex: currentUser ou membre admin)
+  adminName?: string;
 }
 
 export function TontineDetailHeader({ tontine, adminName = "John Doe" }: TontineDetailHeaderProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-      {/* Cagnotte totale */}
-      <div className="rounded-xl border border-gray-100 bg-white p-5 flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-full bg-afrilink-green/10 flex items-center justify-center">
-            <Wallet className="w-4 h-4 text-afrilink-green" />
-          </div>
-          <p className="text-xs text-gray-400">Cagnotte totale</p>
-        </div>
-        <p className="text-2xl font-bold text-gray-900 mb-4">
-          {new Intl.NumberFormat("fr-FR").format(tontine.potAmount)}{" "}
-          <span className="text-sm font-normal text-gray-400">{tontine.currency}</span>
-        </p>
-        <div className="flex items-center justify-between text-xs mt-auto pt-3 border-t border-gray-50">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-gray-400" />
+      {/* Cagnotte totale — style wallet */}
+      <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-4 sm:p-6 relative overflow-hidden">
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute -top-6 -right-2 w-52 h-52 opacity-60"
+          viewBox="0 0 200 200"
+          fill="none"
+        >
+          <defs>
+            <linearGradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+              <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" stroke="url(#globeGradient)" strokeWidth="1.5" />
+          <ellipse cx="100" cy="100" rx="35" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="65" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="90" ry="90" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="55" rx="90" ry="25" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="100" rx="90" ry="8" stroke="url(#globeGradient)" strokeWidth="1" />
+          <ellipse cx="100" cy="145" rx="90" ry="25" stroke="url(#globeGradient)" strokeWidth="1" />
+        </svg>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+          style={{
+            WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
+            WebkitMaskSize: "contain",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
+            maskImage: "url(/afrilinkpay_logo1.svg)",
+            maskSize: "contain",
+            maskRepeat: "no-repeat",
+            maskPosition: "center",
+          }}
+        />
+
+        <div className="flex items-center justify-between mb-6 relative z-10">
+          <div className="flex items-center gap-2">
+            <img src="/afrilinkpay_logo1.svg" alt="" className="w-9 h-9 object-contain" />
             <div>
-              <p className="text-gray-400 leading-none mb-0.5">Prochaine rotation</p>
-              <p className="text-gray-800 font-medium leading-none">{tontine.nextRotationDate}</p>
+              <p className="text-xs text-white/60 tracking-wide">CAGNOTTE TONTINE</p>
+              <p className="text-sm font-medium">{tontine.name}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Repeat className="w-3.5 h-3.5 text-gray-400" />
-            <div className="text-right">
-              <p className="text-gray-400 leading-none mb-0.5">Fréquence</p>
-              <p className="text-gray-800 font-medium leading-none">{tontine.frequency}</p>
-            </div>
-          </div>
+          <span className="text-[11px] font-medium bg-white/10 text-green-300 px-2.5 py-1 rounded-full">
+            {tontine.type}
+          </span>
+        </div>
+
+        <p className="text-xs text-white/60 mb-1 relative z-10">Cagnotte totale</p>
+        <div className="flex items-center gap-2 sm:gap-3 relative z-10">
+          <p className="text-3xl sm:text-4xl font-bold truncate">
+            {new Intl.NumberFormat("fr-FR").format(tontine.potAmount)}{" "}
+            <span className="text-base sm:text-lg font-medium text-afrilink-orange">{tontine.currency}</span>
+          </p>
         </div>
       </div>
 
