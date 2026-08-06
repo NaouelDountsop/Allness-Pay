@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Wallet } from '../../wallet/entities/wallet.entity';
 import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
+import { LinkedAccountOperator } from '../../linked-account/enums/linked-account-operator.enum';
 
 export enum WalletTransactionType {
   DEPOSIT = 'deposit',
@@ -50,6 +51,14 @@ export class WalletTransaction {
   /** Identifiant de référence externe (opérateur paiement, batch, etc.). */
   @Column({ type: 'varchar', nullable: true })
   reference: string | null;
+
+  /** Opérateur mobile money utilisé (MTN, Orange, etc.). */
+  @Column({ type: 'enum', enum: LinkedAccountOperator, nullable: true })
+  operator: LinkedAccountOperator | null;
+
+  /** Numéro de téléphone utilisé pour l'opération mobile money. */
+  @Column({ type: 'varchar', nullable: true })
+  phoneNumber: string | null;
 
   /** Description lisible de l'opération. */
   @Column({ type: 'text', nullable: true })

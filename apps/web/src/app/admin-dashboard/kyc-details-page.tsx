@@ -7,8 +7,6 @@ import { SectionCard, Field } from "../../components/ui/section-card";
 import { kycService } from "../../lib/api/kyc.service";
 import type { KycRecord, KycStatus } from "@afrilinkpay/shared";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
-
 const DOC_LABELS: Record<string, string> = {
   PASSPORT: "Passeport",
   NATIONAL_ID: "Carte d'identité",
@@ -40,10 +38,16 @@ function formatDate(iso: string) {
 }
 
 function fileUrl(path: string) {
-  if (path.startsWith("http")) return path;
-  const base = API_BASE.replace(/\/$/, "");
-  return `${base}${path}`;
+  if (!path) return "";
+  try {
+    const url = new URL(path);
+    return url.pathname;
+  } catch {
+    return path;
+  }
 }
+
+
 
 export default function KycDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -54,15 +58,18 @@ export default function KycDetailPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [isReviewing, setIsReviewing] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    kycService
-      .getById(Number(id))
-      .then(setRecord)
-      .catch(() => setError("Dossier KYC introuvable."))
-      .finally(() => setLoading(false));
-  }, [id]);
+ useEffect(() => {
+  if (!id) return;
+  setLoading(true);
+  kycService
+    .getById(Number(id))
+    .then((result) => {
+      console.warn("KYC record", result);
+      setRecord(result);
+    })
+    .catch(() => setError("Dossier KYC introuvable."))
+    .finally(() => setLoading(false));
+}, [id]);
 
   const handleReview = async (status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "REQUIRES_ADDITIONAL_INFO") => {
     if (!record) return;

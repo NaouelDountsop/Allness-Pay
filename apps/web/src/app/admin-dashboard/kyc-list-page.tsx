@@ -137,7 +137,7 @@ export default function KycListPage() {
                             {initials}
                           </span>
                           <div>
-                            <p className="text-xs font-medium text-afrilink-dark">Utilisateur #{row.userId}</p>
+                            <p className="text-xs font-medium text-afrilink-dark">Utilisateur {row.userId}</p>
                             <p className="text-[11px] text-gray-400">ID: {row.id}</p>
                           </div>
                         </div>

@@ -27,7 +27,7 @@ export class AdministrateursController {
   constructor(private readonly adminService: AdministrateursService) {}
 
   @Post()
-  @ApiBearerAuth('access-token')
+  //@ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Créer un administrateur' })
   create(@Body() dto: CreateAdminDto) {
     return this.adminService.create(dto);

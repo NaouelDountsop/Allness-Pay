@@ -93,13 +93,13 @@ export const authService = {
       motdepasse: password,
     }),
 
-  loginAdmin: (email: string, password: string) =>
+    loginAdmin: (email: string, password: string) =>
     apiClient.post("/auth/login-admin", {
       email: email.trim().toLowerCase(),
       motdepasse: password,
     }),
 
-   loginOrAdmin: async (email: string, password: string) => {
+  loginOrAdmin: async (email: string, password: string) => {
     try {
       const response = await apiClient.post("/auth/login-admin", {
         email: email.trim().toLowerCase(),
@@ -130,6 +130,7 @@ export const authService = {
       throw error;
     }
   },
+
 
   logout: () => {
     const token = localStorage.getItem("afrilink_access_token");

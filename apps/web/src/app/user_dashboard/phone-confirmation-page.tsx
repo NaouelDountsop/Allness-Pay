@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Lock, Info, X, ArrowRight } from "lucide-react";
+import { Lock, Info, X, ArrowRight, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { DepositStepper } from "../../components/ui/deposit-stepper";
 import { useDepositFlow } from "../../context/deposit-flow-context";
 
 
@@ -23,12 +22,15 @@ export default function PhoneConfirmationPage() {
   return (
     <DashboardLayout>
       <DashboardHeader />
-      <DepositStepper current={3} />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-2">Notification sur votre téléphone</h1>
-        <p className="text-sm text-gray-500 mb-6 sm:mb-8">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Confirmation du paiement</h1>
+        </div>
+        <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Vous avez reçu une demande de paiement sur votre téléphone. Veuillez entrer votre code
           secret Mobile Money pour confirmer.
         </p>
@@ -76,7 +78,6 @@ export default function PhoneConfirmationPage() {
             </button>
           </div>
         </div>
-      </div>
       </div>
     </DashboardLayout>
   );

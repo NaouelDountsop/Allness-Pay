@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Eye, ArrowRight, Download } from "lucide-react";
+import { CheckCircle2, Eye, ArrowRight, Download, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { DepositStepper } from "../../components/ui/deposit-stepper";
 import { useDepositFlow } from "../../context/deposit-flow-context";
 function formatDate(date: Date | null) {
   if (!date) return "—";
@@ -22,18 +21,21 @@ export default function DepositSuccessPage() {
 
   const handleBackToWallet = () => {
     reset();
-    navigate("/wallet");
+    navigate("wallet");
   };
 
   return (
     <DashboardLayout>
       <DashboardHeader />
-      <DepositStepper current={5} />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-2">Dépôt réussi !</h1>
-        <p className="text-sm text-gray-500 mb-6 sm:mb-8">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Dépôt réussi !</h1>
+        </div>
+        <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Votre portefeuille a été crédité avec succès.
         </p>
 
@@ -82,7 +84,7 @@ export default function DepositSuccessPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleBackToWallet}
-              className="h-12 rounded-lg bg-afrilink-orange text-white text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              className="h-12 rounded-lg bg-afrilink-green text-white text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             >
               Retour au portefeuille
               <ArrowRight className="w-4 h-4" />
@@ -93,7 +95,6 @@ export default function DepositSuccessPage() {
             </button>
           </div>
         </div>
-      </div>
       </div>
     </DashboardLayout>
   );

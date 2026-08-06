@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Copy, Info, CheckCircle2 } from "lucide-react";
+import { Copy, Info, CheckCircle2, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { DepositStepper } from "../../components/ui/deposit-stepper";
 import { useDepositFlow } from "../../context/deposit-flow-context";
 
 function maskPhone(phone: string) {
@@ -27,12 +26,15 @@ export default function RequestSentPage() {
   return (
     <DashboardLayout>
       <DashboardHeader />
-      <DepositStepper current={2} />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-2">Demande envoyée</h1>
-        <p className="text-sm text-gray-500 mb-6 sm:mb-8">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Demande envoyée</h1>
+        </div>
+        <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Votre demande de dépôt a été envoyée avec succès à votre téléphone. Veuillez confirmer
           le paiement pour finaliser la transaction.
         </p>
@@ -89,7 +91,6 @@ export default function RequestSentPage() {
             </p>
           </div>
         </div>
-      </div>
       </div>
     </DashboardLayout>
   );

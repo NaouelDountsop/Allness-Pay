@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RefreshCcw, CheckCircle2, Loader2, Info } from "lucide-react";
+import { RefreshCcw, CheckCircle2, Loader2, Info, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { DepositStepper } from "../../components/ui/deposit-stepper";
 
 const STEPS = [
   "Requête envoyée à CamPay",
@@ -29,12 +28,15 @@ export default function ProcessingPage() {
   return (
     <DashboardLayout>
       <DashboardHeader />
-      <DepositStepper current={4} />
 
-      <div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-2">Traitement en cours</h1>
-        <p className="text-sm text-gray-500 mb-6 sm:mb-8">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Traitement en cours</h1>
+        </div>
+        <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Nous vérifions votre paiement auprès de CamPay et de votre opérateur. Veuillez
           patienter quelques instants.
         </p>
@@ -83,7 +85,6 @@ export default function ProcessingPage() {
             </p>
           </div>
         </div>
-      </div>
       </div>
     </DashboardLayout>
   );
