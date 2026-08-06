@@ -14,6 +14,8 @@ import { CreateInvitationDto } from '../dto/create-invitation.dto';
 import { InvitationResponse, RespondInvitationDto } from '../dto/respond-invitation.dto';
 import { TontineMemberRole } from '../enums/tontine-member-role.enum';
 import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
+import { MailService } from '../../mail/mail.service';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class InvitationService {
@@ -24,6 +26,9 @@ export class InvitationService {
     private readonly memberRepo: Repository<TontineMember>,
     @InjectRepository(Tontine)
     private readonly tontineRepo: Repository<Tontine>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
 
   async create(
@@ -80,7 +85,20 @@ export class InvitationService {
       expiresAt,
     });
 
-    return this.invitationRepo.save(invitation);
+    const saved = await this.invitationRepo.save(invitation);
+
+    if (dto.inviteeEmail) {
+      const inviter = await this.userRepo.findOne({ where: { idutilisateur: inviterUserId } });
+      const inviterName = inviter ? `${inviter.prenom} ${inviter.nom}` : 'Un membre';
+      await this.mailService.sendTontineInvitation(
+        dto.inviteeEmail,
+        inviterName,
+        tontine.name,
+        token,
+      );
+    }
+
+    return saved;
   }
 
   async respond(
@@ -155,5 +173,67 @@ export class InvitationService {
     return this.invitationRepo.find({
       where: { inviteeEmail: email, status: 'PENDING' },
     });
+  }
+
+  async findByToken(token: string): Promise<TontineInvitation | null> {
+    return this.invitationRepo.findOne({ where: { token } });
+  }
+
+  async acceptByToken(token: string, userId: number): Promise<TontineMember> {
+    const invitation = await this.findByToken(token);
+    if (!invitation) {
+      throw new NotFoundException('Invitation introuvable');
+    }
+
+    if (invitation.status !== 'PENDING') {
+      throw new BadRequestException('Cette invitation a déjà été traitée');
+    }
+
+    if (invitation.expiresAt < new Date()) {
+      invitation.status = 'EXPIRED';
+      await this.invitationRepo.save(invitation);
+      throw new BadRequestException('Cette invitation a expiré');
+    }
+
+    if (invitation.inviteeUserId && invitation.inviteeUserId !== userId) {
+      throw new ForbiddenException('Cette invitation ne vous est pas destinée');
+    }
+
+    const tontine = await this.tontineRepo.findOne({
+      where: { id: invitation.tontineId },
+    });
+    if (!tontine) {
+      throw new NotFoundException('Tontine introuvable');
+    }
+
+    const members = await this.memberRepo.find({
+      where: { tontineId: invitation.tontineId },
+    });
+    const alreadyMember = members.some(
+      (m) => m.userId === userId && m.status !== TontineMemberStatus.REMOVED,
+    );
+    if (alreadyMember) {
+      throw new BadRequestException('Vous êtes déjà membre de cette tontine');
+    }
+
+    const activeCount = members.filter(
+      (m) => m.status === TontineMemberStatus.ACTIVE,
+    ).length;
+    if (activeCount >= tontine.nombreMembres) {
+      throw new BadRequestException('La tontine est pleine');
+    }
+
+    invitation.status = 'ACCEPTED';
+    await this.invitationRepo.save(invitation);
+
+    const member = this.memberRepo.create({
+      tontineId: invitation.tontineId,
+      userId,
+      role: TontineMemberRole.MEMBER,
+      status: TontineMemberStatus.ACTIVE,
+      tourOrdre: activeCount + 1,
+    });
+
+    return this.memberRepo.save(member);
   }
 }

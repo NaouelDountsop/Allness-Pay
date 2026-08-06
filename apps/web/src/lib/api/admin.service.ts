@@ -46,6 +46,33 @@ export interface AdminKycRecord {
   updatedAt: string;
 }
 
+export interface AdminTontine {
+  id: number;
+  name: string;
+  description?: string;
+  montantCotisation: number;
+  frequence: string;
+  nombreMembres: number;
+  statut: string;
+  tourActuel: number;
+  devise?: string;
+  createurId: number;
+  createur?: {
+    id?: number;
+    nom?: string;
+    prenom?: string;
+  };
+  membres?: Array<{
+    id: number;
+    userId: number;
+    role: string;
+    status: string;
+    tourOrdre: number;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const adminService = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
     const res = await apiClient.get<AdminDashboardStats>("/admin/dashboard/stats");
@@ -70,6 +97,16 @@ export const adminService = {
 
   getKycById: async (id: number): Promise<AdminKycRecord> => {
     const res = await apiClient.get<AdminKycRecord>(`/admin/kyc/${id}`);
+    return res.data;
+  },
+
+  reviewKyc: async (id: number, data: { status: string; reviewComment?: string }): Promise<AdminKycRecord> => {
+    const res = await apiClient.patch<AdminKycRecord>(`/admin/kyc/${id}`, data);
+    return res.data;
+  },
+
+  listTontines: async (): Promise<AdminTontine[]> => {
+    const res = await apiClient.get<AdminTontine[]>("/admin/tontines");
     return res.data;
   },
 };

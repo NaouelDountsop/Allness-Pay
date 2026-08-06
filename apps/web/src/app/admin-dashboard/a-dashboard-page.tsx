@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Users,
   ShieldAlert,
@@ -8,9 +9,11 @@ import {
   UserPlus,
   AlertTriangle,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
 import { StatCard, Badge } from "../../components/ui";
+import { adminService } from "../../lib/api/admin.service";
 
 const ACTIVITIES = [
   {
@@ -43,40 +46,27 @@ const ACTIVITIES = [
   },
 ];
 
-const KYC_ROWS = [
-  {
-    initials: "MK",
-    name: "Mariam Koné",
-    email: "mariam.k@telesim.com",
-    date: "Aujourd'hui, 08:12",
-    doc: "Passeport (CI)",
-    risk: "FAIBLE",
-    riskTone: "green" as const,
-  },
-  {
-    initials: "AB",
-    name: "Amadou Barry",
-    email: "a.barry@work.co",
-    date: "Hier, 16:45",
-    doc: "Carte d'identité",
-    risk: "MODÉRÉ",
-    riskTone: "orange" as const,
-  },
-  {
-    initials: "SL",
-    name: "Sophie Lambert",
-    email: "s.lambert@service.fr",
-    date: "Hier, 14:20",
-    doc: "Permis de Conduire",
-    risk: "ÉLEVÉ",
-    riskTone: "red" as const,
-  },
-];
-
 const CHART_VALUES = [40, 55, 70, 90, 65, 50, 78];
 
 export default function DashboardPage() {
   const [period, setPeriod] = useState<"7j" | "30j">("7j");
+
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["admin-dashboard-stats"],
+    queryFn: adminService.getDashboardStats,
+  });
+
+  if (isLoading) {
+    return (
+      <AdminLayout active="dashboard">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
 
   return (
     <AdminLayout active="dashboard">
@@ -86,19 +76,19 @@ export default function DashboardPage() {
       </p>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Users} label="Utilisateurs Totaux" value="128,430" />
+        <StatCard icon={Users} label="Utilisateurs Totaux" value={formatNumber(stats?.totalUsers ?? 0)} />
         <StatCard
           icon={ShieldAlert}
           iconTone="red"
           label="KYC en Attente"
-          value="452"
+          value={formatNumber(stats?.kyc.pending ?? 0)}
           tag={{ label: "Urgent", tone: "red" }}
         />
-        <StatCard icon={TrendingUp} label="Volume Mensuel" value="€4.4M" />
+        <StatCard icon={TrendingUp} label="Volume Mensuel" value={`${formatNumber(stats?.monthlyVolume ?? 0)} XAF`} />
         <StatCard
           icon={Wallet}
           label="Liquidité Système"
-          value="€18.7M"
+          value={`${formatNumber(stats?.totalLiquidity ?? 0)} XAF`}
           hint="Seuil: Optimal"
           hintTone="green"
         />
@@ -168,48 +158,13 @@ export default function DashboardPage() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-semibold text-afrilink-dark">Approbations KYC Urgentes</p>
-          <a href="#" className="text-xs text-afrilink-green font-medium hover:underline">
-            Voir les 452 dossiers
+          <a href="/admin/kyc" className="text-xs text-afrilink-green font-medium hover:underline">
+            Voir les {stats?.kyc.pending ?? 0} dossiers
           </a>
         </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-              <th className="font-medium pb-3">Utilisateur</th>
-              <th className="font-medium pb-3">Date de Soumission</th>
-              <th className="font-medium pb-3">Type de Document</th>
-              <th className="font-medium pb-3">Score Risque</th>
-              <th className="font-medium pb-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {KYC_ROWS.map((row) => (
-              <tr key={row.email} className="border-b border-gray-50 last:border-0">
-                <td className="py-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center">
-                      {row.initials}
-                    </span>
-                    <div>
-                      <p className="text-xs font-medium text-afrilink-dark">{row.name}</p>
-                      <p className="text-[11px] text-gray-400">{row.email}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-xs text-gray-500">{row.date}</td>
-                <td className="text-xs text-gray-500">{row.doc}</td>
-                <td>
-                  <Badge tone={row.riskTone}>{row.risk}</Badge>
-                </td>
-                <td className="text-right">
-                  <button className="h-8 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
-                    Examiner
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p className="text-xs text-gray-400">
+          Consultez la liste complète des demandes KYC en attente.
+        </p>
       </div>
     </AdminLayout>
   );

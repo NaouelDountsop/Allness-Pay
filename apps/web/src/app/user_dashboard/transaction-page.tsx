@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Wallet,
   ShieldCheck,
@@ -6,107 +7,47 @@ import {
   ChevronDown,
   Download,
   Eye,
-  AlertTriangle,
+  //AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { DashboardLayout } from "../../components/user_dashboard/dash-layout";
 import { DashboardHeader } from "../../components/user_dashboard/header";
 import { Badge } from "../../components/ui";
 import { TransactionDetailModal } from "./transaction-detail-modal";
-import type { WalletTransaction } from "../../lib/api/transaction.service";
-
-interface TransactionRow {
-  id: string;
-  reference: string;
-  description: string;
-  type: WalletTransaction["type"];
-  amount: number;
-  status: "Complété" | "En attente" | "Bloqué";
-  date: string;
-}
-
-const TRANSACTIONS: TransactionRow[] = [
-  {
-    id: "1",
-    reference: "TXN-88213",
-    description: "Dépôt Mobile Money — Awa Njoya",
-    type: "deposit",
-    amount: 65000,
-    status: "Complété",
-    date: "2026-07-27T18:40:00Z",
-  },
-  {
-    id: "2",
-    reference: "TXN-88214",
-    description: "Retrait Mobile Money — Cissé Moktar",
-    type: "withdrawal",
-    amount: 120000,
-    status: "En attente",
-    date: "2026-07-27T17:12:00Z",
-  },
-  {
-    id: "3",
-    reference: "TXN-88215",
-    description: "Transfert Tontine — Julie Moyo",
-    type: "transfer_out",
-    amount: 25000,
-    status: "Bloqué",
-    date: "2026-07-27T15:05:00Z",
-  },
-  {
-    id: "4",
-    reference: "TXN-88216",
-    description: "Paiement Marchand — Ivan Tchoua",
-    type: "withdrawal",
-    amount: 8400,
-    status: "Complété",
-    date: "2026-07-27T13:51:00Z",
-  },
-  {
-    id: "5",
-    reference: "TXN-88217",
-    description: "Transfert reçu — Marie L.",
-    type: "transfer_in",
-    amount: 75000,
-    status: "Complété",
-    date: "2026-07-25T07:15:00Z",
-  },
-];
-
-const STATUS_TONE: Record<string, "green" | "orange" | "red"> = {
-  Complété: "green",
-  "En attente": "orange",
-  Bloqué: "red",
-};
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return (
-    d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) +
-    " " +
-    d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-  );
-}
-
-function toDetail(t: TransactionRow): WalletTransaction {
-  return {
-    id: t.id,
-    walletId: "mock-wallet-id",
-    type: t.type,
-    amount: t.amount,
-    relatedWalletId: null,
-    reference: t.reference,
-    description: t.description,
-    createdAt: t.date,
-  };
-}
+import { transactionService, type WalletTransaction } from "../../lib/api/transaction.service";
+import { walletService } from "../../lib/api/wallet.service";
 
 export default function TransactionsPage() {
-  const [selected, setSelected] = useState<TransactionRow | null>(null);
+  const [selected, setSelected] = useState<WalletTransaction | null>(null);
 
-  const totalVolume = TRANSACTIONS.reduce((sum, t) => {
-    const credit = t.type === "deposit" || t.type === "transfer_in";
+  const { data: wallet } = useQuery({
+    queryKey: ["wallet-primary"],
+    queryFn: walletService.getPrimary,
+  });
+
+  const { data: transactions, isLoading } = useQuery({
+    queryKey: ["transactions", wallet?.id],
+    queryFn: () => transactionService.listByWallet(wallet!.id),
+    enabled: !!wallet?.id,
+  });
+
+  const totalVolume = transactions?.reduce((sum, t) => {
+    const credit = transactionService.isCredit(t.type);
     return credit ? sum + t.amount : sum - t.amount;
-  }, 0);
+  }, 0) ?? 0;
+
+  const completedCount = transactions?.length ?? 0;
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -137,7 +78,7 @@ export default function TransactionsPage() {
                 </span>
                 <span className="text-sm text-gray-300">Transactions</span>
               </div>
-              <p className="text-2xl font-bold text-white mb-2">{TRANSACTIONS.length}</p>
+              <p className="text-2xl font-bold text-white mb-2">{transactions?.length ?? 0}</p>
               <p className="text-xs text-gray-400">Depuis la création</p>
             </div>
 
@@ -148,7 +89,7 @@ export default function TransactionsPage() {
                 </span>
                 <span className="text-sm text-gray-300">Complétées</span>
               </div>
-              <p className="text-2xl font-bold text-white mb-2">{TRANSACTIONS.filter((t) => t.status === "Complété").length}</p>
+              <p className="text-2xl font-bold text-white mb-2">{completedCount}</p>
               <p className="text-xs text-green-400">↗ Réussites</p>
             </div>
           </div>
@@ -184,22 +125,24 @@ export default function TransactionsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {TRANSACTIONS.map((t) => {
-                    const credit = t.type === "deposit" || t.type === "transfer_in";
+                  {transactions?.map((t) => {
+                    const credit = transactionService.isCredit(t.type);
                     return (
                       <tr key={t.id} className="border-b border-gray-50 last:border-0">
                         <td className="py-3.5">
                           <p className="text-xs font-medium text-afrilink-dark">{t.reference}</p>
                           <p className="text-[11px] text-gray-400 truncate max-w-[200px]">{t.description}</p>
                         </td>
-                        <td className="text-xs text-gray-600">{t.type === "deposit" ? "Dépôt" : t.type === "withdrawal" ? "Retrait" : t.type === "transfer_in" ? "Transfert reçu" : "Transfert envoyé"}</td>
+                        <td className="text-xs text-gray-600">{transactionService.getTypeLabel(t.type)}</td>
                         <td className={`text-xs font-medium ${credit ? "text-afrilink-green" : "text-red-500"}`}>
                           {credit ? "+" : "-"} {new Intl.NumberFormat("fr-FR").format(t.amount)} XAF
                         </td>
                         <td>
-                          <Badge tone={STATUS_TONE[t.status]} dot>{t.status}</Badge>
+                          <Badge tone="green" dot>Complété</Badge>
                         </td>
-                        <td className="text-xs text-gray-500">{formatDate(t.date)}</td>
+                        <td className="text-xs text-gray-500">
+                          {new Date(t.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
+                        </td>
                         <td className="text-right">
                           <button
                             onClick={() => setSelected(t)}
@@ -217,45 +160,12 @@ export default function TransactionsPage() {
             </div>
           </div>
 
-          <div className="bg-red-50 border border-red-100 rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              <p className="text-sm font-semibold text-red-600">Audit des Alertes</p>
-            </div>
-            <div className="flex flex-col gap-3">
-              <div className="bg-white rounded-lg p-4 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-medium text-afrilink-dark">
-                    Comportement inhabituel détecté — Cissé Moktar
-                  </p>
-                  <p className="text-[11px] text-gray-400">
-                    3 retraits consécutifs supérieurs au seuil habituel · TXN-88214
-                  </p>
-                </div>
-                <button className="h-8 px-4 rounded-lg bg-red-500 text-white text-xs font-medium hover:opacity-90 transition-opacity shrink-0">
-                  Signaler
-                </button>
-              </div>
-              <div className="bg-white rounded-lg p-4 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-medium text-afrilink-dark">
-                    Localisation inhabituelle — Julie Moyo
-                  </p>
-                  <p className="text-[11px] text-gray-400">
-                    Connexion depuis un nouvel appareil non reconnu · TXN-88215
-                  </p>
-                </div>
-                <button className="h-8 px-4 rounded-lg bg-red-500 text-white text-xs font-medium hover:opacity-90 transition-opacity shrink-0">
-                  Signaler
-                </button>
-              </div>
-            </div>
-          </div>
+
       </div>
 
       {selected && (
         <TransactionDetailModal
-          transaction={toDetail(selected)}
+          transaction={selected}
           currency="XAF"
           onClose={() => setSelected(null)}
         />

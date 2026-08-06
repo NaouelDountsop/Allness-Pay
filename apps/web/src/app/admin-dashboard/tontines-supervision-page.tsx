@@ -1,43 +1,19 @@
 import { useState } from "react";
-import { PiggyBank, Coins, ShieldAlert, Target, Download, AlertTriangle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { PiggyBank, Coins, ShieldAlert, Target, Download, AlertTriangle, Loader2 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
 import { StatCard, Tabs, Badge } from "../../components/ui";
-
-const TONTINES = [
-  {
-    name: "Cercle Bienvenue Ahidjo",
-    admin: "Awa J.",
-    members: 12,
-    amount: "25,000",
-    frequency: "Mensuel",
-    next: "Demain (18/07)",
-    progress: 65,
-    status: "Actif",
-  },
-  {
-    name: "Tontine Sunuxaley",
-    admin: "Fatou D.",
-    members: 8,
-    amount: "12,000",
-    frequency: "Hebdomadaire",
-    next: "Aujourd'hui",
-    progress: 40,
-    status: "Actif",
-  },
-  {
-    name: "Projet Immobilier Zamo",
-    admin: "Cissé M.",
-    members: 20,
-    amount: "50,000",
-    frequency: "Mensuel",
-    next: "25/07",
-    progress: 90,
-    status: "Actif",
-  },
-];
+import { adminService } from "../../lib/api/admin.service";
 
 export default function TontinesSupervisionPage() {
   const [tab, setTab] = useState("Toutes les Tontines");
+
+  const { data: tontines, isLoading } = useQuery({
+    queryKey: ["admin-tontines"],
+    queryFn: adminService.listTontines,
+  });
+
+  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
 
   return (
     <AdminLayout active="tontines">
@@ -55,61 +31,71 @@ export default function TontinesSupervisionPage() {
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={PiggyBank} label="Tontines Actives" value="1,284" />
-        <StatCard icon={Coins} label="Volume Total Épargné" value="842,500 €" />
+        <StatCard icon={PiggyBank} label="Tontines Actives" value={formatNumber(tontines?.length ?? 0)} />
+        <StatCard icon={Coins} label="Volume Total Épargné" value={`${formatNumber(tontines?.reduce((sum, t) => sum + t.montantCotisation, 0) ?? 0)} XAF`} />
         <StatCard
           icon={ShieldAlert}
           iconTone="red"
           label="Alertes de Blocage"
-          value="42"
+          value="0"
           tag={{ label: "Urgent", tone: "red" }}
         />
-        <StatCard icon={Target} label="Taux de Complétion" value="98.2%" />
+        <StatCard icon={Target} label="Taux de Complétion" value="100%" />
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <Tabs tabs={["Toutes les Tontines", "Alertes Actives"]} active={tab} onChange={setTab} />
 
-        <table className="w-full text-sm mt-4">
-          <thead>
-            <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-              <th className="font-medium pb-3">Nom de la Tontine</th>
-              <th className="font-medium pb-3">Membres</th>
-              <th className="font-medium pb-3">Montant</th>
-              <th className="font-medium pb-3">Fréquence</th>
-              <th className="font-medium pb-3">Prochain Tour</th>
-              <th className="font-medium pb-3">Progression</th>
-              <th className="font-medium pb-3">Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TONTINES.map((t) => (
-              <tr key={t.name} className="border-b border-gray-50 last:border-0">
-                <td className="py-3.5">
-                  <p className="text-xs font-medium text-afrilink-dark">{t.name}</p>
-                  <p className="text-[11px] text-gray-400">Admin: {t.admin}</p>
-                </td>
-                <td className="text-xs text-gray-600">{t.members}</td>
-                <td className="text-xs text-gray-600">{t.amount} XAF</td>
-                <td className="text-xs text-gray-600">{t.frequency}</td>
-                <td className="text-xs text-gray-600">{t.next}</td>
-                <td>
-                  <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                    <div
-                      className="h-full bg-afrilink-green rounded-full"
-                      style={{ width: `${t.progress}%` }}
-                    />
-                  </div>
-                </td>
-                <td>
-                  <Badge tone="green" dot>
-                    {t.status}
-                  </Badge>
-                </td>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+          </div>
+        ) : (
+          <table className="w-full text-sm mt-4">
+            <thead>
+              <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
+                <th className="font-medium pb-3">Nom de la Tontine</th>
+                <th className="font-medium pb-3">Membres</th>
+                <th className="font-medium pb-3">Montant</th>
+                <th className="font-medium pb-3">Fréquence</th>
+                <th className="font-medium pb-3">Progression</th>
+                <th className="font-medium pb-3">Statut</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tontines?.map((t) => {
+                const progressPercent = t.nombreMembres > 0 ? Math.round((t.tourActuel / t.nombreMembres) * 100) : 0;
+                const statusTone = t.statut === "active" ? "green" : t.statut === "pending" ? "orange" : "red";
+                return (
+                  <tr key={t.id} className="border-b border-gray-50 last:border-0">
+                    <td className="py-3.5">
+                      <p className="text-xs font-medium text-afrilink-dark">{t.name}</p>
+                      <p className="text-[11px] text-gray-400">
+                        Admin: {t.createur?.prenom} {t.createur?.nom}
+                      </p>
+                    </td>
+                    <td className="text-xs text-gray-600">{t.nombreMembres}</td>
+                    <td className="text-xs text-gray-600">{formatNumber(t.montantCotisation)} {t.devise ?? "CFA"}</td>
+                    <td className="text-xs text-gray-600">{t.frequence}</td>
+                    <td>
+                      <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                          className="h-full bg-afrilink-green rounded-full"
+                          style={{ width: `${progressPercent}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <Badge tone={statusTone} dot>
+                        {t.statut === "active" ? "Actif" : t.statut === "pending" ? "En attente" : "Fermé"}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
 
         <div className="mt-5 rounded-xl bg-red-50 border border-red-100 p-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
@@ -119,7 +105,7 @@ export default function TontinesSupervisionPage() {
             <div>
               <p className="text-xs font-semibold text-red-600">Détection d'activité suspecte</p>
               <p className="text-[11px] text-red-400">
-                Comportement inhabituel détecté sur plusieurs cycles de cotisation.
+                Aucune alerte pour le moment.
               </p>
             </div>
           </div>

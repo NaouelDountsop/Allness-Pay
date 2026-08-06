@@ -92,7 +92,7 @@ export class KycController {
     },
     @Req() req: Request,
   ) {
-    const user = req.user as { idutilisateur: number };
+    const user = req.user as { sub: number };
 
     if (
       !files.documentFront?.[0] ||
@@ -119,7 +119,7 @@ export class KycController {
         selfieUrl,
         proofOfAddressUrl,
       },
-      user.idutilisateur,
+      user.sub,
     );
   }
 
@@ -128,15 +128,15 @@ export class KycController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   findMine(@Req() req: Request) {
-    const user = req.user as { idutilisateur: number };
-    return this.kycService.findByUser(user.idutilisateur);
+    const user = req.user as { sub: number };
+    return this.kycService.findByUser(user.sub);
   }
 
   // Routes admin : restreintes aux administrateurs avec la permission kyc:review
   @Get()
-  //@UseGuards(JwtAuthGuard, PermissionsGuard)
-  //@RequirePermissions('kyc:review')
-  //@ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('kyc:review')
+  @ApiBearerAuth('access-token')
   findAll(@Query('status') status?: string) {
     return this.kycService.findAll(status);
   }
@@ -158,14 +158,14 @@ findOne(@Param('id', ParseIntPipe) id: number) {
     @Body() updateKycDto: UpdateKycDto,
     @Req() req: Request,
   ) {
-    const user = req.user as { idutilisateur: number };
-    return this.kycService.update(id, updateKycDto, user.idutilisateur);
+    const user = req.user as { sub: number };
+    return this.kycService.update(id, updateKycDto, user.sub);
   }
 
   @Patch(':id/review')
-  //@UseGuards(JwtAuthGuard, PermissionsGuard)
-  //@RequirePermissions('kyc:review')
-  //@ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('kyc:review')
+  @ApiBearerAuth('access-token')
   review(
     @Param('id', ParseIntPipe) id: number,
     @Body() reviewKycDto: ReviewKycDto,
@@ -179,7 +179,7 @@ findOne(@Param('id', ParseIntPipe) id: number) {
   @UseGuards(JwtAuthGuard)
   //@ApiBearerAuth('access-token')
   remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
-    const user = req.user as { idutilisateur: number };
-    return this.kycService.remove(id, user.idutilisateur);
+    const user = req.user as { sub: number };
+    return this.kycService.remove(id, user.sub);
   }
 }

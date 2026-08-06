@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
-import type { Tontine } from "@/lib/mock/tontines-data";
+import type { Tontine } from "@/lib/api/tontine.service";
 
 interface TontineCardProps {
   tontine: Tontine;
@@ -15,7 +15,9 @@ const avatarColors = [
 
 export function TontineCard({ tontine }: TontineCardProps) {
   const navigate = useNavigate();
-  const extraMembers = tontine.participantsCount - 3;
+  const members = tontine.membres ?? [];
+  const extraMembers = tontine.nombreMembres - 3;
+  const progressPercent = tontine.nombreMembres > 0 ? Math.round((tontine.tourActuel / tontine.nombreMembres) * 100) : 0;
 
   return (
     <div className="min-h-[420px] flex flex-col rounded-xl border border-gray-100 bg-white p-6 hover:shadow-md hover:border-gray-200 transition-all">
@@ -25,7 +27,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
           {tontine.name}
         </p>
         <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-afrilink-green px-2 py-0.5 rounded-full whitespace-nowrap">
-          {tontine.frequency}
+          {tontine.frequence}
         </span>
       </div>
 
@@ -74,13 +76,13 @@ export function TontineCard({ tontine }: TontineCardProps) {
             <p className="text-xs text-white/60 tracking-wide">CAGNOTTE</p>
           </div>
           <span className="text-[10px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">
-            {tontine.frequency}
+            {tontine.frequence}
           </span>
         </div>
 
         <p className="text-2xl font-bold relative z-10">
-          {new Intl.NumberFormat("fr-FR").format(tontine.potAmount)}{" "}
-          <span className="text-sm font-medium text-afrilink-orange">{tontine.currency}</span>
+          {new Intl.NumberFormat("fr-FR").format(tontine.montantCotisation)}{" "}
+          <span className="text-sm font-medium text-afrilink-orange">{tontine.devise ?? "CFA"}</span>
         </p>
       </div>
 
@@ -88,16 +90,16 @@ export function TontineCard({ tontine }: TontineCardProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-1.5 text-xs text-gray-500">
           <Users className="w-3.5 h-3.5 text-gray-400" />
-          <span>{tontine.participantsCount} membres</span>
+          <span>{tontine.nombreMembres} membres</span>
         </div>
         <div className="flex -space-x-2">
-          {tontine.members.slice(0, 3).map((m, i) => (
+          {members.slice(0, 3).map((m, i) => (
             <span
               key={m.id}
               className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-semibold ${avatarColors[i % avatarColors.length]}`}
-              title={m.name}
+              title={m.user?.prenom}
             >
-              {m.name.charAt(0).toUpperCase()}
+              {m.user?.prenom?.charAt(0)?.toUpperCase() ?? "?"}
             </span>
           ))}
           {extraMembers > 0 && (
@@ -114,16 +116,16 @@ export function TontineCard({ tontine }: TontineCardProps) {
       {/* Progression */}
       <div className="mb-2 flex items-center justify-between text-[11px]">
         <span className="text-gray-400">
-          Tour <span className="font-medium text-gray-600">{tontine.currentTurn}</span> / {tontine.totalTurns}
+          Tour <span className="font-medium text-gray-600">{tontine.tourActuel}</span> / {tontine.nombreMembres}
         </span>
         <span className="text-afrilink-green font-semibold">
-          {tontine.progressPercent}%
+          {progressPercent}%
         </span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden mb-6">
         <div
           className="h-full rounded-full bg-afrilink-orange transition-all"
-          style={{ width: `${Math.min(tontine.progressPercent, 100)}%` }}
+          style={{ width: `${Math.min(progressPercent, 100)}%` }}
         />
       </div>
 

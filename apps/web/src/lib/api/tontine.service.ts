@@ -77,4 +77,23 @@ export const tontineService = {
   remove: async (id: number): Promise<void> => {
     await apiClient.delete(`${basePath}/${id}`);
   },
+
+  leave: async (id: number): Promise<void> => {
+    await apiClient.post(`${basePath}/${id}/leave`);
+  },
+
+  invite: async (tontineId: number, data: { inviteeEmail?: string; inviteeUserId?: number }) => {
+    const res = await apiClient.post(`${basePath}/${tontineId}/invitations`, data);
+    return res.data;
+  },
+
+  listInvitations: async (tontineId: number) => {
+    const res = await apiClient.get(`${basePath}/${tontineId}/invitations`);
+    return res.data;
+  },
+
+  acceptByToken: async (token: string): Promise<TontineMember> => {
+    const res = await apiClient.post<TontineMember>(`${basePath}/invitations/accept`, { token });
+    return res.data;
+  },
 };

@@ -17,6 +17,8 @@ import { PayoutJob } from './jobs/payout.job';
 import { ContributionReminderJob } from './jobs/contribution-reminder.job';
 import { WalletsModule } from '../wallet/wallet.module';
 import { PinModule } from '../pin/pin.module';
+import { MailModule } from '../mail/mail.module';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
@@ -26,9 +28,11 @@ import { PinModule } from '../pin/pin.module';
       TontineCycle,
       TontineContribution,
       TontineInvitation,
+      User,
     ]),
     WalletsModule,
     PinModule,
+    MailModule,
   ],
   controllers: [TontineController],
   providers: [

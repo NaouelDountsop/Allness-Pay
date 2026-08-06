@@ -34,8 +34,13 @@ export class AuthController {
   @ApiBearerAuth('access-token')
   @Get('profile')
   @ApiOperation({ summary: 'Profil utilisateur connecté' })
-  getProfile(@Request() req: ExpressRequest) {
-    return req.user;
+  async getProfile(@Request() req: ExpressRequest) {
+    const user = req.user as { sub: number; email: string; role?: string };
+    if (user.role === 'admin') {
+      const admin = await this.authService.getAdminProfile(user.sub);
+      return { ...admin, role: 'admin' };
+    }
+    return this.authService.getUserProfile(user.sub);
   }
 
   @Post('verify-otp')
@@ -56,13 +61,14 @@ export class AuthController {
     return this.authService.refresh(dto.refreshToken);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Post('logout')
   @ApiOperation({ summary: 'Déconnexion' })
   async logout(@Request() req: ExpressRequest) {
-    const user = req.user as { sub: number };
-    return this.authService.logout(user.sub);
+    const user = req.user as { sub?: number } | undefined;
+    if (user?.sub) {
+      await this.authService.logout(user.sub);
+    }
+    return { message: 'Déconnexion réussie' };
   }
 
   @Get('google')

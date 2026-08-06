@@ -1,16 +1,16 @@
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { TontineMember } from "@/lib/mock/tontines-data";
+import type { TontineMember } from "@/lib/api/tontine.service";
 
-const statusStyles: Record<TontineMember["status"], { label: string; className: string }> = {
-  paid: { label: "Payé", className: "bg-green-50 text-afrilink-green" },
+const statusStyles: Record<string, { label: string; className: string }> = {
+  active: { label: "Actif", className: "bg-green-50 text-afrilink-green" },
   pending: { label: "En attente", className: "bg-orange-50 text-afrilink-orange" },
-  late: { label: "En retard", className: "bg-red-50 text-red-600" },
+  inactive: { label: "Inactif", className: "bg-red-50 text-red-600" },
 };
 
 interface MembersTableProps {
   members: TontineMember[];
-  tontineId?: string;
+  tontineId?: number;
 }
 
 export function MembersTable({ members, tontineId }: MembersTableProps) {
@@ -39,34 +39,36 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
           <tr className="bg-afrilink-dark text-white text-xs">
             <th className="text-left font-medium px-4 py-2.5">Nom du Membre</th>
             <th className="text-left font-medium px-4 py-2.5">Localisation</th>
-            <th className="text-left font-medium px-4 py-2.5">Statut de Cotisation</th>
-            <th className="text-left font-medium px-4 py-2.5">Tour de Rotation</th>
+            <th className="text-left font-medium px-4 py-2.5">Statut</th>
+            <th className="text-left font-medium px-4 py-2.5">Tour</th>
             <th className="px-4 py-2.5" />
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-50">
           {members.map((m) => {
-            const status = statusStyles[m.status];
+            const status = (statusStyles[m.status ?? "pending"] ?? statusStyles.pending) as { label: string; className: string };
+            const memberName = m.user ? `${m.user.prenom ?? ""} ${m.user.nom ?? ""}`.trim() : "Membre";
+            const location = m.user ? `${m.user.ville ?? ""}, ${m.user.pays ?? ""}`.trim() : "---";
+            const initials = m.user
+              ? `${m.user.prenom?.charAt(0) ?? ""}${m.user.nom?.charAt(0) ?? ""}`.toUpperCase()
+              : "?";
             return (
               <tr key={m.id}>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-medium text-gray-500">
-                      {m.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {initials}
                     </span>
-                    <span className="text-gray-800">{m.name}</span>
+                    <span className="text-gray-800">{memberName}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-500">{m.location}</td>
+                <td className="px-4 py-3 text-gray-500">{location}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}>
                     {status.label}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">Mois {m.turnMonth}</td>
+                <td className="px-4 py-3 text-gray-500">Tour {m.tourOrdre}</td>
                 <td className="px-4 py-3 text-right">
                   <button aria-label="Actions" className="text-gray-400">
                     <MoreVertical className="w-4 h-4" />

@@ -1,14 +1,31 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { MembersTable } from "@/components/user_dashboard/tontines/members-table";
-import { mockTontines } from "@/lib/mock/tontines-data";
+import { tontineService } from "@/lib/api/tontine.service";
 
 export default function TontineMembersPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const tontine = mockTontines.find((t) => t.id === id);
+
+  const { data: tontine, isLoading } = useQuery({
+    queryKey: ["tontine", id],
+    queryFn: () => tontineService.getById(Number(id)),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!tontine) {
     return (
@@ -46,17 +63,17 @@ export default function TontineMembersPage() {
               Retour à {tontine.name}
             </button>
             <p className="mt-2 text-sm text-gray-500">
-              Membres de la tontine · {tontine.participantsCount} participants
+              Membres de la tontine · {tontine.nombreMembres} participants
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Fréquence</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.frequency}</p>
+              <p className="font-semibold text-afrilink-dark">{tontine.frequence}</p>
             </div>
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Tour actuel</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.currentTurn} / {tontine.totalTurns}</p>
+              <p className="font-semibold text-afrilink-dark">{tontine.tourActuel} / {tontine.nombreMembres}</p>
             </div>
           </div>
         </div>
@@ -68,13 +85,13 @@ export default function TontineMembersPage() {
               <h2 className="text-xl font-semibold text-afrilink-dark">{tontine.name}</h2>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-400">Prochaine rotation</p>
-              <p className="text-sm font-semibold text-afrilink-dark">{tontine.nextRotationDate}</p>
+              <p className="text-xs text-gray-400">Devise</p>
+              <p className="text-sm font-semibold text-afrilink-dark">{tontine.devise ?? "CFA"}</p>
             </div>
           </div>
         </div>
 
-        <MembersTable members={tontine.members} />
+        <MembersTable members={tontine.membres ?? []} tontineId={tontine.id} />
       </div>
     </DashboardLayout>
   );

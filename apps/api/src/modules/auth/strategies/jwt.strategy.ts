@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
  async validate(payload: { sub: number; email: string; role?: string }) {
-  this.logger.debug(`JWT validate — sub: ${payload.sub}, email: ${payload.email}, role: ${payload.role ?? '(none)'}`);
+  this.logger.debug(`JWT validate — id: ${payload.sub}, email: ${payload.email}, role: ${payload.role ?? '(none)'}`);
 
   if (payload.role === 'admin') {
     const admin = await this.adminRepo.findOne({
@@ -33,10 +33,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       select: ['id', 'nom', 'email', 'statut'],
     });
     if (!admin) {
-      this.logger.warn(`Admin not found — id: ${payload.sub}`);
+      this.logger.warn( `Admin not found — id: ${payload.sub}`);
       throw new UnauthorizedException('Administrateur introuvable');
     }
-    return { sub: admin.id, email: admin.email, role: 'admin' };
+    return { id: admin.id, sub: admin.id, email: admin.email, role: 'admin' };
   }
 
   try {
@@ -48,5 +48,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 }
 }
-
-

@@ -15,9 +15,12 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
+import { InvitationService } from './services/invitation.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { AddMemberDto } from './dto/add-member.dto';
+import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { RespondInvitationDto } from './dto/respond-invitation.dto';
 import { TontineStatus } from './entities/tontine.entity';
 
 interface AuthenticatedRequest extends Request {
@@ -29,7 +32,10 @@ interface AuthenticatedRequest extends Request {
 @UseGuards(JwtAuthGuard)
 @Controller('tontines')
 export class TontineController {
-  constructor(private readonly tontineService: TontineService) {}
+  constructor(
+    private readonly tontineService: TontineService,
+    private readonly invitationService: InvitationService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Créer une tontine' })
@@ -109,5 +115,53 @@ export class TontineController {
   @ApiParam({ name: 'id', type: Number })
   join(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
     return this.tontineService.join(id, req.user.sub);
+  }
+
+  @Post(':id/leave')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Quitter une tontine (membres non-admin)' })
+  @ApiParam({ name: 'id', type: Number })
+  leave(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
+    return this.tontineService.leave(id, req.user.sub);
+  }
+
+  @Post(':id/invitations')
+  @ApiOperation({ summary: 'Envoyer une invitation à rejoindre la tontine' })
+  @ApiParam({ name: 'id', type: Number })
+  createInvitation(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateInvitationDto,
+  ) {
+    return this.invitationService.create(id, req.user.sub, dto);
+  }
+
+  @Get(':id/invitations')
+  @ApiOperation({ summary: 'Lister les invitations d\'une tontine' })
+  @ApiParam({ name: 'id', type: Number })
+  listInvitations(@Param('id', ParseIntPipe) id: number) {
+    return this.invitationService.findByTontine(id);
+  }
+
+  @Post('invitations/:invitationId/respond')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Répondre à une invitation' })
+  @ApiParam({ name: 'invitationId', type: Number })
+  respondInvitation(
+    @Param('invitationId', ParseIntPipe) invitationId: number,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: RespondInvitationDto,
+  ) {
+    return this.invitationService.respond(invitationId, req.user.sub, dto);
+  }
+
+  @Post('invitations/accept')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Accepter une invitation par token (lien email)' })
+  acceptByToken(
+    @Req() req: AuthenticatedRequest,
+    @Body('token') token: string,
+  ) {
+    return this.invitationService.acceptByToken(token, req.user.sub);
   }
 }

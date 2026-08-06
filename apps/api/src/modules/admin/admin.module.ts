@@ -4,13 +4,14 @@ import { User } from '../users/entities/user.entity';
 import { Kyc } from '../kyc/entities/kyc.entity';
 import { Wallet } from '../wallet/entities/wallet.entity';
 import { WalletTransaction } from '../transactions/entities/wallet-transaction.entity';
+import { Tontine } from '../tontine/entities/tontine.entity';
 import { RolesModule } from '../role/role.module';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Kyc, Wallet, WalletTransaction]),
+    TypeOrmModule.forFeature([User, Kyc, Wallet, WalletTransaction, Tontine]),
     RolesModule,
   ],
   controllers: [AdminController],
