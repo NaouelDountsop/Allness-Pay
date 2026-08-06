@@ -74,6 +74,7 @@ export const mailConfig = registerAs('mail', () => ({
   user: process.env.SMTP_USER ?? '',
   pass: process.env.SMTP_PASS ?? '',
   from: process.env.SMTP_FROM ?? 'noreply@afrilinkpay.com',
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
 }));
 
 export const configurations = [
@@ -93,4 +94,4 @@ export type AuthConfig = ReturnType<typeof authConfig>;
 export type RedisConfig = ReturnType<typeof redisConfig>;
 export type ThrottleConfig = ReturnType<typeof throttleConfig>;
 export type ProvidersConfig = ReturnType<typeof providersConfig>;
-export type MailConfig = ReturnType<typeof mailConfig>;
+export type MailConfig = ReturnType<typeof mailConfig> & { frontendUrl: string };

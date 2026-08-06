@@ -47,4 +47,11 @@ export class AdminController {
   findOneKyc(@Param('id') id: string) {
     return this.adminService.findOneKyc(Number(id));
   }
+
+  @Get('tontines')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Liste des tontines (admin)' })
+  findAllTontines() {
+    return this.adminService.findAllTontines();
+  }
 }

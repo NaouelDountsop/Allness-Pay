@@ -5,6 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 import { Wallet } from '../wallet/entities/wallet.entity';
 import { WalletTransaction } from '../transactions/entities/wallet-transaction.entity';
+import { Tontine } from '../tontine/entities/tontine.entity';
 
 @Injectable()
 export class AdminService {
@@ -17,6 +18,8 @@ export class AdminService {
     private readonly walletsRepository: Repository<Wallet>,
     @InjectRepository(WalletTransaction)
     private readonly transactionsRepository: Repository<WalletTransaction>,
+    @InjectRepository(Tontine)
+    private readonly tontinesRepository: Repository<Tontine>,
   ) {}
 
   async getDashboardStats() {
@@ -89,5 +92,13 @@ export class AdminService {
 
   findOneKyc(id: number) {
     return this.kycRepository.findOne({ where: { id } });
+  }
+
+  async findAllTontines() {
+    const tontines = await this.tontinesRepository.find({
+      relations: ['createur', 'membres'],
+      order: { createdAt: 'DESC' },
+    });
+    return tontines;
   }
 }

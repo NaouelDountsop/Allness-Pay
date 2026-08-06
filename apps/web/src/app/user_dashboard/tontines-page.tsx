@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Plus, Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { TontinesEmptyState } from "@/components/user_dashboard/tontines/tontines-empty-state";
@@ -7,19 +8,38 @@ import { TontinesStats } from "@/components/user_dashboard/tontines/tontines-sta
 import { TontineCard } from "@/components/user_dashboard/tontines/tontine-card";
 import { NewInitiativeCard } from "@/components/user_dashboard/tontines/new-initiative-card";
 import { InvitationsList } from "@/components/user_dashboard/tontines/invitations-list";
-import { mockTontines, mockInvitations } from "@/lib/mock/tontines-data";
-
-const HAS_TONTINES = mockTontines.length > 0; // à remplacer par un vrai état backend
+import { tontineService } from "@/lib/api/tontine.service";
 
 export default function TontinesPage() {
   const navigate = useNavigate();
+
+  const { data: tontines, isLoading } = useQuery({
+    queryKey: ["tontines"],
+    queryFn: tontineService.list,
+  });
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const hasTontines = tontines && tontines.length > 0;
+
+  const totalContributed = tontines?.reduce((sum, t) => sum + (t.montantCotisation * t.tourActuel), 0) ?? 0;
+  const nextGain = tontines?.find((t) => t.tourActuel < t.nombreMembres);
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div>
-        {!HAS_TONTINES ? (
+        {!hasTontines ? (
           <TontinesEmptyState
             onCreate={() => navigate("/dashboard/tontines/create")}
             onJoin={() => {}}
@@ -42,25 +62,25 @@ export default function TontinesPage() {
 
             <div className="mt-6">
               <TontinesStats
-                totalContributed={12450000}
-                currency="CFA"
-                activeTontinesCount={mockTontines.length}
-                nextGainAmount={500000}
-                nextGainDate="30/07/26"
-                nextGainLabel="Impact Diaspora"
-                pendingRequestsCount={mockInvitations.length}
+                totalContributed={totalContributed}
+                currency={tontines?.[0]?.devise ?? "CFA"}
+                activeTontinesCount={tontines?.length ?? 0}
+                nextGainAmount={nextGain?.montantCotisation ?? 0}
+                nextGainDate={nextGain?.createdAt ? new Date(nextGain.createdAt).toLocaleDateString("fr-FR") : "---"}
+                nextGainLabel={nextGain?.name ?? "---"}
+                pendingRequestsCount={0}
               />
             </div>
 
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Mes Tontines Actives</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              {mockTontines.map((t) => (
+              {tontines?.map((t) => (
                 <TontineCard key={t.id} tontine={t} />
               ))}
               <NewInitiativeCard />
             </div>
 
-            <InvitationsList invitations={mockInvitations} />
+            <InvitationsList invitations={[]} />
           </>
         )}
       </div>

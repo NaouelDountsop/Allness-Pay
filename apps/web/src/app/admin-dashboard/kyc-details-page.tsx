@@ -4,8 +4,8 @@ import { ArrowLeft, IdCard, ScanFace, Home, Loader2 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
 import { Avatar, Badge } from "../../components/ui";
 import { SectionCard, Field } from "../../components/ui/section-card";
-import { kycService } from "../../lib/api/kyc.service";
-import type { KycRecord, KycStatus } from "@afrilinkpay/shared";
+import { adminService } from "../../lib/api/admin.service";
+import type { AdminKycRecord } from "../../lib/api/admin.service";
 
 const DOC_LABELS: Record<string, string> = {
   PASSPORT: "Passeport",
@@ -19,12 +19,10 @@ const ADDRESS_DOC_LABELS: Record<string, string> = {
   RESIDENCE_CERTIFICATE: "Certificat de résidence",
 };
 
-const STATUS_BADGE: Record<KycStatus, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
+const STATUS_BADGE: Record<string, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
   APPROVED: { tone: "green", label: "Validé" },
   PENDING: { tone: "orange", label: "En attente" },
   REJECTED: { tone: "red", label: "Rejeté" },
-  UNDER_REVIEW: { tone: "blue", label: "En cours d'examen" },
-  REQUIRES_ADDITIONAL_INFO: { tone: "amber", label: "Infos requises" },
 };
 
 function formatDate(iso: string) {
@@ -47,36 +45,33 @@ function fileUrl(path: string) {
   }
 }
 
-
-
 export default function KycDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [record, setRecord] = useState<KycRecord | null>(null);
+  const [record, setRecord] = useState<AdminKycRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reviewComment, setReviewComment] = useState("");
   const [isReviewing, setIsReviewing] = useState(false);
 
- useEffect(() => {
-  if (!id) return;
-  setLoading(true);
-  kycService
-    .getById(Number(id))
-    .then((result) => {
-      console.warn("KYC record", result);
-      setRecord(result);
-    })
-    .catch(() => setError("Dossier KYC introuvable."))
-    .finally(() => setLoading(false));
-}, [id]);
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    adminService
+      .getKycById(Number(id))
+      .then((result) => {
+        setRecord(result);
+      })
+      .catch(() => setError("Dossier KYC introuvable."))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  const handleReview = async (status: "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "REQUIRES_ADDITIONAL_INFO") => {
+  const handleReview = async (status: "APPROVED" | "REJECTED") => {
     if (!record) return;
     setIsReviewing(true);
     setError(null);
     try {
-      const result = await kycService.review(record.id, {
+      const result = await adminService.reviewKyc(record.id, {
         status,
         reviewComment: reviewComment || undefined,
       });
@@ -116,8 +111,8 @@ export default function KycDetailPage() {
               <Avatar initials={`U${record.userId}`} size="lg" />
               <p className="text-sm font-bold text-afrilink-dark mt-3">Utilisateur #{record.userId}</p>
               <p className="text-[11px] text-gray-400 mb-2">Dossier #{record.id}</p>
-              <Badge tone={STATUS_BADGE[record.status as KycStatus]?.tone ?? "orange"}>
-                {STATUS_BADGE[record.status as KycStatus]?.label ?? record.status}
+              <Badge tone={STATUS_BADGE[record.status]?.tone ?? "orange"}>
+                {STATUS_BADGE[record.status]?.label ?? record.status}
               </Badge>
             </div>
           </div>
@@ -196,18 +191,10 @@ export default function KycDetailPage() {
                   rows={3}
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Ajoutez un commentaire pour justifier votre décision (optionnel pour une approbation, requis pour un rejet)"
+                  placeholder="Ajoutez un commentaire pour justifier votre décision"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange resize-none mb-4"
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => handleReview("REQUIRES_ADDITIONAL_INFO")}
-                    disabled={isReviewing}
-                    className="h-10 px-5 rounded-lg bg-orange-500 text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
-                    Demander des infos
-                  </button>
                   <button
                     onClick={() => handleReview("REJECTED")}
                     disabled={isReviewing}

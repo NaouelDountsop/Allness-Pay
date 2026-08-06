@@ -1,16 +1,33 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Send, Settings, MessageCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Send, Settings, MessageCircle, Loader2 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { TontineDetailHeader } from "@/components/user_dashboard/tontines/tontine-detail-header";
 import { TontineDetailStats } from "@/components/user_dashboard/tontines/tontine-detail-stats";
 import { MembersTable } from "@/components/user_dashboard/tontines/members-table";
-import { mockTontines } from "@/lib/mock/tontines-data";
+import { tontineService } from "@/lib/api/tontine.service";
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const tontine = mockTontines.find((t) => t.id === id);
+
+  const { data: tontine, isLoading } = useQuery({
+    queryKey: ["tontine", id],
+    queryFn: () => tontineService.getById(Number(id)),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!tontine) {
     return (
@@ -34,6 +51,8 @@ export default function TontineDetailPage() {
     );
   }
 
+  const progressPercent = tontine.nombreMembres > 0 ? Math.round((tontine.tourActuel / tontine.nombreMembres) * 100) : 0;
+
   return (
     <DashboardLayout>
       <DashboardHeader />
@@ -48,7 +67,7 @@ export default function TontineDetailPage() {
               <ArrowLeft className="w-5 h-5" />
               Tontine {tontine.name}
             </button>
-            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequency}</p>
+            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequence}</p>
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">
@@ -58,15 +77,13 @@ export default function TontineDetailPage() {
             >
               Historique des versements
             </button>
-            {tontine.isAdmin && (
-              <button
-                onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
-                aria-label="Paramètres"
-                className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
+              aria-label="Paramètres"
+              className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}/contribute`)}
               className="h-10 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
@@ -77,9 +94,9 @@ export default function TontineDetailPage() {
           </div>
         </div>
 
-        <TontineDetailHeader tontine={tontine} />
-        <TontineDetailStats tontine={tontine} />
-        <MembersTable members={tontine.members} tontineId={tontine.id} />
+        <TontineDetailHeader tontine={tontine} progressPercent={progressPercent} />
+        <TontineDetailStats tontine={tontine} progressPercent={progressPercent} />
+        <MembersTable members={tontine.membres ?? []} tontineId={tontine.id} />
 
         <button
           aria-label="Support"

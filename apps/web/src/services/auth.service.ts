@@ -96,10 +96,7 @@ export const authService = {
     }),
 
   logout: () => {
-    const token = localStorage.getItem("afrilink_access_token");
-    return apiClient.post("/auth/logout", {}, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    return apiClient.post("/auth/logout");
   },
 
   verifyEmail: (email: string, code: string) =>

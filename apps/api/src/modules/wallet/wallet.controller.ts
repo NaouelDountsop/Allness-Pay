@@ -16,7 +16,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 interface AuthenticatedRequest extends Request {
   user: {
-    idutilisateur: number;
+    sub: number;
   };
 }
 
@@ -28,17 +28,17 @@ export class WalletsController {
 
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateWalletDto) {
-    return this.walletsService.create(req.user.idutilisateur, dto);
+    return this.walletsService.create(req.user.sub, dto);
   }
 
   @Get()
   findAll(@Req() req: AuthenticatedRequest) {
-    return this.walletsService.findAllForUser(req.user.idutilisateur);
+    return this.walletsService.findAllForUser(req.user.sub);
   }
 
   @Get(':id')
   findOne(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.findOne(id, req.user.idutilisateur);
+    return this.walletsService.findOne(id, req.user.sub);
   }
 
   @Patch(':id')
@@ -47,16 +47,16 @@ export class WalletsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateWalletDto,
   ) {
-    return this.walletsService.update(id, req.user.idutilisateur, dto);
+    return this.walletsService.update(id, req.user.sub, dto);
   }
 
   @Patch(':id/close')
   close(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.close(id, req.user.idutilisateur);
+    return this.walletsService.close(id, req.user.sub);
   }
 
   @Patch(':id/set-primary')
   setPrimary(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
-    return this.walletsService.setPrimary(id, req.user.idutilisateur);
+    return this.walletsService.setPrimary(id, req.user.sub);
   }
 }

@@ -214,6 +214,53 @@ export class MailService {
     }
   }
 
+  async sendTontineInvitation(
+    email: string,
+    inviterName: string,
+    tontineName: string,
+    token: string,
+  ): Promise<void> {
+    const frontendUrl = this.config.getOrThrow<string>('mail.frontendUrl');
+    const acceptUrl = `${frontendUrl}/invitations/accept?token=${token}`;
+
+    const html = this.buildKycBaseTemplate(`
+      <p style="color: #555; font-size: 14px; margin-bottom: 16px;">
+        Bonjour,
+      </p>
+      <p style="color: #555; font-size: 14px; margin-bottom: 16px;">
+        <strong>${inviterName}</strong> vous invite à rejoindre la tontine <strong>${tontineName}</strong> sur AfrilinkPay.
+      </p>
+      <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 4px; padding: 12px 16px; margin-bottom: 16px;">
+        <p style="color: #0369a1; font-size: 13px; font-weight: 600; margin: 0;">
+          Invitation à la tontine
+        </p>
+        <p style="color: #0c4a6e; font-size: 12px; margin: 4px 0 0 0;">
+          En rejoignant cette tontine, vous participerez à un système d'épargne collaborative.
+        </p>
+      </div>
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${acceptUrl}" style="display: inline-block; background-color: #1a1a2e; color: #ffffff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+          Accepter l'invitation
+        </a>
+      </div>
+      <p style="color: #999; font-size: 12px; margin-top: 16px;">
+        Cette invitation expire dans 7 jours. Si vous ne souhaitez pas rejoindre cette tontine, vous pouvez ignorer cet email.
+      </p>
+    `);
+
+    try {
+      await this.transporter.sendMail({
+        from: this.from,
+        to: email,
+        subject: `AfrilinkPay — Invitation à rejoindre ${tontineName}`,
+        html,
+      });
+      this.logger.log(`Email invitation tontine envoyé à ${email}`);
+    } catch (err) {
+      this.logger.error(`Échec envoi email invitation tontine à ${email}`, err);
+    }
+  }
+
   async sendKycRequiresInfo(
     email: string,
     firstName: string,

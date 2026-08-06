@@ -8,9 +8,10 @@ interface RotationMember {
 
 interface RotationOrderListProps {
   members: RotationMember[];
+  onInvite?: () => void;
 }
 
-export function RotationOrderList({ members }: RotationOrderListProps) {
+export function RotationOrderList({ members, onInvite }: RotationOrderListProps) {
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-900 mb-3">Ordre de Passage</h3>
@@ -33,7 +34,11 @@ export function RotationOrderList({ members }: RotationOrderListProps) {
           </div>
         ))}
       </div>
-      <button className="w-full h-10 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 flex items-center justify-center gap-2">
+      <button
+        type="button"
+        onClick={onInvite}
+        className="w-full h-10 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 flex items-center justify-center gap-2 hover:border-afrilink-orange hover:text-afrilink-orange transition-colors"
+      >
         <Plus className="w-3.5 h-3.5" />
         Ajouter un membre
       </button>

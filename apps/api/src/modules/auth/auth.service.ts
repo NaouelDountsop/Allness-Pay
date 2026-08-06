@@ -147,6 +147,32 @@ export class AuthService {
     return { message: 'Déconnecté avec succès.' };
   }
 
+  async getUserProfile(userId: number) {
+    const user = await this.userRepo.findOne({
+      where: { idutilisateur: userId },
+      select: [
+        'idutilisateur', 'nom', 'prenom', 'datenaissance', 'sexe',
+        'pays', 'ville', 'telephone', 'adresse', 'email',
+        'profession', 'statut', 'verificationotp', 'dateinscription', 'datemodification',
+      ],
+    });
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur introuvable.');
+    }
+    return user;
+  }
+
+  async getAdminProfile(adminId: number) {
+    const admin = await this.adminRepo.findOne({
+      where: { id: adminId },
+      select: ['id', 'nom', 'email', 'statut', 'createdAt'],
+    });
+    if (!admin) {
+      throw new UnauthorizedException('Administrateur introuvable.');
+    }
+    return { idutilisateur: admin.id, nom: admin.nom, prenom: '', email: admin.email, profession: 'Administrateur', statut: admin.statut };
+  }
+
   async verifyOtp(email: string, otp: string) {
     return this.usersService.verifyOtp(email, otp);
   }

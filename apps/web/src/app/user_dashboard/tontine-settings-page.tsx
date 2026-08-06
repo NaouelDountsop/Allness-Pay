@@ -1,30 +1,105 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { RotationOrderList } from "@/components/user_dashboard/tontines/rotation-order-list";
 import { CycleSummaryPanel } from "@/components/user_dashboard/tontines/cycle-summary-panel";
 import { ScheduleCalendarModal } from "@/components/user_dashboard/tontines/schedule-calendar-modal";
-import { mockTontines } from "@/lib/mock/tontines-data";
+import { InviteMemberModal } from "@/components/user_dashboard/tontines/invite-member-modal";
+import { tontineService } from "@/lib/api/tontine.service";
+import { authStorage } from "@/lib/auth-storage";
 
-const rotationMembers = [
-  { id: "r1", name: "Sophie Dubois", month: "Janvier" },
-  { id: "r2", name: "Moussa Kone", month: "Février" },
-  { id: "r3", name: "Jean Dupont", month: "Mars" },
-];
+function getCurrentUserId(): number | null {
+  try {
+    const token = authStorage.getToken();
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3 || !parts[1]) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export default function TontineSettingsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const tontine = mockTontines.find((t) => t.id === id) ?? mockTontines[0];
+  const queryClient = useQueryClient();
+  const tontineId = Number(id);
+  const currentUserId = getCurrentUserId();
   const [showCalendar, setShowCalendar] = useState(false);
-  const [name, setName] = useState(tontine?.name ?? "");
-  const [potAmount, setPotAmount] = useState(String(tontine ? tontine.potAmount / 1000 : 0));
-  const [contribution, setContribution] = useState("1000");
+  const [showInvite, setShowInvite] = useState(false);
 
-  // Garde-fou : seul l'administrateur (créateur) accède à cette page.
-  if (!tontine?.isAdmin) {
+  const { data: tontine, isLoading } = useQuery({
+    queryKey: ["tontine", tontineId],
+    queryFn: () => tontineService.getById(tontineId),
+    enabled: !!tontineId,
+  });
+
+  const [name, setName] = useState("");
+  const [montantCotisation, setMontantCotisation] = useState("");
+  const [frequence, setFrequence] = useState("Mensuelle");
+  const [nombreMembres, setNombreMembres] = useState("");
+
+  useEffect(() => {
+    if (tontine) {
+      setName(tontine.name);
+      setMontantCotisation(String(Number(tontine.montantCotisation) / 1000));
+      setFrequence(tontine.frequence);
+      setNombreMembres(String(tontine.nombreMembres));
+    }
+  }, [tontine]);
+
+  const isAdmin = tontine?.createurId === currentUserId;
+
+  const updateMutation = useMutation({
+    mutationFn: () => tontineService.update(tontineId, {
+      name,
+      montantCotisation: Number(montantCotisation) * 1000,
+      frequence,
+      nombreMembres: Number(nombreMembres),
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tontine", tontineId] });
+      queryClient.invalidateQueries({ queryKey: ["tontines"] });
+    },
+  });
+
+  const rotationMembers = tontine?.membres
+    ?.filter((m) => m.status === "ACTIVE")
+    .sort((a, b) => a.tourOrdre - b.tourOrdre)
+    .map((m, i) => ({
+      id: String(m.id),
+      name: m.user ? `${m.user.prenom ?? ""} ${m.user.nom ?? ""}`.trim() : `Membre ${m.userId}`,
+      month: new Date(2026, i, 1).toLocaleDateString("fr-FR", { month: "long" }),
+    })) ?? [];
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!tontine) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="px-4 sm:px-8 pb-10">
+          <p className="text-sm text-gray-500">Tontine introuvable.</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!isAdmin) {
     return (
       <DashboardLayout>
         <DashboardHeader />
@@ -36,6 +111,12 @@ export default function TontineSettingsPage() {
       </DashboardLayout>
     );
   }
+
+  const totalPot = Number(tontine.montantCotisation) * tontine.nombreMembres;
+
+  const handleSave = () => {
+    updateMutation.mutate();
+  };
 
   return (
     <DashboardLayout>
@@ -67,8 +148,8 @@ export default function TontineSettingsPage() {
                   <label className="text-xs font-medium text-gray-500">Cagnotte</label>
                   <input
                     type="number"
-                    value={potAmount}
-                    onChange={(e) => setPotAmount(e.target.value)}
+                    value={montantCotisation}
+                    onChange={(e) => setMontantCotisation(e.target.value)}
                     className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
                   />
                 </div>
@@ -76,7 +157,7 @@ export default function TontineSettingsPage() {
 
               <div className="mb-2">
                 <label className="text-xs font-medium text-gray-500">
-                  Montant de la Contribution Mensuelle (EUR)
+                  Montant de la Contribution Mensuelle (FCFA)
                 </label>
               </div>
               <div className="flex items-center gap-3">
@@ -84,18 +165,18 @@ export default function TontineSettingsPage() {
                   type="range"
                   min="0"
                   max="5000"
-                  value={contribution}
-                  onChange={(e) => setContribution(e.target.value)}
+                  value={montantCotisation}
+                  onChange={(e) => setMontantCotisation(e.target.value)}
                   className="flex-1 accent-afrilink-orange"
                 />
                 <span className="text-sm font-semibold text-afrilink-orange whitespace-nowrap">
-                  {contribution} €
+                  {Number(montantCotisation).toLocaleString()} FCFA
                 </span>
               </div>
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5">
-              <RotationOrderList members={rotationMembers} />
+              <RotationOrderList members={rotationMembers} onInvite={() => setShowInvite(true)} />
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5">
@@ -103,10 +184,14 @@ export default function TontineSettingsPage() {
                 Règles de Participation
               </h3>
               <label className="text-xs font-medium text-gray-500">Logique de rotation</label>
-              <select className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900">
-                <option>Attribution Manuelle</option>
-                <option>Tirage au sort</option>
-                <option>Ordre d'inscription</option>
+              <select
+                value={frequence}
+                onChange={(e) => setFrequence(e.target.value)}
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
+              >
+                <option value="Hebdomadaire">Hebdomadaire</option>
+                <option value="Bimensuelle">Bimensuelle</option>
+                <option value="Mensuelle">Mensuelle</option>
               </select>
             </div>
 
@@ -140,19 +225,37 @@ export default function TontineSettingsPage() {
                 tontine.
               </div>
             </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleSave}
+                disabled={updateMutation.isPending}
+                className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
+              >
+                {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                Enregistrer les modifications
+              </button>
+            </div>
           </div>
 
           <CycleSummaryPanel
-            durationMonths={12}
-            totalPot={12000}
-            membersCount={12}
-            nextDrawDate="01 Janv. 2024"
+            durationMonths={tontine.nombreMembres}
+            totalPot={totalPot}
+            membersCount={tontine.membres?.filter((m) => m.status === "ACTIVE").length ?? 0}
+            nextDrawDate={new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
             onShowCalendar={() => setShowCalendar(true)}
           />
         </div>
       </div>
 
-      {showCalendar && <ScheduleCalendarModal onClose={() => setShowCalendar(false)} />}
+      {showCalendar && <ScheduleCalendarModal onClose={() => setShowCalendar(false)} frequence={tontine.frequence} />}
+      {showInvite && (
+        <InviteMemberModal
+          tontineId={tontineId}
+          tontineName={tontine.name}
+          onClose={() => setShowInvite(false)}
+        />
+      )}
     </DashboardLayout>
   );
 }

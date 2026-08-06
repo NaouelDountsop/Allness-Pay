@@ -170,6 +170,21 @@ export class TontineService {
     return this.memberRepo.save(member);
   }
 
+  async leave(id: number, userId: number): Promise<void> {
+    const tontine = await this.findOne(id, userId);
+    const member = tontine.membres.find(
+      (m) => m.userId === userId && m.status === TontineMemberStatus.ACTIVE,
+    );
+    if (!member) {
+      throw new NotFoundException('Membre introuvable');
+    }
+    if (member.role === TontineMemberRole.ADMIN) {
+      throw new BadRequestException('L\'administrateur ne peut pas quitter la tontine. Transférez le rôle ou supprimez-la.');
+    }
+    member.status = TontineMemberStatus.LEFT;
+    await this.memberRepo.save(member);
+  }
+
   private assertMembership(tontine: Tontine, userId: number): void {
     const isMember = tontine.membres?.some((m) => m.userId === userId);
     if (!isMember) {
