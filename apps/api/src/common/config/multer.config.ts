@@ -1,12 +1,16 @@
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { BadRequestException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { mkdirSync } from 'fs';
 import type { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+
+const uploadsDir = join(process.cwd(), 'uploads', 'kyc');
+mkdirSync(uploadsDir, { recursive: true });
 
 export const kycMulterConfig: MulterOptions = {
   storage: diskStorage({
-    destination: './uploads/kyc',
+    destination: uploadsDir,
     filename: (_req, file, callback) => {
       const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
       callback(null, uniqueName);

@@ -77,10 +77,6 @@ export default function TontineDetailPage() {
           </div>
         </div>
 
-        <p className="text-sm text-gray-500 mb-6 -mt-4">
-          Groupe d'épargne collaborative · Cycle {tontine.frequency}
-        </p>
-
         <TontineDetailHeader tontine={tontine} />
         <TontineDetailStats tontine={tontine} />
         <MembersTable members={tontine.members} tontineId={tontine.id} />

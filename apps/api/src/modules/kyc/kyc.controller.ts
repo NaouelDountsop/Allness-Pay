@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../role/guards/permissions.guards';
 import { RequirePermissions } from '../role/decorators/permissions.decorator';
 import { kycMulterConfig } from '../../common/config/multer.config';
+import { buildPublicFileUrl } from '../../common/utils/upload-url.util';
 import { Request } from 'express';
 
 @ApiTags('kyc')
@@ -103,12 +104,12 @@ export class KycController {
       );
     }
 
-    const documentFrontUrl = `/uploads/kyc/${files.documentFront[0].filename}`;
+    const documentFrontUrl = buildPublicFileUrl(req, files.documentFront[0].filename, 'kyc');
     const documentBackUrl = files.documentBack?.[0]
-      ? `/uploads/kyc/${files.documentBack[0].filename}`
+      ? buildPublicFileUrl(req, files.documentBack[0].filename, 'kyc')
       : undefined;
-    const selfieUrl = `/uploads/kyc/${files.selfie[0].filename}`;
-    const proofOfAddressUrl = `/uploads/kyc/${files.proofOfAddress[0].filename}`;
+    const selfieUrl = buildPublicFileUrl(req, files.selfie[0].filename, 'kyc');
+    const proofOfAddressUrl = buildPublicFileUrl(req, files.proofOfAddress[0].filename, 'kyc');
 
     return this.kycService.create(
       {
@@ -140,16 +141,17 @@ export class KycController {
     return this.kycService.findAll(status);
   }
 
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
-    const user = req.user as { idutilisateur: number };
-    return this.kycService.findOneForUser(id, user.idutilisateur);
-  }
+  
+@Get(':id')
+@UseGuards(JwtAuthGuard, PermissionsGuard)
+@RequirePermissions('kyc:review')
+@ApiBearerAuth('access-token')
+findOne(@Param('id', ParseIntPipe) id: number) {
+  return this.kycService.findOne(id);
+}
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+ @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -175,7 +177,7 @@ export class KycController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  //@ApiBearerAuth('access-token')
   remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.kycService.remove(id, user.idutilisateur);

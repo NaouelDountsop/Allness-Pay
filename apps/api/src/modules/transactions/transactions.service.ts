@@ -9,6 +9,7 @@ import {
 import { WalletsService } from '../wallet/wallet.service';
 import { PinService } from '../pin/pin.service';
 import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
+import { detectOperator } from '../../common/utils/phone-operator.util';
 
 @Injectable()
 export class TransactionsService {
@@ -26,6 +27,13 @@ export class TransactionsService {
       this.walletsService.assertActive(wallet);
 
       const amount = BigInt(dto.amount);
+      const operator = detectOperator(dto.phone_number);
+
+      if (!operator) {
+        throw new BadRequestException(
+          'Numéro de téléphone non reconnu. Seuls les préfixes MTN (650-659) et Orange (690-699) sont acceptés.',
+        );
+      }
 
       // Écriture comptable immutable
       const entry = manager.create(WalletTransaction, {
@@ -33,6 +41,8 @@ export class TransactionsService {
         type: WalletTransactionType.DEPOSIT,
         amount,
         description: dto.description ?? 'Dépôt',
+        operator,
+        phoneNumber: dto.phone_number,
       });
       await manager.save(entry);
 

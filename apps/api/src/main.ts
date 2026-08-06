@@ -6,6 +6,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { join } from 'node:path';
+import { mkdirSync } from 'node:fs';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -20,7 +21,12 @@ async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
 
   // --- Securite ------------------------------------------------------------
-  app.use(helmet({ contentSecurityPolicy: appConfig.env === 'production' }));
+  app.use(helmet({
+    contentSecurityPolicy: appConfig.env === 'production',
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
+  }));
 
   app.enableCors({
     origin: appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins : false,
@@ -32,7 +38,9 @@ async function bootstrap(): Promise<void> {
   });
 
   // --- Fichiers statiques (uploads KYC, etc.) -------------------------------
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  const uploadsDir = join(__dirname, '..', 'uploads');
+  mkdirSync(uploadsDir, { recursive: true });
+  app.useStaticAssets(uploadsDir, {
     prefix: '/uploads',
   });
 

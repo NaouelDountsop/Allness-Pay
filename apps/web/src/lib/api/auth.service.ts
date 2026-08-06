@@ -93,6 +93,45 @@ export const authService = {
       motdepasse: password,
     }),
 
+    loginAdmin: (email: string, password: string) =>
+    apiClient.post("/auth/login-admin", {
+      email: email.trim().toLowerCase(),
+      motdepasse: password,
+    }),
+
+  loginOrAdmin: async (email: string, password: string) => {
+    try {
+      const response = await apiClient.post("/auth/login-admin", {
+        email: email.trim().toLowerCase(),
+        motdepasse: password,
+      });
+      return {
+        ...response,
+        data: {
+          ...response.data,
+          role: "admin",
+        },
+      };
+    } catch (error: unknown) {
+      const err = error as { statusCode?: number };
+      if (err?.statusCode === 401) {
+        const response = await apiClient.post("/auth/login", {
+          email: email.trim().toLowerCase(),
+          motdepasse: password,
+        });
+        return {
+          ...response,
+          data: {
+            ...response.data,
+            role: "user",
+          },
+        };
+      }
+      throw error;
+    }
+  },
+  
+
   logout: () => {
     const token = localStorage.getItem("afrilink_access_token");
     return apiClient.post("/auth/logout", {}, {
