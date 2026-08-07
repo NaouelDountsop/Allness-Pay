@@ -14,26 +14,31 @@ export class TontineService {
     private readonly memberRepo: Repository<TontineMember>,
   ) {}
 
-  async create(dto: CreateTontineDto, createurId: number): Promise<Tontine> {
+  async create(dto: CreateTontineDto, creatorId: number): Promise<Tontine> {
     const tontine = this.tontineRepo.create({
-      ...dto,
-      createurId,
-      tourActuel: 0,
-      statut: TontineStatus.DRAFT,
+      name: dto.name,
+      description: dto.description,
+      targetAmount: dto.targetAmount.toString(),
+      contributionAmount: dto.contributionAmount.toString(),
+      frequency: dto.frequency,
+      memberLimit: dto.memberLimit,
+      currency: dto.currency ?? 'XAF',
+      walletId: dto.walletId ?? null,
+      creatorId,
+      currentCycle: 0,
+      status: TontineStatus.DRAFT,
     });
     const saved = await this.tontineRepo.save(tontine);
 
     const creatorMember = this.memberRepo.create({
       tontineId: saved.id,
-      userId: createurId,
+      userId: creatorId,
       role: TontineMemberRole.ADMIN,
       status: TontineMemberStatus.ACTIVE,
-      tourOrdre: 1,
-      aPayeTourActuel: false,
     });
     await this.memberRepo.save(creatorMember);
 
-    return this.findOne(saved.id, createurId);
+    return this.findOne(saved.id, creatorId);
   }
 
   async findAll(userId: number): Promise<Tontine[]> {
@@ -42,18 +47,18 @@ export class TontineService {
       .innerJoin('t.membres', 'm', 'm.userId = :userId', { userId })
       .leftJoinAndSelect('t.membres', 'allMembres')
       .leftJoinAndSelect('allMembres.user', 'user')
-      .leftJoinAndSelect('t.createur', 'createur')
+      .leftJoinAndSelect('t.creator', 'creator')
       .orderBy('t.createdAt', 'DESC')
       .getMany();
   }
 
-  async findOne(id: number, userId?: number): Promise<Tontine> {
+  async findOne(id: string, userId?: number): Promise<Tontine> {
     const tontine = await this.tontineRepo.findOne({
       where: { id },
-      relations: ['membres', 'membres.user', 'createur'],
+      relations: ['membres', 'membres.user', 'creator'],
     });
     if (!tontine) {
-      throw new NotFoundException(`Tontine #${id} introuvable`);
+      throw new NotFoundException(Tontine #${id} introuvable);
     }
     if (userId !== undefined) {
       this.assertMembership(tontine, userId);
@@ -61,11 +66,11 @@ export class TontineService {
     return tontine;
   }
 
-  async update(id: number, dto: UpdateTontineDto, userId: number): Promise<Tontine> {
+  async update(id: string, dto: UpdateTontineDto, userId: number): Promise<Tontine> {
     const tontine = await this.findOne(id, userId);
     this.assertAdmin(tontine, userId);
 
-    if (tontine.statut !== TontineStatus.DRAFT) {
+    if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException('Seule une tontine en DRAFT peut être modifiée');
     }
 
@@ -73,7 +78,7 @@ export class TontineService {
     return this.tontineRepo.save(tontine);
   }
 
-  async updateStatus(id: number, userId: number, newStatus: TontineStatus): Promise<Tontine> {
+  async updateStatus(id: string, userId: number, newStatus: TontineStatus): Promise<Tontine> {
     const tontine = await this.findOne(id, userId);
     this.assertAdmin(tontine, userId);
 
@@ -83,36 +88,36 @@ export class TontineService {
       [TontineStatus.CLOSED]: [],
     };
 
-    const allowed = validTransitions[tontine.statut];
+    const allowed = validTransitions[tontine.status];
     if (!allowed.includes(newStatus)) {
       throw new BadRequestException(
-        `Transition invalide: ${tontine.statut} → ${newStatus}`,
+        Transition invalide: ${tontine.status} → ${newStatus},
       );
     }
 
-    tontine.statut = newStatus;
+    tontine.status = newStatus;
     return this.tontineRepo.save(tontine);
   }
 
-  async remove(id: number, userId: number): Promise<void> {
+  async remove(id: string, userId: number): Promise<void> {
     const tontine = await this.findOne(id, userId);
     this.assertAdmin(tontine, userId);
 
-    if (tontine.statut !== TontineStatus.DRAFT) {
+    if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException('Seule une tontine en DRAFT peut être supprimée');
     }
 
     await this.tontineRepo.remove(tontine);
   }
 
-  async addMember(tontineId: number, userId: number, memberUserId: number): Promise<TontineMember> {
+  async addMember(tontineId: string, userId: number, memberUserId: number): Promise<TontineMember> {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
 
     const activeCount = tontine.membres.filter(
       (m) => m.status === TontineMemberStatus.ACTIVE,
     ).length;
-    if (activeCount >= tontine.nombreMembres) {
+    if (activeCount >= tontine.memberLimit) {
       throw new BadRequestException('La tontine est pleine');
     }
 
@@ -128,13 +133,12 @@ export class TontineService {
       userId: memberUserId,
       role: TontineMemberRole.MEMBER,
       status: TontineMemberStatus.ACTIVE,
-      tourOrdre: activeCount + 1,
     });
 
     return this.memberRepo.save(member);
   }
 
-  async removeMember(tontineId: number, userId: number, memberId: number): Promise<void> {
+  async removeMember(tontineId: string, userId: number, memberId: string): Promise<void> {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
 
@@ -151,13 +155,13 @@ export class TontineService {
     await this.memberRepo.save(member);
   }
 
-  async join(id: number, userId: number): Promise<TontineMember> {
+  async join(id: string, userId: number): Promise<TontineMember> {
     const tontine = await this.findOne(id);
     const existing = tontine.membres.find((m) => m.userId === userId);
     if (existing) {
       throw new ForbiddenException('Vous êtes déjà membre de cette tontine');
     }
-    if (tontine.membres.length >= tontine.nombreMembres) {
+    if (tontine.membres.length >= tontine.memberLimit) {
       throw new ForbiddenException('Cette tontine est pleine');
     }
     const member = this.memberRepo.create({
@@ -165,12 +169,11 @@ export class TontineService {
       userId,
       role: TontineMemberRole.MEMBER,
       status: TontineMemberStatus.ACTIVE,
-      tourOrdre: tontine.membres.length + 1,
     });
     return this.memberRepo.save(member);
   }
 
-  async leave(id: number, userId: number): Promise<void> {
+  async leave(id: string, userId: number): Promise<void> {
     const tontine = await this.findOne(id, userId);
     const member = tontine.membres.find(
       (m) => m.userId === userId && m.status === TontineMemberStatus.ACTIVE,

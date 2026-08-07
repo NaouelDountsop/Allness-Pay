@@ -1,13 +1,43 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { UserProfile } from "@afrilinkpay/shared";
-import { Sparkles } from "lucide-react";
+import {
+  Sparkles,
+  CreditCard,
+  Users,
+  LifeBuoy,
+  ShieldAlert,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Toggle } from "@/components/ui/toggle";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { userService } from "@/lib/api/user.service";
 
-function SettingCard({ title, description, badge, children }: { title: string; description: string; badge?: string; children: React.ReactNode }) {
+function SettingCard({
+  title,
+  description,
+  badge,
+  children,
+}: {
+  title: string;
+  description: string;
+  badge?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between gap-3 mb-5">
@@ -26,13 +56,35 @@ function SettingCard({ title, description, badge, children }: { title: string; d
   );
 }
 
-function SettingField({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function ToggleRow({
+  label,
+  hint,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  hint: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
   return (
-    <div className="rounded-3xl bg-gray-50 p-4">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400">{label}</p>
-      <p className="mt-2 text-sm font-medium text-gray-900">{value}</p>
+    <div className="flex items-center justify-between rounded-2xl bg-gray-50 p-4">
+      <div>
+        <p className="text-sm font-medium text-gray-900">{label}</p>
+        <p className="text-xs text-gray-500">{hint}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500">{checked ? "Activé" : "Désactivé"}</span>
+        <Toggle checked={checked} onChange={onCheckedChange} />
+      </div>
     </div>
   );
+}
+
+interface PaymentMethod {
+  id: string;
+  type: string;
+  identifier: string;
 }
 
 export default function SettingsPage() {
@@ -41,7 +93,67 @@ export default function SettingsPage() {
     queryFn: userService.getProfile,
   });
 
-  const fullName = useMemo(() => (profile ? `${profile.prenom} ${profile.nom}` : "Utilisateur Afrilink"), [profile]);
+  const fullName = useMemo(
+    () => (profile ? `${profile.prenom} ${profile.nom}` : "Utilisateur Afrilink"),
+    [profile],
+  );
+
+  // --- État des pop-ups ---
+  const [securityOpen, setSecurityOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [paymentMethodsOpen, setPaymentMethodsOpen] = useState(false);
+  const [tontinePrefsOpen, setTontinePrefsOpen] = useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
+
+  // --- Sécurité ---
+  const [twoFaEnabled, setTwoFaEnabled] = useState(true);
+  const [pinEnabled, setPinEnabled] = useState(true);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+
+  // --- Notifications ---
+  const [emailNotifs, setEmailNotifs] = useState(true);
+  const [smsNotifs, setSmsNotifs] = useState(false);
+  const [pushNotifs, setPushNotifs] = useState(true);
+  const [notifDeposit, setNotifDeposit] = useState(true);
+  const [notifTontineReminder, setNotifTontineReminder] = useState(true);
+  const [notifInvitation, setNotifInvitation] = useState(true);
+  const [notifLatePayment, setNotifLatePayment] = useState(true);
+
+  // --- Préférences de compte ---
+  const [currency, setCurrency] = useState("CFA");
+  const [theme, setTheme] = useState("Clair");
+  const [language, setLanguage] = useState("Français");
+  const [timezone, setTimezone] = useState("Afrique/Douala (GMT+1)");
+
+  // --- Moyens de paiement ---
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+    { id: "1", type: "Orange Money", identifier: "+237 6XX XX XX XX" },
+  ]);
+  const [newMethodType, setNewMethodType] = useState("Orange Money");
+  const [newMethodIdentifier, setNewMethodIdentifier] = useState("");
+
+  const addPaymentMethod = () => {
+    if (!newMethodIdentifier.trim()) return;
+    setPaymentMethods((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), type: newMethodType, identifier: newMethodIdentifier },
+    ]);
+    setNewMethodIdentifier("");
+    // TODO: brancher sur userService.addPaymentMethod({ type: newMethodType, identifier: newMethodIdentifier })
+  };
+
+  const removePaymentMethod = (id: string) => {
+    setPaymentMethods((prev) => prev.filter((m) => m.id !== id));
+    // TODO: brancher sur userService.removePaymentMethod(id)
+  };
+
+  // --- Préférences tontine ---
+  const [reminderDays, setReminderDays] = useState("2");
+  const [profileVisibleToMembers, setProfileVisibleToMembers] = useState(true);
+
+  // --- Confidentialité ---
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   return (
     <DashboardLayout>
@@ -72,7 +184,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="rounded-3xl bg-afrilink-green/5 p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-gray-500">2FA</p>
-                  <p className="mt-3 text-sm font-medium text-gray-900">Activée</p>
+                  <p className="mt-3 text-sm font-medium text-gray-900">{twoFaEnabled ? "Activée" : "Désactivée"}</p>
                 </div>
               </div>
 
@@ -84,11 +196,11 @@ export default function SettingsPage() {
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">Français</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Devise</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">CFA</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
                   </div>
                 </div>
               </div>
@@ -96,26 +208,35 @@ export default function SettingsPage() {
           </aside>
 
           <main className="space-y-6 xl:w-2/3">
-
-
             <div className="grid gap-4 lg:grid-cols-1">
-
-
               <SettingCard
                 title="Sécurité du compte"
-                description="Verrouillez votre compte et activez les protections"
-                badge="Activée"
+                description="Mot de passe, 2FA, PIN transactionnel et biométrie"
+                badge={twoFaEnabled ? "Activée" : "Désactivée"}
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Authentification</p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-green">2FA activée</p>
+                    <p className="mt-2 text-sm font-medium text-afrilink-green">
+                      {twoFaEnabled ? "2FA activée" : "2FA désactivée"}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">PIN transactionnel</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {pinEnabled ? "Configuré" : "Non configuré"}
+                    </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Historique de connexion</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">Dernière connexion aujourd'hui</p>
                   </div>
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => setSecurityOpen(true)}
+                  >
                     Gérer la sécurité
                   </Button>
                 </div>
@@ -125,18 +246,33 @@ export default function SettingsPage() {
             <div className="grid gap-4 lg:grid-cols-2">
               <SettingCard
                 title="Préférences de notifications"
-                description="Recevez les alertes qui comptent pour vous"
+                description="Email, SMS, push et alertes par type d'événement"
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Email</p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-dark">Activées</p>
+                    <p className="mt-2 text-sm font-medium text-afrilink-dark">
+                      {emailNotifs ? "Activées" : "Désactivées"}
+                    </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">SMS</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">Désactivées</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {smsNotifs ? "Activées" : "Désactivées"}
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Push</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {pushNotifs ? "Activées" : "Désactivées"}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => setNotificationsOpen(true)}
+                  >
                     Modifier mes notifications
                   </Button>
                 </div>
@@ -144,19 +280,120 @@ export default function SettingsPage() {
 
               <SettingCard
                 title="Préférences de compte"
-                description="Paramètres d'affichage et de devise"
+                description="Devise, langue, thème et fuseau horaire"
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Devise</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">CFA</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
+                  </div>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Thème</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">Clair</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{theme}</p>
                   </div>
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => setPreferencesOpen(true)}
+                  >
                     Modifier mes préférences
+                  </Button>
+                </div>
+              </SettingCard>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <SettingCard
+                title="Moyens de paiement"
+                description="Comptes mobile money et bancaires liés à votre compte"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <CreditCard className="w-4 h-4 text-afrilink-orange shrink-0" />
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Moyens liés</p>
+                      <p className="mt-2 text-sm font-medium text-gray-900">
+                        {paymentMethods.length} moyen{paymentMethods.length > 1 ? "s" : ""} de paiement
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => setPaymentMethodsOpen(true)}
+                  >
+                    Gérer mes moyens de paiement
+                  </Button>
+                </div>
+              </SettingCard>
+
+              <SettingCard
+                title="Préférences tontines"
+                description="Rappels et visibilité de votre profil dans les groupes"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <Users className="w-4 h-4 text-afrilink-green shrink-0" />
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Rappel avant mon tour</p>
+                      <p className="mt-2 text-sm font-medium text-gray-900">{reminderDays} jour(s) avant</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => setTontinePrefsOpen(true)}
+                  >
+                    Modifier mes préférences tontines
+                  </Button>
+                </div>
+              </SettingCard>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <SettingCard
+                title="Support"
+                description="Besoin d'aide ? Contactez-nous ou consultez la FAQ"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <LifeBuoy className="w-4 h-4 text-afrilink-orange shrink-0" />
+                    <p className="text-sm font-medium text-gray-900">Une question, un problème ?</p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Button variant="outline" size="sm" className="rounded-full w-full">
+                      Contacter le support
+                    </Button>
+                    <Button variant="outline" size="sm" className="rounded-full w-full">
+                      Consulter la FAQ
+                    </Button>
+                  </div>
+                </div>
+              </SettingCard>
+
+              <SettingCard
+                title="Confidentialité & compte"
+                description="Export de vos données et suppression du compte"
+              >
+                <div className="space-y-3">
+                  <Button variant="outline" size="sm" className="rounded-full w-full">
+                    Exporter mes données
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full border-red-200 text-red-600 hover:bg-red-50"
+                    onClick={() => setDeleteAccountOpen(true)}
+                  >
+                    <ShieldAlert className="mr-2 h-4 w-4" />
+                    Supprimer mon compte
                   </Button>
                 </div>
               </SettingCard>
@@ -164,6 +401,400 @@ export default function SettingsPage() {
           </main>
         </div>
       </div>
+
+      {/* --- Pop-up : Sécurité --- */}
+      <Dialog open={securityOpen} onOpenChange={setSecurityOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setSecurityOpen} />
+          <DialogHeader>
+            <DialogTitle>Gérer la sécurité</DialogTitle>
+            <DialogDescription>
+              Modifiez votre mot de passe et vos options d'authentification.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <ToggleRow
+              label="Authentification à deux facteurs"
+              hint="Sécurise vos connexions avec un code supplémentaire"
+              checked={twoFaEnabled}
+              onCheckedChange={setTwoFaEnabled}
+            />
+            <ToggleRow
+              label="Biométrie"
+              hint="Déverrouillez l'app avec votre empreinte ou Face ID"
+              checked={biometricEnabled}
+              onCheckedChange={setBiometricEnabled}
+            />
+
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Mot de passe actuel</Label>
+              <Input id="current-password" type="password" placeholder="••••••••" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Nouveau mot de passe</Label>
+              <Input id="new-password" type="password" placeholder="••••••••" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pin">PIN transactionnel (4 chiffres)</Label>
+              <Input
+                id="pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="••••"
+                onChange={() => setPinEnabled(true)}
+              />
+              <p className="text-xs text-gray-400">
+                Requis pour valider vos dépôts et retraits.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSecurityOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                // TODO: brancher sur userService.updateSecurity({ twoFaEnabled, biometricEnabled, pin, password })
+                setSecurityOpen(false);
+              }}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- Pop-up : Notifications --- */}
+      <Dialog open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setNotificationsOpen} />
+          <DialogHeader>
+            <DialogTitle>Modifier mes notifications</DialogTitle>
+            <DialogDescription>
+              Choisissez les canaux et les types d'alertes que vous souhaitez recevoir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Canaux</p>
+            <ToggleRow
+              label="Notifications par email"
+              hint="Recevez les alertes importantes par email"
+              checked={emailNotifs}
+              onCheckedChange={setEmailNotifs}
+            />
+            <ToggleRow
+              label="Notifications par SMS"
+              hint="Recevez les alertes urgentes par SMS"
+              checked={smsNotifs}
+              onCheckedChange={setSmsNotifs}
+            />
+            <ToggleRow
+              label="Notifications push"
+              hint="Recevez les alertes directement sur votre téléphone"
+              checked={pushNotifs}
+              onCheckedChange={setPushNotifs}
+            />
+
+            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+              Types d'événements
+            </p>
+            <ToggleRow
+              label="Dépôt reçu"
+              hint="Quand un dépôt est confirmé sur votre compte"
+              checked={notifDeposit}
+              onCheckedChange={setNotifDeposit}
+            />
+            <ToggleRow
+              label="Rappel de tour de tontine"
+              hint="Avant votre tour de cotisation ou de réception"
+              checked={notifTontineReminder}
+              onCheckedChange={setNotifTontineReminder}
+            />
+            <ToggleRow
+              label="Invitation reçue"
+              hint="Quand quelqu'un vous invite à rejoindre une tontine"
+              checked={notifInvitation}
+              onCheckedChange={setNotifInvitation}
+            />
+            <ToggleRow
+              label="Paiement en retard"
+              hint="Quand une cotisation d'un membre est en retard"
+              checked={notifLatePayment}
+              onCheckedChange={setNotifLatePayment}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNotificationsOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                // TODO: brancher sur userService.updateNotificationPrefs(...)
+                setNotificationsOpen(false);
+              }}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- Pop-up : Préférences de compte --- */}
+      <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setPreferencesOpen} />
+          <DialogHeader>
+            <DialogTitle>Modifier mes préférences</DialogTitle>
+            <DialogDescription>
+              Ajustez la devise, la langue, le thème et le fuseau horaire.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="currency">Devise</Label>
+              <select
+                id="currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+              >
+                <option value="CFA">CFA</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="language">Langue</Label>
+              <select
+                id="language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+              >
+                <option value="Français">Français</option>
+                <option value="English">English</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="theme">Thème</Label>
+              <select
+                id="theme"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+              >
+                <option value="Clair">Clair</option>
+                <option value="Sombre">Sombre</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="timezone">Fuseau horaire</Label>
+              <select
+                id="timezone"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+              >
+                <option value="Afrique/Douala (GMT+1)">Afrique/Douala (GMT+1)</option>
+                <option value="Europe/Paris (GMT+1/+2)">Europe/Paris (GMT+1/+2)</option>
+                <option value="Afrique/Abidjan (GMT+0)">Afrique/Abidjan (GMT+0)</option>
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreferencesOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                // TODO: brancher sur userService.updatePreferences({ currency, language, theme, timezone })
+                setPreferencesOpen(false);
+              }}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- Pop-up : Moyens de paiement --- */}
+      <Dialog open={paymentMethodsOpen} onOpenChange={setPaymentMethodsOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setPaymentMethodsOpen} />
+          <DialogHeader>
+            <DialogTitle>Moyens de paiement</DialogTitle>
+            <DialogDescription>
+              Gérez les comptes mobile money et bancaires liés à votre compte.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1">
+            {paymentMethods.length === 0 ? (
+              <p className="text-sm text-gray-400">Aucun moyen de paiement enregistré.</p>
+            ) : (
+              paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className="flex items-center justify-between rounded-2xl bg-gray-50 p-4"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{method.type}</p>
+                    <p className="text-xs text-gray-500">{method.identifier}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removePaymentMethod(method.id)}
+                    className="rounded-full p-2 text-red-500 hover:bg-red-50"
+                    aria-label="Supprimer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="mt-4 space-y-3 rounded-2xl border border-dashed border-gray-200 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+              Ajouter un moyen de paiement
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="method-type">Type</Label>
+                <select
+                  id="method-type"
+                  value={newMethodType}
+                  onChange={(e) => setNewMethodType(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-900"
+                >
+                  <option value="Orange Money">Orange Money</option>
+                  <option value="MTN MoMo">MTN MoMo</option>
+                  <option value="Carte bancaire">Carte bancaire</option>
+                  <option value="Compte bancaire">Compte bancaire</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="method-identifier">Numéro / IBAN</Label>
+                <Input
+                  id="method-identifier"
+                  value={newMethodIdentifier}
+                  onChange={(e) => setNewMethodIdentifier(e.target.value)}
+                  placeholder="+237 6XX XX XX XX"
+                />
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="rounded-full" onClick={addPaymentMethod}>
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter
+            </Button>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => setPaymentMethodsOpen(false)}>Fermer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- Pop-up : Préférences tontines --- */}
+      <Dialog open={tontinePrefsOpen} onOpenChange={setTontinePrefsOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setTontinePrefsOpen} />
+          <DialogHeader>
+            <DialogTitle>Préférences tontines</DialogTitle>
+            <DialogDescription>
+              Configurez vos rappels et la visibilité de votre profil dans vos groupes.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="reminder-days">Rappel avant mon tour</Label>
+              <select
+                id="reminder-days"
+                value={reminderDays}
+                onChange={(e) => setReminderDays(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+              >
+                <option value="1">1 jour avant</option>
+                <option value="2">2 jours avant</option>
+                <option value="3">3 jours avant</option>
+                <option value="7">7 jours avant</option>
+              </select>
+            </div>
+
+            <ToggleRow
+              label="Visible par les membres"
+              hint="Les autres membres de vos tontines peuvent voir votre profil"
+              checked={profileVisibleToMembers}
+              onCheckedChange={setProfileVisibleToMembers}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTontinePrefsOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                // TODO: brancher sur userService.updateTontinePrefs({ reminderDays, profileVisibleToMembers })
+                setTontinePrefsOpen(false);
+              }}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- Pop-up : Suppression du compte --- */}
+      <Dialog open={deleteAccountOpen} onOpenChange={setDeleteAccountOpen}>
+        <DialogContent>
+          <DialogClose onOpenChange={setDeleteAccountOpen} />
+          <DialogHeader>
+            <DialogTitle>Supprimer mon compte</DialogTitle>
+            <DialogDescription>
+              Cette action est définitive. Toutes vos données, y compris l'historique de vos
+              tontines, seront supprimées et ne pourront pas être récupérées.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label htmlFor="delete-confirm">
+              Tapez <span className="font-semibold">SUPPRIMER</span> pour confirmer
+            </Label>
+            <Input
+              id="delete-confirm"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="SUPPRIMER"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteAccountOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-red-600 text-white hover:bg-red-700"
+              disabled={deleteConfirmText !== "SUPPRIMER"}
+              onClick={() => {
+                // TODO: brancher sur userService.deleteAccount()
+                setDeleteAccountOpen(false);
+              }}
+            >
+              Supprimer définitivement
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
+ 

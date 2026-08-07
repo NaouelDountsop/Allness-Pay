@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Tontine } from './tontine.entity';
 import { User } from '../../users/entities/user.entity';
@@ -24,15 +25,15 @@ export enum TontineMemberStatus {
 
 @Entity('tontine_members')
 export class TontineMember {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Tontine, (t) => t.membres, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tontineId' })
   tontine: Tontine;
 
-  @Column()
-  tontineId: number;
+  @Column({ type: 'uuid' })
+  tontineId: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
@@ -44,14 +45,8 @@ export class TontineMember {
   @Column({ type: 'enum', enum: TontineMemberRole, default: TontineMemberRole.MEMBER })
   role: TontineMemberRole;
 
-  @Column({ type: 'enum', enum: TontineMemberStatus, default: TontineMemberStatus.ACTIVE })
+  @Column({ type: 'enum', enum: TontineMemberStatus, default: TontineMemberStatus.PENDING })
   status: TontineMemberStatus;
-
-  @Column({ type: 'int', default: 0 })
-  tourOrdre: number;
-
-  @Column({ type: 'boolean', default: false })
-  aPayeTourActuel: boolean;
 
   @Column({ type: 'int', nullable: true })
   beneficiaryOrder?: number;
@@ -62,6 +57,9 @@ export class TontineMember {
   @Column({ type: 'int', default: 0 })
   missedContributions: number;
 
-  @CreateDateColumn()
-  dateRejoint: Date;
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }

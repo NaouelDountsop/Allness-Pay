@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
@@ -7,10 +8,12 @@ import { AccountList } from "@/components/user_dashboard/wallet/account-list";
 import { QuickActionsGrid } from "@/components/user_dashboard/wallet/quick-actions-grid";
 import { MonthlySummary } from "@/components/user_dashboard/wallet/monthly-summary";
 import { SecurityCard } from "@/components/user_dashboard/wallet/security-card";
+import { AddLinkedAccountModal } from "@/components/user_dashboard/wallet/add-linked-account-modal";
 import { walletService } from "@/lib/api/wallet.service";
 import { Plus } from "lucide-react";
 
 export default function WalletPage() {
+  const [addAccountOpen, setAddAccountOpen] = useState(false);
   const { data: wallets = [], isLoading: walletsLoading } = useQuery({
     queryKey: ["wallets"],
     queryFn: walletService.list,
@@ -54,7 +57,8 @@ export default function WalletPage() {
                 />
                 <WalletActions />
               </div>
-              <AccountList wallets={wallets} />
+              <AccountList wallets={wallets} onAddAccount={() => setAddAccountOpen(true)} />
+              <AddLinkedAccountModal open={addAccountOpen} onOpenChange={setAddAccountOpen} wallets={wallets} />
             </div>
 
             <div className="space-y-6">

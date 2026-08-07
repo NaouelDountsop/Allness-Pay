@@ -3,9 +3,10 @@ import type { Wallet as ApiWallet } from "@afrilinkpay/shared";
 
 interface AccountListProps {
   wallets: ApiWallet[];
+  onAddAccount: () => void;
 }
 
-export function AccountList({ wallets }: AccountListProps) {
+export function AccountList({ wallets, onAddAccount }: AccountListProps) {
   return (
     <div className="space-y-3">
       <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -44,7 +45,10 @@ export function AccountList({ wallets }: AccountListProps) {
         </ul>
       </div>
 
-      <button className="w-full text-left rounded-2xl border border-afrilink-orange/20 bg-gradient-to-br from-afrilink-orange via-afrilink-dark to-afrilink-darker shadow-sm p-5 flex items-center justify-between gap-3 transition hover:shadow-md hover:border-afrilink-orange/50">
+      <button
+        onClick={onAddAccount}
+        className="w-full text-left rounded-2xl border border-afrilink-orange/20 bg-gradient-to-br from-afrilink-orange via-afrilink-dark to-afrilink-darker shadow-sm p-5 flex items-center justify-between gap-3 transition hover:shadow-md hover:border-afrilink-orange/50"
+      >
         <div className="flex items-center gap-3">
           <span className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
             <Sparkles className="w-4 h-4 text-white" />

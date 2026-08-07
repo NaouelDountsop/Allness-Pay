@@ -2,6 +2,8 @@ import { apiClient } from "@/lib/api-client";
 
 export interface RegisterPayload {
   fullName: string;
+  nom?: string;
+  prenom?: string;
   email: string;
   password?: string;
   phone?: string;

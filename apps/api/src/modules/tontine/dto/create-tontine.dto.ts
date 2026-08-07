@@ -3,32 +3,36 @@ import { TontineFrequency } from '../entities/tontine.entity';
 
 export class CreateTontineDto {
   @IsString()
-  @Length(3, 100)
+  @Length(3, 120)
   name: string;
 
   @IsOptional()
   @IsString()
-  @Length(0, 255)
+  @Length(0, 500)
   description?: string;
 
   @IsInt()
   @Min(500)
-  montantCotisation: number;
+  targetAmount: number;
+
+  @IsInt()
+  @Min(500)
+  contributionAmount: number;
 
   @IsEnum(TontineFrequency)
-  frequence: TontineFrequency;
+  frequency: TontineFrequency;
 
   @IsInt()
   @Min(2)
   @Max(50)
-  nombreMembres: number;
+  memberLimit: number;
 
   @IsOptional()
   @IsString()
   @Length(3, 10)
-  devise?: string;
+  currency?: string;
 
-  //@IsOptional()
-  //@IsString()
-  //lieu?: string;
+  @IsOptional()
+  @IsString()
+  walletId?: string;
 }

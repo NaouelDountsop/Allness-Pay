@@ -7,14 +7,15 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  VersionColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { TontineMember } from './tontine-member.entity';
 
 export enum TontineFrequency {
-  WEEKLY = 'Hebdomadaire',
-  BIWEEKLY = 'Bimensuelle',
-  MONTHLY = 'Mensuelle',
+  WEEKLY = 'WEEKLY',
+  BIWEEKLY = 'BIWEEKLY',
+  MONTHLY = 'MONTHLY',
 }
 
 export enum TontineStatus {
@@ -25,47 +26,62 @@ export enum TontineStatus {
 
 @Entity('tontines')
 export class Tontine {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 120 })
   name: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ length: 500, nullable: true })
   description: string;
 
   @Column({ type: 'bigint' })
-  montantCotisation: number;
+  targetAmount: string;
+
+  @Column({ type: 'bigint' })
+  contributionAmount: string;
+
+  @Column({ type: 'int' })
+  memberLimit: number;
+
+  @Column({ length: 10, default: 'XAF' })
+  currency: string;
 
   @Column({ type: 'enum', enum: TontineFrequency, default: TontineFrequency.MONTHLY })
-  frequence: TontineFrequency;
-
-  @Column({ default: 12 })
-  nombreMembres: number;
+  frequency: TontineFrequency;
 
   @Column({ type: 'enum', enum: TontineStatus, default: TontineStatus.DRAFT })
-  statut: TontineStatus;
+  status: TontineStatus;
 
-  @Column({ default: 0 })
-  tourActuel: number;
+  @Column({ type: 'int', default: 0 })
+  currentCycle: number;
 
-  @Column({ default: 'XAF' })
-  devise: string;
-
+  @Column({ type: 'timestamptz', nullable: true })
+  nextContributionAt: Date | null;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'createurId' })
-  createur: User;
+  @JoinColumn({ name: 'creatorId' })
+  creator: User;
 
   @Column()
-  createurId: number;
+  creatorId: number;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'walletId' })
+  wallet: User;
+
+  @Column({ type: 'uuid', nullable: true })
+  walletId: string | null;
 
   @OneToMany(() => TontineMember, (m) => m.tontine, { cascade: true })
   membres: TontineMember[];
 
-  @CreateDateColumn()
+  @VersionColumn()
+  version: number;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

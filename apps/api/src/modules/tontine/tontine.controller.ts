@@ -6,7 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -49,24 +49,18 @@ export class TontineController {
     return this.tontineService.findAll(req.user.sub);
   }
 
-  @Get('invitations/pending')
-  @ApiOperation({ summary: 'Lister les invitations en attente de l\'utilisateur' })
-  findPendingInvitations(@Req() req: AuthenticatedRequest) {
-    return this.invitationService.findPendingByUserId(req.user.sub);
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Obtenir une tontine par ID' })
-  @ApiParam({ name: 'id', type: Number })
-  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest) {
+  @ApiParam({ name: 'id', type: String })
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
     return this.tontineService.findOne(id, req.user.sub);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Modifier une tontine (DRAFT uniquement)' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
     @Body() dto: UpdateTontineDto,
   ) {
@@ -75,9 +69,9 @@ export class TontineController {
 
   @Patch(':id/status')
   @ApiOperation({ summary: 'Changer le statut d\'une tontine' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   updateStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
     @Body('status') status: TontineStatus,
   ) {
@@ -87,16 +81,16 @@ export class TontineController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Supprimer une tontine (DRAFT uniquement)' })
-  @ApiParam({ name: 'id', type: Number })
-  remove(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest) {
+  @ApiParam({ name: 'id', type: String })
+  remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
     return this.tontineService.remove(id, req.user.sub);
   }
 
   @Post(':id/members')
   @ApiOperation({ summary: 'Ajouter un membre à la tontine' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   addMember(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
     @Body() dto: AddMemberDto,
   ) {
@@ -106,11 +100,11 @@ export class TontineController {
   @Delete(':id/members/:memberId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Retirer un membre de la tontine' })
-  @ApiParam({ name: 'id', type: Number })
-  @ApiParam({ name: 'memberId', type: Number })
+  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'memberId', type: String })
   removeMember(
-    @Param('id', ParseIntPipe) id: number,
-    @Param('memberId', ParseIntPipe) memberId: number,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('memberId', ParseUUIDPipe) memberId: string,
     @Req() req: AuthenticatedRequest,
   ) {
     return this.tontineService.removeMember(id, req.user.sub, memberId);
@@ -118,24 +112,24 @@ export class TontineController {
 
   @Post(':id/join')
   @ApiOperation({ summary: 'Rejoindre une tontine' })
-  @ApiParam({ name: 'id', type: Number })
-  join(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
+  @ApiParam({ name: 'id', type: String })
+  join(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.tontineService.join(id, req.user.sub);
   }
 
   @Post(':id/leave')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Quitter une tontine (membres non-admin)' })
-  @ApiParam({ name: 'id', type: Number })
-  leave(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
+  @ApiParam({ name: 'id', type: String })
+  leave(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.tontineService.leave(id, req.user.sub);
   }
 
   @Post(':id/invitations')
   @ApiOperation({ summary: 'Envoyer une invitation à rejoindre la tontine' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   createInvitation(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
     @Body() dto: CreateInvitationDto,
   ) {
@@ -144,17 +138,17 @@ export class TontineController {
 
   @Get(':id/invitations')
   @ApiOperation({ summary: 'Lister les invitations d\'une tontine' })
-  @ApiParam({ name: 'id', type: Number })
-  listInvitations(@Param('id', ParseIntPipe) id: number) {
+  @ApiParam({ name: 'id', type: String })
+  listInvitations(@Param('id', ParseUUIDPipe) id: string) {
     return this.invitationService.findByTontine(id);
   }
 
   @Post('invitations/:invitationId/respond')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Répondre à une invitation' })
-  @ApiParam({ name: 'invitationId', type: Number })
+  @ApiParam({ name: 'invitationId', type: String })
   respondInvitation(
-    @Param('invitationId', ParseIntPipe) invitationId: number,
+    @Param('invitationId', ParseUUIDPipe) invitationId: string,
     @Req() req: AuthenticatedRequest,
     @Body() dto: RespondInvitationDto,
   ) {

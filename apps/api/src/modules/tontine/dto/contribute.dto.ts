@@ -1,10 +1,10 @@
-import { IsInt, IsString, Length } from 'class-validator';
+import { IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ContributeDto {
   @ApiProperty({ description: 'ID of the cycle to contribute to' })
-  @IsInt()
-  cycleId: number;
+  @IsString()
+  cycleId: string;
 
   @ApiProperty({ description: 'Amount in centimes (FCFA)', example: '50000' })
   @IsString()
