@@ -141,7 +141,7 @@ export class KycController {
     return this.kycService.findAll(status);
   }
 
-
+  
 @Get(':id')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @RequirePermissions('kyc:review')
