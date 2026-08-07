@@ -19,7 +19,7 @@ export class PayoutService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async processPayout(cycleId: number): Promise<{ beneficiaryWallet: Wallet; amount: string }> {
+  async processPayout(cycleId: string): Promise<{ beneficiaryWallet: Wallet; amount: string }> {
     return this.dataSource.transaction(async (manager) => {
       const cycle = await manager.findOneOrFail(TontineCycle, {
         where: { id: cycleId },
@@ -56,7 +56,7 @@ export class PayoutService {
       }
 
       const tontineWallet = await manager.findOne(Wallet, {
-        where: { userId: tontine.createurId, isPrimary: true },
+        where: { userId: tontine.creatorId, isPrimary: true },
       });
 
       if (!tontineWallet) {

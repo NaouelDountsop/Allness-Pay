@@ -14,7 +14,7 @@ export default function TontineDetailPage() {
 
   const { data: tontine, isLoading } = useQuery({
     queryKey: ["tontine", id],
-    queryFn: () => tontineService.getById(Number(id)),
+    queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
 
@@ -51,7 +51,7 @@ export default function TontineDetailPage() {
     );
   }
 
-  const progressPercent = tontine.nombreMembres > 0 ? Math.round((tontine.tourActuel / tontine.nombreMembres) * 100) : 0;
+  const progressPercent = tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
 
   return (
     <DashboardLayout>
@@ -67,7 +67,7 @@ export default function TontineDetailPage() {
               <ArrowLeft className="w-5 h-5" />
               Tontine {tontine.name}
             </button>
-            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequence}</p>
+            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequency}</p>
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">

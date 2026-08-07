@@ -13,11 +13,11 @@ import { TontineContribution } from './tontine-contribution.entity';
 
 @Entity('tontine_cycles')
 export class TontineCycle {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  tontineId: number;
+  @Column({ type: 'uuid' })
+  tontineId: string;
 
   @ManyToOne(() => Tontine, { onDelete: 'CASCADE' })
   tontine: Tontine;
@@ -25,8 +25,8 @@ export class TontineCycle {
   @Column({ type: 'int' })
   cycleNumber: number;
 
-  @Column()
-  beneficiaryId: number;
+  @Column({ type: 'uuid' })
+  beneficiaryId: string;
 
   @Column({ type: 'enum', enum: TontineCycleStatus, default: TontineCycleStatus.PENDING })
   status: TontineCycleStatus;

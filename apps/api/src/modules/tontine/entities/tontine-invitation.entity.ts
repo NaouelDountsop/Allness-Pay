@@ -10,11 +10,11 @@ import { Tontine } from './tontine.entity';
 
 @Entity('tontine_invitations')
 export class TontineInvitation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  tontineId: number;
+  @Column({ type: 'uuid' })
+  tontineId: string;
 
   @ManyToOne(() => Tontine, { onDelete: 'CASCADE' })
   tontine: Tontine;

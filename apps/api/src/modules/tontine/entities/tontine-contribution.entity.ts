@@ -11,17 +11,17 @@ import { TontineCycle } from './tontine-cycle.entity';
 
 @Entity('tontine_contributions')
 export class TontineContribution {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
-  cycleId: number;
+  @Column({ type: 'uuid' })
+  cycleId: string;
 
   @ManyToOne(() => TontineCycle, (cycle) => cycle.contributions, { onDelete: 'CASCADE' })
   cycle: TontineCycle;
 
-  @Column()
-  memberId: number;
+  @Column({ type: 'uuid' })
+  memberId: string;
 
   @Column({ type: 'bigint' })
   amount: string;
@@ -29,8 +29,8 @@ export class TontineContribution {
   @Column({ type: 'enum', enum: TontineContributionStatus, default: TontineContributionStatus.PENDING })
   status: TontineContributionStatus;
 
-  @Column({ type: 'int', nullable: true })
-  walletTransactionId?: number;
+  @Column({ type: 'uuid', nullable: true })
+  walletTransactionId?: string;
 
   @Column({ type: 'timestamptz', nullable: true })
   paidAt?: Date;

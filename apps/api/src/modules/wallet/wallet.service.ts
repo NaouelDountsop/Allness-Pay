@@ -7,6 +7,7 @@ import {
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Wallet, WalletStatus } from './entities/wallet.entity';
+import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 
@@ -15,6 +16,8 @@ export class WalletsService {
   constructor(
     @InjectRepository(Wallet)
     private readonly walletRepo: Repository<Wallet>,
+    @InjectRepository(Kyc)
+    private readonly kycRepository: Repository<Kyc>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     
@@ -41,7 +44,7 @@ export class WalletsService {
         userId,
         balance: 0n,
         currency: dto.currency ?? 'XAF',
-        status: WalletStatus.ACTIVE,
+        status: WalletStatus.INACTIVE,
         failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
@@ -113,6 +116,31 @@ export class WalletsService {
       target.isPrimary = true;
       return manager.save(target);
     });
+  }
+
+  async activate(id: string, userId: number): Promise<Wallet> {
+    const wallet = await this.findOne(id, userId);
+
+    if (wallet.status !== WalletStatus.INACTIVE) {
+      throw new BadRequestException('Seul un wallet inactive peut être activé');
+    }
+
+    const kyc = await this.kycRepository.findOne({ where: { userId } });
+    if (!kyc || kyc.status !== KycStatus.APPROVED) {
+      throw new BadRequestException(
+        "Votre KYC doit être approuvé avant d'activer votre wallet",
+      );
+    }
+
+    wallet.status = WalletStatus.ACTIVE;
+    return this.walletRepo.save(wallet);
+  }
+
+  async activateByUserId(userId: number): Promise<void> {
+    await this.walletRepo.update(
+      { userId, status: WalletStatus.INACTIVE },
+      { status: WalletStatus.ACTIVE },
+    );
   }
 
   // garder l'atomicité (verrou + PIN + solde) d'un seul bloc.

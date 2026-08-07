@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tontineService } from "@/lib/api/tontine.service";
 
 interface InviteMemberModalProps {
-  tontineId: number;
+  tontineId: string;
   tontineName: string;
   onClose: () => void;
 }

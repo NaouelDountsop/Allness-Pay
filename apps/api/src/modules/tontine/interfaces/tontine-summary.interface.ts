@@ -1,26 +1,23 @@
-import type{ TontineStatus } from '../enums/tontine-status.enum';
+import type { TontineStatus } from '../enums/tontine-status.enum';
 import type { TontineFrequency } from '../enums/tontine-frequency.enum';
-import type { TontineMemberRole,TontineMemberStatus } from '../entities/tontine-member.entity';
-import type{ TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
+import type { TontineMemberRole, TontineMemberStatus } from '../entities/tontine-member.entity';
+import type { TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
 import type { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
 
-
 export interface TontineMemberSummary {
-  id: number;
+  id: string;
   userId: number;
   role: TontineMemberRole;
   status: TontineMemberStatus;
-  tourOrdre: number;
-  aPayeTourActuel: boolean;
   beneficiaryOrder?: number;
   hasReceivedPayout: boolean;
   missedContributions: number;
 }
 
 export interface TontineCycleSummary {
-  id: number;
+  id: string;
   cycleNumber: number;
-  beneficiaryId: number;
+  beneficiaryId: string;
   status: TontineCycleStatus;
   totalPot: string;
   collectedAmount: string;
@@ -29,9 +26,9 @@ export interface TontineCycleSummary {
 }
 
 export interface TontineContributionSummary {
-  id: number;
-  cycleId: number;
-  memberId: number;
+  id: string;
+  cycleId: string;
+  memberId: string;
   amount: string;
   status: TontineContributionStatus;
   paidAt?: Date;
@@ -40,17 +37,17 @@ export interface TontineContributionSummary {
 }
 
 export interface TontineSummary {
-  id: number;
+  id: string;
   name: string;
   description?: string;
-  montantCotisation: string;
-  frequence: TontineFrequency;
-  nombreMembres: number;
-  statut: TontineStatus;
-  tourActuel: number;
-  devise: string;
-  lieu?: string;
-  createurId: number;
+  targetAmount: string;
+  contributionAmount: string;
+  memberLimit: number;
+  currency: string;
+  frequency: TontineFrequency;
+  status: TontineStatus;
+  currentCycle: number;
+  creatorId: number;
   createdAt: Date;
   membres: TontineMemberSummary[];
 }

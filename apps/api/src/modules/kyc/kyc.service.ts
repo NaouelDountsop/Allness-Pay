@@ -13,6 +13,7 @@ import { ReviewKycDto } from './dto/review-kyc.dto';
 import { Kyc, KycStatus } from './entities/kyc.entity';
 import { MailService } from '../mail/mail.service';
 import { UsersService } from '../users/users.service';
+import { WalletsService } from '../wallet/wallet.service';
 
 type CreateKycInput = CreateKycDto & {
   documentFrontUrl: string;
@@ -30,6 +31,7 @@ export class KycService {
     private readonly kycRepository: Repository<Kyc>,
     private readonly mailService: MailService,
     private readonly usersService: UsersService,
+    private readonly walletsService: WalletsService,
   ) {}
 
   async create(createKycInput: CreateKycInput, userId: number) {
@@ -118,6 +120,10 @@ export class KycService {
     kyc.verifiedAt = new Date();
 
     const saved = await this.kycRepository.save(kyc);
+
+    if (saved.status === KycStatus.APPROVED) {
+      await this.walletsService.activateByUserId(kyc.userId);
+    }
 
     await this.notifyUser(kyc.userId, 'review', {
       previousStatus,

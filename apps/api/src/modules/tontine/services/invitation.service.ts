@@ -32,7 +32,7 @@ export class InvitationService {
   ) {}
 
   async create(
-    tontineId: number,
+    tontineId: string,
     inviterUserId: number,
     dto: CreateInvitationDto,
   ): Promise<TontineInvitation> {
@@ -58,7 +58,7 @@ export class InvitationService {
       throw new ForbiddenException('Seul un admin peut envoyer des invitations');
     }
 
-    if (tontine.statut !== TontineStatus.DRAFT) {
+    if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException('On ne peut inviter qu\'une tontine en DRAFT');
     }
 
@@ -102,7 +102,7 @@ export class InvitationService {
   }
 
   async respond(
-    invitationId: number,
+    invitationId: string,
     userId: number,
     dto: RespondInvitationDto,
   ): Promise<TontineMember | null> {
@@ -147,7 +147,7 @@ export class InvitationService {
     const activeCount = await this.memberRepo.count({
       where: { tontineId: invitation.tontineId, status: TontineMemberStatus.ACTIVE },
     });
-    if (activeCount >= tontine.nombreMembres) {
+    if (activeCount >= tontine.memberLimit) {
       throw new BadRequestException('La tontine est pleine');
     }
 
@@ -156,13 +156,12 @@ export class InvitationService {
       userId,
       role: TontineMemberRole.MEMBER,
       status: TontineMemberStatus.ACTIVE,
-      tourOrdre: activeCount + 1,
     });
 
     return this.memberRepo.save(member);
   }
 
-  async findByTontine(tontineId: number): Promise<TontineInvitation[]> {
+  async findByTontine(tontineId: string): Promise<TontineInvitation[]> {
     return this.invitationRepo.find({
       where: { tontineId },
       order: { createdAt: 'DESC' },
@@ -219,7 +218,7 @@ export class InvitationService {
     const activeCount = members.filter(
       (m) => m.status === TontineMemberStatus.ACTIVE,
     ).length;
-    if (activeCount >= tontine.nombreMembres) {
+    if (activeCount >= tontine.memberLimit) {
       throw new BadRequestException('La tontine est pleine');
     }
 
@@ -231,7 +230,6 @@ export class InvitationService {
       userId,
       role: TontineMemberRole.MEMBER,
       status: TontineMemberStatus.ACTIVE,
-      tourOrdre: activeCount + 1,
     });
 
     return this.memberRepo.save(member);

@@ -31,8 +31,8 @@ export default function TontinesPage() {
 
   const hasTontines = tontines && tontines.length > 0;
 
-  const totalContributed = tontines?.reduce((sum, t) => sum + (t.montantCotisation * t.tourActuel), 0) ?? 0;
-  const nextGain = tontines?.find((t) => t.tourActuel < t.nombreMembres);
+  const totalContributed = tontines?.reduce((sum, t) => sum + (Number(t.contributionAmount) * t.currentCycle), 0) ?? 0;
+  const nextGain = tontines?.find((t) => t.currentCycle < t.memberLimit);
 
   return (
     <DashboardLayout>
@@ -63,9 +63,9 @@ export default function TontinesPage() {
             <div className="mt-6">
               <TontinesStats
                 totalContributed={totalContributed}
-                currency={tontines?.[0]?.devise ?? "CFA"}
+                currency={tontines?.[0]?.currency ?? "CFA"}
                 activeTontinesCount={tontines?.length ?? 0}
-                nextGainAmount={nextGain?.montantCotisation ?? 0}
+                nextGainAmount={Number(nextGain?.contributionAmount ?? 0)}
                 nextGainDate={nextGain?.createdAt ? new Date(nextGain.createdAt).toLocaleDateString("fr-FR") : "---"}
                 nextGainLabel={nextGain?.name ?? "---"}
                 pendingRequestsCount={0}

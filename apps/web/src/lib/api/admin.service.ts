@@ -47,27 +47,27 @@ export interface AdminKycRecord {
 }
 
 export interface AdminTontine {
-  id: number;
+  id: string;
   name: string;
   description?: string;
-  montantCotisation: number;
-  frequence: string;
-  nombreMembres: number;
-  statut: string;
-  tourActuel: number;
-  devise?: string;
-  createurId: number;
-  createur?: {
+  contributionAmount: string;
+  frequency: string;
+  memberLimit: number;
+  status: string;
+  currentCycle: number;
+  currency?: string;
+  creatorId: number;
+  creator?: {
     id?: number;
     nom?: string;
     prenom?: string;
   };
   membres?: Array<{
-    id: number;
+    id: string;
     userId: number;
     role: string;
     status: string;
-    tourOrdre: number;
+    beneficiaryOrder?: number;
   }>;
   createdAt: string;
   updatedAt: string;

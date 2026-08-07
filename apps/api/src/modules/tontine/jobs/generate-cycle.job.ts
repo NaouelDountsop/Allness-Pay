@@ -17,7 +17,7 @@ export class GenerateCycleJob {
   async handle(): Promise<void> {
     const tontines = await this.tontineRepo.find({
       where: {
-        statut: TontineStatus.ACTIVE,
+        status: TontineStatus.ACTIVE,
       },
     });
 

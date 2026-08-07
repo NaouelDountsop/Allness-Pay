@@ -16,11 +16,11 @@ export function CreateTontineForm() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("general");
   const [name, setName] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("XAF");
   const [description, setDescription] = useState("");
   const [contribution, setContribution] = useState("500");
-  const [frequency, setFrequency] = useState("Mensuelle");
-  const [nombreMembres, setNombreMembres] = useState("12");
+  const [frequency, setFrequency] = useState("MONTHLY");
+  const [memberLimit, setMemberLimit] = useState("12");
   //const [lieu] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,10 +35,11 @@ export function CreateTontineForm() {
       await tontineService.create({
         name,
         description,
-        montantCotisation: Number(contribution),
-        frequence: frequency,
-        nombreMembres: Number(nombreMembres),
-        devise: currency,
+        targetAmount: Number(contribution),
+        contributionAmount: Number(contribution),
+        frequency,
+        memberLimit: Number(memberLimit),
+        currency,
       });
       navigate("/dashboard/tontines");
     } catch (createError) {
@@ -140,8 +141,9 @@ export function CreateTontineForm() {
                 onChange={(e) => setFrequency(e.target.value)}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
               >
-                <option value="Mensuelle">Mensuelle</option>
-                <option value="Hebdomadaire">Hebdomadaire</option>
+                <option value="MONTHLY">Mensuelle</option>
+                <option value="WEEKLY">Hebdomadaire</option>
+                <option value="BIWEEKLY">Bimensuelle</option>
               </select>
             </div>
             <div>
@@ -150,8 +152,8 @@ export function CreateTontineForm() {
                 type="number"
                 min={2}
                 placeholder="ex: 25"
-                value={nombreMembres}
-                onChange={(e) => setNombreMembres(e.target.value)}
+                value={memberLimit}
+                onChange={(e) => setMemberLimit(e.target.value)}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
               />
             </div>

@@ -15,6 +15,7 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
 
 export enum WalletStatus {
+  INACTIVE = 'inactive',
   ACTIVE = 'active',
   SUSPENDED = 'suspended',
   CLOSED = 'closed',
@@ -44,7 +45,7 @@ export class Wallet {
   @Column({ default: 'XAF' })
   currency: string;
 
-  @Column({ type: 'enum', enum: WalletStatus, default: WalletStatus.ACTIVE })
+  @Column({ type: 'enum', enum: WalletStatus, default: WalletStatus.INACTIVE })
   status: WalletStatus;
 
   @Column({ default: false })
