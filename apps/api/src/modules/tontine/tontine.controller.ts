@@ -49,6 +49,12 @@ export class TontineController {
     return this.tontineService.findAll(req.user.sub);
   }
 
+  @Get('invitations/pending')
+  @ApiOperation({ summary: 'Lister les invitations en attente de l\'utilisateur' })
+  findPendingInvitations(@Req() req: AuthenticatedRequest) {
+    return this.invitationService.findPendingByUserId(req.user.sub);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtenir une tontine par ID' })
   @ApiParam({ name: 'id', type: Number })

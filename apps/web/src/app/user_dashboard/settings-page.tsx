@@ -26,7 +26,7 @@ function SettingCard({ title, description, badge, children }: { title: string; d
   );
 }
 
-function SettingField({ label, value }: { label: string; value: string }) {
+function SettingField({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-3xl bg-gray-50 p-4">
       <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400">{label}</p>
@@ -96,44 +96,10 @@ export default function SettingsPage() {
           </aside>
 
           <main className="space-y-6 xl:w-2/3">
-            <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-gray-400">Vue globale</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-afrilink-dark">Gestion du compte</h2>
-                </div>
-                <Button variant="default" size="sm" className="rounded-full px-4">
-                  Modifier les préférences
-                </Button>
-              </div>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <SettingField label="Nom complet" value={fullName} />
-                <SettingField label="Téléphone" value={profile?.telephone ?? "-"} />
-                <SettingField label="Pays" value={profile?.pays ?? "-"} />
-                <SettingField label="Ville" value={profile?.ville ?? "-"} />
-              </div>
-            </div>
 
-            <div className="grid gap-4 lg:grid-cols-2">
-              <SettingCard
-                title="Informations du compte"
-                description="Adresse e-mail, téléphone et connexion"
-              >
-                <div className="space-y-3">
-                  <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Email</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{profile?.email ?? "-"}</p>
-                  </div>
-                  <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Téléphone</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{profile?.telephone ?? "-"}</p>
-                  </div>
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
-                    Modifier les informations
-                  </Button>
-                </div>
-              </SettingCard>
+            <div className="grid gap-4 lg:grid-cols-1">
+
 
               <SettingCard
                 title="Sécurité du compte"

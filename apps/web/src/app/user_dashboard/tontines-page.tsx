@@ -18,6 +18,11 @@ export default function TontinesPage() {
     queryFn: tontineService.list,
   });
 
+  const { data: invitations } = useQuery({
+    queryKey: ["pending-invitations"],
+    queryFn: tontineService.listPendingInvitations,
+  });
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -80,7 +85,7 @@ export default function TontinesPage() {
               <NewInitiativeCard />
             </div>
 
-            <InvitationsList invitations={[]} />
+            <InvitationsList invitations={invitations ?? []} />
           </>
         )}
       </div>

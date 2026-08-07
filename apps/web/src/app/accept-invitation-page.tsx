@@ -22,7 +22,7 @@ export default function AcceptInvitationPage() {
     tontineService
       .acceptByToken(token)
       .then(() => setStatus("success"))
-      .catch((err: any) => {
+      .catch((err) => {
         setStatus("error");
         setErrorMessage(
           err?.response?.data?.message || "Une erreur est survenue lors de l'activation de l'invitation."

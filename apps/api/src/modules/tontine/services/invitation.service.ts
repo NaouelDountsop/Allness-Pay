@@ -175,6 +175,13 @@ export class InvitationService {
     });
   }
 
+  async findPendingByUserId(userId: number): Promise<TontineInvitation[]> {
+    return this.invitationRepo.find({
+      where: { inviteeUserId: userId, status: 'PENDING' },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }

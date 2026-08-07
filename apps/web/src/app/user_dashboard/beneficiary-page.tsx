@@ -234,9 +234,7 @@ export default function BeneficiariesPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                    <th className="font-medium pb-3 w-8">
-                      <input type="checkbox" className="rounded border-gray-300" />
-                    </th>
+
                     <th className="font-medium pb-3">Bénéficiaire</th>
                     <th className="font-medium pb-3">Numéro</th>
                     <th className="font-medium pb-3">Réseau</th>
@@ -249,9 +247,7 @@ export default function BeneficiariesPage() {
                 <tbody>
                   {BENEFICIARIES.map((b) => (
                     <tr key={b.phone} className="border-b border-gray-50 last:border-0">
-                      <td className="py-3.5">
-                        <input type="checkbox" className="rounded border-gray-300" />
-                      </td>
+                      
                       <td>
                         <div className="flex items-center gap-2.5">
                           <span className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold ${b.avatarBg}`}>

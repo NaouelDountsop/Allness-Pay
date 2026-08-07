@@ -51,6 +51,19 @@ export interface CreateTontinePayload {
   lieu?: string;
 }
 
+export interface TontineInvitation {
+  id: number;
+  tontineId: number;
+  inviterUserId: number;
+  inviteeUserId?: number;
+  inviteeEmail?: string;
+  token: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED';
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const basePath = "/tontines";
 
 export const tontineService = {
@@ -89,6 +102,11 @@ export const tontineService = {
 
   listInvitations: async (tontineId: number) => {
     const res = await apiClient.get(`${basePath}/${tontineId}/invitations`);
+    return res.data;
+  },
+
+  listPendingInvitations: async (): Promise<TontineInvitation[]> => {
+    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations/pending`);
     return res.data;
   },
 

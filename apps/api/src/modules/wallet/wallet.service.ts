@@ -17,7 +17,7 @@ export class WalletsService {
     private readonly walletRepo: Repository<Wallet>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    
+
   ) {}
 
 
@@ -154,7 +154,7 @@ export class WalletsService {
     return wallet;
   }
 
-  
+
 
   private async generateUniqueWalletNumber(): Promise<string> {
     // Retry loop pour garantir l'unicité malgré la (très faible) probabilité de collision.
