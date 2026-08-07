@@ -58,7 +58,7 @@ export class TontineService {
       relations: ['membres', 'membres.user', 'creator'],
     });
     if (!tontine) {
-      throw new NotFoundException(Tontine #${id} introuvable);
+      throw new NotFoundException(`Tontine #${id} introuvable`);
     }
     if (userId !== undefined) {
       this.assertMembership(tontine, userId);
