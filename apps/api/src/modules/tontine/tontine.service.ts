@@ -91,7 +91,7 @@ export class TontineService {
     const allowed = validTransitions[tontine.status];
     if (!allowed.includes(newStatus)) {
       throw new BadRequestException(
-        Transition invalide: ${tontine.status} → ${newStatus},
+        `Transition invalide: ${tontine.status} → ${newStatus}`,
       );
     }
 

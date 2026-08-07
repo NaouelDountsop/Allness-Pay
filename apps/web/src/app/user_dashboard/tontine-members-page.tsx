@@ -12,7 +12,7 @@ export default function TontineMembersPage() {
 
   const { data: tontine, isLoading } = useQuery({
     queryKey: ["tontine", id],
-    queryFn: () => tontineService.getById(Number(id)),
+    queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
 
@@ -63,17 +63,17 @@ export default function TontineMembersPage() {
               Retour à {tontine.name}
             </button>
             <p className="mt-2 text-sm text-gray-500">
-              Membres de la tontine · {tontine.nombreMembres} participants
+              Membres de la tontine · {tontine.memberLimit} participants
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Fréquence</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.frequence}</p>
+              <p className="font-semibold text-afrilink-dark">{tontine.frequency}</p>
             </div>
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Tour actuel</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.tourActuel} / {tontine.nombreMembres}</p>
+              <p className="font-semibold text-afrilink-dark">{tontine.currentCycle} / {tontine.memberLimit}</p>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function TontineMembersPage() {
             </div>
             <div className="text-right">
               <p className="text-xs text-gray-400">Devise</p>
-              <p className="text-sm font-semibold text-afrilink-dark">{tontine.devise ?? "CFA"}</p>
+              <p className="text-sm font-semibold text-afrilink-dark">{tontine.currency ?? "CFA"}</p>
             </div>
           </div>
         </div>

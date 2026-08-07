@@ -13,7 +13,7 @@ export function TontineDetailStats({ tontine, progressPercent = 0 }: TontineDeta
         <Users className="w-5 h-5 text-blue-500" />
         <div>
           <p className="text-xs text-gray-400">Total Membres</p>
-          <p className="text-sm font-semibold text-gray-900">{tontine.nombreMembres} Membres</p>
+          <p className="text-sm font-semibold text-gray-900">{tontine.memberLimit} Membres</p>
         </div>
       </div>
       <div className="rounded-xl border border-gray-100 bg-white p-4 flex items-center gap-3">
@@ -21,7 +21,7 @@ export function TontineDetailStats({ tontine, progressPercent = 0 }: TontineDeta
         <div>
           <p className="text-xs text-gray-400">Cycle de Rotation</p>
           <p className="text-sm font-semibold text-gray-900">
-            {tontine.tourActuel} / {tontine.nombreMembres} tours ({progressPercent}%)
+            {tontine.currentCycle} / {tontine.memberLimit} tours ({progressPercent}%)
           </p>
         </div>
       </div>

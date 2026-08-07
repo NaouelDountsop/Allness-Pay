@@ -7,8 +7,8 @@ interface TontineDetailHeaderProps {
 }
 
 export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
-  const adminName = tontine.createur ? `${tontine.createur.prenom ?? ""} ${tontine.createur.nom ?? ""}`.trim() : "Admin";
-  const currentMember = tontine.membres?.find((m) => m.tourOrdre === tontine.tourActuel);
+  const adminName = tontine.creator ? `${tontine.creator.prenom ?? ""} ${tontine.creator.nom ?? ""}`.trim() : "Admin";
+  const currentMember = tontine.membres?.find((m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
@@ -60,15 +60,15 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
             </div>
           </div>
           <span className="text-[11px] font-medium bg-white/10 text-green-300 px-2.5 py-1 rounded-full">
-            {tontine.frequence}
+            {tontine.frequency}
           </span>
         </div>
 
         <p className="text-xs text-white/60 mb-1 relative z-10">Cagnotte totale</p>
         <div className="flex items-center gap-2 sm:gap-3 relative z-10">
           <p className="text-3xl sm:text-4xl font-bold truncate">
-            {new Intl.NumberFormat("fr-FR").format(tontine.montantCotisation)}{" "}
-            <span className="text-base sm:text-lg font-medium text-afrilink-orange">{tontine.devise ?? "CFA"}</span>
+            {new Intl.NumberFormat("fr-FR").format(Number(tontine.contributionAmount))}{" "}
+            <span className="text-base sm:text-lg font-medium text-afrilink-orange">{tontine.currency ?? "CFA"}</span>
           </p>
         </div>
       </div>

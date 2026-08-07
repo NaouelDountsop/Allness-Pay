@@ -53,7 +53,7 @@ export default function WalletPage() {
                   walletId={primaryWallet?.walletNumber ?? "—"}
                   balance={totalBalance}
                   currency={primaryWallet?.currency ?? "FCFA"}
-                  status={primaryWallet?.status === "active" ? "Actif" : primaryWallet?.status ?? "Actif"}
+                  status={primaryWallet?.status === "active" ? "Actif" : primaryWallet?.status === "inactive" ? "En attente KYC" : primaryWallet?.status ?? "Actif"}
                 />
                 <WalletActions />
               </div>

@@ -32,7 +32,7 @@ export default function TontinesSupervisionPage() {
 
       <div className="flex flex-wrap gap-4 mb-6">
         <StatCard icon={PiggyBank} label="Tontines Actives" value={formatNumber(tontines?.length ?? 0)} />
-        <StatCard icon={Coins} label="Volume Total Épargné" value={`${formatNumber(tontines?.reduce((sum, t) => sum + t.montantCotisation, 0) ?? 0)} XAF`} />
+        <StatCard icon={Coins} label="Volume Total Épargné" value={`${formatNumber(tontines?.reduce((sum, t) => sum + Number(t.contributionAmount), 0) ?? 0)} XAF`} />
         <StatCard
           icon={ShieldAlert}
           iconTone="red"
@@ -64,19 +64,19 @@ export default function TontinesSupervisionPage() {
             </thead>
             <tbody>
               {tontines?.map((t) => {
-                const progressPercent = t.nombreMembres > 0 ? Math.round((t.tourActuel / t.nombreMembres) * 100) : 0;
-                const statusTone = t.statut === "active" ? "green" : t.statut === "pending" ? "orange" : "red";
+                const progressPercent = t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
+                const statusTone = t.status === "active" ? "green" : t.status === "pending" ? "orange" : "red";
                 return (
                   <tr key={t.id} className="border-b border-gray-50 last:border-0">
                     <td className="py-3.5">
                       <p className="text-xs font-medium text-afrilink-dark">{t.name}</p>
                       <p className="text-[11px] text-gray-400">
-                        Admin: {t.createur?.prenom} {t.createur?.nom}
+                        Admin: {t.creator?.prenom} {t.creator?.nom}
                       </p>
                     </td>
-                    <td className="text-xs text-gray-600">{t.nombreMembres}</td>
-                    <td className="text-xs text-gray-600">{formatNumber(t.montantCotisation)} {t.devise ?? "CFA"}</td>
-                    <td className="text-xs text-gray-600">{t.frequence}</td>
+                    <td className="text-xs text-gray-600">{t.memberLimit}</td>
+                    <td className="text-xs text-gray-600">{formatNumber(Number(t.contributionAmount))} {t.currency ?? "CFA"}</td>
+                    <td className="text-xs text-gray-600">{t.frequency}</td>
                     <td>
                       <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                         <div
@@ -87,7 +87,7 @@ export default function TontinesSupervisionPage() {
                     </td>
                     <td>
                       <Badge tone={statusTone} dot>
-                        {t.statut === "active" ? "Actif" : t.statut === "pending" ? "En attente" : "Fermé"}
+                        {t.status === "active" ? "Actif" : t.status === "pending" ? "En attente" : "Fermé"}
                       </Badge>
                     </td>
                   </tr>

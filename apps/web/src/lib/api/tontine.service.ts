@@ -1,11 +1,10 @@
 import { apiClient } from "@/lib/api-client";
 
 export interface TontineMember {
-  id: number;
+  id: string;
   userId: number;
   role: string;
   status: string;
-  tourOrdre: number;
   beneficiaryOrder?: number;
   hasReceivedPayout?: boolean;
   missedContributions?: number;
@@ -20,18 +19,19 @@ export interface TontineMember {
 }
 
 export interface Tontine {
-  id: number;
+  id: string;
   name: string;
   description?: string;
-  montantCotisation: number;
-  frequence: string;
-  nombreMembres: number;
-  statut: string;
-  tourActuel: number;
-  devise?: string;
-  lieu?: string;
-  createurId: number;
-  createur?: {
+  targetAmount: string;
+  contributionAmount: string;
+  memberLimit: number;
+  currency: string;
+  frequency: string;
+  status: string;
+  currentCycle: number;
+  nextContributionAt?: string;
+  creatorId: number;
+  creator?: {
     id?: number;
     nom?: string;
     prenom?: string;
@@ -44,11 +44,12 @@ export interface Tontine {
 export interface CreateTontinePayload {
   name: string;
   description: string;
-  montantCotisation: number;
-  frequence: string;
-  nombreMembres: number;
-  devise?: string;
-  lieu?: string;
+  targetAmount: number;
+  contributionAmount: number;
+  frequency: string;
+  memberLimit: number;
+  currency?: string;
+  walletId?: string;
 }
 
 export interface TontineInvitation {
@@ -72,7 +73,7 @@ export const tontineService = {
     return res.data;
   },
 
-  getById: async (id: number): Promise<Tontine> => {
+  getById: async (id: string): Promise<Tontine> => {
     const res = await apiClient.get<Tontine>(`${basePath}/${id}`);
     return res.data;
   },
@@ -82,25 +83,25 @@ export const tontineService = {
     return res.data;
   },
 
-  update: async (id: number, payload: Partial<CreateTontinePayload>): Promise<Tontine> => {
+  update: async (id: string, payload: Partial<CreateTontinePayload>): Promise<Tontine> => {
     const res = await apiClient.patch<Tontine>(`${basePath}/${id}`, payload);
     return res.data;
   },
 
-  remove: async (id: number): Promise<void> => {
+  remove: async (id: string): Promise<void> => {
     await apiClient.delete(`${basePath}/${id}`);
   },
 
-  leave: async (id: number): Promise<void> => {
+  leave: async (id: string): Promise<void> => {
     await apiClient.post(`${basePath}/${id}/leave`);
   },
 
-  invite: async (tontineId: number, data: { inviteeEmail?: string; inviteeUserId?: number }) => {
+  invite: async (tontineId: string, data: { inviteeEmail?: string; inviteeUserId?: number }) => {
     const res = await apiClient.post(`${basePath}/${tontineId}/invitations`, data);
     return res.data;
   },
 
-  listInvitations: async (tontineId: number) => {
+  listInvitations: async (tontineId: string) => {
     const res = await apiClient.get(`${basePath}/${tontineId}/invitations`);
     return res.data;
   },

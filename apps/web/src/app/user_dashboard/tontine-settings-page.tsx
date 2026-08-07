@@ -28,14 +28,14 @@ export default function TontineSettingsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const tontineId = Number(id);
+  const tontineId = id;
   const currentUserId = getCurrentUserId();
   const [showCalendar, setShowCalendar] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
 
   const { data: tontine, isLoading } = useQuery({
     queryKey: ["tontine", tontineId],
-    queryFn: () => tontineService.getById(tontineId),
+    queryFn: () => tontineService.getById(tontineId!),
     enabled: !!tontineId,
   });
 
@@ -47,20 +47,20 @@ export default function TontineSettingsPage() {
   useEffect(() => {
     if (tontine) {
       setName(tontine.name);
-      setMontantCotisation(String(Number(tontine.montantCotisation) / 1000));
-      setFrequence(tontine.frequence);
-      setNombreMembres(String(tontine.nombreMembres));
+      setMontantCotisation(String(Number(tontine.contributionAmount) / 1000));
+      setFrequence(tontine.frequency);
+      setNombreMembres(String(tontine.memberLimit));
     }
   }, [tontine]);
 
-  const isAdmin = tontine?.createurId === currentUserId;
+  const isAdmin = tontine?.creatorId === currentUserId;
 
   const updateMutation = useMutation({
-    mutationFn: () => tontineService.update(tontineId, {
+    mutationFn: () => tontineService.update(tontineId!, {
       name,
-      montantCotisation: Number(montantCotisation) * 1000,
-      frequence,
-      nombreMembres: Number(nombreMembres),
+      contributionAmount: Number(montantCotisation) * 1000,
+      frequency: frequence,
+      memberLimit: Number(nombreMembres),
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tontine", tontineId] });
@@ -70,7 +70,7 @@ export default function TontineSettingsPage() {
 
   const rotationMembers = tontine?.membres
     ?.filter((m) => m.status === "ACTIVE")
-    .sort((a, b) => a.tourOrdre - b.tourOrdre)
+    .sort((a, b) => (a.beneficiaryOrder ?? 0) - (b.beneficiaryOrder ?? 0))
     .map((m, i) => ({
       id: String(m.id),
       name: m.user ? `${m.user.prenom ?? ""} ${m.user.nom ?? ""}`.trim() : `Membre ${m.userId}`,
@@ -112,7 +112,7 @@ export default function TontineSettingsPage() {
     );
   }
 
-  const totalPot = Number(tontine.montantCotisation) * tontine.nombreMembres;
+  const totalPot = Number(tontine.contributionAmount) * tontine.memberLimit;
 
   const handleSave = () => {
     updateMutation.mutate();
@@ -239,7 +239,7 @@ export default function TontineSettingsPage() {
           </div>
 
           <CycleSummaryPanel
-            durationMonths={tontine.nombreMembres}
+            durationMonths={tontine.memberLimit}
             totalPot={totalPot}
             membersCount={tontine.membres?.filter((m) => m.status === "ACTIVE").length ?? 0}
             nextDrawDate={new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
@@ -248,10 +248,10 @@ export default function TontineSettingsPage() {
         </div>
       </div>
 
-      {showCalendar && <ScheduleCalendarModal onClose={() => setShowCalendar(false)} frequence={tontine.frequence} />}
+      {showCalendar && <ScheduleCalendarModal onClose={() => setShowCalendar(false)} frequence={tontine.frequency} />}
       {showInvite && (
         <InviteMemberModal
-          tontineId={tontineId}
+          tontineId={tontineId!}
           tontineName={tontine.name}
           onClose={() => setShowInvite(false)}
         />

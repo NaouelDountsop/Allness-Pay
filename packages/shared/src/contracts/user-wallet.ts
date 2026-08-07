@@ -22,7 +22,7 @@ export interface UserProfile {
 
 // ── Wallet ─────────────────────────────────────────────────────────────
 
-export const WalletStatusEnum = z.enum(['active', 'suspended', 'closed']);
+export const WalletStatusEnum = z.enum(['inactive', 'active', 'suspended', 'closed']);
 export type WalletStatus = z.infer<typeof WalletStatusEnum>;
 
 export interface Wallet {

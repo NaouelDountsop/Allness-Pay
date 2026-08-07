@@ -23,13 +23,13 @@ export class CycleService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async generateNextCycle(tontineId: number): Promise<TontineCycle> {
+  async generateNextCycle(tontineId: string): Promise<TontineCycle> {
     return this.dataSource.transaction(async (manager) => {
       const tontine = await manager.findOneOrFail(Tontine, {
         where: { id: tontineId },
       });
 
-      if (tontine.statut !== TontineStatus.ACTIVE) {
+      if (tontine.status !== TontineStatus.ACTIVE) {
         throw new BadRequestException('La tontine doit être ACTIVE pour générer un cycle');
       }
 
@@ -41,16 +41,16 @@ export class CycleService {
         throw new BadRequestException('Pas assez de membres actifs pour un cycle');
       }
 
-      const nextCycleNumber = tontine.tourActuel + 1;
+      const nextCycleNumber = tontine.currentCycle + 1;
 
       const beneficiary = this.selectBeneficiary(members, nextCycleNumber);
       if (!beneficiary) {
         throw new BadRequestException('Aucun bénéficiaire disponible');
       }
 
-      const totalPot = BigInt(tontine.montantCotisation) * BigInt(members.length);
+      const totalPot = BigInt(tontine.contributionAmount) * BigInt(members.length);
 
-      const dueDate = this.calculateDueDate(tontine.frequence, nextCycleNumber);
+      const dueDate = this.calculateDueDate(tontine.frequency, nextCycleNumber);
 
       const cycle = manager.create(TontineCycle, {
         tontineId,
@@ -67,21 +67,21 @@ export class CycleService {
         manager.create(TontineContribution, {
           cycleId: savedCycle.id,
           memberId: member.id,
-          amount: tontine.montantCotisation.toString(),
+          amount: tontine.contributionAmount.toString(),
           status: TontineContributionStatus.PENDING,
           dueDate,
         }),
       );
       await manager.save(contributions);
 
-      tontine.tourActuel = nextCycleNumber;
+      tontine.currentCycle = nextCycleNumber;
       await manager.save(tontine);
 
       return savedCycle;
     });
   }
 
-  async findAllByTontine(tontineId: number): Promise<TontineCycle[]> {
+  async findAllByTontine(tontineId: string): Promise<TontineCycle[]> {
     return this.cycleRepo.find({
       where: { tontineId },
       order: { cycleNumber: 'DESC' },
@@ -89,7 +89,7 @@ export class CycleService {
     });
   }
 
-  async findOne(id: number): Promise<TontineCycle> {
+  async findOne(id: string): Promise<TontineCycle> {
     const cycle = await this.cycleRepo.findOne({
       where: { id },
       relations: ['contributions'],
@@ -100,7 +100,7 @@ export class CycleService {
     return cycle;
   }
 
-  async completeCycle(cycleId: number): Promise<TontineCycle> {
+  async completeCycle(cycleId: string): Promise<TontineCycle> {
     const cycle = await this.findOne(cycleId);
 
     if (cycle.status !== TontineCycleStatus.ACTIVE) {
@@ -142,13 +142,13 @@ export class CycleService {
     const offset = cycleNumber - 1;
 
     switch (frequency) {
-      case 'Hebdomadaire':
+      case 'WEEKLY':
         now.setDate(now.getDate() + offset * 7);
         break;
-      case 'Bimensuelle':
+      case 'BIWEEKLY':
         now.setDate(now.getDate() + offset * 14);
         break;
-      case 'Mensuelle':
+      case 'MONTHLY':
       default:
         now.setMonth(now.getMonth() + offset);
         break;

@@ -21,6 +21,14 @@ const statusLabel: Record<NonNullable<KycStatus>, string> = {
   REQUIRES_ADDITIONAL_INFO: "Votre dossier KYC nécessite des informations complémentaires.",
 };
 
+const statusStyles: Record<NonNullable<KycStatus>, string> = {
+  PENDING: "bg-orange-50 border-orange-300 text-orange-900",
+  UNDER_REVIEW: "bg-blue-50 border-blue-300 text-blue-900",
+  APPROVED: "bg-green-50 border-green-300 text-green-900",
+  REJECTED: "bg-red-50 border-red-300 text-red-900",
+  REQUIRES_ADDITIONAL_INFO: "bg-orange-50 border-orange-300 text-orange-900",
+};
+
 export function KycBanner({ status }: KycBannerProps) {
   const navigate = useNavigate();
 
@@ -48,10 +56,10 @@ export function KycBanner({ status }: KycBannerProps) {
   }
 
   return (
-    <div className="mb-4 sm:mb-6 rounded-xl bg-green-50 border border-green-300 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-      <p className="text-sm font-medium text-green-900">
-        {statusLabel[status]}
-      </p>
+    <div
+      className={`mb-4 sm:mb-6 rounded-xl border px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${statusStyles[status]}`}
+    >
+      <p className="text-sm font-medium">{statusLabel[status]}</p>
     </div>
   );
 }

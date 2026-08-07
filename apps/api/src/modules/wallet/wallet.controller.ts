@@ -59,4 +59,9 @@ export class WalletsController {
   setPrimary(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.walletsService.setPrimary(id, req.user.sub);
   }
+
+  @Patch(':id/activate')
+  activate(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+    return this.walletsService.activate(id, req.user.sub);
+  }
 }

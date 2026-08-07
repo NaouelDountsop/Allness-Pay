@@ -10,7 +10,7 @@ const statusStyles: Record<string, { label: string; className: string }> = {
 
 interface MembersTableProps {
   members: TontineMember[];
-  tontineId?: number;
+  tontineId?: string;
 }
 
 export function MembersTable({ members, tontineId }: MembersTableProps) {
@@ -68,7 +68,7 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
                     {status.label}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">Tour {m.tourOrdre}</td>
+                <td className="px-4 py-3 text-gray-500">Tour {m.beneficiaryOrder ?? 0}</td>
                 <td className="px-4 py-3 text-right">
                   <button aria-label="Actions" className="text-gray-400">
                     <MoreVertical className="w-4 h-4" />

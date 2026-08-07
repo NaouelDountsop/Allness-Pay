@@ -29,7 +29,7 @@ export class ContributionService {
   ) {}
 
   async contribute(
-    memberId: number,
+    memberId: string,
     dto: ContributeDto,
   ): Promise<TontineContribution> {
     return this.dataSource.transaction(async (manager) => {
@@ -79,7 +79,7 @@ export class ContributionService {
 
       await this.pinService.verifyPinWithManager(manager, dto.walletId, member.userId, dto.pin);
 
-      const tontineWallet = await this.walletsService.lockWalletForUpdate(manager, tontine.id.toString());
+      const tontineWallet = await this.walletsService.lockWalletForUpdate(manager, tontine.id);
 
       const debitEntry = manager.create(WalletTransaction, {
         walletId: dto.walletId,
@@ -108,7 +108,7 @@ export class ContributionService {
 
       contribution.status = TontineContributionStatus.PAID;
       contribution.paidAt = new Date();
-      contribution.walletTransactionId = debitEntry.id as unknown as number;
+      contribution.walletTransactionId = debitEntry.id;
       await manager.save(contribution);
 
       const paidAmount = BigInt(cycle.collectedAmount) + providedAmount;
@@ -119,14 +119,14 @@ export class ContributionService {
     });
   }
 
-  async findAllByCycle(cycleId: number): Promise<TontineContribution[]> {
+  async findAllByCycle(cycleId: string): Promise<TontineContribution[]> {
     return this.contributionRepo.find({
       where: { cycleId },
       relations: ['cycle'],
     });
   }
 
-  async findPendingByMember(memberId: number): Promise<TontineContribution[]> {
+  async findPendingByMember(memberId: string): Promise<TontineContribution[]> {
     return this.contributionRepo.find({
       where: {
         memberId,
@@ -137,7 +137,7 @@ export class ContributionService {
     });
   }
 
-  async markLate(contributionId: number): Promise<TontineContribution> {
+  async markLate(contributionId: string): Promise<TontineContribution> {
     const contribution = await this.contributionRepo.findOne({
       where: { id: contributionId },
     });
