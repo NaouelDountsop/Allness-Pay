@@ -1,0 +1,304 @@
+@startuml Parcours Utilisateur — AfriLinkPay
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 20
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+
+skinparam activity {
+  BackgroundColor #EFF6FF
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+  DiamondBackgroundColor #FEF3C7
+  DiamondBorderColor #F59E0B
+  ArrowColor #374151
+  ArrowThickness 2
+}
+
+skinparam swimlane {
+  BackgroundColor #F8FAFC
+  BorderColor #CBD5E1
+  TitleBackgroundColor #1E40AF
+  TitleFontColor #FFFFFF
+  TitleFontSize 14
+}
+
+skinparam note {
+  BackgroundColor #F0FDF4
+  BorderColor #22C55E
+  FontColor #166534
+}
+
+title **Parcours Utilisateur — AfriLinkPay**
+
+|  Client |
+start
+:Je découvre AfriLinkPay;
+note right
+  Page d'accueil
+  (marketing)
+end note
+
+:Je clique sur\n**"Créer un compte"**;
+
+|  Inscription |
+:Je remplis le formulaire\nde création de compte;
+note right
+  Nom, prénom, email,
+  mot de passe, téléphone...
+  **API** → POST /users
+end note
+
+:J'ai reçu un code OTP\npar email;
+
+:Je saisis le code\nà 6 chiffres;
+note right
+  **API** → POST /auth/verify-otp
+end note
+
+if (Code valide ?) then (non)
+  :Je demande un\nnouveau code;
+  note right
+    **API** → POST /auth/resend-otp
+  end note
+  :Je ressaisis le code;
+  detach
+else (oui)
+endif
+
+:Mon compte est activé !
+
+|  Connexion |
+:Je me connecte\navec email + mot de passe;
+note right
+  **API** → POST /auth/login
+  (ou POST /auth/login-admin)
+end note
+
+:J'accède à\nmon **tableau de bord**;
+
+|  Tableau de bord |
+:Je vois mon **solde**,\nmes **wallets**,\nmes **transactions** récentes;
+note right
+  **API** → GET /wallets
+  **API** → GET /kyc/me
+end note
+
+|  Vérification KYC |
+if (Mon wallet est **INACTIVE** ?) then (oui)
+  :Je dois vérifier\nmon identité;
+  
+  :J'upload ma **pièce d'identité**
+  (CNI, passeport, permis);
+  
+  :Je prends un **selfie**;
+  
+  :J'upload une **justificatif\nde domicile**;
+  
+  :Je soumets mon dossier;
+  note right
+    **API** → POST /kyc
+    (multipart/form-data)
+  end note
+  
+  :Mon dossier est en cours\nde vérification;
+  
+  if (Approuvé ?) then (oui)
+    :Mon **wallet passe à ACTIVE** !;
+    note right
+      **API** → PATCH /kyc/:id/review
+      (côté admin uniquement)
+    end note
+  else (en attente)
+    note right
+      J'attends la validation
+      de l'administrateur
+    end note
+  endif
+else (non, déjà ACTIF)
+endif
+
+|  Portefeuille |
+:Je consulte mes wallets;
+note right
+  **API** → GET /wallets
+end note
+
+split
+  :Je **dépose** de l'argent;
+  note right
+    **API** → GET /auth/profile
+    (pour la devise)
+  end note
+  
+  :Je choisis le mode
+  (Mobile Money / Banque);
+  
+  :Je saisis le numéro\net le montant;
+  
+  :Je confirme sur\nmon téléphone;
+  
+  :L'argent est crédité
+  sur mon wallet;
+  
+split again
+  
+  :Je **transfère** vers\nun autre wallet;
+  note right
+    **API** → GET /wallets/{id}/pin/status
+  end note
+  
+  :Je saisis le numéro\nde destinataire + montant;
+  
+  :Je confirme avec mon **PIN**;
+  note right
+    **API** → POST /wallets/{id}/pin/verify
+    **API** → POST /wallets/:id/transfer
+  end note
+  
+  :Le transfert est effectué;
+  
+split again
+
+  :Je **retire** de l'argent;
+  note right
+    **API** → POST /wallets/:id/withdraw
+  end note
+
+  :Je saisis le montant\net confirme avec mon PIN;
+
+  :L'argent est retiré;
+
+end split
+
+|  Transactions |
+:Je consulte l'historique\nde toutes mes transactions;
+note right
+  **API** → GET /wallets/:id/transactions
+end note
+
+:Je peux **filtrer** par type\nou par statut;
+
+|  Tontine |
+split
+  :Je **crée** une tontine;
+  note right
+    **API** → POST /tontines
+  end note
+  
+  :Je remplis les infos
+  (nom, montant, fréquence,
+  nombre de membres);
+  
+  :Ma tontine est créée
+  en statut **DRAFT**;
+  
+split again
+
+  :Je **rejoins** une tontine
+  via invitation;
+  note right
+    **API** → POST /tontines/invitations/accept
+  end note
+  
+split again
+
+  :Je consulte **mes tontines**;
+  note right
+    **API** → GET /tontines
+    **API** → GET /tontines/:id
+  end note
+
+end split
+
+:Je vois le tableau de bord\nde ma tontine
+(membres, cycles, cotisations);
+
+:J'invite des membres;
+note right
+  **API** → POST /tontines/:id/invitations
+end note
+
+:Je **contribue** à un cycle;
+note right
+  Choisir montant + mode de paiement
+  (wallet, carte, mobile money)
+end note
+
+:Je vois mon **historique\nde cotisations**;
+
+|  Paiements |
+:Je veux payer une facture;
+note right
+  Électricité, eau, télécom,
+  éducation, transport
+end note
+
+:Je choisis la **catégorie**;
+
+:Je saisis la référence\net le montant;
+
+:Je **confirme** le paiement;
+
+split
+  :Je scanne un **QR code**;
+  note right
+    Caméra → lecture QR
+  end note
+  
+  :Je vois les détails
+  de la facture;
+  
+  :Je confirme le paiement;
+
+split again
+
+  :Je paie une **facture**;
+  :Je saisis le fournisseur\net la référence;
+  :Je confirme;
+
+end split
+
+|  Profil |
+split
+  :Je consulte mon **profil**;
+  note right
+    **API** → GET /auth/profile
+  end note
+  
+split again
+
+  :Je gére mes **paramètres**;
+  note right
+    Sécurité, notifications,
+    préférences
+  end note
+
+end split
+
+|  Déconnexion |
+:Je me **déconnecte**;
+note right
+  **API** → POST /auth/logout
+  (supprime le refresh token)
+end note
+
+:Retour à l'écran\nde connexion;
+
+stop
+
+note bottom
+  **Légende :**
+  🟦 Bleu = écran utilisateur
+  🟨 Jaune = décision
+  🟩 Vert = API appelée
+  
+  **APIs principales :**
+  • Auth : login, logout, verify-otp
+  • Wallet : list, transfer, withdraw
+  • KYC : submit, review
+  • Tontine : create, list, invite, contribute
+  • Pin : status, create, verify
+end note
+
+@enduml

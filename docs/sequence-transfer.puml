@@ -1,0 +1,140 @@
+@startuml Sequence Diagram — Transfert Wallet
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 1.5
+skinparam roundcorner 10
+skinparam maxMessageSize 200
+skinparam responseMessageBelowArrow true
+
+title Diagramme de Séquence — Transfert entre Wallets
+
+actor "Client" as Client
+participant "TransactionsController\n(wallets/:id/transfer)" as Controller
+participant "JwtAuthGuard" as Auth
+participant "TransactionsService" as Service
+participant "PinService" as PinService
+participant "WalletsService" as WalletsService
+participant "EntityManager\n(DB Transaction)" as EM
+database "PostgreSQL" as DB
+
+== Requête HTTP ==
+
+Client -> Controller: POST /api/v1/wallets/:id/transfer\n{ toWalletId, amount, pin, description? }
+Controller -> Auth: canActivate()
+Auth -> Auth: Verify JWT token\n(decode, check expiry, signature)
+Auth --> Controller: { id: userId }
+
+== Validation initiale ==
+
+Controller -> Service: transfer(fromId, userId, dto)
+Service -> Service: Vérifier fromId ≠ dto.toWalletId\n(same wallet transfer = interdit)
+
+Service -> DB: BEGIN TRANSACTION
+activate EM
+
+== Verrouillage pessimiste (ordre des IDs pour anti-deadlock) ==
+
+Service -> WalletsService: lockWalletForUpdate(manager, firstId)\n[premier ID trié]
+WalletsService -> EM: SELECT … FOR UPDATE
+EM --> WalletsService: wallet_row
+WalletsService --> Service: wallet_row
+
+Service -> WalletsService: lockWalletForUpdate(manager, secondId)\n[deuxième ID trié]
+WalletsService -> EM: SELECT … FOR UPDATE
+EM --> WalletsService: wallet_row
+WalletsService --> Service: wallet_row
+
+== Vérification PIN du wallet source ==
+
+Service -> PinService: verifyPinWithManager(manager, fromId, userId, pin)
+PinService -> EM: SELECT … FOR UPDATE (lock wallet source)
+EM --> PinService: wallet
+PinService -> WalletsService: assertOwnership(wallet, userId)
+PinService -> PinService: Vérifier pinHash existe\n(sinon → erreur : "aucun PIN configuré")
+PinService -> PinService: Vérifier lockedUntil\n(silocké → erreur : "wallet verrouillé X min")
+PinService -> PinService: argon2.verify(pinHash, pin)
+alt PIN incorrect
+  PinService -> EM: failedPinAttempts + 1
+  alt attempts ≥ 5
+    PinService -> EM: failedPinAttempts = 0\nlockedUntil = now + 15min
+    PinService --> Service: throw ForbiddenException\n("trop de tentatives")
+  else
+    PinService --> Service: throw ForbiddenException\n("PIN incorrect")
+  end
+else PIN correct
+  PinService -> EM: reset failedPinAttempts\n& lockedUntil
+end
+PinService --> Service: wallet (source vérifié)
+
+== Vérification statut wallet source ==
+
+Service -> WalletsService: assertActive(fromWallet)
+note right: WalletsService.assertActive()\nVérifie wallet.status === ACTIVE\nSi INACTIVE → BadRequestException\n("wallet inactif — activation requise")
+
+== Vérification wallet destination ==
+
+Service -> WalletsService: lockWalletForUpdate(manager, toWalletId)
+WalletsService -> EM: SELECT … FOR UPDATE
+EM --> WalletsService: toWallet
+WalletsService --> Service: toWallet
+
+Service -> WalletsService: assertActive(toWallet)
+note right: Le wallet destination doit\naussi être ACTIVE
+
+== Contrôles de cohérence ==
+
+Service -> Service: fromWallet.currency = toWalletCurrency ?
+alt Devises différentes
+  Service --> Client: 400 "Transfert entre devises différentes\nnon supporté"
+  Service -> DB: ROLLBACK
+end
+
+Service -> Service: fromWallet.balance ≥ amount ?
+alt Solde insuffisant
+  Service --> Client: 400 "Solde insuffisant"
+  Service -> DB: ROLLBACK
+end
+
+== Écritures comptables (ledger immuable) ==
+
+Service -> EM: INSERT wallet_transactions\n(type: TRANSFER_OUT, walletId: from,\namount, relatedWalletId: to)
+Service -> EM: INSERT wallet_transactions\n(type: TRANSFER_IN, walletId: to,\namount, relatedWalletId: from)
+EM --> Service: 2 rows saved
+
+== Recalcul des soldes (projections du ledger) ==
+
+Service -> EM: SUM(deposits + transfer_in)\n- SUM(withdrawals + transfer_out)\nWHERE walletId = fromId
+EM --> Service: newFromBalance
+
+Service -> EM: SUM(deposits + transfer_in)\n- SUM(withdrawals + transfer_out)\nWHERE walletId = toWalletId
+EM --> Service: newToBalance
+
+Service -> EM: UPDATE wallets\nSET balance = newFromBalance\nWHERE id = fromId
+Service -> EM: UPDATE wallets\nSET balance = newToBalance\nWHERE id = toWalletId
+
+== Finalisation ==
+
+Service -> EM: COMMIT TRANSACTION
+deactivate EM
+
+Service -> EM: SELECT updated wallets
+EM --> Service: { from, to }
+
+Service --> Controller: { from, to }
+Controller --> Client: 200 OK\n{ from: { id, balance, ... },\n  to: { id, balance, ... } }
+
+== Erreurs possibles (alt global) ==
+
+note over Client, DB
+  **Erreurs et codes de réponse :**
+  - 400 "Impossible de transférer vers le même wallet"
+  - 400 "Aucun PIN configuré"
+  - 400 "Solde insuffisant"
+  - 400 "Transfert entre devises différentes non supporté"
+  - 403 "PIN incorrect"
+  - 403 "Wallet temporairement verrouillé (15 min)"
+  - 404 "Wallet source introuvable"
+  - 404 "Wallet destination introuvable"
+  - 409 "Concurrence détectée" (deadlock retry)
+end note
+
+@enduml

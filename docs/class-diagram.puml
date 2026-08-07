@@ -1,0 +1,449 @@
+@startuml Diagramme de Classes — AfriLinkPay
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 15
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam class {
+  BackgroundColor #F0F9FF
+  BorderColor #1E40AF
+  FontColor #1E3A5F
+  AttributeFontSize 11
+  HeaderBackgroundColor #1E40AF
+  HeaderFontColor #FFFFFF
+  ArrowColor #374151
+}
+
+skinparam enum {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #92400E
+}
+
+skinparam note {
+  BackgroundColor #F0FDF4
+  BorderColor #22C55E
+  FontColor #166534
+}
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #D1D5DB
+}
+
+title **Modèle de Données — AfriLinkPay**
+
+' ═══════════════════════════════════════════
+' UTILISATEUR
+' ═══════════════════════════════════════════
+
+package "👤 UTILISATEUR" #F0F9FF {
+
+  class User <<Entity>> #EFF6FF {
+    -- Propriétés --
+    idutilisateur : number  PK
+    nom : string
+    prenom : string
+    email : string  unique
+    telephone : string  unique
+    datenaissance : Date
+    sexe : string
+    pays : string
+    ville : string
+    adresse : string
+    profession : string
+    motdepasse : string  (caché)
+    googleId : string?
+    statut : string  [ACTIF]
+    verificationotp : boolean
+    dateinscription : Date
+    datemodification : Date
+  }
+
+  class Administrateur <<Entity>> #EFF6FF {
+    id : number  PK
+    nom : string
+    email : string  unique
+    motdepasse : string  (caché)
+    statut : AdministrateurStatut
+    createdAt : Date
+    updatedAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' WALLET & TRANSACTIONS
+' ═══════════════════════════════════════════
+
+package "💰 PORTEFEUILLE" #F0FDF4 {
+
+  class Wallet <<Entity>> #DCFCE7 {
+    -- Propriétés --
+    id : uuid  PK
+    walletNumber : string  unique
+    userId : number  FK
+    balance : bigint  (centimes FCFA)
+    currency : string  [XAF]
+    status : WalletStatus  [INACTIVE]
+    isPrimary : boolean
+    label : string?
+    pinHash : string?  (caché)
+    pinCreatedAt : Date?
+    failedPinAttempts : number
+    lockedUntil : Date?
+    version : number
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class WalletTransaction <<Entity>> #DCFCE7 {
+    -- Propriétés --
+    id : uuid  PK
+    walletId : string  FK
+    type : WalletTransactionType
+    amount : bigint  (centimes FCFA)
+    relatedWalletId : string?  FK
+    reference : string?
+    operator : LinkedAccountOperator?
+    phoneNumber : string?
+    description : string?
+    createdAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' COMPTES LIÉS
+' ═══════════════════════════════════════════
+
+package "🔗 COMPTES EXTERNES" #FFFBEB {
+
+  class LinkedAccount <<Entity>> #FEF3C7 {
+    -- Propriétés --
+    id : uuid  PK
+    userId : number  FK
+    walletId : string  FK
+    type : LinkedAccountType
+    operator : LinkedAccountOperator
+    label : string
+    phoneNumber : string?
+    accountNumber : string?
+    bankName : string?
+    iban : string?
+    swiftCode : string?
+    currency : string  [XAF]
+    status : LinkedAccountStatus  [PENDING]
+    isDefault : boolean
+    verifiedAt : Date?
+    createdAt : Date
+    updatedAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' KYC
+' ═══════════════════════════════════════════
+
+package "🪪 VÉRIFICATION D'IDENTITÉ" #FFF7ED {
+
+  class Kyc <<Entity>> #FFEDD5 {
+    -- Propriétés --
+    id : number  PK
+    userId : number  FK
+    IdentityDocumentType : IdentityDocumentType
+    proofOfAddressType : ProofOfAddressType
+    documentFrontUrl : string
+    documentBackUrl : string?
+    selfieUrl : string
+    proofOfAddressUrl : string
+    status : KycStatus  [PENDING]
+    reviewComment : string?
+    verifiedBy : number?
+    verifiedAt : Date?
+    createdAt : Date
+    updatedAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' TONTINE
+' ═══════════════════════════════════════════
+
+package "🤝 TONTINE" #FDF2F8 {
+
+  class Tontine <<Entity>> #FCE7F3 {
+    -- Propriétés --
+    id : uuid  PK
+    name : string
+    description : string?
+    targetAmount : bigint
+    contributionAmount : bigint
+    memberLimit : number
+    currency : string  [XAF]
+    frequency : TontineFrequency  [MONTHLY]
+    status : TontineStatus  [DRAFT]
+    currentCycle : number
+    nextContributionAt : Date?
+    creatorId : number  FK
+    walletId : uuid?  FK
+    version : number
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class TontineMember <<Entity>> #FCE7F3 {
+    -- Propriétés --
+    id : uuid  PK
+    tontineId : uuid  FK
+    userId : number  FK
+    role : TontineMemberRole  [MEMBER]
+    status : TontineMemberStatus  [PENDING]
+    beneficiaryOrder : number?
+    hasReceivedPayout : boolean
+    missedContributions : number
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class TontineCycle <<Entity>> #FCE7F3 {
+    -- Propriétés --
+    id : uuid  PK
+    tontineId : uuid  FK
+    cycleNumber : number
+    beneficiaryId : uuid
+    status : TontineCycleStatus  [PENDING]
+    totalPot : bigint
+    collectedAmount : bigint  [0]
+    dueDate : Date
+    completedAt : Date?
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class TontineContribution <<Entity>> #FCE7F3 {
+    -- Propriétés --
+    id : uuid  PK
+    cycleId : uuid  FK
+    memberId : uuid  FK
+    amount : bigint
+    status : TontineContributionStatus  [PENDING]
+    walletTransactionId : uuid?
+    paidAt : Date?
+    dueDate : Date
+    penaltyCount : number
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class TontineInvitation <<Entity>> #FCE7F3 {
+    -- Propriétés --
+    id : uuid  PK
+    tontineId : uuid  FK
+    inviterUserId : number
+    inviteeUserId : number?
+    inviteeEmail : string?
+    token : string  unique
+    status : string  [PENDING]
+    expiresAt : Date
+    createdAt : Date
+    updatedAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' RÔLES & PERMISSIONS
+' ═══════════════════════════════════════════
+
+package "🛡️ RÔLES & PERMISSIONS" #F5F3FF {
+
+  class Role <<Entity>> #EDE9FE {
+    -- Propriétés --
+    id : uuid  PK
+    name : string  unique
+    description : string?
+    createdAt : Date
+    updatedAt : Date
+  }
+
+  class Permission <<Entity>> #EDE9FE {
+    -- Propriétés --
+    id : uuid  PK
+    name : string  unique  [resource:action]
+    description : string?
+    createdAt : Date
+  }
+
+  class AdminRole <<Entity>> #EDE9FE {
+    -- Propriétés --
+    id : uuid  PK
+    adminId : number  FK
+    roleId : uuid  FK
+    assignedBy : number?
+    assignedAt : Date
+  }
+}
+
+' ═══════════════════════════════════════════
+' ENUMS (hors packages)
+' ═══════════════════════════════════════════
+
+package "📋 ÉNUMÉRATIONS" #FAFAFA {
+
+  enum WalletStatus {
+    INACTIVE = 'inactive'
+    ACTIVE = 'active'
+    SUSPENDED = 'suspended'
+    CLOSED = 'closed'
+  }
+
+  enum WalletTransactionType {
+    DEPOSIT = 'deposit'
+    WITHDRAWAL = 'withdrawal'
+    TRANSFER_IN = 'transfer_in'
+    TRANSFER_OUT = 'transfer_out'
+  }
+
+  enum KycStatus {
+    PENDING = 'PENDING'
+    UNDER_REVIEW = 'UNDER_REVIEW'
+    APPROVED = 'APPROVED'
+    REJECTED = 'REJECTED'
+    REQUIRES_ADDITIONAL_INFO
+  }
+
+  enum IdentityDocumentType {
+    NATIONAL_ID = 'NATIONAL_ID'
+    PASSPORT = 'PASSPORT'
+    DRIVER_LICENSE = 'DRIVER_LICENSE'
+  }
+
+  enum LinkedAccountType {
+    BANK_ACCOUNT = 'bank_account'
+    MOBILE_MONEY = 'mobile_money'
+  }
+
+  enum LinkedAccountOperator {
+    MTN_MOMO
+    ORANGE_MONEY
+    WAVE
+    FREE_MONEY
+    MOOV_MONEY
+    AIRTEL_MONEY
+    BANK_APP
+    OTHER
+  }
+
+  enum LinkedAccountStatus {
+    PENDING = 'pending'
+    ACTIVE = 'active'
+    SUSPENDED = 'suspended'
+    REMOVED = 'removed'
+  }
+
+  enum TontineFrequency {
+    WEEKLY = 'WEEKLY'
+    BIWEEKLY = 'BIWEEKLY'
+    MONTHLY = 'MONTHLY'
+  }
+
+  enum TontineStatus {
+    DRAFT = 'DRAFT'
+    ACTIVE = 'ACTIVE'
+    CLOSED = 'CLOSED'
+  }
+
+  enum TontineMemberRole {
+    ADMIN = 'ADMIN'
+    MEMBER = 'MEMBER'
+  }
+
+  enum TontineMemberStatus {
+    PENDING = 'PENDING'
+    ACTIVE = 'ACTIVE'
+    SUSPENDED = 'SUSPENDED'
+    LEFT = 'LEFT'
+    REMOVED = 'REMOVED'
+  }
+
+  enum TontineCycleStatus {
+    PENDING = 'PENDING'
+    ACTIVE = 'ACTIVE'
+    COMPLETED = 'COMPLETED'
+    FAILED = 'FAILED'
+  }
+
+  enum TontineContributionStatus {
+    PENDING = 'PENDING'
+    PAID = 'PAID'
+    LATE = 'LATE'
+    FAILED = 'FAILED'
+    REFUNDED = 'REFUNDED'
+  }
+
+  enum AdministrateurStatut {
+    ACTIF = 'actif'
+    SUSPENDU = 'suspendu'
+  }
+}
+
+' ═══════════════════════════════════════════
+' RELATIONS
+' ═══════════════════════════════════════════
+
+User "1" -- "0..*" Wallet : possède >
+User "1" -- "0..*" LinkedAccount : lie >
+User "1" -- "0..*" Kyc : soumet >
+User "1" -- "0..*" Tontine : crée >
+User "1" -- "0..*" TontineMember : rejoint >
+
+Wallet "1" -- "0..*" WalletTransaction : enregistre >
+Wallet "1" -- "0..*" LinkedAccount : est lié à >
+
+Tontine "1" -- "1..*" TontineMember : contient >
+Tontine "1" -- "0..*" TontineCycle : génère >
+Tontine "1" -- "0..*" TontineInvitation : envoie >
+
+TontineCycle "1" -- "0..*" TontineContribution : reçoit >
+
+TontineMember "1" -- "0..*" TontineContribution : effectue >
+
+Administrateur "1" -- "0..*" AdminRole : attribué à >
+Role "1" -- "0..*" AdminRole : contient >
+Role "0..*" -- "0..*" Permission : autorise >
+
+' ═══════════════════════════════════════════
+' NOTES
+' ═══════════════════════════════════════════
+
+note bottom of Wallet
+  **Solde** = projection du ledger
+  (jamais modifié directement)
+  
+  **Status** : INACTIVE → ACTIVE
+  (après vérification KYC)
+end note
+
+note bottom of WalletTransaction
+  **Ledger immuable** :
+  Chaque opération crée
+  une écriture comptable.
+  
+  Montants en **centimes FCFA**
+  (bigint, jamais float)
+end note
+
+note bottom of Tontine
+  **Cycle de vie** :
+  DRAFT → ACTIVE → CLOSED
+  
+  **Cotisations** :
+  PENDING → PAID / LATE / FAILED
+end note
+
+note right of Kyc
+  **Activation wallet** :
+  KYC APPROVED →
+  wallet passe à ACTIVE
+end note
+
+@enduml

@@ -1,0 +1,248 @@
+@startuml Sequence Diagram — Authentification
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 1.5
+skinparam roundcorner 10
+skinparam maxMessageSize 220
+skinparam responseMessageBelowArrow true
+skinparam sequenceParticipantPadding 15
+
+title Diagramme de Séquence — Authentification AfriLinkPay
+
+actor "Client" as Client
+participant "AuthController\n(/auth)" as Controller
+participant "AuthService" as Service
+participant "UsersService" as Users
+participant "JwtStrategy\n(Passport)" as JwtStrat
+participant "JwtAuthGuard" as AuthGuard
+participant "RedisService" as Redis
+participant "MailService" as Mail
+database "PostgreSQL" as DB
+database "Redis" as RDB
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 1 : CONNEXION EMAIL/MOT DE PASSE (CLIENT)
+' ════════════════════════════════════════════════════════════
+
+== [1] Connexion Client (email/mot de passe) ==
+
+Client -> Controller: POST /api/v1/auth/login\n{ email, motdepasse }
+Controller -> Service: validateUser(email, motdepasse)
+Service -> Users: validateUser(email, password)
+Users -> DB: SELECT user WHERE email = :email\n(addSelect motdepasse)
+DB --> Users: user_row (with hash)
+Users -> Users: argon2.verify(hash, password)
+alt Mot de passe incorrect
+  Users --> Service: null
+  Service --> Client: 401 "Email ou mot de passe invalide"
+end
+Users --> Service: user
+Service -> Service: Vérifier verificationotp === true
+alt OTP non vérifié
+  Service --> Client: 401 "Compte non vérifié.\nVeuillez valider l'OTP reçu par email."
+end
+Service --> Controller: user { idutilisateur, email }
+
+Controller -> Service: login(user)
+Service -> Service: issueTokens(user)
+Service -> Service: JWT sign\n{ sub, email }\nsecret: JWT_ACCESS_SECRET\nexpiresIn: JWT_ACCESS_TTL (15m)
+Service -> Service: JWT sign\n{ sub, jti }\nsecret: JWT_REFRESH_SECRET\nexpiresIn: JWT_REFRESH_TTL (30d)
+Service -> Redis: SET refresh:{userId} = jti\nTTL = 30d
+Redis --> Service: OK
+Service --> Controller: { access_token, refresh_token }
+Controller --> Client: 200 OK\n{ access_token, refresh_token }
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 2 : CONNEXION ADMINISTRATEUR
+' ════════════════════════════════════════════════════════════
+
+== [2] Connexion Administrateur ==
+
+Client -> Controller: POST /api/v1/auth/login-admin\n{ email, motdepasse }
+Controller -> Service: validateAdmin(email, motdepasse)
+Service -> DB: SELECT admin WHERE email = :email\n(select: id, nom, email, motdepasse, statut)
+DB --> Service: admin_row
+Service -> Service: Vérifier admin.statut === ACTIF
+alt Statut ≠ ACTIF
+  Service --> Client: 403 "Compte administrateur suspendu"
+end
+Service -> Service: argon2.verify(motdepasse)
+alt Mot de passe non-haché (legacy)
+  Service -> Service: Comparaison en clair
+  Service -> Service: hash(motdepasse) → migration sécurité
+  Service -> DB: UPDATE admin SET motdepasse = hash
+end
+alt Mot de passe incorrect
+  Service --> Client: 401 "Email ou mot de passe invalide"
+end
+Service --> Controller: admin { id, email }
+
+Controller -> Service: loginAdmin(admin)
+Service -> Service: issueAdminTokens(admin)
+Service -> Service: JWT sign\n{ sub, email, role: 'admin' }\nsecret: JWT_ACCESS_SECRET
+Service -> Service: JWT sign\n{ sub, jti, role: 'admin' }\nsecret: JWT_REFRESH_SECRET
+Service -> Redis: SET refresh:admin:{adminId} = jti\nTTL = 30d
+Redis --> Service: OK
+Service --> Controller: { access_token, refresh_token }
+Controller --> Client: 200 OK\n{ access_token, refresh_token }
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 3 : INSCRIPTION + VÉRIFICATION OTP
+' ════════════════════════════════════════════════════════════
+
+== [3] Inscription (POST /users) + OTP ==
+
+Client -> Users: POST /api/v1/users\n{ nom, prenom, email, motdepasse, ... }
+Users -> DB: Vérifier unicité (email, telephone, googleId)
+Users -> DB: BEGIN TRANSACTION
+Users -> DB: INSERT user (motdepasse = argon2hash)\nverificationotp = false
+Users -> DB: INSERT wallet principal (status: INACTIVE)\nselon le pays
+Users -> DB: COMMIT
+DB --> Users: savedUser
+Users -> Redis: SET otp:email:{email} = code\nTTL = 3 min
+Users -> Mail: sendOtp(email, otpCode)
+Mail --> Client: Email avec code OTP
+Users --> Client: 200 { user }
+
+== [3b] Vérification OTP ==
+
+Client -> Controller: POST /api/v1/auth/verify-otp\n{ email, otp }
+Controller -> Service: verifyOtp(email, otp)
+Service -> Users: verifyOtp(email, otp)
+Users -> DB: SELECT user WHERE email = :email
+Users -> Redis: GET otp:email:{email}
+alt OTP invalide ou expiré
+  Users --> Client: 409 "Code OTP invalide ou expiré."
+end
+Users -> Users: user.verificationotp = true
+Users -> Redis: DEL otp:email:{email}
+Users -> DB: UPDATE user SET verificationotp = true
+Users --> Controller: updated_user
+Controller --> Client: 200 OK
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 4 : RAFRAÎCHISSEMENT DU TOKEN
+' ════════════════════════════════════════════════════════════
+
+== [4] Rafraîchir le token ==
+
+Client -> Controller: POST /api/v1/auth/refresh\n{ refreshToken }
+Controller -> Service: refresh(refreshToken)
+Service -> Service: jwtService.verify(refreshToken)\nsecret: JWT_REFRESH_SECRET
+alt Token invalide ou expiré
+  Service --> Client: 401 "Refresh token invalide ou expiré."
+end
+Service -> Redis: GET refresh:{decoded.sub}
+alt jti ne correspond pas (révoqué/invalide)
+  Service --> Client: 401 "Refresh token invalide ou révoqué."
+end
+Service -> Users: findOne(decoded.sub)
+Users --> Service: user
+Service -> Service: issueTokens(user)\n(nouveaux access + refresh tokens)
+Service -> Redis: SET refresh:{userId} = new_jti\n(remplace l'ancien jti)
+Service --> Controller: { access_token, refresh_token }
+Controller --> Client: 200 OK\n(nouveaux tokens)
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 5 : ACCÈS PROTÉGÉ (JWT GUARD)
+' ════════════════════════════════════════════════════════════
+
+== [5] Accès à une route protégée ==
+
+Client -> AuthGuard: GET /api/v1/wallets\nAuthorization: Bearer {access_token}
+AuthGuard -> AuthGuard: ExtractJwt.fromAuthHeaderAsBearerToken()
+AuthGuard -> JwtStrat: validate(payload)
+JwtStrat -> JwtStrat: Vérifier signature + expiry\n(secret: JWT_ACCESS_SECRET)
+alt Token invalide ou expiré
+  JwtStrat --> Client: 401 Unauthorized
+end
+JwtStrat -> DB: SELECT user WHERE id = payload.sub
+alt User introuvable
+  JwtStrat --> Client: 401 "Utilisateur introuvable"
+end
+JwtStrat --> AuthGuard: { sub, email, role }
+AuthGuard --> Controller: req.user = { sub, email, role }
+Controller --> Client: 200 OK
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 6 : GOOGLE OAUTH
+' ════════════════════════════════════════════════════════════
+
+== [6] Connexion Google OAuth ==
+
+Client -> Controller: GET /api/v1/auth/google
+Controller -> Controller: Passport redirige vers\naccounts.google.com
+Controller --> Client: 302 Redirect → Google
+
+Client -> Controller: GET /api/v1/auth/google/callback\n?code=...&state=...
+Controller -> Controller: Passport Google Strategy\néchange code contre profil
+Controller -> Service: resolveGoogleUser(googleId, email)
+
+alt Compte existant (par googleId ou email)
+  Service -> DB: SELECT user WHERE googleId = :googleId
+  alt Trouvé par googleId
+    Service --> Controller: existingUser
+  else Trouvé par email (fusion)
+    Service -> DB: UPDATE user SET googleId = :googleId
+    Service --> Controller: existingUser
+  end
+
+  alt verificationotp === false (jamais vérifié)
+    Service -> Service: resendOtp(email)
+    Service -> Redis: SET otp:email:{email} = code\nTTL = 10 min
+    Service -> Mail: sendOtp(email, code)
+    Controller --> Client: 302 Redirect\n/verify-otp?email=...
+  else Vérifié
+    Service -> Service: login(user)\n→ issueTokens()
+    Controller --> Client: 302 Redirect\n/auth/callback#access_token=...\n&refresh_token=...
+  end
+
+else Nouveau compte
+  Service -> Redis: SET google_pending:{uuid}\n= { googleId, email, prenom, nom }\nTTL = 15 min
+  Service --> Controller: pendingToken
+  Controller --> Client: 302 Redirect\n/signup?token=...
+end
+
+== [6b] Finaliser inscription Google ==
+
+Client -> Controller: POST /api/v1/auth/google/complete-signup/:token\n{ datenaissance, sexe, pays, motdepasse, ... }
+Controller -> Service: completeGoogleSignup(token, dto)
+Service -> Redis: GET google_pending:{token}
+Service -> Users: create(userDto + googleProfile)
+Users -> DB: BEGIN TRANSACTION
+Users -> DB: INSERT user + wallet principal
+Users -> DB: COMMIT
+Service -> Redis: DEL google_pending:{token}
+Service --> Controller: { message, email }
+Controller --> Client: 200 OK
+
+' ════════════════════════════════════════════════════════════
+' SCÉNARIO 7 : DÉCONNEXION
+' ════════════════════════════════════════════════════════════
+
+== [7] Déconnexion ==
+
+Client -> Controller: POST /api/v1/auth/logout\n(Bearer token)
+Controller -> AuthGuard: canActivate()
+AuthGuard -> JwtStrat: validate(payload)
+JwtStrat --> AuthGuard: { sub, email }
+Controller -> Service: logout(userId)
+Service -> Redis: DEL refresh:{userId}
+Service --> Controller: { message: "Déconnecté avec succès." }
+Controller --> Client: 200 OK
+
+' ════════════════════════════════════════════════════════════
+' NOTES
+' ════════════════════════════════════════════════════════════
+
+note over Client, RDB
+  **Sécurité :**
+  - Mots de passe hachés avec Argon2
+  - JWT access token : 15 min, refresh token : 30 j
+  - Refresh token jti stocké en Redis (rotation à chaque refresh)
+  - OTP : code 6 chiffres, TTL 3 min (inscription) / 10 min (resend)
+  - Google OAuth : session pending TTL 15 min
+  - Admin : vérification statut ACTIF à chaque connexion
+  - Route protégée : JwtAuthGuard → JwtStrategy.validate()
+end note
+
+@enduml

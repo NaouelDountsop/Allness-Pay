@@ -1,0 +1,168 @@
+@startuml AfriLinkPay Use Cases
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #FEFEFE
+skinparam usecaseBorderColor #333333
+skinparam rectangleBackgroundColor #F8F9FA
+skinparam arrowColor #555555
+
+title Diagramme de Cas d'Utilisation — AfriLinkPay
+
+rectangle "AUTHENTIFICATION" as auth {
+  usecase "S'inscrire\n(email/mot de passe)" as UC_REG
+  usecase "S'inscrire via\nGoogle OAuth" as UC_GOOGLE_REG
+  usecase "Se connecter\n(client)" as UC_LOGIN
+  usecase "Se connecter\n(admin)" as UC_LOGIN_ADMIN
+  usecase "Vérifier OTP\nemail" as UC_OTP
+  usecase "Renvoyer OTP" as UC_RESEND_OTP
+  usecase "Rafraîchir\nle token" as UC_REFRESH
+  usecase "Se déconnecter" as UC_LOGOUT
+  usecase "Consulter\nson profil" as UC_PROFILE
+}
+
+rectangle "GESTION DU WALLET" as wallet_mod {
+  usecase "Créer un wallet\n(status: INACTIVE)" as UC_CREATE_WALLET
+  usecase "Consulter ses\nwallets" as UC_LIST_WALLET
+  usecase "Consulter un\nwallet" as UC_GET_WALLET
+  usecase "Modifier\nwallet (label)" as UC_UPDATE_WALLET
+  usecase "Activer un wallet\n(KYC requis)" as UC_ACTIVATE_WALLET
+  usecase "Fermer un wallet\n(solde = 0)" as UC_CLOSE_WALLET
+  usecase "Définir wallet\nprincipal" as UC_SET_PRIMARY
+  usecase "Consulter\nhistorique transactions" as UC_LIST_TX
+}
+
+rectangle "OPÉRATIONS FINANCIÈRES" as finance_mod {
+  usecase "Déposer de\nl'argent" as UC_DEPOSIT
+  usecase "Retirer de\nl'argent" as UC_WITHDRAW
+  usecase "Transférer vers\nun autre wallet" as UC_TRANSFER
+  usecase "Gérer le PIN\nwallet" as UC_PIN
+  usecase "Lier un compte\nmobile money / banque" as UC_LINK_ACCOUNT
+}
+
+rectangle "KYC (Vérification d'identité)" as kyc_mod {
+  usecase "Soumettre un\ndossier KYC" as UC_SUBMIT_KYC
+  usecase "Consulter l'état\ndu KYC" as UC_GET_KYC
+  usecase "Modifier son\ndossier KYC" as UC_UPDATE_KYC
+  usecase "Supprimer son\ndossier KYC" as UC_DELETE_KYC
+  usecase "Réviser un KYC\n(approuver/rejeter)" as UC_REVIEW_KYC
+}
+
+rectangle "TONTINE" as tontine_mod {
+  usecase "Créer une tontine\n(DRAFT)" as UC_CREATE_TONTINE
+  usecase "Consulter ses\ntontines" as UC_LIST_TONTINE
+  usecase "Consulter détails\ntontine" as UC_GET_TONTINE
+  usecase "Modifier tontine\n(DRAFT only)" as UC_UPDATE_TONTINE
+  usecase "Changer statut\ntontine" as UC_TONTINE_STATUS
+  usecase "Supprimer tontine\n(DRAFT only)" as UC_DELETE_TONTINE
+  usecase "Ajouter un\nmembre" as UC_ADD_MEMBER
+  usecase "Retirer un\nmembre" as UC_REMOVE_MEMBER
+  usecase "Rejoindre une\ntontine" as UC_JOIN_TONTINE
+  usecase "Quitter une\ntontine" as UC_LEAVE_TONTINE
+  usecase "Envoyer une\ninvitation" as UC_INVITE
+  usecase "Répondre à une\ninvitation" as UC_RESPOND_INVITE
+  usecase "Contribuer à\nun cycle" as UC_CONTRIBUTE
+  usecase "Recevoir le\npot (payout)" as UC_PAYOUT
+}
+
+rectangle "ADMINISTRATION" as admin_mod {
+  usecase "Dashboard\nstatistiques" as UC_DASHBOARD
+  usecase "Consulter liste\nutilisateurs" as UC_LIST_USERS
+  usecase "Consulter liste\nKYC" as UC_ADMIN_KYC_LIST
+  usecase "Superviser\ntontines" as UC_ADMIN_TONTINE
+  usecase "Gérer les rôles\net permissions" as UC_MANAGE_ROLES
+  usecase "Gérer les\nadministrateurs" as UC_MANAGE_ADMINS
+}
+
+rectangle "SYSTÈME (Automatisé)" as system_mod {
+  usecase "Générer cycles\ntontine" as UC_GEN_CYCLE
+  usecase "Pénaliser\ncotisations en retard" as UC_LATE_PENALTY
+  usecase "Verser le pot\nau bénéficiaire" as UC_AUTO_PAYOUT
+  usecase "Relancer les\ncotisations en attente" as UC_REMIND_CONTRIB
+  usecase "Activer wallet\naprès KYC approuvé" as UC_AUTO_ACTIVATE
+}
+
+' ── ACTORS ──────────────────────────────────────────────
+actor "Client" as Client
+actor "Administrateur" as Admin
+actor "Système" as System
+
+' ── CLIENT associations ─────────────────────────────────
+Client --> UC_REG
+Client --> UC_GOOGLE_REG
+Client --> UC_LOGIN
+Client --> UC_OTP
+Client --> UC_RESEND_OTP
+Client --> UC_REFRESH
+Client --> UC_LOGOUT
+Client --> UC_PROFILE
+
+Client --> UC_CREATE_WALLET
+Client --> UC_LIST_WALLET
+Client --> UC_GET_WALLET
+Client --> UC_UPDATE_WALLET
+Client --> UC_ACTIVATE_WALLET
+Client --> UC_CLOSE_WALLET
+Client --> UC_SET_PRIMARY
+
+Client --> UC_LIST_TX
+Client --> UC_DEPOSIT
+Client --> UC_WITHDRAW
+Client --> UC_TRANSFER
+Client --> UC_PIN
+Client --> UC_LINK_ACCOUNT
+
+Client --> UC_SUBMIT_KYC
+Client --> UC_GET_KYC
+Client --> UC_UPDATE_KYC
+Client --> UC_DELETE_KYC
+
+Client --> UC_CREATE_TONTINE
+Client --> UC_LIST_TONTINE
+Client --> UC_GET_TONTINE
+Client --> UC_UPDATE_TONTINE
+Client --> UC_TONTINE_STATUS
+Client --> UC_DELETE_TONTINE
+Client --> UC_ADD_MEMBER
+Client --> UC_REMOVE_MEMBER
+Client --> UC_JOIN_TONTINE
+Client --> UC_LEAVE_TONTINE
+Client --> UC_INVITE
+Client --> UC_RESPOND_INVITE
+Client --> UC_CONTRIBUTE
+
+' ── ADMIN associations ──────────────────────────────────
+Admin --> UC_LOGIN_ADMIN
+Admin --> UC_REFRESH
+Admin --> UC_LOGOUT
+Admin --> UC_PROFILE
+
+Admin --> UC_REVIEW_KYC
+Admin --> UC_DASHBOARD
+Admin --> UC_LIST_USERS
+Admin --> UC_ADMIN_KYC_LIST
+Admin --> UC_ADMIN_TONTINE
+Admin --> UC_MANAGE_ROLES
+Admin --> UC_MANAGE_ADMINS
+
+' ── SYSTEM associations ─────────────────────────────────
+System --> UC_GEN_CYCLE
+System --> UC_LATE_PENALTY
+System --> UC_AUTO_PAYOUT
+System --> UC_REMIND_CONTRIB
+System --> UC_AUTO_ACTIVATE
+
+' ── INCLUDES / EXTENDS ──────────────────────────────────
+UC_ACTIVATE_WALLET ..> UC_SUBMIT_KYC : <<require>>\nKYC must be APPROVED
+UC_DEPOSIT ..> UC_ACTIVATE_WALLET : <<require>>\nwallet must be ACTIVE
+UC_WITHDRAW ..> UC_ACTIVATE_WALLET : <<require>>\nwallet must be ACTIVE
+UC_TRANSFER ..> UC_ACTIVATE_WALLET : <<require>>\nboth wallets ACTIVE
+UC_CONTRIBUTE ..> UC_ACTIVATE_WALLET : <<require>>\nwallet must be ACTIVE
+UC_WITHDRAW ..> UC_PIN : <<require>>
+UC_TRANSFER ..> UC_PIN : <<require>>
+UC_CONTRIBUTE ..> UC_PIN : <<require>>
+UC_AUTO_ACTIVATE ..> UC_REVIEW_KYC : <<auto>>\non APPROVED status
+UC_AUTO_PAYOUT ..> UC_GEN_CYCLE : <<auto>>\non COMPLETED cycle
+UC_LATE_PENALTY ..> UC_CONTRIBUTE : <<auto>>\nmarks as LATE
+
+@enduml
