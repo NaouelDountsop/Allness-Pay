@@ -108,8 +108,13 @@ export default function KycDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-1 flex flex-col gap-5">
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center">
-              <Avatar initials={`U${record.userId}`} size="lg" />
-              <p className="text-sm font-bold text-afrilink-dark mt-3">Utilisateur #{record.userId}</p>
+              <Avatar initials={record.userName && record.userNom ? `${record.userName[0]}${record.userNom[0]}` : `U${record.userId}`} size="lg" />
+              <p className="text-sm font-bold text-afrilink-dark mt-3">
+                {record.userName && record.userNom ? `${record.userName} ${record.userNom}` : `Utilisateur #${record.userId}`}
+              </p>
+              {record.userEmail && (
+                <p className="text-[11px] text-gray-400 mb-1">{record.userEmail}</p>
+              )}
               <p className="text-[11px] text-gray-400 mb-2">Dossier #{record.id}</p>
               <Badge tone={STATUS_BADGE[record.status]?.tone ?? "orange"}>
                 {STATUS_BADGE[record.status]?.label ?? record.status}

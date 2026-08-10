@@ -90,8 +90,14 @@ export class AdminService {
     });
   }
 
-  findOneKyc(id: number) {
-    return this.kycRepository.findOne({ where: { id } });
+  async findOneKyc(id: number) {
+    const kyc = await this.kycRepository.findOne({ where: { id } });
+    if (!kyc) return null;
+    const user = await this.usersRepository.findOne({
+      where: { idutilisateur: kyc.userId },
+      select: ['nom', 'prenom', 'email'],
+    });
+    return { ...kyc, userName: user?.prenom ?? null, userNom: user?.nom ?? null, userEmail: user?.email ?? null };
   }
 
   async findAllTontines() {

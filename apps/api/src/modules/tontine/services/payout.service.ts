@@ -55,13 +55,9 @@ export class PayoutService {
         );
       }
 
-      const tontineWallet = await manager.findOne(Wallet, {
-        where: { userId: tontine.creatorId, isPrimary: true },
+      const tontineWallet = await manager.findOneOrFail(Wallet, {
+        where: { walletNumber: tontine.walletNumber },
       });
-
-      if (!tontineWallet) {
-        throw new BadRequestException('Le wallet de la tontine est introuvable');
-      }
 
       const amount = BigInt(cycle.totalPot);
 

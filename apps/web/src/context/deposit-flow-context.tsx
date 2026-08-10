@@ -10,6 +10,17 @@ export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   USD: "$",
 };
 
+export const BANK_LABELS: Record<string, string> = {
+  sgbc: "SGBC (Société Générale Cameroun)",
+  uba: "UBA Cameroun",
+  afriland: "Afriland First Bank",
+  beac: "BEAC",
+  ecobank: "Ecobank Cameroun",
+  bicec: "BICEC",
+  btc: "BTCI (Banque Camerounaise des Travailleurs)",
+  autres: "Autres",
+};
+
 export interface DepositState {
   method: DepositMethod;
   operator: MobileMoneyOperator;

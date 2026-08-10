@@ -1,7 +1,20 @@
 import { apiClient } from "@/lib/api-client";
 import type { Wallet } from "@afrilinkpay/shared";
 
+export interface CreateWalletPayload {
+  currency?: string;
+  label?: string;
+}
+
 export const walletService = {
+  /**
+   * Créer un nouveau portefeuille.
+   */
+  create: async (data: CreateWalletPayload = {}): Promise<Wallet> => {
+    const res = await apiClient.post<Wallet>("/wallets", data);
+    return res.data;
+  },
+
   /**
    * Récupérer tous les portefeuilles de l'utilisateur connecté.
    */

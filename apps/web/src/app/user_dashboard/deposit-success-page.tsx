@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Eye, ArrowRight, Download, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Eye, ArrowRight, Download, ArrowLeft, Building2 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow } from "../../context/deposit-flow-context";
+import { useDepositFlow, BANK_LABELS } from "../../context/deposit-flow-context";
+
 function formatDate(date: Date | null) {
   if (!date) return "—";
   return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }) +
@@ -10,7 +11,7 @@ function formatDate(date: Date | null) {
     date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
-const OPERATOR_LABEL: Record<string, string> = {
+const MOBILE_OPERATOR_LABEL: Record<string, string> = {
   mtn: "MTN Mobile Money",
   orange: "Orange Money",
 };
@@ -18,6 +19,7 @@ const OPERATOR_LABEL: Record<string, string> = {
 export default function DepositSuccessPage() {
   const navigate = useNavigate();
   const { deposit, reset } = useDepositFlow();
+  const isBank = deposit.method === "bank";
 
   const handleBackToWallet = () => {
     reset();
@@ -63,10 +65,28 @@ export default function DepositSuccessPage() {
               <span className="text-xs text-gray-400">Date</span>
               <span className="text-xs text-afrilink-dark">{formatDate(deposit.createdAt)}</span>
             </div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-gray-400">Opérateur</span>
-              <span className="text-xs text-afrilink-dark">{OPERATOR_LABEL[deposit.operator]}</span>
-            </div>
+
+            {isBank ? (
+              <>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs text-gray-400">Banque</span>
+                  <span className="text-xs text-afrilink-dark flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                    {BANK_LABELS[deposit.bankName] || deposit.bankName}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs text-gray-400">Titulaire</span>
+                  <span className="text-xs text-afrilink-dark">{deposit.accountHolder}</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-gray-400">Opérateur</span>
+                <span className="text-xs text-afrilink-dark">{MOBILE_OPERATOR_LABEL[deposit.operator]}</span>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Statut</span>
               <span className="text-xs font-semibold text-afrilink-green">Succès</span>

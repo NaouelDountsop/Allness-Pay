@@ -32,6 +32,9 @@ export interface AdminUser {
 export interface AdminKycRecord {
   id: number;
   userId: number;
+  userName: string | null;
+  userNom: string | null;
+  userEmail: string | null;
   IdentityDocumentType: string;
   proofOfAddressType: string;
   documentFrontUrl: string;
@@ -101,7 +104,7 @@ export const adminService = {
   },
 
   reviewKyc: async (id: number, data: { status: string; reviewComment?: string }): Promise<AdminKycRecord> => {
-    const res = await apiClient.patch<AdminKycRecord>(`/admin/kyc/${id}`, data);
+    const res = await apiClient.patch<AdminKycRecord>(`/kyc/${id}/review`, data);
     return res.data;
   },
 

@@ -14,6 +14,11 @@ import { Exclude } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
 
+export enum WalletType {
+  PERSONAL = 'PERSONAL',
+  TONTINE = 'TONTINE',
+}
+
 export enum WalletStatus {
   INACTIVE = 'inactive',
   ACTIVE = 'active',
@@ -47,6 +52,12 @@ export class Wallet {
 
   @Column({ type: 'enum', enum: WalletStatus, default: WalletStatus.INACTIVE })
   status: WalletStatus;
+
+  @Column({ type: 'enum', enum: WalletType, default: WalletType.PERSONAL })
+  type: WalletType;
+
+  @Column({ name: 'tontineid', type: 'uuid', nullable: true })
+  tontineId: string | null;
 
   @Column({ default: false })
   isPrimary: boolean;

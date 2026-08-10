@@ -31,8 +31,4 @@ export class CreateTontineDto {
   @IsString()
   @Length(3, 10)
   currency?: string;
-
-  @IsOptional()
-  @IsString()
-  walletId?: string;
 }

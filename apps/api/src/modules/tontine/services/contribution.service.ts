@@ -79,7 +79,9 @@ export class ContributionService {
 
       await this.pinService.verifyPinWithManager(manager, dto.walletId, member.userId, dto.pin);
 
-      const tontineWallet = await this.walletsService.lockWalletForUpdate(manager, tontine.id);
+      const tontineWallet = await manager.findOneOrFail(Wallet, {
+        where: { walletNumber: tontine.walletNumber },
+      });
 
       const debitEntry = manager.create(WalletTransaction, {
         walletId: dto.walletId,
