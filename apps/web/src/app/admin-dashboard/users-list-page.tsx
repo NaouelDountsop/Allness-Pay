@@ -15,7 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Badge, Pagination } from "../../components/ui";
+import { Pagination, Badge } from "../../components/ui";
 import { UserDetailPanel } from "./user-detail-panel";
 import { adminService } from "../../lib/api/admin.service";
 
@@ -51,11 +51,46 @@ export default function UsersListPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Users} label="Utilisateurs Totaux" value={formatNumber(users?.length ?? 0)} />
-        <StatCard icon={CheckCircle2} label="KYC Complétés" value="94.2%" />
-        <StatCard icon={ArrowLeftRight} label="Flux Mensuel" value="0 XAF" />
-        <StatCard icon={AlertTriangle} iconTone="red" label="Alertes Fraude" value="0" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Utilisateurs Totaux</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(users?.length ?? 0)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">KYC Complétés</span>
+          </div>
+          <p className="text-2xl font-bold text-white">94.2%</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <ArrowLeftRight className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Flux Mensuel</span>
+          </div>
+          <p className="text-2xl font-bold text-white">0 XAF</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-red-400" />
+            </span>
+            <span className="text-sm text-gray-300">Alertes Fraude</span>
+          </div>
+          <p className="text-2xl font-bold text-white">0</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">

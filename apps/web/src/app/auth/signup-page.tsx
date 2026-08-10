@@ -320,7 +320,7 @@ export default function SignupPage() {
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <AppButton type="submit">Continuer →</AppButton>
+          
 
           {!isFromGoogle && (
             <>
@@ -345,6 +345,8 @@ export default function SignupPage() {
                 </span>
               </label>
 
+              <AppButton type="submit">Continuer →</AppButton>
+
               <p className="text-center text-sm text-gray-500 mt-4">
                 Déjà inscrit ?{" "}
                 <a href="/login" className="text-afrilink-green font-medium">
@@ -355,6 +357,8 @@ export default function SignupPage() {
               <SocialButtons />
             </>
           )}
+
+          
         </form>
       )}
 

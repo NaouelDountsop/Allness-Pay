@@ -12,7 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Badge } from "../../components/ui";
+import { Badge } from "../../components/ui";
 import { adminService } from "../../lib/api/admin.service";
 
 const ACTIVITIES = [
@@ -75,23 +75,48 @@ export default function DashboardPage() {
         Surveillez les comptes et gérez les limites financières.
       </p>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Users} label="Utilisateurs Totaux" value={formatNumber(stats?.totalUsers ?? 0)} />
-        <StatCard
-          icon={ShieldAlert}
-          iconTone="red"
-          label="KYC en Attente"
-          value={formatNumber(stats?.kyc.pending ?? 0)}
-          tag={{ label: "Urgent", tone: "red" }}
-        />
-        <StatCard icon={TrendingUp} label="Volume Mensuel" value={`${formatNumber(stats?.monthlyVolume ?? 0)} XAF`} />
-        <StatCard
-          icon={Wallet}
-          label="Liquidité Système"
-          value={`${formatNumber(stats?.totalLiquidity ?? 0)} XAF`}
-          hint="Seuil: Optimal"
-          hintTone="green"
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Utilisateurs Totaux</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalUsers ?? 0)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <ShieldAlert className="w-5 h-5 text-red-400" />
+            </span>
+            <span className="text-sm text-gray-300">KYC en Attente</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(stats?.kyc.pending ?? 0)}</p>
+          <p className="text-xs text-red-400 mt-1">Urgent</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Volume Mensuel</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(stats?.monthlyVolume ?? 0)} XAF</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-amber-400" />
+            </span>
+            <span className="text-sm text-gray-300">Liquidité Système</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalLiquidity ?? 0)} XAF</p>
+          <p className="text-xs text-green-400 mt-1">Seuil: Optimal</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">

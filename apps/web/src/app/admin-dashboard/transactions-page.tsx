@@ -9,7 +9,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Badge, Pagination } from "../../components/ui";
+import { Badge, Pagination } from "../../components/ui";
 import { TransactionDetailModal, type TransactionDetail } from "./TransactionDetailModal";
 
 interface TransactionRow {
@@ -99,16 +99,37 @@ export default function AdminTransactionsPage() {
         Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
       </p>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Wallet} label="Volume total" value="1 245 000 €" />
-        <StatCard icon={ShieldCheck} label="Approbations" value="62" />
-        <StatCard
-          icon={ShieldAlert}
-          iconTone="red"
-          label="Transactions bloquées"
-          value="18"
-          tag={{ label: "Urgent", tone: "red" }}
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Volume total</span>
+          </div>
+          <p className="text-2xl font-bold text-white">1 245 000 €</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Approbations</span>
+          </div>
+          <p className="text-2xl font-bold text-white">62</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <ShieldAlert className="w-5 h-5 text-red-400" />
+            </span>
+            <span className="text-sm text-gray-300">Transactions bloquées</span>
+          </div>
+          <p className="text-2xl font-bold text-white">18</p>
+          <p className="text-xs text-red-400 mt-1">Urgent</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">

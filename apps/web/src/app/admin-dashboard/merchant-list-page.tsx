@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Store, UserCheck, Clock, Coins, Plus, ChevronDown, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Badge, Pagination } from "../../components/ui";
+import { Badge, Pagination } from "../../components/ui";
 
 const MERCHANTS = [
   {
@@ -56,11 +56,46 @@ export default function MerchantsListPage() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Store} label="Marchands Actifs" value="1,248" />
-        <StatCard icon={UserCheck} label="Nouvelles Inscriptions" value="1,06k" />
-        <StatCard icon={Clock} iconTone="orange" label="Approbations en attente" value="44" />
-        <StatCard icon={Coins} label="Volume Traité" value="145 M" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <Store className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Marchands Actifs</span>
+          </div>
+          <p className="text-2xl font-bold text-white">1,248</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <UserCheck className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Nouvelles Inscriptions</span>
+          </div>
+          <p className="text-2xl font-bold text-white">1,06k</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-amber-400" />
+            </span>
+            <span className="text-sm text-gray-300">Approbations en attente</span>
+          </div>
+          <p className="text-2xl font-bold text-white">44</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <Coins className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Volume Traité</span>
+          </div>
+          <p className="text-2xl font-bold text-white">145 M</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">

@@ -7,7 +7,7 @@ import {
   type LinkedAccountOperator,
 } from "@/lib/api/linked-account.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Smartphone, Building2, Globe, ArrowLeft, Check, ShieldCheck } from "lucide-react";
+import { Smartphone, Building2, ArrowLeft, Check, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +25,6 @@ interface AddLinkedAccountModalProps {
   onOpenChange: (open: boolean) => void;
   wallets: ApiWallet[];
 }
-
-const STEP_LABELS = ["Type de compte", "Informations", "Confirmation"] as const;
 
 const MOBILE_OPERATORS = [
   { value: "orange_money" as LinkedAccountOperator, label: "Orange Money" },
@@ -141,8 +139,8 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-afrilink-green/10 flex items-center justify-center">
-                <svg className="w-4 h-4 text-afrilink-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <span className="w-8 h-8 rounded-full bg-afrilink-orange/10 flex items-center justify-center">
+                <svg className="w-4 h-4 text-afrilink-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
               </span>
@@ -156,30 +154,59 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center justify-between my-4 px-2">
-          {[1, 2, 3].map((s, i) => (
-            <div key={s} className="flex items-center flex-1 last:flex-none">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    step === s
-                      ? "bg-afrilink-green text-white"
-                      : step > s
-                        ? "bg-afrilink-green text-white"
-                        : "border-2 border-gray-300 text-gray-400"
-                  }`}
-                >
-                  {step > s ? <Check className="h-4 w-4" /> : s}
+        <div
+          className="rounded-2xl p-3 my-4"
+          style={{
+            backgroundColor: "#082B37",
+            boxShadow: "0 1px 2px rgba(8,43,55,0.15), 0 8px 20px -6px rgba(8,43,55,0.35)",
+          }}
+        >
+          <div className="flex items-center">
+            {[
+              { label: "Type", num: 1 },
+              { label: "Informations", num: 2 },
+              { label: "Confirmation", num: 3 },
+            ].map(({ label, num }, i) => {
+              const isDone = step > num;
+              const isActive = step === num;
+              const isLast = i === 2;
+              return (
+                <div key={num} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
+                  <div className="flex flex-col items-center gap-1.5 min-w-[56px]">
+                    <div
+                      className="relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0"
+                      style={{
+                        backgroundColor: isDone || isActive ? "#D28E2F" : "rgba(255,255,255,0.08)",
+                        color: isDone || isActive ? "#082B37" : "rgba(255,255,255,0.4)",
+                        border: isDone || isActive ? "none" : "2px solid rgba(255,255,255,0.25)",
+                        boxShadow: isActive ? "0 0 0 4px rgba(210,142,47,0.25)" : "none",
+                      }}
+                    >
+                      {isDone ? <Check className="w-4 h-4" strokeWidth={3} /> : num}
+                    </div>
+                    <span
+                      className="text-[10px] text-center leading-tight whitespace-nowrap transition-colors duration-300"
+                      style={{
+                        color: isActive ? "#FFFFFF" : isDone ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)",
+                        fontWeight: isActive ? 700 : 500,
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                  {!isLast && (
+                    <div
+                      className="flex-1 mx-1.5 -mt-5"
+                      style={{
+                        borderTop: "2px dashed rgba(255,255,255,0.5)",
+                        minWidth: "20px",
+                      }}
+                    />
+                  )}
                 </div>
-                <span className={`text-[10px] mt-1 whitespace-nowrap ${step === s ? "text-afrilink-green font-medium" : "text-gray-400"}`}>
-                  {STEP_LABELS[i]}
-                </span>
-              </div>
-              {i < 2 && (
-                <div className={`flex-1 h-0.5 mx-2 mb-5 ${step > s ? "bg-afrilink-green" : "bg-gray-200"}`} />
-              )}
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
 
         {step === 1 && (
@@ -208,15 +235,15 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               </button>
 
               <button
-                onClick={() => setAccountType("bank_account")}
+                onClick={() => setAccountType("international_account")}
                 className={`relative p-4 rounded-xl border-2 text-center transition ${
-                  accountType === "bank_account"
-                    ? "border-afrilink-green bg-afrilink-green/5"
+                  accountType === "international_account"
+                    ? "border-afrilink-orange bg-afrilink-orange/5"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
-                {accountType === "bank_account" && (
-                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-green flex items-center justify-center">
+                {accountType === "international_account" && (
+                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-orange flex items-center justify-center">
                     <Check className="h-3 w-3 text-white" />
                   </span>
                 )}
@@ -225,26 +252,6 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 </div>
                 <p className="font-semibold text-sm text-gray-800">Compte Bancaire</p>
                 <p className="text-xs text-gray-500 mt-1">Compte bancaire local (CEMAC)</p>
-              </button>
-
-              <button
-                onClick={() => setAccountType("international_account")}
-                className={`relative p-4 rounded-xl border-2 text-center transition ${
-                  accountType === "international_account"
-                    ? "border-afrilink-green bg-afrilink-green/5"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                {accountType === "international_account" && (
-                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-green flex items-center justify-center">
-                    <Check className="h-3 w-3 text-white" />
-                  </span>
-                )}
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <Globe className="h-6 w-6 text-afrilink-dark" />
-                </div>
-                <p className="font-semibold text-sm text-gray-800">Compte International</p>
-                <p className="text-xs text-gray-500 mt-1">Compte bancaire international</p>
               </button>
             </div>
 
@@ -270,7 +277,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 <select
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green appearance-none bg-white"
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
                 >
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -288,7 +295,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={operator}
                     onChange={(e) => setOperator(e.target.value as LinkedAccountOperator)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
                   >
                     {MOBILE_OPERATORS.map((op) => (
                       <option key={op.value} value={op.value}>{op.label}</option>
@@ -302,7 +309,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="MTN MoMo personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -316,7 +323,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder="6 12 34 56 78"
-                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                     />
                   </div>
                 </div>
@@ -330,7 +337,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
                   >
                     <option value="">Sélectionnez une banque</option>
                     {BANKS.map((b) => (
@@ -345,7 +352,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="Compte Ecobank personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -355,7 +362,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder="10012345678901"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                   />
                 </div>
               </>
@@ -368,7 +375,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
                   >
                     <option value="">Sélectionnez une banque</option>
                     {INTERNATIONAL_BANKS.map((b) => (
@@ -383,7 +390,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="Compte HSBC personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -393,7 +400,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder="GB29NWBK60161331926819"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                   />
                 </div>
             <div className="grid grid-cols-3 gap-3">
@@ -404,7 +411,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       value={iban}
                       onChange={(e) => setIban(e.target.value)}
                       placeholder="Optionnel"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                     />
                   </div>
                   <div className="space-y-2">
@@ -414,7 +421,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       value={swiftCode}
                       onChange={(e) => setSwiftCode(e.target.value)}
                       placeholder="Optionnel"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                     />
                   </div>
                 </div>
@@ -426,7 +433,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green appearance-none bg-white"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
               >
                 <option value="XAF">XAF - Franc CFA</option>
                 <option value="EUR">EUR - Euro</option>
@@ -512,7 +519,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <Button
                 disabled={step === 1 ? !accountType : !isStep2Valid()}
                 onClick={() => setStep((s) => (s + 1) as 2 | 3)}
-                className="bg-afrilink-green hover:bg-afrilink-greenHover"
+                className="bg-afrilink-orange hover:bg-afrilink-orange/90"
               >
                 Suivant
               </Button>
@@ -522,7 +529,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <Button variant="outline" onClick={() => { resetForm(); onOpenChange(false); }}>
                 Annuler
               </Button>
-              <Button onClick={handleConfirm} disabled={createMutation.isPending} className="bg-afrilink-green hover:bg-afrilink-greenHover">
+              <Button onClick={handleConfirm} disabled={createMutation.isPending} className="bg-afrilink-orange hover:bg-afrilink-orange/90">
                 {createMutation.isPending ? "Création..." : "Confirmer"}
               </Button>
             </>

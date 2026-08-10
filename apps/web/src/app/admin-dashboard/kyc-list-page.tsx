@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Files, CheckCircle2, Clock, XCircle, SlidersHorizontal, Loader2 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Badge, Tabs } from "../../components/ui";
+import { Badge, Tabs } from "../../components/ui";
 import { adminService } from "../../lib/api/admin.service";
 import type { AdminKycRecord } from "../../lib/api/admin.service";
 
@@ -74,11 +74,46 @@ export default function KycListPage() {
         Validez les documents d'identité et suivez le niveau de conformité des utilisateurs.
       </p>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={Files} label="Total Dossiers" value={String(counts.total)} />
-        <StatCard icon={CheckCircle2} label="Validés" value={String(counts.approved)} />
-        <StatCard icon={Clock} iconTone="orange" label="En attente" value={String(counts.pending)} />
-        <StatCard icon={XCircle} iconTone="red" label="Rejetés" value={String(counts.rejected)} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <Files className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Total Dossiers</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{String(counts.total)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Validés</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{String(counts.approved)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-amber-400" />
+            </span>
+            <span className="text-sm text-gray-300">En attente</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{String(counts.pending)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <XCircle className="w-5 h-5 text-red-400" />
+            </span>
+            <span className="text-sm text-gray-300">Rejetés</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{String(counts.rejected)}</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">

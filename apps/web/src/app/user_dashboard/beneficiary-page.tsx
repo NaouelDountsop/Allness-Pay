@@ -18,6 +18,7 @@ import { DashboardLayout } from "../../components/user_dashboard/dash-layout";
 import { DashboardHeader } from "../../components/user_dashboard/header";
 import { Badge } from "../../components/ui/badge";
 import { Pagination } from "../../components/ui/pagination";
+import { AddBeneficiaryModal } from "../../components/user_dashboard/beneficiary/add-beneficiary-modal";
 
 interface Beneficiary {
   initials: string;
@@ -113,6 +114,7 @@ function NetworkBadge({ network }: { network: Beneficiary["network"] }) {
 
 export default function BeneficiariesPage() {
   const [page, setPage] = useState(1);
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   return (
     <DashboardLayout>
@@ -127,11 +129,14 @@ export default function BeneficiariesPage() {
               </p>
             </div>
             <div className="flex flex-col items-end gap-2">
-              <button className="h-10 px-4 rounded-lg bg-afrilink-orange text-white text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <button
+                onClick={() => setAddModalOpen(true)}
+                className="h-10 px-4 rounded-lg bg-afrilink-green text-white text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+              >
                 <Plus className="w-4 h-4" />
                 Ajouter un bénéficiaire
               </button>
-              <button className="h-9 px-4 rounded-lg border border-gray-200 bg-white text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
+              <button className="h-9 px-4 rounded-lg border border-afrilink-green bg-white text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
                 <UserPlus className="w-3.5 h-3.5" />
                 Importer depuis les contacts
               </button>
@@ -247,7 +252,7 @@ export default function BeneficiariesPage() {
                 <tbody>
                   {BENEFICIARIES.map((b) => (
                     <tr key={b.phone} className="border-b border-gray-50 last:border-0">
-                      
+
                       <td>
                         <div className="flex items-center gap-2.5">
                           <span className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold ${b.avatarBg}`}>
@@ -338,6 +343,8 @@ export default function BeneficiariesPage() {
             </div>
           </div>
       </div>
+
+      <AddBeneficiaryModal open={addModalOpen} onOpenChange={setAddModalOpen} />
     </DashboardLayout>
   );
 }
