@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Tontine, TontineStatus } from './entities/tontine.entity';
 import { TontineMember, TontineMemberRole, TontineMemberStatus } from './entities/tontine-member.entity';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
+import { WalletsService } from '../wallet/wallet.service';
+
 @Injectable()
 export class TontineService {
   constructor(
@@ -12,33 +14,53 @@ export class TontineService {
     private readonly tontineRepo: Repository<Tontine>,
     @InjectRepository(TontineMember)
     private readonly memberRepo: Repository<TontineMember>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+    private readonly walletsService: WalletsService,
   ) {}
 
   async create(dto: CreateTontineDto, creatorId: number): Promise<Tontine> {
-    const tontine = this.tontineRepo.create({
-      name: dto.name,
-      description: dto.description,
-      targetAmount: dto.targetAmount.toString(),
-      contributionAmount: dto.contributionAmount.toString(),
-      frequency: dto.frequency,
-      memberLimit: dto.memberLimit,
-      currency: dto.currency ?? 'XAF',
-      walletId: dto.walletId ?? null,
-      creatorId,
-      currentCycle: 0,
-      status: TontineStatus.DRAFT,
-    });
-    const saved = await this.tontineRepo.save(tontine);
+    return this.dataSource.transaction(async (manager) => {
+      const tontine = manager.create(Tontine, {
+        name: dto.name,
+        description: dto.description,
+        targetAmount: dto.targetAmount.toString(),
+        contributionAmount: dto.contributionAmount.toString(),
+        frequency: dto.frequency,
+        memberLimit: dto.memberLimit,
+        currency: dto.currency ?? 'XAF',
+        creatorId,
+        currentCycle: 0,
+        status: TontineStatus.DRAFT,
+      });
+      const saved = await manager.save(tontine);
 
-    const creatorMember = this.memberRepo.create({
-      tontineId: saved.id,
-      userId: creatorId,
-      role: TontineMemberRole.ADMIN,
-      status: TontineMemberStatus.ACTIVE,
-    });
-    await this.memberRepo.save(creatorMember);
+      // Création atomique du wallet TONTINE lié à cette tontine
+      const wallet = await this.walletsService.createTontineWallet(
+        creatorId,
+        saved.id,
+        saved.currency,
+        manager,
+      );
 
-    return this.findOne(saved.id, creatorId);
+      // Liaison du wallet à la tontine via le walletNumber
+      saved.walletNumber = wallet.walletNumber;
+      await manager.save(saved);
+
+      const creatorMember = manager.create(TontineMember, {
+        tontineId: saved.id,
+        userId: creatorId,
+        role: TontineMemberRole.ADMIN,
+        status: TontineMemberStatus.ACTIVE,
+      });
+      await manager.save(creatorMember);
+
+      // Retourner depuis le manager ( données non commitées visibles )
+      return manager.findOneOrFail(Tontine, {
+        where: { id: saved.id },
+        relations: ['membres', 'membres.user', 'creator'],
+      });
+    });
   }
 
   async findAll(userId: number): Promise<Tontine[]> {

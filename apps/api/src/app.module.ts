@@ -20,6 +20,7 @@ import { TontineModule } from './modules/tontine/tontine.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
 
+import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
     TontineModule,
     AdminModule,
     BeneficiaireModule,
-
+   
+    LinkedAccountModule,
     
     // `src/modules/README.md`.
   ],

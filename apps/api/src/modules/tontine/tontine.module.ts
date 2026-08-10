@@ -16,6 +16,7 @@ import { LatePenaltyJob } from './jobs/late-penalty.job';
 import { PayoutJob } from './jobs/payout.job';
 import { ContributionReminderJob } from './jobs/contribution-reminder.job';
 import { WalletsModule } from '../wallet/wallet.module';
+import { Wallet } from '../wallet/entities/wallet.entity';
 import { PinModule } from '../pin/pin.module';
 import { MailModule } from '../mail/mail.module';
 import { User } from '../users/entities/user.entity';
@@ -28,6 +29,7 @@ import { User } from '../users/entities/user.entity';
       TontineCycle,
       TontineContribution,
       TontineInvitation,
+      Wallet,
       User,
     ]),
     WalletsModule,

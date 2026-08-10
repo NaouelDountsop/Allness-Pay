@@ -3,27 +3,38 @@ import { useNavigate } from "react-router-dom";
 import { RefreshCcw, CheckCircle2, Loader2, Info, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
+import { useDepositFlow } from "../../context/deposit-flow-context";
 
-const STEPS = [
+const MOBILE_MONEY_STEPS = [
   "Requête envoyée à CamPay",
   "Vérification CamPay",
   "Confirmation opérateur",
   "Crédit du portefeuille",
 ];
 
+const BANK_STEPS = [
+  "Virement enregistré",
+  "Vérification bancaire",
+  "Confirmation réception",
+  "Crédit du portefeuille",
+];
+
 export default function ProcessingPage() {
   const navigate = useNavigate();
-  const [completedCount, setCompletedCount] = useState(3); // 3 premières déjà "Complétée" à l'affichage cible
+  const { deposit } = useDepositFlow();
+  const isBank = deposit.method === "bank";
+  const steps = isBank ? BANK_STEPS : MOBILE_MONEY_STEPS;
 
-  // Simule la fin du traitement (webhook CamPay confirmé + crédit du wallet)
-  // À remplacer par un polling réel de GET /wallets/deposits/:id.
+  const [completedCount, setCompletedCount] = useState(isBank ? 0 : 3);
+
   useEffect(() => {
+    const delay = isBank ? 3500 : 2500;
     const timer = setTimeout(() => {
-      setCompletedCount(4);
+      setCompletedCount((c) => c + 1);
       setTimeout(() => navigate("/deposit/success"), 600);
-    }, 2500);
+    }, delay);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, isBank]);
 
   return (
     <DashboardLayout>
@@ -37,8 +48,9 @@ export default function ProcessingPage() {
           <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Traitement en cours</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
-          Nous vérifions votre paiement auprès de CamPay et de votre opérateur. Veuillez
-          patienter quelques instants.
+          {isBank
+            ? "Nous vérifions la réception de votre virement bancaire. Veuillez patienter quelques instants."
+            : "Nous vérifions votre paiement auprès de CamPay et de votre opérateur. Veuillez patienter quelques instants."}
         </p>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-10">
@@ -53,7 +65,7 @@ export default function ProcessingPage() {
               Vérification de la transaction
             </p>
             <div className="flex flex-col gap-3">
-              {STEPS.map((label, i) => {
+              {steps.map((label, i) => {
                 const isDone = i < completedCount;
                 const isCurrent = i === completedCount;
                 return (
@@ -81,7 +93,9 @@ export default function ProcessingPage() {
           <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4">
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <p className="text-[11px] text-blue-600 leading-relaxed">
-              Ne fermez pas cette page. La confirmation peut prendre quelques secondes.
+              {isBank
+                ? "Ne fermez pas cette page. La vérification bancaire peut prendre quelques minutes."
+                : "Ne fermez pas cette page. La confirmation peut prendre quelques secondes."}
             </p>
           </div>
         </div>

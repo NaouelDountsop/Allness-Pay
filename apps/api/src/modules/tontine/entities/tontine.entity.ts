@@ -66,12 +66,8 @@ export class Tontine {
   @Column()
   creatorId: number;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'walletId' })
-  wallet: User;
-
-  @Column({ type: 'uuid', nullable: true })
-  walletId: string | null;
+  @Column({ nullable: true })
+  walletNumber: string;
 
   @OneToMany(() => TontineMember, (m) => m.tontine, { cascade: true })
   membres: TontineMember[];

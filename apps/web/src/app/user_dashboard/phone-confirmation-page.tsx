@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Info, X, ArrowRight, ArrowLeft } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
@@ -8,6 +9,13 @@ import { useDepositFlow } from "../../context/deposit-flow-context";
 export default function PhoneConfirmationPage() {
   const navigate = useNavigate();
   const { deposit, reset } = useDepositFlow();
+
+  // Bank deposits skip phone confirmation entirely
+  useEffect(() => {
+    if (deposit.method === "bank") {
+      navigate("/deposit/processing", { replace: true });
+    }
+  }, [deposit.method, navigate]);
 
   const handleCancel = () => {
     reset();

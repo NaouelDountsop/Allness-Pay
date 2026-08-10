@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
-import { Wallet } from '../wallet/entities/wallet.entity';
+import { Wallet, WalletType } from '../wallet/entities/wallet.entity';
 import {
   WalletTransaction,
   WalletTransactionType,
@@ -25,6 +25,7 @@ export class TransactionsService {
       const wallet = await this.walletsService.lockWalletForUpdate(manager, id);
       this.walletsService.assertOwnership(wallet, userId);
       this.walletsService.assertActive(wallet);
+      this.assertNotTontine(wallet);
 
       const amount = BigInt(dto.amount);
       const operator = detectOperator(dto.phone_number);
@@ -58,6 +59,7 @@ export class TransactionsService {
     return this.dataSource.transaction(async (manager) => {
       const wallet = await this.pinService.verifyPinWithManager(manager, id, userId, dto.pin);
       this.walletsService.assertActive(wallet);
+      this.assertNotTontine(wallet);
 
       const amount = BigInt(dto.amount);
       if (wallet.balance < amount) {
@@ -98,9 +100,11 @@ export class TransactionsService {
 
       const fromWallet = await this.pinService.verifyPinWithManager(manager, fromId, userId, dto.pin);
       this.walletsService.assertActive(fromWallet);
+      this.assertNotTontine(fromWallet);
 
       const toWallet = await this.walletsService.lockWalletForUpdate(manager, dto.toWalletId);
       this.walletsService.assertActive(toWallet);
+      this.assertNotTontine(toWallet);
 
       if (fromWallet.currency !== toWallet.currency) {
         throw new BadRequestException(
@@ -178,5 +182,13 @@ export class TransactionsService {
       .getRawOne<{ balance: string }>();
 
     return BigInt(result?.balance ?? '0');
+  }
+
+  private assertNotTontine(wallet: Wallet): void {
+    if (wallet.type === WalletType.TONTINE) {
+      throw new BadRequestException(
+        'Les opérations sur un portefeuille tontine passent par le module tontine.',
+      );
+    }
   }
 }

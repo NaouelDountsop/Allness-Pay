@@ -9,11 +9,13 @@ import { QuickActionsGrid } from "@/components/user_dashboard/wallet/quick-actio
 import { MonthlySummary } from "@/components/user_dashboard/wallet/monthly-summary";
 import { SecurityCard } from "@/components/user_dashboard/wallet/security-card";
 import { AddLinkedAccountModal } from "@/components/user_dashboard/wallet/add-linked-account-modal";
+import { CreateWalletModal } from "@/components/user_dashboard/wallet/create-wallet-modal";
 import { walletService } from "@/lib/api/wallet.service";
 import { Plus } from "lucide-react";
 
 export default function WalletPage() {
   const [addAccountOpen, setAddAccountOpen] = useState(false);
+  const [createWalletOpen, setCreateWalletOpen] = useState(false);
   const { data: wallets = [], isLoading: walletsLoading } = useQuery({
     queryKey: ["wallets"],
     queryFn: walletService.list,
@@ -40,7 +42,10 @@ export default function WalletPage() {
       <div>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-afrilink-dark">Portefeuille</h1>
-            <button className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2">
+            <button
+              onClick={() => setCreateWalletOpen(true)}
+              className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
+            >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Créer un portefeuille</span>
             </button>
@@ -59,6 +64,7 @@ export default function WalletPage() {
               </div>
               <AccountList wallets={wallets} onAddAccount={() => setAddAccountOpen(true)} />
               <AddLinkedAccountModal open={addAccountOpen} onOpenChange={setAddAccountOpen} wallets={wallets} />
+              <CreateWalletModal open={createWalletOpen} onOpenChange={setCreateWalletOpen} />
             </div>
 
             <div className="space-y-6">

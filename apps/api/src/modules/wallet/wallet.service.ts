@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
-import { Wallet, WalletStatus } from './entities/wallet.entity';
+import { Wallet, WalletStatus, WalletType } from './entities/wallet.entity';
 import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
@@ -61,9 +61,37 @@ export class WalletsService {
       : this.dataSource.transaction(run);
   }
 
+  /**
+   * Crée un wallet de type TONTINE lié à une tontine.
+   * Appelé depuis TontineService.create() dans la même transaction.
+   */
+  async createTontineWallet(
+    creatorId: number,
+    tontineId: string,
+    currency: string,
+    manager?: EntityManager,
+  ): Promise<Wallet> {
+    const run = async (em: EntityManager) => {
+      const wallet = em.create(Wallet, {
+        userId: creatorId,
+        tontineId,
+        type: WalletType.TONTINE,
+        balance: 0n,
+        currency,
+        status: WalletStatus.ACTIVE,
+        isPrimary: false,
+        failedPinAttempts: 0,
+        walletNumber: await this.generateUniqueWalletNumber(),
+      });
+      return em.save(wallet);
+    };
+
+    return manager ? run(manager) : this.dataSource.transaction(run);
+  }
+
   async findAllForUser(userId: number): Promise<Wallet[]> {
     return this.walletRepo.find({
-      where: { userId },
+      where: { userId, type: WalletType.PERSONAL },
       order: { isPrimary: 'DESC', createdAt: 'ASC' },
     });
   }
@@ -86,6 +114,7 @@ export class WalletsService {
   // Fermeture logique (soft) : jamais de suppression physique d'un walleT
   async close(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.findOne(id, userId);
+    this.assertNotTontine(wallet);
 
     if (wallet.balance !== 0n) {
       throw new BadRequestException("Impossible de fermer un wallet dont le solde n'est pas nul");
@@ -107,6 +136,7 @@ export class WalletsService {
         throw new NotFoundException('Wallet introuvable');
       }
       this.assertOwnership(target, userId);
+      this.assertNotTontine(target);
 
       if (target.status !== WalletStatus.ACTIVE) {
         throw new BadRequestException('Seul un wallet actif peut devenir principal');
@@ -120,6 +150,7 @@ export class WalletsService {
 
   async activate(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.findOne(id, userId);
+    this.assertNotTontine(wallet);
 
     if (wallet.status !== WalletStatus.INACTIVE) {
       throw new BadRequestException('Seul un wallet inactive peut être activé');
@@ -155,6 +186,14 @@ export class WalletsService {
   assertActive(wallet: Wallet): void {
     if (wallet.status !== WalletStatus.ACTIVE) {
       throw new BadRequestException(`Ce wallet est ${wallet.status} et ne peut pas être utilisé`);
+    }
+  }
+
+  assertNotTontine(wallet: Wallet): void {
+    if (wallet.type === WalletType.TONTINE) {
+      throw new BadRequestException(
+        'Les opérations sur un portefeuille tontine passent par le module tontine.',
+      );
     }
   }
 
