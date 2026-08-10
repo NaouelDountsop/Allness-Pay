@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, MessageCircle } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { TontinesEmptyState } from "@/components/user_dashboard/tontines/tontines-empty-state";
@@ -56,6 +56,14 @@ export default function TontinesPage() {
                 <h1 className="text-2xl font-semibold text-afrilink-dark">Tontines</h1>
                 <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
               </div>
+              <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate("/dashboard/tontines/chat")}
+                className="h-10 px-4 rounded-lg border border-afrilink-dark text-afrilink-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="hidden md:inline">Conversations</span>
+              </button>
               <button
                 onClick={() => navigate("/dashboard/tontines/create")}
                 className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
@@ -63,6 +71,7 @@ export default function TontinesPage() {
                 <Plus className="w-4 h-4" />
                 <span className="hidden md:inline">Nouvelle Tontine</span>
               </button>
+              </div>
             </div>
 
             <div className="mt-6">

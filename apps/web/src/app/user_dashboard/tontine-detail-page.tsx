@@ -101,6 +101,7 @@ export default function TontineDetailPage() {
         <button
           aria-label="Support"
           className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg"
+          onClick={() => navigate(`/dashboard/tontines/${tontine.id}/chat`)}
         >
           <MessageCircle className="w-5 h-5" />
         </button>

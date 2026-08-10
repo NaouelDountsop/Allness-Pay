@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PiggyBank, Coins, ShieldAlert, Target, Download, AlertTriangle, Loader2 } from "lucide-react";
 import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { StatCard, Tabs, Badge } from "../../components/ui";
+import { Tabs, Badge } from "../../components/ui";
 import { adminService } from "../../lib/api/admin.service";
 
 export default function TontinesSupervisionPage() {
@@ -30,17 +30,47 @@ export default function TontinesSupervisionPage() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <StatCard icon={PiggyBank} label="Tontines Actives" value={formatNumber(tontines?.length ?? 0)} />
-        <StatCard icon={Coins} label="Volume Total Épargné" value={`${formatNumber(tontines?.reduce((sum, t) => sum + Number(t.contributionAmount), 0) ?? 0)} XAF`} />
-        <StatCard
-          icon={ShieldAlert}
-          iconTone="red"
-          label="Alertes de Blocage"
-          value="0"
-          tag={{ label: "Urgent", tone: "red" }}
-        />
-        <StatCard icon={Target} label="Taux de Complétion" value="100%" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <PiggyBank className="w-5 h-5 text-blue-400" />
+            </span>
+            <span className="text-sm text-gray-300">Tontines Actives</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(tontines?.length ?? 0)}</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <Coins className="w-5 h-5 text-green-400" />
+            </span>
+            <span className="text-sm text-gray-300">Volume Total Épargné</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{formatNumber(tontines?.reduce((sum, t) => sum + Number(t.contributionAmount), 0) ?? 0)} XAF</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <ShieldAlert className="w-5 h-5 text-red-400" />
+            </span>
+            <span className="text-sm text-gray-300">Alertes de Blocage</span>
+          </div>
+          <p className="text-2xl font-bold text-white">0</p>
+          <p className="text-xs text-red-400 mt-1">Urgent</p>
+        </div>
+
+        <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <Target className="w-5 h-5 text-amber-400" />
+            </span>
+            <span className="text-sm text-gray-300">Taux de Complétion</span>
+          </div>
+          <p className="text-2xl font-bold text-white">100%</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">

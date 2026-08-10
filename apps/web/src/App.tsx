@@ -20,6 +20,7 @@ import TontineMembersPage from "@/app/user_dashboard/tontine-members-page";
 import ContributionHistoryPage from "@/app/user_dashboard/contribution-history-page";
 import MakeContributionPage from "@/app/user_dashboard/make-contribution-page";
 import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
+import TontineChatPage from "@/app/user_dashboard/tontine-chat-page";
 import ProfilePage from "@/app/user_dashboard/profile-page";
 import SettingsPage from "@/app/user_dashboard/settings-page";
 import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
@@ -37,6 +38,7 @@ import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history
 import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settings-page";
 import TransactionsPage from "@/app/user_dashboard/transaction-page";
 import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
+import PartnersPage from "@/app/admin-dashboard/partners-page";
 
 import { DepositFlowProvider } from "./context/deposit-flow-context";
 import InitiateDepositPage from "@/app/user_dashboard/initiate-deposit-page";
@@ -72,6 +74,8 @@ export function App() {
         <Route path="/dashboard/tontines/:id/members" element={<TontineMembersPage />} />
         <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
         <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
+        <Route path="/dashboard/tontines/:id/chat" element={<TontineChatPage />} />
+        <Route path="/dashboard/tontines/chat" element={<TontineChatPage />} />
         <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
         <Route path="/dashboard/transactions" element={<TransactionsPage />} />
         <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
@@ -91,6 +95,7 @@ export function App() {
         <Route path="/admin/taux-de-change/historique" element={<ProtectedRoute><ExchangeRateHistoryPage /></ProtectedRoute>} />
         <Route path="/admin/taux-de-change/parametres" element={<ProtectedRoute><ExchangeRateSettingsPage /></ProtectedRoute>} />
         <Route path="/admin/taux-de-change/:id/modifier" element={<ProtectedRoute><EditExchangeRatePage /></ProtectedRoute>} />
+        <Route path="/admin/partenaires" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
 
         <Route path="/deposit" element={<DepositFlowProvider><InitiateDepositPage /></DepositFlowProvider>} />
         <Route path="/deposit/request-sent" element={<DepositFlowProvider><RequestSentPage /></DepositFlowProvider>} />

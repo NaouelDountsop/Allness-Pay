@@ -31,6 +31,7 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
           className="text-xs text-afrilink-green font-medium"
         >
           Voir tout →
+
         </button>
       </div>
 
