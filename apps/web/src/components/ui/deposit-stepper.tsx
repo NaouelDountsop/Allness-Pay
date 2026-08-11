@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Check, ArrowLeft } from "lucide-react";
 
-export const DEPOSIT_STEPS = [
+const DEPOSIT_STEPS = [
   { step: 1, label: "Initier le dépôt", href: "/deposit" },
   { step: 2, label: "Demande envoyée", href: "/deposit/request-sent" },
   { step: 3, label: "Notification utilisateur", href: "/deposit/confirm" },

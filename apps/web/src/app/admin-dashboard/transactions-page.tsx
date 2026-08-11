@@ -48,17 +48,6 @@ export default function AdminTransactionsPage() {
   const formatXAF = (value: number) =>
     new Intl.NumberFormat("fr-FR").format(value) + " XAF";
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const isLoading = loadingTx || loadingStats;
 
   if (isLoading) {
@@ -71,8 +60,20 @@ export default function AdminTransactionsPage() {
     );
   }
 
-  const paginatedTx = transactions?.slice((page - 1) * 10, page * 10) ?? [];
   const totalPages = Math.ceil((transactions?.length ?? 0) / 10);
+
+  const paginatedTx = transactions?.slice((page - 1) * 10, page * 10) ?? [];
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <AdminLayout active="Transactions">

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Copy, Info, CheckCircle2, ArrowLeft, Building2 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow, BANK_LABELS } from "../../context/deposit-flow-context";
+import { useDepositFlow } from "../../context/deposit-flow-context";
+import { BANK_LABELS } from "../../context/deposit-flow.constants";
 
 function maskPhone(phone: string) {
   const digits = phone.replace(/\D/g, "");

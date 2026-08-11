@@ -2,12 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
+import { useDepositFlow } from "../../context/deposit-flow-context";
 import {
-  useDepositFlow,
   type DepositMethod,
   type Currency,
   CURRENCY_SYMBOLS,
-} from "../../context/deposit-flow-context";
+} from "../../context/deposit-flow.constants";
 import { useUserProfile } from "../../hooks/use-user-profile";
 import { getCurrenciesForCountry } from "../../utils/country-currency";
 
