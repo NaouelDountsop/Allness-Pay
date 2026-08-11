@@ -49,5 +49,5 @@ export interface TontineSummary {
   currentCycle: number;
   creatorId: number;
   createdAt: Date;
-  membres: TontineMemberSummary[];
+  members: TontineMemberSummary[];
 }

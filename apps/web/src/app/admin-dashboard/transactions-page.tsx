@@ -92,6 +92,45 @@ export default function AdminTransactionsPage() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<TransactionDetail | null>(null);
 
+  const { data: transactions, isLoading: loadingTx } = useQuery({
+    queryKey: ["admin-transactions"],
+    queryFn: adminService.listTransactions,
+  });
+
+  const { data: stats, isLoading: loadingStats } = useQuery({
+    queryKey: ["admin-transaction-stats"],
+    queryFn: adminService.getTransactionStats,
+  });
+
+  const formatXAF = (value: number) =>
+    new Intl.NumberFormat("fr-FR").format(value) + " XAF";
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const isLoading = loadingTx || loadingStats;
+
+  if (isLoading) {
+    return (
+      <AdminLayout active="Transactions">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  const paginatedTx = transactions?.slice((page - 1) * 10, page * 10) ?? [];
+  const totalPages = Math.ceil((transactions?.length ?? 0) / 10);
+
   return (
     <AdminLayout active="Transactions">
       <h1 className="text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
@@ -99,6 +138,7 @@ export default function AdminTransactionsPage() {
         Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
       </p>
 
+      {/* Stats cards - independent from table */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <div className="bg-afrilink-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
@@ -107,7 +147,7 @@ export default function AdminTransactionsPage() {
             </span>
             <span className="text-sm text-gray-300">Volume total</span>
           </div>
-          <p className="text-2xl font-bold text-white">1 245 000 €</p>
+          <p className="text-2xl font-bold text-white">{formatXAF(stats?.totalVolume ?? 0)}</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -115,9 +155,9 @@ export default function AdminTransactionsPage() {
             <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
               <ShieldCheck className="w-5 h-5 text-green-400" />
             </span>
-            <span className="text-sm text-gray-300">Approbations</span>
+            <span className="text-sm text-gray-300">Complétées</span>
           </div>
-          <p className="text-2xl font-bold text-white">62</p>
+          <p className="text-2xl font-bold text-white">{stats?.completedCount ?? 0}</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -125,10 +165,9 @@ export default function AdminTransactionsPage() {
             <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
               <ShieldAlert className="w-5 h-5 text-red-400" />
             </span>
-            <span className="text-sm text-gray-300">Transactions bloquées</span>
+            <span className="text-sm text-gray-300">Total transactions</span>
           </div>
-          <p className="text-2xl font-bold text-white">18</p>
-          <p className="text-xs text-red-400 mt-1">Urgent</p>
+          <p className="text-2xl font-bold text-white">{stats?.totalTransactions ?? 0}</p>
         </div>
       </div>
 
@@ -141,10 +180,6 @@ export default function AdminTransactionsPage() {
             </button>
             <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
               Statut
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-            <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-              Plage de dates
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -162,8 +197,7 @@ export default function AdminTransactionsPage() {
                 <th className="font-medium pb-3">Type</th>
                 <th className="font-medium pb-3">Montant</th>
                 <th className="font-medium pb-3">Statut</th>
-                <th className="font-medium pb-3">Localisation</th>
-                <th className="font-medium pb-3">Date</th>
+                <th className="font-medium pb-3 hidden lg:table-cell">Date</th>
                 <th className="font-medium pb-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -211,9 +245,11 @@ export default function AdminTransactionsPage() {
           </table>
         </div>
 
-        <div className="mt-4">
-          <Pagination page={page} totalPages={25} onChange={setPage} />
-        </div>
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+          </div>
+        )}
       </div>
 
       <div className="bg-red-50 border border-red-100 rounded-xl p-5">
@@ -221,34 +257,9 @@ export default function AdminTransactionsPage() {
           <AlertTriangle className="w-4 h-4 text-red-500" />
           <p className="text-sm font-semibold text-red-600">Audit des Alertes</p>
         </div>
-        <div className="flex flex-col gap-3">
-          <div className="bg-white rounded-lg p-4 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-afrilink-dark">
-                Comportement inhabituel détecté — Cissé Moktar
-              </p>
-              <p className="text-[11px] text-gray-400">
-                3 retraits consécutifs supérieurs au seuil habituel · TXN-88214
-              </p>
-            </div>
-            <button className="h-8 px-4 rounded-lg bg-red-500 text-white text-xs font-medium hover:opacity-90 transition-opacity shrink-0">
-              Signaler
-            </button>
-          </div>
-          <div className="bg-white rounded-lg p-4 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-afrilink-dark">
-                Localisation inhabituelle — Julie Moyo
-              </p>
-              <p className="text-[11px] text-gray-400">
-                Connexion depuis un nouvel appareil non reconnu · TXN-88215
-              </p>
-            </div>
-            <button className="h-8 px-4 rounded-lg bg-red-500 text-white text-xs font-medium hover:opacity-90 transition-opacity shrink-0">
-              Signaler
-            </button>
-          </div>
-        </div>
+        <p className="text-xs text-gray-500">
+          Les alertes de comportement suspect seront affichées ici une fois détectées par le système.
+        </p>
       </div>
 
       {selected && (

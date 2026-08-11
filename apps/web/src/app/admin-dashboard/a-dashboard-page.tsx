@@ -7,54 +7,64 @@ import {
   Wallet,
   RefreshCcw,
   UserPlus,
-  AlertTriangle,
-  CheckCircle2,
   Loader2,
-} from 'lucide-react';
-import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
-import { Badge } from '../../components/ui';
-import { adminService } from '../../lib/api/admin.service';
+  ArrowDownLeft,
+  ArrowUpRight,
+  Send,
+} from "lucide-react";
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
+import { Badge } from "../../components/ui";
+import { adminService } from "../../lib/api/admin.service";
 
-const ACTIVITIES = [
-  {
-    icon: RefreshCcw,
-    tone: 'green' as const,
-    title: 'Dépôt Tontine "Espoir"',
-    meta: '€650.00 • Il y a 3min',
-    tag: { label: 'Nouvel', tone: 'green' as const },
-  },
-  {
-    icon: UserPlus,
-    tone: 'blue' as const,
-    title: 'Nouvel Utilisateur Inscrit',
-    meta: 'Jean Dupont • Il y a 8min',
-    tag: { label: 'Vérification', tone: 'blue' as const },
-  },
-  {
-    icon: AlertTriangle,
-    tone: 'red' as const,
-    title: 'Retrait Suspect Bloqué',
-    meta: '€2,500.00 • Il y a 12m',
-    tag: { label: 'Alerte', tone: 'red' as const },
-  },
-  {
-    icon: CheckCircle2,
-    tone: 'gray' as const,
-    title: 'Liquidation Cycle A4',
-    meta: 'Tontine Alpha • Il y a 20m',
-    tag: { label: 'Traité', tone: 'gray' as const },
-  },
-];
 
-const CHART_VALUES = [40, 55, 70, 90, 65, 50, 78];
+
+const ACTIVITY_ICONS: Record<string, typeof RefreshCcw> = {
+  deposit: ArrowDownLeft,
+  withdrawal: ArrowUpRight,
+  transfer_in: ArrowDownLeft,
+  transfer_out: Send,
+  user_registered: UserPlus,
+};
+
+const ACTIVITY_TONES: Record<string, "green" | "blue" | "red" | "gray"> = {
+  deposit: "green",
+  withdrawal: "red",
+  transfer_in: "green",
+  transfer_out: "blue",
+  user_registered: "blue",
+};
+
+const ACTIVITY_TAGS: Record<string, { label: string; tone: "green" | "blue" | "red" | "gray" }> = {
+  deposit: { label: "Dépôt", tone: "green" },
+  withdrawal: { label: "Retrait", tone: "red" },
+  transfer_in: { label: "Reçu", tone: "green" },
+  transfer_out: { label: "Envoyé", tone: "blue" },
+  user_registered: { label: "Inscription", tone: "blue" },
+};
 
 export default function DashboardPage() {
-  const [period, setPeriod] = useState<'7j' | '30j'>('7j');
-
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin-dashboard-stats'],
+  const { data: stats, isLoading: loadingStats } = useQuery({
+    queryKey: ["admin-dashboard-stats"],
     queryFn: adminService.getDashboardStats,
   });
+
+  const { data: activities, isLoading: loadingActivities } = useQuery({
+    queryKey: ["admin-activities"],
+    queryFn: adminService.getRecentActivities,
+  });
+
+  const { data: kycPending } = useQuery({
+    queryKey: ["admin-kyc-pending"],
+    queryFn: adminService.getKycPending,
+  });
+
+  const { data: chartData } = useQuery({
+    queryKey: ["admin-chart-weekly"],
+    queryFn: adminService.getChartWeekly,
+  });
+
+  const isLoading = loadingStats || loadingActivities;
 
   if (isLoading) {
     return (
@@ -66,7 +76,18 @@ export default function DashboardPage() {
     );
   }
 
-  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+
+  const getTimeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return "à l'instant";
+    if (minutes < 60) return `il y a ${minutes}min`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `il y a ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `il y a ${days}j`;
+  };
 
   return (
     <AdminLayout active="dashboard">
@@ -75,6 +96,7 @@ export default function DashboardPage() {
         Surveillez les comptes et gérez les limites financières.
       </p>
 
+      {/* Stats cards - independent */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <div className="bg-afrilink-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
@@ -123,47 +145,56 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Chart + Activities */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm font-semibold text-afrilink-dark">Croissance des Transactions</p>
-            <div className="flex items-center bg-gray-50 rounded-lg p-0.5 text-xs">
-              <button
-                onClick={() => setPeriod('7j')}
-                className={`px-3 py-1 rounded-md transition-colors ${
-                  period === '7j' ? 'bg-white shadow-sm text-afrilink-dark' : 'text-gray-400'
-                }`}
-              >
-                7 Jours
-              </button>
-              <button
-                onClick={() => setPeriod('30j')}
-                className={`px-3 py-1 rounded-md transition-colors ${
-                  period === '30j' ? 'bg-white shadow-sm text-afrilink-dark' : 'text-gray-400'
-                }`}
-              >
-                30 Jours
-              </button>
-            </div>
           </div>
-          <div className="flex items-end gap-3 h-40">
-            {CHART_VALUES.map((v, i) => (
-              <div
-                key={i}
-                className={`flex-1 rounded-t-md ${
-                  i === CHART_VALUES.length - 2 ? 'bg-afrilink-green' : 'bg-afrilink-green/40'
-                }`}
-                style={{ height: `${v}%` }}
-              />
-            ))}
+          <div className="h-48">
+            {chartData && chartData.some((d) => d.value > 0) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fontSize: 10, fill: "#9ca3af" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10, fill: "#9ca3af" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 12, fontSize: 12, border: "1px solid #e5e7eb" }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#006C49"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: "#006C49" }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-sm text-gray-400">Aucune transaction cette semaine</p>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Recent Activities from backend */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col">
           <p className="text-sm font-semibold text-afrilink-dark mb-4">Activités Récentes</p>
           <div className="flex flex-col gap-4 flex-1">
-            {ACTIVITIES.map((a, i) => {
-              const Icon = a.icon;
+            {activities?.map((a, i) => {
+              const Icon = ACTIVITY_ICONS[a.type] ?? RefreshCcw;
+              const tone = ACTIVITY_TONES[a.type] ?? "gray";
+              const tag = ACTIVITY_TAGS[a.type] ?? { label: "Autre", tone: "gray" as const };
               return (
                 <div key={i} className="flex items-start gap-3">
                   <span className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
@@ -171,19 +202,26 @@ export default function DashboardPage() {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-afrilink-dark truncate">{a.title}</p>
-                    <p className="text-[11px] text-gray-400">{a.meta}</p>
+                    <p className="text-[11px] text-gray-400">{a.meta} · {getTimeAgo(a.createdAt)}</p>
                   </div>
-                  <Badge tone={a.tag.tone}>{a.tag.label}</Badge>
+                  <Badge tone={tone}>{tag.label}</Badge>
                 </div>
               );
             })}
+            {activities?.length === 0 && (
+              <p className="text-xs text-gray-400 text-center py-4">Aucune activité récente.</p>
+            )}
           </div>
-          <button className="mt-4 h-9 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
+          <a
+            href="/admin/transactions"
+            className="mt-4 h-9 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity flex items-center justify-center"
+          >
             Voir tout l'historique
-          </button>
+          </a>
         </div>
       </div>
 
+      {/* KYC section */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-semibold text-afrilink-dark">Approbations KYC Urgentes</p>
@@ -191,9 +229,28 @@ export default function DashboardPage() {
             Voir les {stats?.kyc.pending ?? 0} dossiers
           </a>
         </div>
-        <p className="text-xs text-gray-400">
-          Consultez la liste complète des demandes KYC en attente.
-        </p>
+        {kycPending && kycPending.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {kycPending.map((kyc) => (
+              <div key={kyc.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                  <ShieldAlert className="w-4 h-4 text-amber-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-afrilink-dark truncate">{kyc.userName}</p>
+                  <p className="text-[11px] text-gray-400">{kyc.documentType ?? 'KYC'} · {getTimeAgo(kyc.createdAt)}</p>
+                </div>
+                <a href="/admin/kyc" className="text-[11px] text-afrilink-green font-medium hover:underline shrink-0">
+                  Vérifier
+                </a>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-400">
+            Aucune demande KYC en attente.
+          </p>
+        )}
       </div>
     </AdminLayout>
   );

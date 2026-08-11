@@ -65,7 +65,7 @@ export interface AdminTontine {
     nom?: string;
     prenom?: string;
   };
-  membres?: Array<{
+  members?: Array<{
     id: string;
     userId: number;
     role: string;
@@ -74,6 +74,39 @@ export interface AdminTontine {
   }>;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminTransaction {
+  id: string;
+  reference: string;
+  user: string;
+  email: string | null;
+  type: string;
+  amount: number;
+  status: string;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface AdminActivity {
+  type: string;
+  title: string;
+  meta: string;
+  createdAt: string;
+}
+
+export interface AdminKycPending {
+  id: number;
+  userId: number;
+  userName: string;
+  userEmail: string | null;
+  documentType: string | null;
+  createdAt: string;
+}
+
+export interface AdminChartPoint {
+  day: string;
+  value: number;
 }
 
 export const adminService = {
@@ -113,6 +146,44 @@ export const adminService = {
 
   listTontines: async (): Promise<AdminTontine[]> => {
     const res = await apiClient.get<AdminTontine[]>('/admin/tontines');
+    return res.data;
+  },
+
+  getTontineStats: async (): Promise<{
+    totalTontines: number;
+    activeTontines: number;
+    totalVolume: number;
+  }> => {
+    const res = await apiClient.get("/admin/tontines/stats");
+    return res.data;
+  },
+
+  listTransactions: async (): Promise<AdminTransaction[]> => {
+    const res = await apiClient.get<AdminTransaction[]>("/admin/transactions");
+    return res.data;
+  },
+
+  getTransactionStats: async (): Promise<{
+    totalTransactions: number;
+    completedCount: number;
+    totalVolume: number;
+  }> => {
+    const res = await apiClient.get("/admin/transactions/stats");
+    return res.data;
+  },
+
+  getRecentActivities: async (): Promise<AdminActivity[]> => {
+    const res = await apiClient.get<AdminActivity[]>("/admin/activities");
+    return res.data;
+  },
+
+  getKycPending: async (): Promise<AdminKycPending[]> => {
+    const res = await apiClient.get<AdminKycPending[]>("/admin/kyc/pending");
+    return res.data;
+  },
+
+  getChartWeekly: async (): Promise<AdminChartPoint[]> => {
+    const res = await apiClient.get<AdminChartPoint[]>("/admin/chart/weekly");
     return res.data;
   },
 };

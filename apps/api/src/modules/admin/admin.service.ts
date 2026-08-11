@@ -107,7 +107,7 @@ export class AdminService {
 
   async findAllTontines() {
     const tontines = await this.tontinesRepository.find({
-      relations: ['createur', 'membres'],
+      relations: ['creator', 'members'],
       order: { createdAt: 'DESC' },
     });
     return tontines;

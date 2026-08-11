@@ -67,7 +67,7 @@ export class TontineService {
       // Retourner depuis le manager ( données non commitées visibles )
       return manager.findOneOrFail(Tontine, {
         where: { id: saved.id },
-        relations: ['membres', 'membres.user', 'creator'],
+        relations: ['members', 'members.user', 'creator'],
       });
     });
   }
@@ -75,8 +75,8 @@ export class TontineService {
   async findAll(userId: number): Promise<Tontine[]> {
     return this.tontineRepo
       .createQueryBuilder('t')
-      .innerJoin('t.membres', 'm', 'm.userId = :userId', { userId })
-      .leftJoinAndSelect('t.membres', 'allMembres')
+      .innerJoin('t.members', 'm', 'm.userId = :userId', { userId })
+      .leftJoinAndSelect('t.members', 'allMembres')
       .leftJoinAndSelect('allMembres.user', 'user')
       .leftJoinAndSelect('t.creator', 'creator')
       .orderBy('t.createdAt', 'DESC')
@@ -86,7 +86,7 @@ export class TontineService {
   async findOne(id: string, userId?: number): Promise<Tontine> {
     const tontine = await this.tontineRepo.findOne({
       where: { id },
-      relations: ['membres', 'membres.user', 'creator'],
+      relations: ['members', 'members.user', 'creator'],
     });
     if (!tontine) {
       throw new NotFoundException(`Tontine #${id} introuvable`);
@@ -143,14 +143,14 @@ export class TontineService {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
 
-    const activeCount = tontine.membres.filter(
+    const activeCount = tontine.members.filter(
       (m) => m.status === TontineMemberStatus.ACTIVE,
     ).length;
     if (activeCount >= tontine.memberLimit) {
       throw new BadRequestException('La tontine est pleine');
     }
 
-    const existing = tontine.membres.find(
+    const existing = tontine.members.find(
       (m) => m.userId === memberUserId && m.status !== TontineMemberStatus.REMOVED,
     );
     if (existing) {
@@ -171,7 +171,7 @@ export class TontineService {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
 
-    const member = tontine.membres.find((m) => m.id === memberId);
+    const member = tontine.members.find((m) => m.id === memberId);
     if (!member) {
       throw new NotFoundException('Membre introuvable');
     }
@@ -186,11 +186,11 @@ export class TontineService {
 
   async join(id: string, userId: number): Promise<TontineMember> {
     const tontine = await this.findOne(id);
-    const existing = tontine.membres.find((m) => m.userId === userId);
+    const existing = tontine.members.find((m) => m.userId === userId);
     if (existing) {
       throw new ForbiddenException('Vous êtes déjà membre de cette tontine');
     }
-    if (tontine.membres.length >= tontine.memberLimit) {
+    if (tontine.members.length >= tontine.memberLimit) {
       throw new ForbiddenException('Cette tontine est pleine');
     }
     const member = this.memberRepo.create({
@@ -204,7 +204,7 @@ export class TontineService {
 
   async leave(id: string, userId: number): Promise<void> {
     const tontine = await this.findOne(id, userId);
-    const member = tontine.membres.find(
+    const member = tontine.members.find(
       (m) => m.userId === userId && m.status === TontineMemberStatus.ACTIVE,
     );
     if (!member) {
@@ -220,14 +220,14 @@ export class TontineService {
   }
 
   private assertMembership(tontine: Tontine, userId: number): void {
-    const isMember = tontine.membres?.some((m) => m.userId === userId);
+    const isMember = tontine.members?.some((m) => m.userId === userId);
     if (!isMember) {
       throw new ForbiddenException("Vous n'êtes pas membre de cette tontine");
     }
   }
 
   private assertAdmin(tontine: Tontine, userId: number): void {
-    const isAdmin = tontine.membres?.some(
+    const isAdmin = tontine.members?.some(
       (m) => m.userId === userId && m.role === TontineMemberRole.ADMIN,
     );
     if (!isAdmin) {

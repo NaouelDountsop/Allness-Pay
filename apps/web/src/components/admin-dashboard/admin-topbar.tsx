@@ -1,13 +1,40 @@
-import { Search, Bell, HelpCircle } from 'lucide-react';
-import { Avatar } from '../ui/avatar';
+import { Search, Bell, HelpCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Avatar } from "../ui/avatar";
+import { apiClient } from "@/lib/api-client";
 
-export function AdminTopbar({
-  adminName = 'Admin Principal',
-  adminId = 'PA-00431',
-}: {
-  adminName?: string;
-  adminId?: string;
-}) {
+interface AdminProfile {
+  idutilisateur: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  profession: string;
+  statut: string;
+  role?: string;
+}
+
+async function fetchAdminProfile(): Promise<AdminProfile> {
+  const res = await apiClient.get<AdminProfile>("/auth/profile");
+  return res.data;
+}
+
+export function AdminTopbar() {
+  const { data: admin } = useQuery({
+    queryKey: ["admin-profile"],
+    queryFn: fetchAdminProfile,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const displayName = admin
+    ? `${admin.prenom || ""} ${admin.nom || ""}`.trim() || "Admin"
+    : "Admin";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <header className="h-14 md:h-16 shrink-0 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-6 gap-4 md:gap-6">
       <div className="flex-1 max-w-md hidden sm:block">
@@ -35,15 +62,10 @@ export function AdminTopbar({
           <HelpCircle className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2 pl-3 md:pl-4 border-l border-gray-100">
-          <Avatar
-            initials={adminName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')}
-          />
+          <Avatar initials={initials} />
           <div className="leading-tight hidden sm:block">
-            <p className="text-xs font-semibold text-afrilink-dark">{adminName}</p>
-            <p className="text-[11px] text-gray-400">ID: {adminId}</p>
+            <p className="text-xs font-semibold text-afrilink-dark">{displayName}</p>
+            <p className="text-[11px] text-gray-400">{admin?.profession || "Administrateur"}</p>
           </div>
         </div>
       </div>

@@ -70,7 +70,7 @@ export class Tontine {
   walletNumber: string;
 
   @OneToMany(() => TontineMember, (m) => m.tontine, { cascade: true })
-  membres: TontineMember[];
+  members: TontineMember[];
 
   @VersionColumn()
   version: number;

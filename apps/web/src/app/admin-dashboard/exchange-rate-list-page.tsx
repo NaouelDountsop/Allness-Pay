@@ -9,15 +9,24 @@ const RATES = [
   { pair: 'CAD → XAF', rate: '441.80', change: '-0.18%', up: false },
 ];
 
-export default function ExchangeRatesListPage() {
+export default function ExchangeRatesPage() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [selectedRate, setSelectedRate] = useState<Rate>(RATES[0]!);
+  const [page, setPage] = useState(1);
+  const totalRates = 132;
+  const pageSize = 10;
 
   return (
-    <AdminLayout active="parametres">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-afrilink-dark mb-1">Taux de Change</h1>
-          <p className="text-sm text-gray-400">Gérez les taux appliqués sur la plateforme.</p>
+    <AdminLayout>
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          
+          <div>
+            <h1 className="text-lg font-bold text-afrilink-dark">Taux de change</h1>
+            <p className="text-xs text-gray-400">Gérez les taux de change de la plateforme.</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -87,5 +96,14 @@ export default function ExchangeRatesListPage() {
         </table>
       </div>
     </AdminLayout>
+  );
+}
+
+function FilterSelect({ label }: { label: string }) {
+  return (
+    <button className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 hover:border-gray-300">
+      {label}
+      <ChevronDown className="h-3 w-3 text-gray-400" />
+    </button>
   );
 }

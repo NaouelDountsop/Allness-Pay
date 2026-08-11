@@ -12,9 +12,13 @@ export const authStorage = {
   setRefreshToken: (token: string) => sessionStorage.setItem(REFRESH_TOKEN_KEY, token),
   clearRefreshToken: () => sessionStorage.removeItem(REFRESH_TOKEN_KEY),
 
+  getRole: (): string | null => sessionStorage.getItem(ROLE_KEY),
+  setRole: (role: string) => sessionStorage.setItem(ROLE_KEY, role),
+
   clearAll: () => {
     sessionStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(ROLE_KEY);
   },
 };
 
