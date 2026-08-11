@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProtectedRoute } from "@/components/common/protected-route";
+import { AdminProtectedRoute } from "@/components/common/admin-protected-route";
 import LandingPage from "@/app/landing-page";
 import SignupPage from "@/app/auth/signup-page";
 import VerifyEmailPage from "@/app/auth/verify-email-page";
@@ -23,6 +23,7 @@ import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
 import TontineChatPage from "@/app/user_dashboard/tontine-chat-page";
 import ProfilePage from "@/app/user_dashboard/profile-page";
 import SettingsPage from "@/app/user_dashboard/settings-page";
+import AdminLoginPage from "@/app/admin-dashboard/admin-login-page";
 import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
 import UsersListPage from "@/app/admin-dashboard/users-list-page";
 import TontinesSupervisionPage from "@/app/admin-dashboard/tontines-supervision-page";
@@ -31,7 +32,7 @@ import MerchantDetailPage from "@/app/admin-dashboard/merchant-detail-page";
 import AddMerchantPage from "@/app/admin-dashboard/add-merchant-page";
 import KycListPage from "@/app/admin-dashboard/kyc-list-page";
 import KycDetailPage from "@/app/admin-dashboard/kyc-details-page";
-import ExchangeRatesListPage from "@/app/admin-dashboard/exchange-rate-list-page";
+import ExchangeRatesPage from "./app/admin-dashboard/exchange-rate-list-page";
 import EditExchangeRatePage from "@/app/admin-dashboard/edit-exchange-rate-page";
 import AddExchangeRatePage from "@/app/admin-dashboard/add-exchange-rate-page";
 import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history-page";
@@ -81,21 +82,23 @@ export function App() {
         <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
         <Route path="/dashboard/profile" element={<ProfilePage />} />
         <Route path="/dashboard/settings" element={<SettingsPage />} />
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
-        <Route path="/admin/utilisateurs" element={<ProtectedRoute><UsersListPage /></ProtectedRoute>} />
-        <Route path="/admin/transactions" element={<ProtectedRoute><AdminTransactionsPage /></ProtectedRoute>} />
-        <Route path="/admin/tontines" element={<ProtectedRoute><TontinesSupervisionPage /></ProtectedRoute>} />
-        <Route path="/admin/marchands" element={<ProtectedRoute><MerchantsListPage /></ProtectedRoute>} />
-        <Route path="/admin/marchands/nouveau" element={<ProtectedRoute><AddMerchantPage /></ProtectedRoute>} />
-        <Route path="/admin/marchands/:id" element={<ProtectedRoute><MerchantDetailPage /></ProtectedRoute>} />
-        <Route path="/admin/kyc" element={<ProtectedRoute><KycListPage /></ProtectedRoute>} />
-        <Route path="/admin/kyc/:id" element={<ProtectedRoute><KycDetailPage /></ProtectedRoute>} />
-        <Route path="/admin/taux-de-change" element={<ProtectedRoute><ExchangeRatesListPage /></ProtectedRoute>} />
-        <Route path="/admin/taux-de-change/nouveau" element={<ProtectedRoute><AddExchangeRatePage /></ProtectedRoute>} />
-        <Route path="/admin/taux-de-change/historique" element={<ProtectedRoute><ExchangeRateHistoryPage /></ProtectedRoute>} />
-        <Route path="/admin/taux-de-change/parametres" element={<ProtectedRoute><ExchangeRateSettingsPage /></ProtectedRoute>} />
-        <Route path="/admin/taux-de-change/:id/modifier" element={<ProtectedRoute><EditExchangeRatePage /></ProtectedRoute>} />
-        <Route path="/admin/partenaires" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
+
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
+        <Route path="/admin/utilisateurs" element={<AdminProtectedRoute><UsersListPage /></AdminProtectedRoute>} />
+        <Route path="/admin/transactions" element={<AdminProtectedRoute><AdminTransactionsPage /></AdminProtectedRoute>} />
+        <Route path="/admin/tontines" element={<AdminProtectedRoute><TontinesSupervisionPage /></AdminProtectedRoute>} />
+        <Route path="/admin/marchands" element={<AdminProtectedRoute><MerchantsListPage /></AdminProtectedRoute>} />
+        <Route path="/admin/marchands/nouveau" element={<AdminProtectedRoute><AddMerchantPage /></AdminProtectedRoute>} />
+        <Route path="/admin/marchands/:id" element={<AdminProtectedRoute><MerchantDetailPage /></AdminProtectedRoute>} />
+        <Route path="/admin/kyc" element={<AdminProtectedRoute><KycListPage /></AdminProtectedRoute>} />
+        <Route path="/admin/kyc/:id" element={<AdminProtectedRoute><KycDetailPage /></AdminProtectedRoute>} />
+        <Route path="/admin/taux-de-change" element={<AdminProtectedRoute><ExchangeRatesPage /></AdminProtectedRoute>} />
+        <Route path="/admin/taux-de-change/nouveau" element={<AdminProtectedRoute><AddExchangeRatePage /></AdminProtectedRoute>} />
+        <Route path="/admin/taux-de-change/historique" element={<AdminProtectedRoute><ExchangeRateHistoryPage /></AdminProtectedRoute>} />
+        <Route path="/admin/taux-de-change/parametres" element={<AdminProtectedRoute><ExchangeRateSettingsPage /></AdminProtectedRoute>} />
+        <Route path="/admin/taux-de-change/:id/modifier" element={<AdminProtectedRoute><EditExchangeRatePage /></AdminProtectedRoute>} />
+        <Route path="/admin/partenaires" element={<AdminProtectedRoute><PartnersPage /></AdminProtectedRoute>} />
 
         <Route path="/deposit" element={<DepositFlowProvider><InitiateDepositPage /></DepositFlowProvider>} />
         <Route path="/deposit/request-sent" element={<DepositFlowProvider><RequestSentPage /></DepositFlowProvider>} />

@@ -8,7 +8,7 @@ interface TontineDetailHeaderProps {
 
 export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
   const adminName = tontine.creator ? `${tontine.creator.prenom ?? ""} ${tontine.creator.nom ?? ""}`.trim() : "Admin";
-  const currentMember = tontine.membres?.find((m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle);
+  const currentMember = tontine.members?.find((m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">

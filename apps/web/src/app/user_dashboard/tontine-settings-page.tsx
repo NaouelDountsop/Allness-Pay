@@ -68,7 +68,7 @@ export default function TontineSettingsPage() {
     },
   });
 
-  const rotationMembers = tontine?.membres
+  const rotationMembers = tontine?.members
     ?.filter((m) => m.status === "ACTIVE")
     .sort((a, b) => (a.beneficiaryOrder ?? 0) - (b.beneficiaryOrder ?? 0))
     .map((m, i) => ({
@@ -241,7 +241,7 @@ export default function TontineSettingsPage() {
           <CycleSummaryPanel
             durationMonths={tontine.memberLimit}
             totalPot={totalPot}
-            membersCount={tontine.membres?.filter((m) => m.status === "ACTIVE").length ?? 0}
+            membersCount={tontine.members?.filter((m) => m.status === "ACTIVE").length ?? 0}
             nextDrawDate={new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
             onShowCalendar={() => setShowCalendar(true)}
           />

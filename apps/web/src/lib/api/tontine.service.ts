@@ -36,7 +36,7 @@ export interface Tontine {
     nom?: string;
     prenom?: string;
   };
-  membres?: TontineMember[];
+  members?: TontineMember[];
   createdAt: string;
   updatedAt: string;
 }

@@ -91,7 +91,7 @@ export default function TontineMembersPage() {
           </div>
         </div>
 
-        <MembersTable members={tontine.membres ?? []} tontineId={tontine.id} />
+        <MembersTable members={tontine.members ?? []} tontineId={tontine.id} />
       </div>
     </DashboardLayout>
   );

@@ -28,7 +28,7 @@ export class TontineMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Tontine, (t) => t.membres, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Tontine, (t) => t.members, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tontineId' })
   tontine: Tontine;
 

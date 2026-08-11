@@ -184,11 +184,28 @@ export class InvitationService {
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }
-
-  async acceptByToken(token: string, userId: number): Promise<TontineMember> {
+async acceptByToken(token: string, userId: number): Promise<TontineMember> {
     const invitation = await this.findByToken(token);
     if (!invitation) {
       throw new NotFoundException('Invitation introuvable');
+    }
+
+    // Idempotence : si cette invitation a déjà été acceptée (double appel,
+    // double-clic, remount frontend...) et que l'utilisateur est déjà
+    // membre actif, on renvoie le membre existant au lieu d'une erreur.
+    if (invitation.status === 'ACCEPTED') {
+      const existingMember = await this.memberRepo.findOne({
+        where: {
+          tontineId: invitation.tontineId,
+          userId,
+          status: TontineMemberStatus.ACTIVE,
+        },
+      });
+      if (existingMember) {
+        return existingMember;
+      }
+      // Invitation acceptée mais pas par cet utilisateur / pas de membre actif trouvé
+      throw new BadRequestException('Cette invitation a déjà été traitée');
     }
 
     if (invitation.status !== 'PENDING') {

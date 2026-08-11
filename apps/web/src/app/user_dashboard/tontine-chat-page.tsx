@@ -367,7 +367,7 @@ function ChatArea({
               </span>
             </div>
             <p className="text-xs text-gray-500">
-              {tontine?.membres?.length ?? 12} membres
+              {tontine?.members?.length ?? 12} membres
               {tontine?.nextContributionAt
                 ? ` · Prochain tour : ${new Date(tontine.nextContributionAt).toLocaleDateString("fr-FR")}`
                 : " · Prochain tour : Awa · 25 Mai 2024"}
@@ -509,7 +509,7 @@ function TontineAboutPanel({
               : "12 Jan 2024"
           }
         />
-        <InfoRow icon={Users} label="Nombre de membres" value={String(tontine?.membres?.length ?? 12)} />
+        <InfoRow icon={Users} label="Nombre de membres" value={String(tontine?.members?.length ?? 12)} />
         <InfoRow
           icon={Users}
           label="Montant de cotisation"
@@ -526,7 +526,7 @@ function TontineAboutPanel({
       <div className="mt-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-gray-900">
-            Membres ({tontine?.membres?.length ?? 12})
+            Membres ({tontine?.members?.length ?? 12})
           </p>
           <button className="text-xs font-medium text-afrilink-green">Voir tout</button>
         </div>
@@ -606,7 +606,7 @@ export default function TontineChatPage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 rounded-full border-green-500 text-green-600 hover:bg-green-50"
+              className="mt-4 rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
               onClick={() => navigate("/dashboard/tontines")}
             >
               Retour aux tontines
@@ -623,7 +623,7 @@ export default function TontineChatPage() {
         <DashboardHeader />
         <div className="flex h-[calc(100vh-140px)] min-h-0 min-w-0 gap-4 overflow-hidden">
           <ChatArea conversation={activeConversation} tontine={tontine} />
-          <TontineAboutPanel tontine={tontine} members={tontine?.membres} />
+          <TontineAboutPanel tontine={tontine} members={tontine?.members} />
         </div>
       </DashboardLayout>
     );
@@ -683,7 +683,7 @@ export default function TontineChatPage() {
             <Button
               variant="outline"
               size="sm"
-              className="w-full rounded-full border-green-500 text-green-600 hover:bg-green-50"
+              className="w-full rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
               onClick={() => navigate("/dashboard/tontines/create")}
             >
               <Plus className="mr-2 h-4 w-4" /> 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { tontineService } from "@/lib/api/tontine.service";
 import { Loader2, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
@@ -11,6 +11,7 @@ export default function AcceptInvitationPage() {
 
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const hasCalled = useRef(false);
 
   useEffect(() => {
     if (!token) {
@@ -19,13 +20,20 @@ export default function AcceptInvitationPage() {
       return;
     }
 
+    // Empêche le double appel (StrictMode / remount) qui provoquait
+    // faussement l'erreur "invitation déjà traitée" alors que le premier
+    // appel avait réussi.
+    if (hasCalled.current) return;
+    hasCalled.current = true;
+
     tontineService
       .acceptByToken(token)
       .then(() => setStatus("success"))
       .catch((err) => {
         setStatus("error");
         setErrorMessage(
-          err?.response?.data?.message || "Une erreur est survenue lors de l'activation de l'invitation."
+          err?.response?.data?.message ||
+            "Une erreur est survenue lors de l'activation de l'invitation."
         );
       });
   }, [token]);

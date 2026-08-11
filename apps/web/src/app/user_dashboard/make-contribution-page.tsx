@@ -103,7 +103,7 @@ export default function MakeContributionPage() {
     ? new Date(tontine.nextContributionAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })
     : "—";
 
-  const activeMembers = tontine.membres?.filter((m) => m.status === "ACTIVE").length ?? 0;
+  const activeMembers = tontine.members?.filter((m) => m.status === "ACTIVE").length ?? 0;
 
   return (
     <DashboardLayout>

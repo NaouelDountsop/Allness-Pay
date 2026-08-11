@@ -96,7 +96,7 @@ export default function TontineDetailPage() {
 
         <TontineDetailHeader tontine={tontine} progressPercent={progressPercent} />
         <TontineDetailStats tontine={tontine} progressPercent={progressPercent} />
-        <MembersTable members={tontine.membres ?? []} tontineId={tontine.id} />
+        <MembersTable members={tontine.members ?? []} tontineId={tontine.id} />
 
         <button
           aria-label="Support"

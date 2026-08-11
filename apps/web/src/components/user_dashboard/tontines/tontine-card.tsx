@@ -15,7 +15,7 @@ const avatarColors = [
 
 export function TontineCard({ tontine }: TontineCardProps) {
   const navigate = useNavigate();
-  const members = tontine.membres ?? [];
+  const members = tontine.members ?? [];
   const extraMembers = tontine.memberLimit - 3;
   const progressPercent = tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
 
