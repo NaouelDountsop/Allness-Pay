@@ -96,6 +96,14 @@ export class WalletsService {
     });
   }
 
+  async findByWalletNumber(walletNumber: string): Promise<Wallet> {
+    const wallet = await this.walletRepo.findOne({ where: { walletNumber } });
+    if (!wallet) {
+      throw new NotFoundException(`Wallet ${walletNumber} introuvable`);
+    }
+    return wallet;
+  }
+
   async findOne(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.walletRepo.findOne({ where: { id } });
     if (!wallet) {

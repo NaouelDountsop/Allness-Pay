@@ -19,6 +19,7 @@ import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
+import { TranzakModule } from './payments/tranzak/tranzak.module';
 
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 
@@ -52,6 +53,7 @@ import { LinkedAccountModule } from './modules/linked-account/linked-account.mod
     TontineModule,
     AdminModule,
     BeneficiaireModule,
+    TranzakModule,
    
     LinkedAccountModule,
     

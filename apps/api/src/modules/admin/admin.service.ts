@@ -107,4 +107,44 @@ export class AdminService {
     });
     return tontines;
   }
+
+  async findAllTransactions(filters?: {
+    status?: string;
+    type?: string;
+    provider?: string;
+    page?: number;
+    pageSize?: number;
+  }) {
+    const page = filters?.page ?? 1;
+    const pageSize = Math.min(filters?.pageSize ?? 20, 50);
+    const skip = (page - 1) * pageSize;
+
+    const qb = this.transactionsRepository
+      .createQueryBuilder('tx')
+      .leftJoinAndSelect('tx.wallet', 'wallet');
+
+    if (filters?.status) {
+      qb.andWhere('tx.status = :status', { status: filters.status });
+    }
+    if (filters?.type) {
+      qb.andWhere('tx.type = :type', { type: filters.type });
+    }
+    if (filters?.provider) {
+      qb.andWhere('tx.provider = :provider', { provider: filters.provider });
+    }
+
+    const [data, totalItems] = await qb
+      .orderBy('tx.createdAt', 'DESC')
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return {
+      data,
+      totalItems,
+      page,
+      pageSize,
+      pageCount: Math.ceil(totalItems / pageSize),
+    };
+  }
 }

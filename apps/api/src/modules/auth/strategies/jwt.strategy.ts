@@ -41,7 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   try {
     const user = await this.usersService.findOne(payload.sub);
-    return { sub: user.idutilisateur, email: user.email, role: payload.role };
+    return { id: user.idutilisateur, sub: user.idutilisateur, email: user.email, role: payload.role };
   } catch (err) {
     this.logger.warn(`User not found for sub: ${payload.sub} — ${err instanceof Error ? err.message : String(err)}`);
     throw new UnauthorizedException('Utilisateur introuvable');

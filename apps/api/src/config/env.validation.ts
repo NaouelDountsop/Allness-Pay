@@ -65,6 +65,11 @@ SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),
   GOOGLE_CALLBACK_URL: Joi.string().uri().allow('').optional(),
 
+  TRANZAK_BASE_URL: Joi.string().uri().required(),
+  TRANZAK_APP_ID: Joi.string().required(),
+  TRANZAK_APP_KEY: Joi.string().required(),
+  TRANZAK_CALLBACK_URL: Joi.string().uri().allow('').optional(),
+
   LOG_LEVEL: Joi.string()
     .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal')
     .default('info'),

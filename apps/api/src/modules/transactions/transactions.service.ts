@@ -5,11 +5,13 @@ import { Wallet, WalletType } from '../wallet/entities/wallet.entity';
 import {
   WalletTransaction,
   WalletTransactionType,
+  WalletTransactionStatus,
 } from './entities/wallet-transaction.entity';
 import { WalletsService } from '../wallet/wallet.service';
 import { PinService } from '../pin/pin.service';
 import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
 import { detectOperator } from '../../common/utils/phone-operator.util';
+import { LinkedAccountOperator } from '../linked-account/enums/linked-account-operator.enum';
 
 @Injectable()
 export class TransactionsService {
@@ -152,6 +154,95 @@ export class TransactionsService {
   }
 
   /**
+   * Enregistre un paiement externe (Tranzak) dans le ledger.
+   * Crée une écriture comptable avec statut PENDING.
+   */
+  async recordExternalPayment(
+    data: {
+      walletId: string;
+      amount: bigint;
+      operator: LinkedAccountOperator | null;
+      phoneNumber: string;
+      description: string;
+      provider: string;
+      providerRequestId: string;
+      providerTransactionId?: string | null;
+      reference?: string | null;
+    },
+    manager?: EntityManager,
+  ): Promise<WalletTransaction> {
+    const run = async (em: EntityManager) => {
+      const wallet = await this.walletsService.lockWalletForUpdate(em, data.walletId);
+      this.walletsService.assertActive(wallet);
+      this.assertNotTontine(wallet);
+
+      const entry = em.create(WalletTransaction, {
+        walletId: data.walletId,
+        type: WalletTransactionType.DEPOSIT,
+        amount: data.amount,
+        operator: data.operator,
+        phoneNumber: data.phoneNumber,
+        description: data.description,
+        provider: data.provider,
+        providerRequestId: data.providerRequestId,
+        providerTransactionId: data.providerTransactionId ?? null,
+        reference: data.reference ?? null,
+        status: WalletTransactionStatus.PENDING,
+      });
+      await em.save(entry);
+
+      return entry;
+    };
+
+    return manager ? run(manager) : this.dataSource.transaction(run);
+  }
+
+  /**
+   * Confirme ou échoue un paiement externe.
+   * Recherche par providerRequestId ou providerTransactionId.
+   * Idempotent : ignore si déjà COMPLETED.
+   * Recalcule le solde du wallet après confirmation.
+   */
+  async confirmExternalPayment(
+    provider: string,
+    identifier: string,
+    newStatus: WalletTransactionStatus.COMPLETED | WalletTransactionStatus.FAILED,
+    isRequestId: boolean,
+  ): Promise<WalletTransaction> {
+    return this.dataSource.transaction(async (manager) => {
+      const lookupField = isRequestId ? 'providerRequestId' : 'providerTransactionId';
+      const transaction = await manager.findOne(WalletTransaction, {
+        where: { provider, [lookupField]: identifier },
+      });
+
+      if (!transaction) {
+        throw new BadRequestException(
+          `Transaction ${provider}:${identifier} introuvable`,
+        );
+      }
+
+      // Idempotence : si déjà COMPLETED, on ne fait rien
+      if (transaction.status === WalletTransactionStatus.COMPLETED) {
+        return transaction;
+      }
+
+      // Mettre à jour le providerTransactionId si on a reçu le callback avec le requestId
+      if (isRequestId && !transaction.providerTransactionId) {
+        // On ne peut pas updater ici sans le transactionId, mais on le fera via le callback
+      }
+
+      transaction.status = newStatus;
+      await manager.save(transaction);
+
+      // Recalcul du solde du wallet
+      const newBalance = await this.recalculateBalance(manager, transaction.walletId);
+      await manager.update(Wallet, { id: transaction.walletId }, { balance: newBalance });
+
+      return transaction;
+    });
+  }
+
+  /**
    * Recalcule le solde d'un wallet en sommant les écritures du ledger.
    * deposits + transfer_in - withdrawals - transfer_out
    */
@@ -179,6 +270,7 @@ export class TransactionsService {
         'balance',
       )
       .where('wt.walletId = :walletId', { walletId })
+      .andWhere('wt.status = :status', { status: WalletTransactionStatus.COMPLETED })
       .getRawOne<{ balance: string }>();
 
     return BigInt(result?.balance ?? '0');

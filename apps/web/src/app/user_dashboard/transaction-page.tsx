@@ -138,7 +138,9 @@ export default function TransactionsPage() {
                           {credit ? "+" : "-"} {new Intl.NumberFormat("fr-FR").format(t.amount)} XAF
                         </td>
                         <td>
-                          <Badge tone="green" dot>Complété</Badge>
+                          <Badge tone={t.status === 'completed' ? 'green' : t.status === 'pending' ? 'amber' : 'red'} dot>
+                            {t.status === 'completed' ? 'Complété' : t.status === 'pending' ? 'En attente' : 'Échoué'}
+                          </Badge>
                         </td>
                         <td className="text-xs text-gray-500">
                           {new Date(t.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
