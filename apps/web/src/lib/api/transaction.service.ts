@@ -8,6 +8,9 @@ export interface WalletTransaction {
   relatedWalletId: string | null;
   reference: string | null;
   description: string | null;
+  status: "pending" | "completed" | "failed" | "cancelled";
+  provider: string | null;
+  phoneNumber: string | null;
   createdAt: string;
 }
 
