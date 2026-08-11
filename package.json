@@ -53,5 +53,8 @@
     "nodemailer": "^9.0.3",
     "passport-local": "^1.0.0",
     "redis": "^5.12.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.62.4"
   }
 }
