@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from '@/lib/api-client';
 
 export interface TontineMember {
   id: string;
@@ -65,7 +65,7 @@ export interface TontineInvitation {
   updatedAt: string;
 }
 
-const basePath = "/tontines";
+const basePath = '/tontines';
 
 export const tontineService = {
   list: async (): Promise<Tontine[]> => {

@@ -25,7 +25,7 @@ export function CycleSummaryPanel({
           <div className="flex items-center justify-between">
             <dt className="text-gray-400">Pot Final (Cycle)</dt>
             <dd className="font-medium text-gray-800">
-              {new Intl.NumberFormat("fr-FR").format(totalPot)} €
+              {new Intl.NumberFormat('fr-FR').format(totalPot)} €
             </dd>
           </div>
           <div className="flex items-center justify-between">

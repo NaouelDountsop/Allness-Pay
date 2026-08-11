@@ -1,5 +1,5 @@
-import { Receipt } from "lucide-react";
-import type { RecentPayment } from "@/lib/mock/payments-data";
+import { Receipt } from 'lucide-react';
+import type { RecentPayment } from '@/lib/mock/payments-data';
 
 interface RecentPaymentsListProps {
   payments: RecentPayment[];
@@ -27,7 +27,8 @@ export function RecentPaymentsList({ payments }: RecentPaymentsListProps) {
               </div>
             </div>
             <span className="text-xs sm:text-sm font-semibold text-gray-800 text-right whitespace-nowrap shrink-0 pl-2">
-              {new Intl.NumberFormat("fr-FR").format(p.amount)} <span className="hidden sm:inline">FCFA</span>
+              {new Intl.NumberFormat('fr-FR').format(p.amount)}{' '}
+              <span className="hidden sm:inline">FCFA</span>
             </span>
           </li>
         ))}

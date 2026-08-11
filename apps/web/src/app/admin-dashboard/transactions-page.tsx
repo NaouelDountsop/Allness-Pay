@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Wallet,
   ShieldCheck,
@@ -7,10 +7,10 @@ import {
   Download,
   Eye,
   AlertTriangle,
-} from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge, Pagination } from "../../components/ui";
-import { TransactionDetailModal, type TransactionDetail } from "./TransactionDetailModal";
+} from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge, Pagination } from '../../components/ui';
+import { TransactionDetailModal, type TransactionDetail } from './TransactionDetailModal';
 
 interface TransactionRow {
   reference: string;
@@ -18,73 +18,73 @@ interface TransactionRow {
   email: string;
   type: string;
   amount: string;
-  status: "Complété" | "En attente" | "Bloqué";
+  status: 'Complété' | 'En attente' | 'Bloqué';
   location: string;
   date: string;
 }
 
 const STATUS_TONE = {
-  Complété: "green",
-  "En attente": "orange",
-  Bloqué: "red",
+  Complété: 'green',
+  'En attente': 'orange',
+  Bloqué: 'red',
 } as const;
 
 const TRANSACTIONS: TransactionRow[] = [
   {
-    reference: "TXN-88213",
-    user: "Awa Njoya",
-    email: "a.njoya@mail.com",
-    type: "Dépôt Mobile Money",
-    amount: "+ 65 000 XAF",
-    status: "Complété",
-    location: "Douala, CM",
-    date: "27 Juil 2024, 19:40",
+    reference: 'TXN-88213',
+    user: 'Awa Njoya',
+    email: 'a.njoya@mail.com',
+    type: 'Dépôt Mobile Money',
+    amount: '+ 65 000 XAF',
+    status: 'Complété',
+    location: 'Douala, CM',
+    date: '27 Juil 2024, 19:40',
   },
   {
-    reference: "TXN-88214",
-    user: "Cissé Moktar",
-    email: "c.moktar@mail.com",
-    type: "Retrait Mobile Money",
-    amount: "- 120 000 XAF",
-    status: "En attente",
-    location: "Yaoundé, CM",
-    date: "27 Juil 2024, 18:12",
+    reference: 'TXN-88214',
+    user: 'Cissé Moktar',
+    email: 'c.moktar@mail.com',
+    type: 'Retrait Mobile Money',
+    amount: '- 120 000 XAF',
+    status: 'En attente',
+    location: 'Yaoundé, CM',
+    date: '27 Juil 2024, 18:12',
   },
   {
-    reference: "TXN-88215",
-    user: "Julie Moyo",
-    email: "j.moyo@mail.com",
-    type: "Transfert Tontine",
-    amount: "- 25 000 XAF",
-    status: "Bloqué",
-    location: "Bafoussam, CM",
-    date: "27 Juil 2024, 16:05",
+    reference: 'TXN-88215',
+    user: 'Julie Moyo',
+    email: 'j.moyo@mail.com',
+    type: 'Transfert Tontine',
+    amount: '- 25 000 XAF',
+    status: 'Bloqué',
+    location: 'Bafoussam, CM',
+    date: '27 Juil 2024, 16:05',
   },
   {
-    reference: "TXN-88216",
-    user: "Ivan Tchoua",
-    email: "i.tchoua@mail.com",
-    type: "Paiement Marchand",
-    amount: "- 8 400 XAF",
-    status: "Complété",
-    location: "Douala, CM",
-    date: "27 Juil 2024, 14:51",
+    reference: 'TXN-88216',
+    user: 'Ivan Tchoua',
+    email: 'i.tchoua@mail.com',
+    type: 'Paiement Marchand',
+    amount: '- 8 400 XAF',
+    status: 'Complété',
+    location: 'Douala, CM',
+    date: '27 Juil 2024, 14:51',
   },
 ];
 
 const DETAIL: TransactionDetail = {
-  reference: "TXN-88214",
-  date: "27 Juil 2024, 19:40",
-  status: "En attente",
-  amount: "120 000 XAF",
-  type: "Retrait Mobile Money",
-  fees: "1 200 XAF",
-  device: "iPhone 14 · CM-DLA-01",
-  location: "Douala, CM · 102.98.xx.xx",
+  reference: 'TXN-88214',
+  date: '27 Juil 2024, 19:40',
+  status: 'En attente',
+  amount: '120 000 XAF',
+  type: 'Retrait Mobile Money',
+  fees: '1 200 XAF',
+  device: 'iPhone 14 · CM-DLA-01',
+  location: 'Douala, CM · 102.98.xx.xx',
   timeline: [
-    { label: "Requête initiée", meta: "Utilisateur · 19:40" },
-    { label: "Vérification anti-fraude", meta: "Système · 19:41" },
-    { label: "Requête traitée", meta: "IVAN (agent support) · 19:52" },
+    { label: 'Requête initiée', meta: 'Utilisateur · 19:40' },
+    { label: 'Vérification anti-fraude', meta: 'Système · 19:41' },
+    { label: 'Requête traitée', meta: 'IVAN (agent support) · 19:52' },
   ],
 };
 
@@ -177,7 +177,7 @@ export default function AdminTransactionsPage() {
                   <td className="text-xs text-gray-600">{t.type}</td>
                   <td
                     className={`text-xs font-medium ${
-                      t.amount.startsWith("+") ? "text-afrilink-green" : "text-afrilink-dark"
+                      t.amount.startsWith('+') ? 'text-afrilink-green' : 'text-afrilink-dark'
                     }`}
                   >
                     {t.amount}

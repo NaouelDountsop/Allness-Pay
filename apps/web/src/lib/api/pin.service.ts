@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from '@/lib/api-client';
 
 export interface PinStatus {
   hasPin: boolean;
@@ -16,7 +16,9 @@ export const pinService = {
   },
 
   verify: async (walletId: string, pin: string): Promise<boolean> => {
-    const res = await apiClient.post<{ valid: boolean }>(`/wallets/${walletId}/pin/verify`, { pin });
+    const res = await apiClient.post<{ valid: boolean }>(`/wallets/${walletId}/pin/verify`, {
+      pin,
+    });
     return res.data.valid;
   },
 

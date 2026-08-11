@@ -83,9 +83,12 @@ export class WalletTransaction {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
- 
   /** Statut de la transaction (pending, completed, failed, cancelled). */
-  @Column({ type: 'enum', enum: WalletTransactionStatus, default: WalletTransactionStatus.COMPLETED })
+  @Column({
+    type: 'enum',
+    enum: WalletTransactionStatus,
+    default: WalletTransactionStatus.COMPLETED,
+  })
   status: WalletTransactionStatus;
 
   @CreateDateColumn()

@@ -1,6 +1,6 @@
-export type BadgeTone = "green" | "orange" | "red" | "blue" | "gray" | "purple" | "amber";
+export type BadgeTone = 'green' | 'orange' | 'red' | 'blue' | 'gray' | 'purple' | 'amber';
 
-export type AdminRole = "admin" | "super-admin";
+export type AdminRole = 'admin' | 'super-admin';
 
 export interface NavItem {
   key: string;

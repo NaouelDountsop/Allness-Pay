@@ -1,4 +1,4 @@
-import { Wallet, Users, TrendingUp, AlertCircle } from "lucide-react";
+import { Wallet, Users, TrendingUp, AlertCircle } from 'lucide-react';
 
 interface TontinesStatsProps {
   totalContributed: number;
@@ -29,7 +29,7 @@ export function TontinesStats({
           <span className="text-sm text-gray-300">Total cotisé</span>
         </div>
         <p className="text-2xl font-bold text-white mb-2">
-          {new Intl.NumberFormat("fr-FR").format(totalContributed)} {currency}
+          {new Intl.NumberFormat('fr-FR').format(totalContributed)} {currency}
         </p>
         <p className="text-xs text-green-400">↗ Depuis la création</p>
       </div>
@@ -53,9 +53,11 @@ export function TontinesStats({
           <span className="text-sm text-gray-300">Prochain Gain</span>
         </div>
         <p className="text-2xl font-bold text-white mb-2">
-          {new Intl.NumberFormat("fr-FR").format(nextGainAmount)} {currency}
+          {new Intl.NumberFormat('fr-FR').format(nextGainAmount)} {currency}
         </p>
-        <p className="text-xs text-gray-400">{nextGainDate} · {nextGainLabel}</p>
+        <p className="text-xs text-gray-400">
+          {nextGainDate} · {nextGainLabel}
+        </p>
       </div>
 
       <div className="bg-afrilink-dark rounded-2xl p-5">

@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import "@/lib/auth-storage";
+import '@/lib/auth-storage';
 import { createRoot } from 'react-dom/client';
 import { AppProviders } from '@/app/providers';
 import { App } from '@/App';

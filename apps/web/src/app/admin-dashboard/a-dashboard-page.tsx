@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Users,
   ShieldAlert,
@@ -10,49 +10,49 @@ import {
   AlertTriangle,
   CheckCircle2,
   Loader2,
-} from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge } from "../../components/ui";
-import { adminService } from "../../lib/api/admin.service";
+} from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge } from '../../components/ui';
+import { adminService } from '../../lib/api/admin.service';
 
 const ACTIVITIES = [
   {
     icon: RefreshCcw,
-    tone: "green" as const,
-    title: "Dépôt Tontine \"Espoir\"",
-    meta: "€650.00 • Il y a 3min",
-    tag: { label: "Nouvel", tone: "green" as const },
+    tone: 'green' as const,
+    title: 'Dépôt Tontine "Espoir"',
+    meta: '€650.00 • Il y a 3min',
+    tag: { label: 'Nouvel', tone: 'green' as const },
   },
   {
     icon: UserPlus,
-    tone: "blue" as const,
-    title: "Nouvel Utilisateur Inscrit",
-    meta: "Jean Dupont • Il y a 8min",
-    tag: { label: "Vérification", tone: "blue" as const },
+    tone: 'blue' as const,
+    title: 'Nouvel Utilisateur Inscrit',
+    meta: 'Jean Dupont • Il y a 8min',
+    tag: { label: 'Vérification', tone: 'blue' as const },
   },
   {
     icon: AlertTriangle,
-    tone: "red" as const,
-    title: "Retrait Suspect Bloqué",
-    meta: "€2,500.00 • Il y a 12m",
-    tag: { label: "Alerte", tone: "red" as const },
+    tone: 'red' as const,
+    title: 'Retrait Suspect Bloqué',
+    meta: '€2,500.00 • Il y a 12m',
+    tag: { label: 'Alerte', tone: 'red' as const },
   },
   {
     icon: CheckCircle2,
-    tone: "gray" as const,
-    title: "Liquidation Cycle A4",
-    meta: "Tontine Alpha • Il y a 20m",
-    tag: { label: "Traité", tone: "gray" as const },
+    tone: 'gray' as const,
+    title: 'Liquidation Cycle A4',
+    meta: 'Tontine Alpha • Il y a 20m',
+    tag: { label: 'Traité', tone: 'gray' as const },
   },
 ];
 
 const CHART_VALUES = [40, 55, 70, 90, 65, 50, 78];
 
 export default function DashboardPage() {
-  const [period, setPeriod] = useState<"7j" | "30j">("7j");
+  const [period, setPeriod] = useState<'7j' | '30j'>('7j');
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["admin-dashboard-stats"],
+    queryKey: ['admin-dashboard-stats'],
     queryFn: adminService.getDashboardStats,
   });
 
@@ -66,7 +66,7 @@ export default function DashboardPage() {
     );
   }
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   return (
     <AdminLayout active="dashboard">
@@ -104,7 +104,9 @@ export default function DashboardPage() {
             </span>
             <span className="text-sm text-gray-300">Volume Mensuel</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.monthlyVolume ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(stats?.monthlyVolume ?? 0)} XAF
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -114,7 +116,9 @@ export default function DashboardPage() {
             </span>
             <span className="text-sm text-gray-300">Liquidité Système</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalLiquidity ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(stats?.totalLiquidity ?? 0)} XAF
+          </p>
           <p className="text-xs text-green-400 mt-1">Seuil: Optimal</p>
         </div>
       </div>
@@ -125,17 +129,17 @@ export default function DashboardPage() {
             <p className="text-sm font-semibold text-afrilink-dark">Croissance des Transactions</p>
             <div className="flex items-center bg-gray-50 rounded-lg p-0.5 text-xs">
               <button
-                onClick={() => setPeriod("7j")}
+                onClick={() => setPeriod('7j')}
                 className={`px-3 py-1 rounded-md transition-colors ${
-                  period === "7j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
+                  period === '7j' ? 'bg-white shadow-sm text-afrilink-dark' : 'text-gray-400'
                 }`}
               >
                 7 Jours
               </button>
               <button
-                onClick={() => setPeriod("30j")}
+                onClick={() => setPeriod('30j')}
                 className={`px-3 py-1 rounded-md transition-colors ${
-                  period === "30j" ? "bg-white shadow-sm text-afrilink-dark" : "text-gray-400"
+                  period === '30j' ? 'bg-white shadow-sm text-afrilink-dark' : 'text-gray-400'
                 }`}
               >
                 30 Jours
@@ -147,7 +151,7 @@ export default function DashboardPage() {
               <div
                 key={i}
                 className={`flex-1 rounded-t-md ${
-                  i === CHART_VALUES.length - 2 ? "bg-afrilink-green" : "bg-afrilink-green/40"
+                  i === CHART_VALUES.length - 2 ? 'bg-afrilink-green' : 'bg-afrilink-green/40'
                 }`}
                 style={{ height: `${v}%` }}
               />

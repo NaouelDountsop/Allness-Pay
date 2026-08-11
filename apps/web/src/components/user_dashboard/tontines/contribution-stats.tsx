@@ -1,4 +1,4 @@
-import { Wallet, Repeat, Activity } from "lucide-react";
+import { Wallet, Repeat, Activity } from 'lucide-react';
 
 interface ContributionStatsProps {
   totalContributed: number;
@@ -21,7 +21,7 @@ export function ContributionStats({
         <Wallet className="w-4 h-4 text-gray-400 mb-2" />
         <p className="text-[11px] text-gray-400">Total Cotisé</p>
         <p className="text-lg font-bold text-gray-900">
-          {new Intl.NumberFormat("fr-FR").format(totalContributed)} {currency}
+          {new Intl.NumberFormat('fr-FR').format(totalContributed)} {currency}
         </p>
         <p className="text-[11px] text-afrilink-green mt-1">+12% par rapport au mois dernier</p>
       </div>

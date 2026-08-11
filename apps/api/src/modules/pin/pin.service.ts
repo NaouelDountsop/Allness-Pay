@@ -13,13 +13,7 @@ import { Wallet } from '../wallet/entities/wallet.entity';
 import { WalletsService } from '../wallet/wallet.service';
 import { RedisService } from '../otp/redis.service';
 import { MailService } from '../mail/mail.service';
-import {
-  CreatePinDto,
-  ChangePinDto,
-  ForgotPinDto,
-  ResetPinDto,
-  VerifyPinDto,
-} from './dto/pin.dto';
+import { CreatePinDto, ChangePinDto, ForgotPinDto, ResetPinDto, VerifyPinDto } from './dto/pin.dto';
 
 const OTP_PREFIX = 'otp:wallet-pin-reset';
 const OTP_TTL_SECONDS = 5 * 60;
@@ -46,7 +40,6 @@ export class PinService {
     private readonly mailService: MailService,
   ) {}
 
-  
   async getPinStatus(id: string, userId: number): Promise<{ hasPin: boolean }> {
     const wallet = await this.walletRepo.findOne({
       where: { id },
@@ -103,14 +96,12 @@ export class PinService {
     const wallet = await this.walletRepo.findOne({
       where: { id },
       relations: ['user'],
-     
     });
     if (!wallet) {
       throw new NotFoundException('Wallet introuvable');
     }
     this.walletsService.assertOwnership(wallet, userId);
 
-   
     if ((wallet.user as any).kycVerified === false) {
       throw new ForbiddenException(
         'Vérification KYC requise avant de pouvoir réinitialiser le PIN',
@@ -157,7 +148,6 @@ export class PinService {
     return { valid: true };
   }
 
-
   async verifyPinWithManager(
     manager: EntityManager,
     id: string,
@@ -186,10 +176,14 @@ export class PinService {
       const attempts = wallet.failedPinAttempts + 1;
       const shouldLock = attempts >= MAX_FAILED_PIN_ATTEMPTS;
 
-      await manager.update(Wallet, { id }, {
-        failedPinAttempts: shouldLock ? 0 : attempts,
-        lockedUntil: shouldLock ? new Date(Date.now() + LOCK_DURATION_MS) : null,
-      });
+      await manager.update(
+        Wallet,
+        { id },
+        {
+          failedPinAttempts: shouldLock ? 0 : attempts,
+          lockedUntil: shouldLock ? new Date(Date.now() + LOCK_DURATION_MS) : null,
+        },
+      );
 
       if (shouldLock) {
         throw new ForbiddenException(

@@ -97,7 +97,12 @@ export class AdminService {
       where: { idutilisateur: kyc.userId },
       select: ['nom', 'prenom', 'email'],
     });
-    return { ...kyc, userName: user?.prenom ?? null, userNom: user?.nom ?? null, userEmail: user?.email ?? null };
+    return {
+      ...kyc,
+      userName: user?.prenom ?? null,
+      userNom: user?.nom ?? null,
+      userEmail: user?.email ?? null,
+    };
   }
 
   async findAllTontines() {

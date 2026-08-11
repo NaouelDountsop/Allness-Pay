@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search } from "lucide-react";
-import { countries, type Country, getFlagUrl } from "@/data/countries";
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown, Search } from 'lucide-react';
+import { countries, type Country, getFlagUrl } from '@/data/countries';
 
 interface CountrySelectProps {
   value: string;
@@ -11,29 +11,28 @@ interface CountrySelectProps {
 export function CountrySelect({
   value,
   onChange,
-  placeholder = "Sélectionner un pays",
+  placeholder = 'Sélectionner un pays',
 }: CountrySelectProps) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const selected = countries.find((c) => c.code === value);
 
-  const filtered = countries.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.dialCode.includes(search),
+  const filtered = countries.filter(
+    (c) => c.name.toLowerCase().includes(search.toLowerCase()) || c.dialCode.includes(search),
   );
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
-        setSearch("");
+        setSearch('');
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -65,7 +64,7 @@ export function CountrySelect({
             <span className="flex-1 text-left text-gray-400">{placeholder}</span>
           )}
           <ChevronDown
-            className={`w-4 h-4 text-afrilink-gray transition-transform ${open ? "rotate-180" : ""}`}
+            className={`w-4 h-4 text-afrilink-gray transition-transform ${open ? 'rotate-180' : ''}`}
           />
         </button>
 
@@ -92,10 +91,10 @@ export function CountrySelect({
                   onClick={() => {
                     onChange(country);
                     setOpen(false);
-                    setSearch("");
+                    setSearch('');
                   }}
                   className={`w-full px-3 py-2 flex items-center gap-2 text-sm hover:bg-gray-50 transition-colors ${
-                    country.code === value ? "bg-afrilink-green/5 text-afrilink-green" : ""
+                    country.code === value ? 'bg-afrilink-green/5 text-afrilink-green' : ''
                   }`}
                 >
                   <img
@@ -108,9 +107,7 @@ export function CountrySelect({
                 </button>
               ))}
               {filtered.length === 0 && (
-                <p className="px-3 py-2 text-xs text-gray-400 text-center">
-                  Aucun pays trouvé
-                </p>
+                <p className="px-3 py-2 text-xs text-gray-400 text-center">Aucun pays trouvé</p>
               )}
             </div>
           </div>

@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { ShieldCheck, Zap } from "lucide-react";
+import type { ReactNode } from 'react';
+import { ShieldCheck, Zap } from 'lucide-react';
 
 interface Feature {
   icon: typeof ShieldCheck;
@@ -10,13 +10,13 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: ShieldCheck,
-    title: "Sécurité de Niveau Bancaire",
-    description: "Vos données sont protégées par le plus haut standard de cryptage.",
+    title: 'Sécurité de Niveau Bancaire',
+    description: 'Vos données sont protégées par le plus haut standard de cryptage.',
   },
   {
     icon: Zap,
-    title: "Transactions Instantanées",
-    description: "Gérez vos fonds en temps réel, sans friction.",
+    title: 'Transactions Instantanées',
+    description: 'Gérez vos fonds en temps réel, sans friction.',
   },
 ];
 
@@ -57,8 +57,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             />
             <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative mb-[15px]">
               <p className="text-xs text-white/70 italic leading-relaxed">
-                "AfrilinkPay a transformé notre façon de gérer nos actifs internationaux.
-                Une interface d'une fluidité rare."
+                "AfrilinkPay a transformé notre façon de gérer nos actifs internationaux. Une
+                interface d'une fluidité rare."
               </p>
               <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
             </div>
@@ -69,11 +69,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex-1 w-full p-6 sm:p-8 lg:p-10 overflow-y-auto">
           {/* Branding mobile — visible uniquement sur petit écran */}
           <div className="md:hidden flex items-center gap-2 mb-6 bg-afrilink-dark px-4 py-3 rounded-t-xl">
-            <img
-              src="/afrilinkpay_logo1.svg"
-              alt="AfrilinkPay"
-              className="h-8 w-auto"
-            />
+            <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="h-8 w-auto" />
             <span className="text-lg font-bold text-white">
               Afrilink<span className="text-afrilink-orange">Pay</span>
             </span>

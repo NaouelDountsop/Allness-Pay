@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { MapPin, Search } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { MapPin, Search } from 'lucide-react';
 
 interface Suggestion {
   display_name: string;
@@ -20,13 +20,7 @@ interface AddressInputProps {
   error?: string;
 }
 
-export function AddressInput({
-  countryCode,
-  city,
-  value,
-  onChange,
-  error,
-}: AddressInputProps) {
+export function AddressInput({ countryCode, city, value, onChange, error }: AddressInputProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,11 +36,11 @@ export function AddressInput({
 
       setLoading(true);
       try {
-        const countryFilter = countryCode ? `&countrycodes=${countryCode.toLowerCase()}` : "";
-        const cityFilter = city ? ` ${city}` : "";
+        const countryFilter = countryCode ? `&countrycodes=${countryCode.toLowerCase()}` : '';
+        const cityFilter = city ? ` ${city}` : '';
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + cityFilter)}${countryFilter}&format=json&addressdetails=1&limit=5`;
         const res = await fetch(url, {
-          headers: { "Accept-Language": "fr" },
+          headers: { 'Accept-Language': 'fr' },
         });
         const data: Suggestion[] = await res.json();
         setSuggestions(data);
@@ -69,18 +63,14 @@ export function AddressInput({
     }, 300);
   };
 
- const handleSelect = (s: Suggestion) => {
-  const quartier =
-    s.address?.neighbourhood ||
-    s.address?.suburb ||
-    s.address?.quarter ||
-    "";
+  const handleSelect = (s: Suggestion) => {
+    const quartier = s.address?.neighbourhood || s.address?.suburb || s.address?.quarter || '';
 
-  onChange(quartier);
+    onChange(quartier);
 
-  setOpen(false);
-  setSuggestions([]);
-};
+    setOpen(false);
+    setSuggestions([]);
+  };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -88,8 +78,8 @@ export function AddressInput({
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -100,13 +90,16 @@ export function AddressInput({
         <input
           type="text"
           className={`w-full h-11 rounded-lg border pl-9 pr-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-green ${
-            error ? "!border-destructive" : "border-gray-200"
+            error ? '!border-destructive' : 'border-gray-200'
           }`}
           placeholder={
-            countryCode === "CM" ? "Quartier, rue, numéro — Douala" :
-            countryCode === "FR" ? "Numéro, rue — Paris" :
-            countryCode === "CA" ? "Civic address — Toronto, ON" :
-            "Adresse complète"
+            countryCode === 'CM'
+              ? 'Quartier, rue, numéro — Douala'
+              : countryCode === 'FR'
+                ? 'Numéro, rue — Paris'
+                : countryCode === 'CA'
+                  ? 'Civic address — Toronto, ON'
+                  : 'Adresse complète'
           }
           value={value}
           onChange={(e) => handleChange(e.target.value)}
@@ -133,12 +126,8 @@ export function AddressInput({
                 >
                   <MapPin className="w-3.5 h-3.5 text-afrilink-gray mt-0.5 shrink-0" />
                   <span className="text-gray-700 line-clamp-2">
-                  {
-                    s.address?.neighbourhood ||
-                    s.address?.suburb ||
-                    s.address?.quarter
-                  }
-                </span>
+                    {s.address?.neighbourhood || s.address?.suburb || s.address?.quarter}
+                  </span>
                 </button>
               ))}
           </div>

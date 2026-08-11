@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   NotFoundException,
@@ -41,7 +40,9 @@ export class LinkedAccountsService {
     }
 
     if (dto.type === LinkedAccountType.MOBILE_MONEY && !dto.phoneNumber) {
-      throw new BadRequestException('Le numéro de téléphone est obligatoire pour un compte Mobile Money.');
+      throw new BadRequestException(
+        'Le numéro de téléphone est obligatoire pour un compte Mobile Money.',
+      );
     }
 
     if (dto.type === LinkedAccountType.BANK_ACCOUNT && !dto.accountNumber) {
@@ -92,7 +93,7 @@ export class LinkedAccountsService {
     const account = await this.findOne(id, userId);
 
     if (account.status === LinkedAccountStatus.ACTIVE && dto.phoneNumber) {
-      throw new BadRequestException('Impossible de modifier le numéro d\'un compte vérifié.');
+      throw new BadRequestException("Impossible de modifier le numéro d'un compte vérifié.");
     }
 
     Object.assign(account, dto);
@@ -153,7 +154,9 @@ export class LinkedAccountsService {
     const account = await this.findOne(id, userId);
 
     if (account.isDefault) {
-      throw new BadRequestException('Impossible de supprimer le compte par défaut. Définissez un autre compte par défaut.');
+      throw new BadRequestException(
+        'Impossible de supprimer le compte par défaut. Définissez un autre compte par défaut.',
+      );
     }
 
     await this.linkedAccountRepo.remove(account);

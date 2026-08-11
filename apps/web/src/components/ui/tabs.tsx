@@ -15,8 +15,8 @@ export function Tabs({
           onClick={() => onChange(tab)}
           className={`relative text-sm pb-3 pt-1 transition-colors ${
             active === tab
-              ? "text-afrilink-orange font-medium"
-              : "text-gray-400 hover:text-gray-600"
+              ? 'text-afrilink-orange font-medium'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
         >
           {tab}

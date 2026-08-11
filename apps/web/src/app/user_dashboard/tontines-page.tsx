@@ -1,25 +1,25 @@
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Plus, Loader2, MessageCircle } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { TontinesEmptyState } from "@/components/user_dashboard/tontines/tontines-empty-state";
-import { TontinesStats } from "@/components/user_dashboard/tontines/tontines-stats";
-import { TontineCard } from "@/components/user_dashboard/tontines/tontine-card";
-import { NewInitiativeCard } from "@/components/user_dashboard/tontines/new-initiative-card";
-import { InvitationsList } from "@/components/user_dashboard/tontines/invitations-list";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, Loader2, MessageCircle } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { TontinesEmptyState } from '@/components/user_dashboard/tontines/tontines-empty-state';
+import { TontinesStats } from '@/components/user_dashboard/tontines/tontines-stats';
+import { TontineCard } from '@/components/user_dashboard/tontines/tontine-card';
+import { NewInitiativeCard } from '@/components/user_dashboard/tontines/new-initiative-card';
+import { InvitationsList } from '@/components/user_dashboard/tontines/invitations-list';
+import { tontineService } from '@/lib/api/tontine.service';
 
 export default function TontinesPage() {
   const navigate = useNavigate();
 
   const { data: tontines, isLoading } = useQuery({
-    queryKey: ["tontines"],
+    queryKey: ['tontines'],
     queryFn: tontineService.list,
   });
 
   const { data: invitations } = useQuery({
-    queryKey: ["pending-invitations"],
+    queryKey: ['pending-invitations'],
     queryFn: tontineService.listPendingInvitations,
   });
 
@@ -36,7 +36,8 @@ export default function TontinesPage() {
 
   const hasTontines = tontines && tontines.length > 0;
 
-  const totalContributed = tontines?.reduce((sum, t) => sum + (Number(t.contributionAmount) * t.currentCycle), 0) ?? 0;
+  const totalContributed =
+    tontines?.reduce((sum, t) => sum + Number(t.contributionAmount) * t.currentCycle, 0) ?? 0;
   const nextGain = tontines?.find((t) => t.currentCycle < t.memberLimit);
 
   return (
@@ -46,7 +47,7 @@ export default function TontinesPage() {
       <div>
         {!hasTontines ? (
           <TontinesEmptyState
-            onCreate={() => navigate("/dashboard/tontines/create")}
+            onCreate={() => navigate('/dashboard/tontines/create')}
             onJoin={() => {}}
           />
         ) : (
@@ -57,31 +58,35 @@ export default function TontinesPage() {
                 <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
               </div>
               <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/dashboard/tontines/chat")}
-                className="h-10 px-4 rounded-lg border border-afrilink-dark text-afrilink-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="hidden md:inline">Conversations</span>
-              </button>
-              <button
-                onClick={() => navigate("/dashboard/tontines/create")}
-                className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden md:inline">Nouvelle Tontine</span>
-              </button>
+                <button
+                  onClick={() => navigate('/dashboard/tontines/chat')}
+                  className="h-10 px-4 rounded-lg border border-afrilink-dark text-afrilink-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="hidden md:inline">Conversations</span>
+                </button>
+                <button
+                  onClick={() => navigate('/dashboard/tontines/create')}
+                  className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden md:inline">Nouvelle Tontine</span>
+                </button>
               </div>
             </div>
 
             <div className="mt-6">
               <TontinesStats
                 totalContributed={totalContributed}
-                currency={tontines?.[0]?.currency ?? "CFA"}
+                currency={tontines?.[0]?.currency ?? 'CFA'}
                 activeTontinesCount={tontines?.length ?? 0}
                 nextGainAmount={Number(nextGain?.contributionAmount ?? 0)}
-                nextGainDate={nextGain?.createdAt ? new Date(nextGain.createdAt).toLocaleDateString("fr-FR") : "---"}
-                nextGainLabel={nextGain?.name ?? "---"}
+                nextGainDate={
+                  nextGain?.createdAt
+                    ? new Date(nextGain.createdAt).toLocaleDateString('fr-FR')
+                    : '---'
+                }
+                nextGainLabel={nextGain?.name ?? '---'}
                 pendingRequestsCount={0}
               />
             </div>

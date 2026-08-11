@@ -1,11 +1,11 @@
-import { MoreVertical } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import type { TontineMember } from "@/lib/api/tontine.service";
+import { MoreVertical } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import type { TontineMember } from '@/lib/api/tontine.service';
 
 const statusStyles: Record<string, { label: string; className: string }> = {
-  active: { label: "Actif", className: "bg-green-50 text-afrilink-green" },
-  pending: { label: "En attente", className: "bg-orange-50 text-afrilink-orange" },
-  inactive: { label: "Inactif", className: "bg-red-50 text-red-600" },
+  active: { label: 'Actif', className: 'bg-green-50 text-afrilink-green' },
+  pending: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
+  inactive: { label: 'Inactif', className: 'bg-red-50 text-red-600' },
 };
 
 interface MembersTableProps {
@@ -31,7 +31,6 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
           className="text-xs text-afrilink-green font-medium"
         >
           Voir tout →
-
         </button>
       </div>
 
@@ -47,12 +46,17 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
         </thead>
         <tbody className="divide-y divide-gray-50">
           {members.map((m) => {
-            const status = (statusStyles[m.status ?? "pending"] ?? statusStyles.pending) as { label: string; className: string };
-            const memberName = m.user ? `${m.user.prenom ?? ""} ${m.user.nom ?? ""}`.trim() : "Membre";
-            const location = m.user ? `${m.user.ville ?? ""}, ${m.user.pays ?? ""}`.trim() : "---";
+            const status = (statusStyles[m.status ?? 'pending'] ?? statusStyles.pending) as {
+              label: string;
+              className: string;
+            };
+            const memberName = m.user
+              ? `${m.user.prenom ?? ''} ${m.user.nom ?? ''}`.trim()
+              : 'Membre';
+            const location = m.user ? `${m.user.ville ?? ''}, ${m.user.pays ?? ''}`.trim() : '---';
             const initials = m.user
-              ? `${m.user.prenom?.charAt(0) ?? ""}${m.user.nom?.charAt(0) ?? ""}`.toUpperCase()
-              : "?";
+              ? `${m.user.prenom?.charAt(0) ?? ''}${m.user.nom?.charAt(0) ?? ''}`.toUpperCase()
+              : '?';
             return (
               <tr key={m.id}>
                 <td className="px-4 py-3">
@@ -65,7 +69,9 @@ export function MembersTable({ members, tontineId }: MembersTableProps) {
                 </td>
                 <td className="px-4 py-3 text-gray-500">{location}</td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}
+                  >
                     {status.label}
                   </span>
                 </td>

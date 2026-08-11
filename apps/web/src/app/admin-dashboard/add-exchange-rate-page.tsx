@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Info } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { SectionCard } from "../../components/ui/section-card";
-import { Toggle } from "../../components/ui/toggle";
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Info } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { SectionCard } from '../../components/ui/section-card';
+import { Toggle } from '../../components/ui/toggle';
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-[11px] text-gray-500 mb-1.5">{children}</label>;
@@ -32,7 +32,7 @@ export default function AddExchangeRatePage() {
     <AdminLayout active="parametres">
       <div className="mb-6">
         <button
-          onClick={() => navigate("/admin/taux-de-change")}
+          onClick={() => navigate('/admin/taux-de-change')}
           className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -93,7 +93,7 @@ export default function AddExchangeRatePage() {
             <Label>Fiabilité de la source (%)</Label>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                <div className="h-full bg-afrilink-green rounded-full" style={{ width: "99.5%" }} />
+                <div className="h-full bg-afrilink-green rounded-full" style={{ width: '99.5%' }} />
               </div>
               <span className="text-xs font-medium text-afrilink-dark w-12 text-right">99.5%</span>
             </div>
@@ -111,14 +111,14 @@ export default function AddExchangeRatePage() {
         <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4">
           <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
           <p className="text-[11px] text-blue-600 leading-relaxed">
-            Les modifications de taux sont immédiates et affichées. Les nouveaux taux sont
-            appliqués immédiatement à la prochaine transaction du taux système.
+            Les modifications de taux sont immédiates et affichées. Les nouveaux taux sont appliqués
+            immédiatement à la prochaine transaction du taux système.
           </p>
         </div>
 
         <div className="flex items-center justify-end gap-3 pb-6">
           <button
-            onClick={() => navigate("/admin/taux-de-change")}
+            onClick={() => navigate('/admin/taux-de-change')}
             className="h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Annuler

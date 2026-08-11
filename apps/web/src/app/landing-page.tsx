@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Menu,
   X,
@@ -19,7 +19,7 @@ import {
   Eye,
   Lock,
   ArrowRight,
-} from "lucide-react";
+} from 'lucide-react';
 
 function FacebookIcon({ className }: { className?: string }) {
   return (
@@ -104,7 +104,7 @@ export default function LandingPage() {
           {/* Bouton Se connecter */}
           <div className="hidden md:block">
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate('/login')}
               className="h-10 px-5 rounded-lg bg-[#f5a623] text-white text-sm font-semibold hover:bg-[#e09415] transition-colors"
             >
               Se connecter
@@ -140,7 +140,7 @@ export default function LandingPage() {
               Contact
             </a>
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate('/login')}
               className="h-11 rounded-lg bg-[#f5a623] text-white text-sm font-semibold"
             >
               Se connecter
@@ -155,7 +155,7 @@ export default function LandingPage() {
         className="relative bg-[#06251f] overflow-hidden"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 70% 40%, rgba(20,80,70,0.4) 0%, transparent 60%)",
+            'radial-gradient(circle at 70% 40%, rgba(20,80,70,0.4) 0%, transparent 60%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-14 pb-28 sm:pt-16 sm:pb-32 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center">
@@ -164,26 +164,25 @@ export default function LandingPage() {
             <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-bold text-white leading-[1.15] mb-5">
               Gérez votre patrimoine
               <br />
-              global{" "}
-              <span className="text-[#f5a623]">en toute</span>
+              global <span className="text-[#f5a623]">en toute</span>
               <br />
               <span className="text-[#f5a623]">simplicité.</span>
             </h1>
 
             <p className="text-[15px] text-white/70 leading-relaxed mb-8 max-w-[420px]">
-              Envoyez de l'argent, payez vos services et gérez vos tontines en
-              toute sécurité, partout dans le monde avec AfriLink Pay.
+              Envoyez de l'argent, payez vos services et gérez vos tontines en toute sécurité,
+              partout dans le monde avec AfriLink Pay.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-7">
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate('/signup')}
                 className="h-12 px-7 rounded-lg bg-[#1a8a4c] text-white text-[15px] font-semibold hover:bg-[#167a43] transition-colors"
               >
                 Créer un compte
               </button>
               <button
-                onClick={() => navigate("/login")}
+                onClick={() => navigate('/login')}
                 className="h-12 px-7 rounded-lg border-2 border-[#f5a623] text-[#f5a623] text-[15px] font-semibold hover:bg-white/5 transition-colors"
               >
                 Découvrir
@@ -208,14 +207,10 @@ export default function LandingPage() {
             {/* Carte Solde du wallet */}
             <div className="absolute top-0 right-0 sm:right-2 lg:-right-2 w-[210px] rounded-2xl bg-white shadow-xl p-4 z-20">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-gray-400 font-medium">
-                  Solde du wallet
-                </span>
+                <span className="text-[11px] text-gray-400 font-medium">Solde du wallet</span>
                 <Eye className="w-3.5 h-3.5 text-gray-300" />
               </div>
-              <p className="text-[20px] font-bold text-[#06251f] mb-3">
-                42.850,00 €
-              </p>
+              <p className="text-[20px] font-bold text-[#06251f] mb-3">42.850,00 €</p>
               <div className="border-t border-gray-100 pt-3 space-y-2.5">
                 <div className="flex items-center gap-2.5 text-[12px] text-gray-600">
                   <span className="w-7 h-7 rounded-full bg-green-50 flex items-center justify-center shrink-0">
@@ -250,11 +245,7 @@ export default function LandingPage() {
             {/* Trajectoire avion en papier (décorative) */}
             <div className="absolute top-[18%] left-[15%] sm:left-[22%] z-0 pointer-events-none">
               <Send className="w-5 h-5 text-[#f5a623] rotate-[-25deg] opacity-90" />
-              <svg
-                className="absolute top-3 left-4 w-32 h-20"
-                viewBox="0 0 120 80"
-                fill="none"
-              >
+              <svg className="absolute top-3 left-4 w-32 h-20" viewBox="0 0 120 80" fill="none">
                 <path
                   d="M2 10 C30 5, 50 40, 80 35 S110 10, 118 20"
                   stroke="#f5a623"
@@ -286,8 +277,7 @@ export default function LandingPage() {
       >
         <div className="text-center max-w-xl mx-auto mb-12">
           <h2 className="text-[26px] sm:text-[32px] font-bold text-[#06251f] mb-3">
-            Tout ce dont vous avez besoin{" "}
-            <span className="text-[#1a8a4c]">au même endroit</span>
+            Tout ce dont vous avez besoin <span className="text-[#1a8a4c]">au même endroit</span>
           </h2>
           <p className="text-[15px] text-gray-500">
             Une plateforme complète pour simplifier votre quotidien financier.
@@ -328,15 +318,13 @@ export default function LandingPage() {
           </div>
 
           <div className="relative">
-            <p className="text-[#f5a623] text-[14px] font-semibold mb-2">
-              Tontines Digitales
-            </p>
+            <p className="text-[#f5a623] text-[14px] font-semibold mb-2">Tontines Digitales</p>
             <h3 className="text-[24px] sm:text-[28px] font-bold text-[#06251f] mb-4 leading-snug">
               Épargnez à plusieurs, atteignez vos objectifs plus vite.
             </h3>
             <p className="text-[15px] text-gray-500 leading-relaxed mb-7 max-w-md">
-              Notre système de tontines digitales sécurisé et transparent vous
-              permet de bâtir votre avenir ensemble.
+              Notre système de tontines digitales sécurisé et transparent vous permet de bâtir votre
+              avenir ensemble.
             </p>
             <button className="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-[#06251f] text-white text-[14px] font-semibold hover:bg-[#0a352c] transition-colors">
               En savoir plus
@@ -372,9 +360,7 @@ export default function LandingPage() {
       {/* ================= ILS NOUS FONT CONFIANCE ================= */}
       <section className="bg-gray-50 py-12 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 text-center">
-          <p className="text-[17px] font-bold text-[#06251f] mb-7">
-            Ils nous font confiance
-          </p>
+          <p className="text-[17px] font-bold text-[#06251f] mb-7">Ils nous font confiance</p>
           <div className="flex items-center justify-center gap-8 sm:gap-12 flex-wrap text-[42px] sm:text-[48px]">
             <span role="img" aria-label="Canada">
               🇨🇦
@@ -410,14 +396,14 @@ export default function LandingPage() {
               Prêt à transformer votre avenir financier ?
             </h2>
             <p className="text-[14px] text-white/60 max-w-lg">
-              Rejoignez AfriLink Pay aujourd'hui et commencez à gérer votre
-              argent avec plus de liberté et d'efficacité.
+              Rejoignez AfriLink Pay aujourd'hui et commencez à gérer votre argent avec plus de
+              liberté et d'efficacité.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 shrink-0">
             <button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate('/signup')}
               className="h-11 px-6 rounded-lg bg-[#1a8a4c] text-white text-[14px] font-semibold hover:bg-[#167a43] transition-colors"
             >
               Créer un compte
@@ -451,22 +437,16 @@ export default function LandingPage() {
 
           <FooterColumn
             title="Liens utiles"
-            links={["À propos", "Fonctionnalités", "Tarifs", "Contact"]}
+            links={['À propos', 'Fonctionnalités', 'Tarifs', 'Contact']}
           />
           <FooterColumn
             title="Légal"
-            links={[
-              "Conditions d'utilisation",
-              "Politique de confidentialité",
-              "Sécurité",
-            ]}
+            links={["Conditions d'utilisation", 'Politique de confidentialité', 'Sécurité']}
           />
 
           {/* Réseaux sociaux */}
           <div>
-            <p className="text-white text-[13px] font-semibold mb-4">
-              Suivez-nous
-            </p>
+            <p className="text-white text-[13px] font-semibold mb-4">Suivez-nous</p>
             <div className="flex items-center gap-3">
               <a
                 href="#"
@@ -531,9 +511,7 @@ function StatCard({
         <Icon className="w-5 h-5 text-[#1a8a4c]" />
       </span>
       <div>
-        <p className="text-[18px] font-bold text-[#06251f] leading-none mb-1">
-          {value}
-        </p>
+        <p className="text-[18px] font-bold text-[#06251f] leading-none mb-1">{value}</p>
         <p className="text-[12px] text-gray-500 leading-none">{label}</p>
       </div>
     </div>
@@ -560,40 +538,23 @@ function FeatureCard({
   );
 }
 
-function ServiceIcon({
-  icon: Icon,
-  label,
-}: {
-  icon: typeof Zap;
-  label: string;
-}) {
+function ServiceIcon({ icon: Icon, label }: { icon: typeof Zap; label: string }) {
   return (
     <div className="rounded-xl border border-gray-100 shadow-sm py-5 px-2 flex flex-col items-center gap-2.5 hover:shadow-md transition-shadow">
       <Icon className="w-5 h-5 text-[#06251f]" />
-      <span className="text-[12px] text-gray-600 font-medium text-center">
-        {label}
-      </span>
+      <span className="text-[12px] text-gray-600 font-medium text-center">{label}</span>
     </div>
   );
 }
 
-function FooterColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: string[];
-}) {
+function FooterColumn({ title, links }: { title: string; links: string[] }) {
   return (
     <div>
       <p className="text-white text-[13px] font-semibold mb-4">{title}</p>
       <ul className="space-y-2.5">
         {links.map((link) => (
           <li key={link}>
-            <a
-              href="#"
-              className="text-[13px] hover:text-white transition-colors"
-            >
+            <a href="#" className="text-[13px] hover:text-white transition-colors">
               {link}
             </a>
           </li>

@@ -1,8 +1,8 @@
-import { X, Check, Mail, User } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import type { TontineInvitation } from "@/lib/api/tontine.service";
-import { userService } from "@/lib/api/user.service";
-import { tontineService } from "@/lib/api/tontine.service";
+import { X, Check, Mail, User } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import type { TontineInvitation } from '@/lib/api/tontine.service';
+import { userService } from '@/lib/api/user.service';
+import { tontineService } from '@/lib/api/tontine.service';
 
 interface InvitationsListProps {
   invitations: TontineInvitation[];
@@ -12,7 +12,7 @@ interface InvitationsListProps {
 
 function InvitationUser({ userId }: { userId?: number }) {
   const { data: user } = useQuery({
-    queryKey: ["user", userId],
+    queryKey: ['user', userId],
     queryFn: () => userService.getById(userId!),
     enabled: !!userId,
   });
@@ -29,7 +29,7 @@ function InvitationUser({ userId }: { userId?: number }) {
 
 function InvitationTontine({ tontineId }: { tontineId: number }) {
   const { data: tontine } = useQuery({
-    queryKey: ["tontine", tontineId],
+    queryKey: ['tontine', tontineId],
     queryFn: () => tontineService.getById(String(tontineId)),
   });
 
@@ -45,9 +45,7 @@ export function InvitationsList({ invitations, onAccept, onDecline }: Invitation
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">
-        Invitations en attente
-      </h3>
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">Invitations en attente</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {invitations.map((inv) => (
           <div
@@ -56,11 +54,7 @@ export function InvitationsList({ invitations, onAccept, onDecline }: Invitation
           >
             <div className="flex items-center gap-3 min-w-0">
               <span className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 text-gray-400 text-xs font-medium">
-                {inv.inviteeEmail ? (
-                  <Mail className="w-4 h-4" />
-                ) : (
-                  <User className="w-4 h-4" />
-                )}
+                {inv.inviteeEmail ? <Mail className="w-4 h-4" /> : <User className="w-4 h-4" />}
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-800 truncate">
@@ -72,7 +66,7 @@ export function InvitationsList({ invitations, onAccept, onDecline }: Invitation
               </div>
             </div>
 
-            {inv.status === "PENDING" ? (
+            {inv.status === 'PENDING' ? (
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   aria-label="Refuser"
@@ -89,11 +83,11 @@ export function InvitationsList({ invitations, onAccept, onDecline }: Invitation
                   Accepter
                 </button>
               </div>
-            ) : inv.status === "ACCEPTED" ? (
+            ) : inv.status === 'ACCEPTED' ? (
               <span className="shrink-0 text-[10px] font-medium bg-green-50 text-green-600 px-2.5 py-1 rounded-full">
                 Acceptée
               </span>
-            ) : inv.status === "DECLINED" ? (
+            ) : inv.status === 'DECLINED' ? (
               <span className="shrink-0 text-[10px] font-medium bg-red-50 text-red-500 px-2.5 py-1 rounded-full">
                 Refusée
               </span>

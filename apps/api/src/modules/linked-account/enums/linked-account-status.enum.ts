@@ -1,4 +1,3 @@
-
 export enum LinkedAccountStatus {
   PENDING = 'pending',
   ACTIVE = 'active',

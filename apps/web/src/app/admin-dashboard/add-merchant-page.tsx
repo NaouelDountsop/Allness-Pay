@@ -1,9 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Info, Phone, IdCard, Landmark, ShieldCheck, UploadCloud } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { SectionCard } from "../../components/ui/section-card";
-import { Toggle } from "../../components/ui/toggle";
-
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Info, Phone, IdCard, Landmark, ShieldCheck, UploadCloud } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { SectionCard } from '../../components/ui/section-card';
+import { Toggle } from '../../components/ui/toggle';
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-[11px] text-gray-500 mb-1.5">{children}</label>;
@@ -25,7 +24,7 @@ export default function AddMerchantPage() {
     <AdminLayout active="marchands">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <button
-          onClick={() => navigate("/admin/marchands")}
+          onClick={() => navigate('/admin/marchands')}
           className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -119,8 +118,12 @@ export default function AddMerchantPage() {
         <SectionCard title="Validation" icon={ShieldCheck}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-afrilink-dark">Activer le compte immédiatement</p>
-              <p className="text-[11px] text-gray-400">Le marchand pourra recevoir des paiements dès la création.</p>
+              <p className="text-xs font-medium text-afrilink-dark">
+                Activer le compte immédiatement
+              </p>
+              <p className="text-[11px] text-gray-400">
+                Le marchand pourra recevoir des paiements dès la création.
+              </p>
             </div>
             <Toggle checked />
           </div>
@@ -128,7 +131,7 @@ export default function AddMerchantPage() {
 
         <div className="flex items-center justify-end gap-3 pb-6">
           <button
-            onClick={() => navigate("/admin/marchands")}
+            onClick={() => navigate('/admin/marchands')}
             className="h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Annuler

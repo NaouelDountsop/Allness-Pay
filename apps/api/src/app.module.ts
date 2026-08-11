@@ -54,9 +54,9 @@ import { LinkedAccountModule } from './modules/linked-account/linked-account.mod
     AdminModule,
     BeneficiaireModule,
     TranzakModule,
-   
+
     LinkedAccountModule,
-    
+
     // `src/modules/README.md`.
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }, MailService],

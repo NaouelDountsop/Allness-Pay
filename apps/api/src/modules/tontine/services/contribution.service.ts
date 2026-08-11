@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { TontineContribution } from '../entities/tontine-contribution.entity';
@@ -10,7 +6,10 @@ import { TontineCycle } from '../entities/tontine-cycle.entity';
 import { TontineMember } from '../entities/tontine-member.entity';
 import { Tontine } from '../entities/tontine.entity';
 import { Wallet } from '../../wallet/entities/wallet.entity';
-import { WalletTransaction, WalletTransactionType } from '../../transactions/entities/wallet-transaction.entity';
+import {
+  WalletTransaction,
+  WalletTransactionType,
+} from '../../transactions/entities/wallet-transaction.entity';
 import { WalletsService } from '../../wallet/wallet.service';
 import { PinService } from '../../pin/pin.service';
 import { ContributeDto } from '../dto/contribute.dto';
@@ -28,10 +27,7 @@ export class ContributionService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async contribute(
-    memberId: string,
-    dto: ContributeDto,
-  ): Promise<TontineContribution> {
+  async contribute(memberId: string, dto: ContributeDto): Promise<TontineContribution> {
     return this.dataSource.transaction(async (manager) => {
       const member = await manager.findOneOrFail(TontineMember, {
         where: { id: memberId },
@@ -50,9 +46,7 @@ export class ContributionService {
         throw new BadRequestException('Ce cycle est déjà terminé');
       }
 
-      const contribution = cycle.contributions.find(
-        (c) => c.memberId === memberId,
-      );
+      const contribution = cycle.contributions.find((c) => c.memberId === memberId);
       if (!contribution) {
         throw new NotFoundException('Contribution introuvable pour ce membre et ce cycle');
       }
@@ -64,9 +58,7 @@ export class ContributionService {
       const expectedAmount = BigInt(cycle.totalPot) / BigInt(cycle.contributions.length);
       const providedAmount = BigInt(dto.amount);
       if (providedAmount < expectedAmount) {
-        throw new BadRequestException(
-          `Montant insuffisant. Attendu: ${expectedAmount.toString()}`,
-        );
+        throw new BadRequestException(`Montant insuffisant. Attendu: ${expectedAmount.toString()}`);
       }
 
       const memberWallet = await this.walletsService.lockWalletForUpdate(manager, dto.walletId);

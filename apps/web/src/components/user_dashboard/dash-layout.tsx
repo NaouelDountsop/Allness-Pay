@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { Sidebar } from "@/components/user_dashboard/sidebar";
-import { BottomNav } from "@/components/user_dashboard/bottom-nav";
+import type { ReactNode } from 'react';
+import { Sidebar } from '@/components/user_dashboard/sidebar';
+import { BottomNav } from '@/components/user_dashboard/bottom-nav';
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   return (

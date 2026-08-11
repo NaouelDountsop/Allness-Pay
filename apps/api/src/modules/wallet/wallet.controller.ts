@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { WalletsService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 interface AuthenticatedRequest extends Request {

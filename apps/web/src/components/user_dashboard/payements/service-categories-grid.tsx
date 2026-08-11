@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { Zap, Droplet, Phone, Tv, GraduationCap, Bus, Star } from "lucide-react";
-import type { ServiceCategory } from "@/lib/mock/payments-data";
+import { useNavigate } from 'react-router-dom';
+import { Zap, Droplet, Phone, Tv, GraduationCap, Bus, Star } from 'lucide-react';
+import type { ServiceCategory } from '@/lib/mock/payments-data';
 
 const iconMap = {
   electricity: Zap,
@@ -12,12 +12,12 @@ const iconMap = {
 };
 
 const colorMap = {
-  electricity: "bg-yellow-50 text-yellow-600",
-  water: "bg-blue-50 text-blue-600",
-  telecom: "bg-purple-50 text-purple-600",
-  tv: "bg-pink-50 text-pink-600",
-  education: "bg-green-50 text-green-600",
-  transport: "bg-orange-50 text-orange-600",
+  electricity: 'bg-yellow-50 text-yellow-600',
+  water: 'bg-blue-50 text-blue-600',
+  telecom: 'bg-purple-50 text-purple-600',
+  tv: 'bg-pink-50 text-pink-600',
+  education: 'bg-green-50 text-green-600',
+  transport: 'bg-orange-50 text-orange-600',
 };
 
 interface ServiceCategoriesGridProps {
@@ -29,9 +29,7 @@ export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-afrilink-dark mb-4">
-        Catégories de services
-      </h3>
+      <h3 className="text-base font-semibold text-afrilink-dark mb-4">Catégories de services</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         {categories.map((cat) => {
           const Icon = iconMap[cat.icon];
@@ -49,7 +47,9 @@ export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps
               >
                 <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </span>
-              <span className="text-xs sm:text-sm font-medium text-gray-700 text-center leading-tight">{cat.label}</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 text-center leading-tight">
+                {cat.label}
+              </span>
             </button>
           );
         })}

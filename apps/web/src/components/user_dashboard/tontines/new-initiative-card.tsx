@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 
 export function NewInitiativeCard() {
   const navigate = useNavigate();
 
   return (
     <button
-      onClick={() => navigate("/dashboard/tontines/create")}
+      onClick={() => navigate('/dashboard/tontines/create')}
       className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-4 flex flex-col items-center justify-center gap-3 text-center hover:border-afrilink-green/40 transition-colors"
     >
       <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">

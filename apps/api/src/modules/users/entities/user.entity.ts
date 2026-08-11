@@ -6,17 +6,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-
 @Entity('utilisateur')
 export class User {
-
   @PrimaryGeneratedColumn()
   idutilisateur: number;
 
-
   @Column({ length: 100 })
   nom: string;
-
 
   @Column({ length: 100 })
   prenom: string;
@@ -24,9 +20,9 @@ export class User {
   @Column({ type: 'date' })
   datenaissance: Date;
 
-  @Column({ length:10 })
+  @Column({ length: 10 })
   sexe: string;
-/*
+  /*
   @Column({ length: 100 })
   nationalite: string; */
 
@@ -42,15 +38,13 @@ export class User {
   @Column({ length: 255 })
   adresse: string;
 
-
   @Column({ unique: true })
   email: string;
 
-   @Column()
+  @Column()
   profession: string;
 
-
-   @Column({ length: 255, select: false })
+  @Column({ length: 255, select: false })
   motdepasse: string;
 
   @Column({ type: 'varchar', nullable: true, unique: true })
@@ -67,6 +61,4 @@ export class User {
 
   @CreateDateColumn()
   dateinscription: Date;
-
-
 }

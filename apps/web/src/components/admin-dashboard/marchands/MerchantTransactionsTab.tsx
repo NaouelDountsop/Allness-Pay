@@ -1,10 +1,28 @@
-import { Coins, Repeat, Percent, Search, Download } from "lucide-react";
-import { StatCard, Badge } from "../../../components/ui";
+import { Coins, Repeat, Percent, Search, Download } from 'lucide-react';
+import { StatCard, Badge } from '../../../components/ui';
 
 const TRANSACTIONS = [
-  { date: "30/07/2026", client: "Client #4821", amount: "125,000 XAF", status: "Réussi", tone: "green" as const },
-  { date: "29/07/2026", client: "Client #3390", amount: "48,500 XAF", status: "Réussi", tone: "green" as const },
-  { date: "29/07/2026", client: "Client #1187", amount: "12,000 XAF", status: "En attente", tone: "orange" as const },
+  {
+    date: '30/07/2026',
+    client: 'Client #4821',
+    amount: '125,000 XAF',
+    status: 'Réussi',
+    tone: 'green' as const,
+  },
+  {
+    date: '29/07/2026',
+    client: 'Client #3390',
+    amount: '48,500 XAF',
+    status: 'Réussi',
+    tone: 'green' as const,
+  },
+  {
+    date: '29/07/2026',
+    client: 'Client #1187',
+    amount: '12,000 XAF',
+    status: 'En attente',
+    tone: 'orange' as const,
+  },
 ];
 
 export function MerchantTransactionsTab() {

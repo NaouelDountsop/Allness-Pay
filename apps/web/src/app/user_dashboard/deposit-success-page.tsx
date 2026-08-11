@@ -1,29 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Eye, ArrowRight, Download, ArrowLeft, Building2 } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow, BANK_LABELS } from "../../context/deposit-flow-context";
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle2, Eye, ArrowRight, Download, ArrowLeft, Building2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { useDepositFlow, BANK_LABELS } from '../../context/deposit-flow-context';
 
 function formatDate(date: Date | null) {
-  if (!date) return "—";
-  return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }) +
-    " à " +
-    date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  if (!date) return '—';
+  return (
+    date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) +
+    ' à ' +
+    date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  );
 }
 
 const MOBILE_OPERATOR_LABEL: Record<string, string> = {
-  mtn: "MTN Mobile Money",
-  orange: "Orange Money",
+  mtn: 'MTN Mobile Money',
+  orange: 'Orange Money',
 };
 
 export default function DepositSuccessPage() {
   const navigate = useNavigate();
   const { deposit, reset } = useDepositFlow();
-  const isBank = deposit.method === "bank";
+  const isBank = deposit.method === 'bank';
 
   const handleBackToWallet = () => {
     reset();
-    navigate("wallet");
+    navigate('wallet');
   };
 
   return (
@@ -32,7 +34,10 @@ export default function DepositSuccessPage() {
 
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+          >
             <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
           </button>
           <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Dépôt réussi !</h1>
@@ -52,13 +57,15 @@ export default function DepositSuccessPage() {
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400">Montant crédité</span>
               <span className="text-lg font-bold text-afrilink-green">
-                +{deposit.amount || "5 000"} FCFA
+                +{deposit.amount || '5 000'} FCFA
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-400">Référence</span>
               <span className="text-xs font-mono text-afrilink-dark">
-                {deposit.transactionId ? `TXN-${deposit.transactionId.slice(0, 12).toUpperCase()}` : "TXN-20240527-BF7K2Z"}
+                {deposit.transactionId
+                  ? `TXN-${deposit.transactionId.slice(0, 12).toUpperCase()}`
+                  : 'TXN-20240527-BF7K2Z'}
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
@@ -83,7 +90,9 @@ export default function DepositSuccessPage() {
             ) : (
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-400">Opérateur</span>
-                <span className="text-xs text-afrilink-dark">{MOBILE_OPERATOR_LABEL[deposit.operator]}</span>
+                <span className="text-xs text-afrilink-dark">
+                  {MOBILE_OPERATOR_LABEL[deposit.operator]}
+                </span>
               </div>
             )}
 

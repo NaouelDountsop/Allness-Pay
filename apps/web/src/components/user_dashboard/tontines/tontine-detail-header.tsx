@@ -1,5 +1,5 @@
-import { Trophy, Crown } from "lucide-react";
-import type { Tontine } from "@/lib/api/tontine.service";
+import { Trophy, Crown } from 'lucide-react';
+import type { Tontine } from '@/lib/api/tontine.service';
 
 interface TontineDetailHeaderProps {
   tontine: Tontine;
@@ -7,8 +7,12 @@ interface TontineDetailHeaderProps {
 }
 
 export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
-  const adminName = tontine.creator ? `${tontine.creator.prenom ?? ""} ${tontine.creator.nom ?? ""}`.trim() : "Admin";
-  const currentMember = tontine.membres?.find((m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle);
+  const adminName = tontine.creator
+    ? `${tontine.creator.prenom ?? ''} ${tontine.creator.nom ?? ''}`.trim()
+    : 'Admin';
+  const currentMember = tontine.membres?.find(
+    (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle,
+  );
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
@@ -40,14 +44,14 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
           style={{
-            WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
-            WebkitMaskSize: "contain",
-            WebkitMaskRepeat: "no-repeat",
-            WebkitMaskPosition: "center",
-            maskImage: "url(/afrilinkpay_logo1.svg)",
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            maskPosition: "center",
+            WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+            WebkitMaskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskImage: 'url(/afrilinkpay_logo1.svg)',
+            maskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            maskPosition: 'center',
           }}
         />
 
@@ -67,8 +71,10 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
         <p className="text-xs text-white/60 mb-1 relative z-10">Cagnotte totale</p>
         <div className="flex items-center gap-2 sm:gap-3 relative z-10">
           <p className="text-3xl sm:text-4xl font-bold truncate">
-            {new Intl.NumberFormat("fr-FR").format(Number(tontine.contributionAmount))}{" "}
-            <span className="text-base sm:text-lg font-medium text-afrilink-orange">{tontine.currency ?? "CFA"}</span>
+            {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
+            <span className="text-base sm:text-lg font-medium text-afrilink-orange">
+              {tontine.currency ?? 'CFA'}
+            </span>
           </p>
         </div>
       </div>
@@ -91,7 +97,12 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
       <div className="rounded-xl border border-gray-100 bg-white p-5 flex flex-col items-center justify-center text-center">
         <div className="relative mb-2">
           <div className="w-11 h-11 rounded-full bg-afrilink-dark/10 flex items-center justify-center text-sm font-semibold text-afrilink-dark">
-            {adminName.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2).toUpperCase()}
+            {adminName
+              .split(' ')
+              .map((n) => n.charAt(0))
+              .join('')
+              .slice(0, 2)
+              .toUpperCase()}
           </div>
           <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-afrilink-dark flex items-center justify-center border-2 border-white">
             <Crown className="w-2.5 h-2.5 text-white" />

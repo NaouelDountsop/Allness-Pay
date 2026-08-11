@@ -1,4 +1,4 @@
-import { CalendarClock } from "lucide-react";
+import { CalendarClock } from 'lucide-react';
 
 export function ScheduledPaymentsBanner() {
   return (
@@ -7,12 +7,10 @@ export function ScheduledPaymentsBanner() {
         <CalendarClock className="w-5 h-5 text-blue-600" />
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-800 mb-0.5">
-          Paiements programmés
-        </p>
+        <p className="text-sm font-medium text-gray-800 mb-0.5">Paiements programmés</p>
         <p className="text-xs text-gray-500 line-clamp-3">
-          Ne manquez plus jamais une échéance en activant le prélèvement automatique
-          sur votre wallet AfrilinkPay.{" "}
+          Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre
+          wallet AfrilinkPay.{' '}
           <a href="#" className="text-afrilink-green font-medium">
             En savoir plus
           </a>

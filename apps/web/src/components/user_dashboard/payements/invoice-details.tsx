@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { Info } from 'lucide-react';
 
 interface InvoiceDetailsProps {
   clientName: string;
@@ -19,7 +19,7 @@ export function InvoiceDetails({
   total,
   onConfirm,
 }: InvoiceDetailsProps) {
-  const format = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
+  const format = (n: number) => new Intl.NumberFormat('fr-FR').format(n);
 
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -58,8 +58,8 @@ export function InvoiceDetails({
       <div className="flex items-start gap-2 rounded-lg bg-teal-50 p-3 mb-5 text-xs text-teal-700">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
-          Votre paiement sera traité instantanément. Un reçu numérique sera envoyé à
-          votre adresse email et disponible dans votre historique.
+          Votre paiement sera traité instantanément. Un reçu numérique sera envoyé à votre adresse
+          email et disponible dans votre historique.
         </p>
       </div>
 

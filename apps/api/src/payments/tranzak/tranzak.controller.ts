@@ -18,7 +18,7 @@ export class TranzakController {
   @Get('test-token')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Tester l\'authentification Tranzak' })
+  @ApiOperation({ summary: "Tester l'authentification Tranzak" })
   async testToken() {
     const token = await this.tranzakService.getAccessToken();
 
@@ -47,10 +47,7 @@ export class TranzakController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Initier un paiement via Tranzak' })
-  async createPayment(
-    @Req() req: AuthenticatedRequest,
-    @Body() dto: TranzakPaymentDto,
-  ) {
+  async createPayment(@Req() req: AuthenticatedRequest, @Body() dto: TranzakPaymentDto) {
     return this.tranzakService.initiatePayment(dto, req.user.id);
   }
 
@@ -62,15 +59,11 @@ export class TranzakController {
     // Tranzak envoie les données dans body.resource
     const resource = body?.resource ?? body;
 
-    const requestId = resource?.requestId
-      ?? resource?.data?.requestId;
+    const requestId = resource?.requestId ?? resource?.data?.requestId;
 
-    const transactionId = resource?.transactionId
-      ?? resource?.data?.transactionId;
+    const transactionId = resource?.transactionId ?? resource?.data?.transactionId;
 
-    const status = resource?.status
-      ?? resource?.transactionStatus
-      ?? resource?.data?.status;
+    const status = resource?.status ?? resource?.transactionStatus ?? resource?.data?.status;
 
     if (!requestId && !transactionId) {
       this.logger.warn(`Callback Tranzak sans requestId ni transactionId: ${JSON.stringify(body)}`);

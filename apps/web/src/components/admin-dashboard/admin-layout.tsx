@@ -1,14 +1,14 @@
-import type { ReactNode } from "react";
-import { AdminSidebar } from "./admin-sidebar";
-import { AdminTopbar } from "./admin-topbar";
-import { AdminBottomNav } from "./admin-bottom-nav";
+import type { ReactNode } from 'react';
+import { AdminSidebar } from './admin-sidebar';
+import { AdminTopbar } from './admin-topbar';
+import { AdminBottomNav } from './admin-bottom-nav';
 
 export function AdminLayout({
-  role = "admin",
+  role = 'admin',
   children,
 }: {
   active?: string;
-  role?: "admin" | "super-admin";
+  role?: 'admin' | 'super-admin';
   children: ReactNode;
 }) {
   return (

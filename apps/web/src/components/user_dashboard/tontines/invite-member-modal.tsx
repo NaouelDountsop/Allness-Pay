@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { X, Mail, Send, Loader2, CheckCircle2 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useState } from 'react';
+import { X, Mail, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { tontineService } from '@/lib/api/tontine.service';
 
 interface InviteMemberModalProps {
   tontineId: string;
@@ -11,16 +11,17 @@ interface InviteMemberModalProps {
 
 export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMemberModalProps) {
   const queryClient = useQueryClient();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
+  const [errMsg, setErrMsg] = useState('');
 
   const inviteMutation = useMutation({
-    mutationFn: () => tontineService.invite(tontineId, { inviteeEmail: email.trim().toLowerCase() }),
+    mutationFn: () =>
+      tontineService.invite(tontineId, { inviteeEmail: email.trim().toLowerCase() }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tontine", tontineId] });
+      queryClient.invalidateQueries({ queryKey: ['tontine', tontineId] });
       setSuccess(true);
-      setErrMsg("");
+      setErrMsg('');
     },
     onError: (err: { message?: string }) => {
       setErrMsg(err.message ?? "Erreur lors de l'envoi de l'invitation");
@@ -59,7 +60,8 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
               </span>
               <p className="text-sm font-semibold text-gray-900 mb-1">Invitation envoyée</p>
               <p className="text-xs text-gray-500 mb-5">
-                Un email d'invitation a été envoyé à <span className="font-medium text-gray-700">{email}</span>.
+                Un email d'invitation a été envoyé à{' '}
+                <span className="font-medium text-gray-700">{email}</span>.
                 <br />
                 Le lien expire dans 7 jours.
               </p>
@@ -73,7 +75,8 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
           ) : (
             <form onSubmit={handleSubmit}>
               <p className="text-xs text-gray-500 mb-4">
-                Entrez l'adresse email de la personne à inviter. Elle recevra un email avec un lien pour rejoindre la tontine.
+                Entrez l'adresse email de la personne à inviter. Elle recevra un email avec un lien
+                pour rejoindre la tontine.
               </p>
 
               {errMsg && (

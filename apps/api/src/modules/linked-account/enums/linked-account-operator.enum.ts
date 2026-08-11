@@ -1,4 +1,3 @@
-
 export enum LinkedAccountOperator {
   MTN_MOMO = 'mtn_momo',
   ORANGE_MONEY = 'orange_money',

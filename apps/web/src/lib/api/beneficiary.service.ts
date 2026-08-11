@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from '@/lib/api-client';
 
 export interface Beneficiary {
   id: string;
@@ -8,7 +8,7 @@ export interface Beneficiary {
   network: string;
   country: string;
   nickname?: string;
-  status: "pending" | "verified" | "rejected";
+  status: 'pending' | 'verified' | 'rejected';
   isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
@@ -30,7 +30,7 @@ export interface UpdateBeneficiaryPayload {
 
 export const beneficiaryService = {
   list: async (): Promise<Beneficiary[]> => {
-    const res = await apiClient.get<Beneficiary[]>("/beneficiaries");
+    const res = await apiClient.get<Beneficiary[]>('/beneficiaries');
     return res.data;
   },
   get: async (id: string): Promise<Beneficiary> => {
@@ -38,7 +38,7 @@ export const beneficiaryService = {
     return res.data;
   },
   create: async (data: CreateBeneficiaryPayload): Promise<Beneficiary> => {
-    const res = await apiClient.post<Beneficiary>("/beneficiaries", data);
+    const res = await apiClient.post<Beneficiary>('/beneficiaries', data);
     return res.data;
   },
   update: async (id: string, data: UpdateBeneficiaryPayload): Promise<Beneficiary> => {

@@ -1,12 +1,12 @@
-import { NavLink } from "react-router-dom";
-import { Home, Wallet, Send, PiggyBank, CreditCard } from "lucide-react";
+import { NavLink } from 'react-router-dom';
+import { Home, Wallet, Send, PiggyBank, CreditCard } from 'lucide-react';
 
 const tabs = [
-  { to: "/dashboard", label: "Accueil", icon: Home, end: true },
-  { to: "/dashboard/wallet", label: "Portefeuille", icon: Wallet },
-  { to: "/dashboard/send", label: "Envoyer", icon: Send, center: true },
-  { to: "/dashboard/tontines", label: "Tontines", icon: PiggyBank },
-  { to: "/dashboard/payments", label: "Paiements", icon: CreditCard },
+  { to: '/dashboard', label: 'Accueil', icon: Home, end: true },
+  { to: '/dashboard/wallet', label: 'Portefeuille', icon: Wallet },
+  { to: '/dashboard/send', label: 'Envoyer', icon: Send, center: true },
+  { to: '/dashboard/tontines', label: 'Tontines', icon: PiggyBank },
+  { to: '/dashboard/payments', label: 'Paiements', icon: CreditCard },
 ];
 
 export function BottomNav() {
@@ -26,22 +26,30 @@ export function BottomNav() {
                   <>
                     <span
                       className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center border-4 border-afrilink-dark transition-colors ${
-                        isActive ? "bg-afrilink-green" : "bg-afrilink-green/80"
+                        isActive ? 'bg-afrilink-green' : 'bg-afrilink-green/80'
                       }`}
                     >
                       <Icon className="w-6 h-6 text-white" />
                     </span>
-                    <span className={isActive ? "text-afrilink-orange font-medium mt-1" : "text-white/50 mt-1"}>
+                    <span
+                      className={
+                        isActive ? 'text-afrilink-orange font-medium mt-1' : 'text-white/50 mt-1'
+                      }
+                    >
                       {label}
                     </span>
                   </>
                 ) : (
                   <>
                     <Icon
-                      className={isActive ? "w-5 h-5 text-afrilink-orange" : "w-5 h-5 text-white/60"}
+                      className={
+                        isActive ? 'w-5 h-5 text-afrilink-orange' : 'w-5 h-5 text-white/60'
+                      }
                       strokeWidth={isActive ? 2.4 : 2}
                     />
-                    <span className={isActive ? "text-afrilink-orange font-medium" : "text-white/60"}>
+                    <span
+                      className={isActive ? 'text-afrilink-orange font-medium' : 'text-white/60'}
+                    >
                       {label}
                     </span>
                   </>

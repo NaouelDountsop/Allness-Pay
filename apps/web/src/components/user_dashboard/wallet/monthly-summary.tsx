@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
 interface TrendPoint {
   label: string; // ex: "Avr", "Mai", "Juin", "Juil"
@@ -17,10 +17,10 @@ interface MonthlySummaryProps {
 }
 
 const SERIES = [
-  { key: "revenus", label: "Revenus", color: "#F5A623" },
-  { key: "depenses", label: "Dépenses", color: "#F43F5E" },
-  { key: "epargne", label: "Épargne", color: "#22D3EE" },
-  { key: "solde", label: "Solde", color: "#6B7280" },
+  { key: 'revenus', label: 'Revenus', color: '#F5A623' },
+  { key: 'depenses', label: 'Dépenses', color: '#F43F5E' },
+  { key: 'epargne', label: 'Épargne', color: '#22D3EE' },
+  { key: 'solde', label: 'Solde', color: '#6B7280' },
 ] as const;
 
 const VIEW_W = 340;
@@ -31,7 +31,7 @@ const PAD_BOTTOM = 34;
 
 function buildLinePath(pts: { x: number; y: number }[]) {
   const first = pts[0];
-  if (pts.length < 2 || !first) return "";
+  if (pts.length < 2 || !first) return '';
   let d = `M ${first.x},${first.y}`;
   for (let i = 1; i < pts.length; i++) {
     const p = pts[i];
@@ -103,11 +103,7 @@ export function MonthlySummary({
         ))}
       </div>
 
-      <svg
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        className="w-full h-40"
-        preserveAspectRatio="none"
-      >
+      <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-40" preserveAspectRatio="none">
         {/* Grille pointillée horizontale */}
         {gridY.map((y, i) => (
           <line
@@ -149,14 +145,14 @@ export function MonthlySummary({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            )
+            ),
         )}
 
         {/* Points */}
         {seriesPoints.map((s) =>
           s.points.map((p, i) => (
             <circle key={`${s.key}-${i}`} cx={p.x} cy={p.y} r={3} fill={s.color} />
-          ))
+          )),
         )}
 
         {/* Marqueurs d'axe en forme de pilule */}
@@ -188,7 +184,7 @@ export function MonthlySummary({
       </div>
 
       <p className="text-sm font-semibold text-gray-800 mt-3">
-        {new Intl.NumberFormat("fr-FR").format(netAmount)} FCFA
+        {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
       </p>
     </div>
   );

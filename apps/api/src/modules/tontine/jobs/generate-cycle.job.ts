@@ -29,9 +29,7 @@ export class GenerateCycleJob {
         this.logger.log(`Cycle généré pour tontine ${tontine.id}`);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.error(
-          `Erreur génération cycle tontine ${tontine.id}: ${message}`,
-        );
+        this.logger.error(`Erreur génération cycle tontine ${tontine.id}: ${message}`);
       }
     }
   }

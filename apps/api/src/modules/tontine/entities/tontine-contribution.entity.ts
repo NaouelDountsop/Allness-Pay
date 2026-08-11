@@ -26,7 +26,11 @@ export class TontineContribution {
   @Column({ type: 'bigint' })
   amount: string;
 
-  @Column({ type: 'enum', enum: TontineContributionStatus, default: TontineContributionStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: TontineContributionStatus,
+    default: TontineContributionStatus.PENDING,
+  })
   status: TontineContributionStatus;
 
   @Column({ type: 'uuid', nullable: true })

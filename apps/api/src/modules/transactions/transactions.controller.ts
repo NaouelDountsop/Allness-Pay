@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Body,
-  Req,
-  UseGuards,
-  ParseUUIDPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Req, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
 import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
@@ -25,10 +16,8 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Get('transactions')
-  @ApiOperation({ summary: 'Lister les transactions d\'un portefeuille' })
-  listTransactions(
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  @ApiOperation({ summary: "Lister les transactions d'un portefeuille" })
+  listTransactions(@Param('id', ParseUUIDPipe) id: string) {
     return this.transactionsService.listByWallet(id);
   }
 
@@ -43,7 +32,7 @@ export class TransactionsController {
   }
 
   @Post('withdraw')
-  @ApiOperation({ summary: 'Retirer d\'un portefeuille' })
+  @ApiOperation({ summary: "Retirer d'un portefeuille" })
   withdraw(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseUUIDPipe) id: string,

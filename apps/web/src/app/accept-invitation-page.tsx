@@ -1,31 +1,32 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { tontineService } from "@/lib/api/tontine.service";
-import { Loader2, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { tontineService } from '@/lib/api/tontine.service';
+import { Loader2, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function AcceptInvitationPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (!token) {
-      setStatus("error");
+      setStatus('error');
       setErrorMessage("Lien d'invitation invalide — aucun token trouvé.");
       return;
     }
 
     tontineService
       .acceptByToken(token)
-      .then(() => setStatus("success"))
+      .then(() => setStatus('success'))
       .catch((err) => {
-        setStatus("error");
+        setStatus('error');
         setErrorMessage(
-          err?.response?.data?.message || "Une erreur est survenue lors de l'activation de l'invitation."
+          err?.response?.data?.message ||
+            "Une erreur est survenue lors de l'activation de l'invitation.",
         );
       });
   }, [token]);
@@ -33,37 +34,31 @@ export default function AcceptInvitationPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-        {status === "loading" && (
+        {status === 'loading' && (
           <>
             <Loader2 className="h-12 w-12 text-afrilink-blue mx-auto animate-spin mb-4" />
-            <h1 className="text-xl font-bold text-gray-900 mb-2">
-              Activation de l'invitation...
-            </h1>
+            <h1 className="text-xl font-bold text-gray-900 mb-2">Activation de l'invitation...</h1>
             <p className="text-sm text-gray-500">
               Veuillez patienter, nous rejoignons la tontine pour vous.
             </p>
           </>
         )}
 
-        {status === "success" && (
+        {status === 'success' && (
           <>
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-            <h1 className="text-xl font-bold text-gray-900 mb-2">
-              Invitation acceptée !
-            </h1>
+            <h1 className="text-xl font-bold text-gray-900 mb-2">Invitation acceptée !</h1>
             <p className="text-sm text-gray-500 mb-6">
-              Vous êtes maintenant membre de la tontine. Vous pouvez accéder à votre tableau de bord.
+              Vous êtes maintenant membre de la tontine. Vous pouvez accéder à votre tableau de
+              bord.
             </p>
-            <Button
-              onClick={() => navigate("/dashboard/tontines")}
-              className="w-full"
-            >
+            <Button onClick={() => navigate('/dashboard/tontines')} className="w-full">
               Voir mes tontines
             </Button>
           </>
         )}
 
-        {status === "error" && (
+        {status === 'error' && (
           <>
             <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h1 className="text-xl font-bold text-gray-900 mb-2">
@@ -71,18 +66,11 @@ export default function AcceptInvitationPage() {
             </h1>
             <p className="text-sm text-gray-500 mb-6">{errorMessage}</p>
             <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => navigate("/login")}
-                className="flex-1"
-              >
+              <Button variant="outline" onClick={() => navigate('/login')} className="flex-1">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Se connecter
               </Button>
-              <Button
-                onClick={() => navigate("/dashboard/tontines")}
-                className="flex-1"
-              >
+              <Button onClick={() => navigate('/dashboard/tontines')} className="flex-1">
                 Retour aux tontines
               </Button>
             </div>

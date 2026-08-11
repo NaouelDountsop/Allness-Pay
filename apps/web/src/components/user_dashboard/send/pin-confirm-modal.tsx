@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { X } from "lucide-react";
-import { PinPad } from "./pin-pad";
+import { useState } from 'react';
+import { X } from 'lucide-react';
+import { PinPad } from './pin-pad';
 
 interface PinConfirmModalProps {
   onConfirm: (pin: string) => boolean; // retourne true si le PIN est correct
@@ -8,7 +8,7 @@ interface PinConfirmModalProps {
 }
 
 export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
-  const [pin, setPin] = useState("");
+  const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
 
   const handleChange = (value: string) => {
@@ -21,7 +21,7 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
     const ok = onConfirm(pin);
     if (!ok) {
       setError(true);
-      setPin("");
+      setPin('');
     }
   };
 
@@ -54,9 +54,7 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
 
           <PinPad value={pin} onChange={handleChange} error={error} />
 
-          {error && (
-            <p className="text-xs text-red-500 mt-4">Code PIN incorrect, réessayez.</p>
-          )}
+          {error && <p className="text-xs text-red-500 mt-4">Code PIN incorrect, réessayez.</p>}
 
           <button
             onClick={handleConfirm}

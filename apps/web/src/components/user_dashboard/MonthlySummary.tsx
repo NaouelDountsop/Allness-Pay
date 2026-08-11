@@ -1,4 +1,4 @@
-import { useMemo, useId } from "react";
+import { useMemo, useId } from 'react';
 
 interface TrendPoint {
   label: string; // ex: "Avr", "Mai", "Juin", "Juil"
@@ -17,10 +17,10 @@ interface MonthlySummaryProps {
 }
 
 const SERIES = [
-  { key: "revenus", label: "Revenus", color: "#111827" },
-  { key: "depenses", label: "Dépenses", color: "#F97316" },
-  { key: "epargne", label: "Épargne", color: "#22C55E" },
-  { key: "solde", label: "Solde", color: "#3B82F6" },
+  { key: 'revenus', label: 'Revenus', color: '#111827' },
+  { key: 'depenses', label: 'Dépenses', color: '#F97316' },
+  { key: 'epargne', label: 'Épargne', color: '#22C55E' },
+  { key: 'solde', label: 'Solde', color: '#3B82F6' },
 ] as const;
 
 const VIEW_W = 340;
@@ -33,7 +33,7 @@ const PAD_BOTTOM = 18;
 
 function buildLinePath(pts: { x: number; y: number }[]) {
   const first = pts[0];
-  if (pts.length < 2 || !first) return "";
+  if (pts.length < 2 || !first) return '';
   let d = `M ${first.x},${first.y}`;
   for (let i = 1; i < pts.length; i++) {
     const p = pts[i];
@@ -94,11 +94,7 @@ export function MonthlySummary({
         <span className="text-xs text-gray-400">{month}</span>
       </div>
 
-      <svg
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        className="w-full h-44"
-        preserveAspectRatio="none"
-      >
+      <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-44" preserveAspectRatio="none">
         <defs>
           <marker
             id={`${arrowId}-x`}
@@ -126,15 +122,7 @@ export function MonthlySummary({
 
         {/* Grille de fond, très légère */}
         {gridY.map((y, i) => (
-          <line
-            key={i}
-            x1={axisX}
-            x2={xEnd}
-            y1={y}
-            y2={y}
-            stroke="#F3F4F6"
-            strokeWidth={1}
-          />
+          <line key={i} x1={axisX} x2={xEnd} y1={y} y2={y} stroke="#F3F4F6" strokeWidth={1} />
         ))}
 
         {/* Axe X avec flèche */}
@@ -172,7 +160,7 @@ export function MonthlySummary({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            )
+            ),
         )}
       </svg>
 
@@ -180,7 +168,10 @@ export function MonthlySummary({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-[11px]">
         {SERIES.map((s) => (
           <span key={s.key} className="flex items-center gap-1.5 font-medium text-gray-600">
-            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
+            <span
+              className="inline-block w-2 h-2 rounded-full"
+              style={{ backgroundColor: s.color }}
+            />
             {s.label}
           </span>
         ))}
@@ -192,7 +183,7 @@ export function MonthlySummary({
       </div>
 
       <p className="text-sm font-semibold text-gray-800 mt-3">
-        {new Intl.NumberFormat("fr-FR").format(netAmount)} FCFA
+        {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
       </p>
     </div>
   );

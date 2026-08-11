@@ -1,31 +1,31 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Copy, Info, CheckCircle2, ArrowLeft, Building2 } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow, BANK_LABELS } from "../../context/deposit-flow-context";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Copy, Info, CheckCircle2, ArrowLeft, Building2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { useDepositFlow, BANK_LABELS } from '../../context/deposit-flow-context';
 
 function maskPhone(phone: string) {
-  const digits = phone.replace(/\D/g, "");
-  if (digits.length < 4) return phone || "6 70 ** ** **";
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 4) return phone || '6 70 ** ** **';
   return `${digits.slice(0, 1)} ${digits.slice(1, 3)} ** ** **`;
 }
 
 function maskIban(iban: string) {
-  const clean = iban.replace(/\s/g, "");
+  const clean = iban.replace(/\s/g, '');
   if (clean.length <= 8) return iban;
-  return `${clean.slice(0, 4)} ${clean.slice(4, 8)} ${"*".repeat(4)} ${"*".repeat(4)}`;
+  return `${clean.slice(0, 4)} ${clean.slice(4, 8)} ${'*'.repeat(4)} ${'*'.repeat(4)}`;
 }
 
 export default function RequestSentPage() {
   const navigate = useNavigate();
   const { deposit } = useDepositFlow();
-  const isBank = deposit.method === "bank";
+  const isBank = deposit.method === 'bank';
 
   // For mobile money: auto-redirect to phone confirmation after 3s.
   // For bank deposits: auto-redirect to processing (no phone confirmation needed).
   useEffect(() => {
-    const target = isBank ? "/deposit/processing" : "/deposit/confirm";
+    const target = isBank ? '/deposit/processing' : '/deposit/confirm';
     const timer = setTimeout(() => navigate(target), 3000);
     return () => clearTimeout(timer);
   }, [navigate, isBank]);
@@ -36,15 +36,18 @@ export default function RequestSentPage() {
 
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+          >
             <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
           </button>
           <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Demande envoyée</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           {isBank
-            ? "Vos informations bancaires ont été enregistrées. Effectuez le virement pour finaliser la transaction."
-            : "Votre demande de dépôt a été envoyée avec succès à votre téléphone. Veuillez confirmer le paiement pour finaliser la transaction."}
+            ? 'Vos informations bancaires ont été enregistrées. Effectuez le virement pour finaliser la transaction.'
+            : 'Votre demande de dépôt a été envoyée avec succès à votre téléphone. Veuillez confirmer le paiement pour finaliser la transaction.'}
         </p>
 
         {isBank ? (
@@ -64,7 +67,7 @@ export default function RequestSentPage() {
 
             <div className="flex items-center justify-between mb-5">
               <p className="text-2xl font-bold text-afrilink-dark">
-                {deposit.amount || "5 000"} FCFA
+                {deposit.amount || '5 000'} FCFA
               </p>
               <span className="px-2.5 py-1 rounded-full bg-orange-50 text-afrilink-orange text-[11px] font-semibold">
                 EN ATTENTE
@@ -97,7 +100,7 @@ export default function RequestSentPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">Montant</span>
                   <span className="text-sm font-bold text-afrilink-dark">
-                    {new Intl.NumberFormat("fr-FR").format(Number(deposit.amount))} FCFA
+                    {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
                   </span>
                 </div>
                 {deposit.description && (
@@ -136,7 +139,7 @@ export default function RequestSentPage() {
 
             <div className="flex items-center justify-between mb-5">
               <p className="text-2xl font-bold text-afrilink-dark">
-                {deposit.amount || "5 000"} FCFA
+                {deposit.amount || '5 000'} FCFA
               </p>
               <span className="px-2.5 py-1 rounded-full bg-orange-50 text-afrilink-orange text-[11px] font-semibold">
                 EN ATTENTE
@@ -161,8 +164,16 @@ export default function RequestSentPage() {
             <div className="flex flex-col gap-4">
               {isBank ? (
                 <>
-                  <TimelineItem label="Informations enregistrées" status="done" hint="À l'instant" />
-                  <TimelineItem label="En attente du virement" status="active" hint="Effectuez le virement" />
+                  <TimelineItem
+                    label="Informations enregistrées"
+                    status="done"
+                    hint="À l'instant"
+                  />
+                  <TimelineItem
+                    label="En attente du virement"
+                    status="active"
+                    hint="Effectuez le virement"
+                  />
                   <TimelineItem label="Vérification bancaire" status="pending" hint="En attente" />
                   <TimelineItem label="Crédit du portefeuille" status="pending" hint="En attente" />
                 </>
@@ -170,7 +181,11 @@ export default function RequestSentPage() {
                 <>
                   <TimelineItem label="Demande envoyée" status="done" hint="À l'instant" />
                   <TimelineItem label="Notification en cours" status="active" hint="En attente" />
-                  <TimelineItem label="Confirmation utilisateur" status="pending" hint="En attente" />
+                  <TimelineItem
+                    label="Confirmation utilisateur"
+                    status="pending"
+                    hint="En attente"
+                  />
                   <TimelineItem label="Crédit du portefeuille" status="pending" hint="En attente" />
                 </>
               )}
@@ -181,7 +196,7 @@ export default function RequestSentPage() {
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <p className="text-[11px] text-blue-600 leading-relaxed">
               {isBank
-                ? "Effectuez un virement bancaire avec les informations affichées ci-dessus. Le crédit sera automatique dès réception confirmée par votre banque."
+                ? 'Effectuez un virement bancaire avec les informations affichées ci-dessus. Le crédit sera automatique dès réception confirmée par votre banque.'
                 : "Vous n'avez rien à faire pour le moment. Veuillez vérifier votre téléphone et confirmer le paiement Mobile Money."}
             </p>
           </div>
@@ -198,21 +213,23 @@ function TimelineItem({
 }: {
   label: string;
   hint: string;
-  status: "done" | "active" | "pending";
+  status: 'done' | 'active' | 'pending';
 }) {
   return (
     <div className="flex items-center gap-3">
-      {status === "done" ? (
+      {status === 'done' ? (
         <CheckCircle2 className="w-4.5 h-4.5 text-afrilink-green shrink-0" />
       ) : (
         <span
           className={`w-4.5 h-4.5 rounded-full border-2 shrink-0 ${
-            status === "active" ? "border-afrilink-orange bg-orange-50" : "border-gray-200"
+            status === 'active' ? 'border-afrilink-orange bg-orange-50' : 'border-gray-200'
           }`}
         />
       )}
       <div>
-        <p className={`text-xs font-medium ${status === "pending" ? "text-gray-400" : "text-afrilink-dark"}`}>
+        <p
+          className={`text-xs font-medium ${status === 'pending' ? 'text-gray-400' : 'text-afrilink-dark'}`}
+        >
           {label}
         </p>
         <p className="text-[11px] text-gray-400">{hint}</p>

@@ -58,8 +58,16 @@ export class AdminController {
   @Get('transactions')
   @RequirePermissions('kyc:review')
   @ApiOperation({ summary: 'Liste des transactions (admin)' })
-  @ApiQuery({ name: 'status', required: false, enum: ['pending', 'completed', 'failed', 'cancelled'] })
-  @ApiQuery({ name: 'type', required: false, enum: ['deposit', 'withdrawal', 'transfer_in', 'transfer_out'] })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['pending', 'completed', 'failed', 'cancelled'],
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ['deposit', 'withdrawal', 'transfer_in', 'transfer_out'],
+  })
   @ApiQuery({ name: 'provider', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'pageSize', required: false })

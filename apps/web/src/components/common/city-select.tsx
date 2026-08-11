@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { MapPin, ChevronDown, Search } from "lucide-react";
-import { getCitiesForCountry } from "@/data/cities";
+import { useState, useRef, useEffect } from 'react';
+import { MapPin, ChevronDown, Search } from 'lucide-react';
+import { getCitiesForCountry } from '@/data/cities';
 
 interface CitySelectProps {
   countryCode: string;
@@ -11,24 +11,22 @@ interface CitySelectProps {
 
 export function CitySelect({ countryCode, value, onChange, error }: CitySelectProps) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const cities = getCitiesForCountry(countryCode);
-  const filtered = cities.filter((c) =>
-    c.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = cities.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
-        setSearch("");
+        setSearch('');
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -62,7 +60,7 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
           type="button"
           onClick={() => setOpen(!open)}
           className={`w-full h-11 rounded-lg border px-3 text-sm bg-white flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-afrilink-green ${
-            error ? "!border-destructive" : "border-gray-200"
+            error ? '!border-destructive' : 'border-gray-200'
           }`}
         >
           <MapPin className="w-4 h-4 text-afrilink-gray shrink-0" />
@@ -72,7 +70,7 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
             <span className="flex-1 text-left text-gray-400">Choisir une ville</span>
           )}
           <ChevronDown
-            className={`w-4 h-4 text-afrilink-gray transition-transform ${open ? "rotate-180" : ""}`}
+            className={`w-4 h-4 text-afrilink-gray transition-transform ${open ? 'rotate-180' : ''}`}
           />
         </button>
 
@@ -99,19 +97,17 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
                   onClick={() => {
                     onChange(city);
                     setOpen(false);
-                    setSearch("");
+                    setSearch('');
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors ${
-                    city === value ? "bg-afrilink-green/5 text-afrilink-green" : ""
+                    city === value ? 'bg-afrilink-green/5 text-afrilink-green' : ''
                   }`}
                 >
                   {city}
                 </button>
               ))}
               {filtered.length === 0 && (
-                <p className="px-3 py-2 text-xs text-gray-400 text-center">
-                  Aucune ville trouvée
-                </p>
+                <p className="px-3 py-2 text-xs text-gray-400 text-center">Aucune ville trouvée</p>
               )}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { IdCard, ScanFace, Home } from "lucide-react";
+import { IdCard, ScanFace, Home } from 'lucide-react';
 
 interface KycIntroProps {
   onStart: () => void;
@@ -13,13 +13,13 @@ const requirements = [
   },
   {
     icon: ScanFace,
-    title: "Selfie clair",
+    title: 'Selfie clair',
     description: "Une photo de votre visage pour confirmer que c'est bien vous.",
   },
   {
     icon: Home,
-    title: "Justificatif de domicile",
-    description: "Facture de services publics ou relevé bancaire récent (< 3 mois).",
+    title: 'Justificatif de domicile',
+    description: 'Facture de services publics ou relevé bancaire récent (< 3 mois).',
   },
 ];
 
@@ -27,13 +27,11 @@ export function KycIntro({ onStart, onLater }: KycIntroProps) {
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-center">
       <div className="flex-1">
-        <h2 className="text-xl font-bold text-afrilink-dark mb-3">
-          Vérification d'identité
-        </h2>
+        <h2 className="text-xl font-bold text-afrilink-dark mb-3">Vérification d'identité</h2>
         <p className="text-sm text-gray-500 leading-relaxed mb-6">
-          Pour garantir la sécurité de vos fonds et respecter les réglementations
-          bancaires internationales (KYC), nous devons confirmer votre identité. Ce
-          processus est rapide et entièrement sécurisé.
+          Pour garantir la sécurité de vos fonds et respecter les réglementations bancaires
+          internationales (KYC), nous devons confirmer votre identité. Ce processus est rapide et
+          entièrement sécurisé.
         </p>
 
         <p className="text-sm font-semibold text-afrilink-dark mb-3">Éléments requis :</p>
@@ -72,11 +70,7 @@ export function KycIntro({ onStart, onLater }: KycIntroProps) {
       </div>
 
       <div className="hidden lg:flex w-96 shrink-0 items-center justify-center">
-        <img
-          src="/Upload-pana.svg"
-          alt="Illustration vérification"
-          className="w-full h-auto"
-        />
+        <img src="/Upload-pana.svg" alt="Illustration vérification" className="w-full h-auto" />
       </div>
     </div>
   );

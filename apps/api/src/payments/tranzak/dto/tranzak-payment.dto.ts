@@ -6,15 +6,22 @@ const WALLET_NUMBER_REGEX = /^WLT\d{10}$/;
 
 export class TranzakPaymentDto {
   @IsString()
-  @Matches(WALLET_NUMBER_REGEX, { message: 'walletNumber doit être au format WLT suivi de 10 chiffres (ex: WLT1234567890)' })
+  @Matches(WALLET_NUMBER_REGEX, {
+    message: 'walletNumber doit être au format WLT suivi de 10 chiffres (ex: WLT1234567890)',
+  })
   walletNumber: string;
 
   @IsString()
-  @Matches(AMOUNT_REGEX, { message: 'amount doit être un nombre strictement positif avec 2 décimales max' })
+  @Matches(AMOUNT_REGEX, {
+    message: 'amount doit être un nombre strictement positif avec 2 décimales max',
+  })
   amount: string;
 
   @IsString()
-  @Matches(PHONE_REGEX, { message: 'phone_number doit être un numéro camerounais valide (9 chiffres ou avec indicatif 237)' })
+  @Matches(PHONE_REGEX, {
+    message:
+      'phone_number doit être un numéro camerounais valide (9 chiffres ou avec indicatif 237)',
+  })
   phone_number: string;
 
   @IsOptional()

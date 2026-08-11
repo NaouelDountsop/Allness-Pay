@@ -8,18 +8,20 @@ import * as Joi from 'joi';
  * accepte des paiements avec un secret par defaut.
  */
 export const envValidationSchema = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'test', 'staging', 'production').default('development'),
+  NODE_ENV: Joi.string()
+    .valid('development', 'test', 'staging', 'production')
+    .default('development'),
   API_PORT: Joi.number().port().default(3000),
   API_PREFIX: Joi.string().default('api'),
   API_VERSION: Joi.string().default('1'),
   CORS_ORIGINS: Joi.string().allow('').default(''),
 
   SMTP_HOST: Joi.string().required(),
-SMTP_PORT: Joi.number().default(587),
-SMTP_USER: Joi.string().required(),
-SMTP_PASS: Joi.string().required(),
-SMTP_SECURE: Joi.boolean().default(false),
-SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
+  SMTP_PORT: Joi.number().default(587),
+  SMTP_USER: Joi.string().required(),
+  SMTP_PASS: Joi.string().required(),
+  SMTP_SECURE: Joi.boolean().default(false),
+  SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
   FRONTEND_URL: Joi.string().uri().default('http://localhost:5173'),
 
   DB_HOST: Joi.string().required(),
@@ -37,13 +39,15 @@ SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
 
   // Un secret court est un secret cassable : 32 caracteres minimum, et la
   // valeur d'exemple est explicitement refusee.
-  JWT_ACCESS_SECRET: Joi.string().min(32).required().invalid(
-    'changeme-access-secret-minimum-32-caracteres',
-  ),
+  JWT_ACCESS_SECRET: Joi.string()
+    .min(32)
+    .required()
+    .invalid('changeme-access-secret-minimum-32-caracteres'),
   JWT_ACCESS_TTL: Joi.string().default('15m'),
-  JWT_REFRESH_SECRET: Joi.string().min(32).required().invalid(
-    'changeme-refresh-secret-minimum-32-caracteres',
-  ),
+  JWT_REFRESH_SECRET: Joi.string()
+    .min(32)
+    .required()
+    .invalid('changeme-refresh-secret-minimum-32-caracteres'),
   JWT_REFRESH_TTL: Joi.string().default('30d'),
   PASSWORD_HASH_ROUNDS: Joi.number().min(10).max(15).default(12),
 
@@ -70,7 +74,5 @@ SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
   TRANZAK_APP_KEY: Joi.string().required(),
   TRANZAK_CALLBACK_URL: Joi.string().uri().allow('').optional(),
 
-  LOG_LEVEL: Joi.string()
-    .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal')
-    .default('info'),
+  LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
 });

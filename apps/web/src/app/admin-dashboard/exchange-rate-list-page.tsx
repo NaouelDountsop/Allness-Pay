@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { Plus, Settings, History, TrendingDown, TrendingUp } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
+import { useNavigate } from 'react-router-dom';
+import { Plus, Settings, History, TrendingDown, TrendingUp } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 
 const RATES = [
-  { pair: "USD → XAF", rate: "607.25", change: "+0.12%", up: true },
-  { pair: "EUR → XAF", rate: "655.96", change: "+0.02%", up: true },
-  { pair: "GBP → XAF", rate: "768.40", change: "-0.31%", up: false },
-  { pair: "CAD → XAF", rate: "441.80", change: "-0.18%", up: false },
+  { pair: 'USD → XAF', rate: '607.25', change: '+0.12%', up: true },
+  { pair: 'EUR → XAF', rate: '655.96', change: '+0.02%', up: true },
+  { pair: 'GBP → XAF', rate: '768.40', change: '-0.31%', up: false },
+  { pair: 'CAD → XAF', rate: '441.80', change: '-0.18%', up: false },
 ];
 
 export default function ExchangeRatesListPage() {
@@ -21,21 +21,21 @@ export default function ExchangeRatesListPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate("/admin/taux-de-change/parametres")}
+            onClick={() => navigate('/admin/taux-de-change/parametres')}
             className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <Settings className="w-3.5 h-3.5" />
             Paramètres
           </button>
           <button
-            onClick={() => navigate("/admin/taux-de-change/historique")}
+            onClick={() => navigate('/admin/taux-de-change/historique')}
             className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <History className="w-3.5 h-3.5" />
             Historique
           </button>
           <button
-            onClick={() => navigate("/admin/taux-de-change/nouveau")}
+            onClick={() => navigate('/admin/taux-de-change/nouveau')}
             className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -62,16 +62,20 @@ export default function ExchangeRatesListPage() {
                 <td>
                   <span
                     className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
-                      r.up ? "text-green-600" : "text-red-500"
+                      r.up ? 'text-green-600' : 'text-red-500'
                     }`}
                   >
-                    {r.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    {r.up ? (
+                      <TrendingUp className="w-3 h-3" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3" />
+                    )}
                     {r.change}
                   </span>
                 </td>
                 <td className="text-right">
                   <button
-                    onClick={() => navigate("/admin/taux-de-change/1/modifier")}
+                    onClick={() => navigate('/admin/taux-de-change/1/modifier')}
                     className="h-8 px-4 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                   >
                     Modifier

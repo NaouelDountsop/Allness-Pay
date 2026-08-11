@@ -1,10 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Lock, Info, X, ArrowRight, ArrowLeft } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow } from "../../context/deposit-flow-context";
-
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Lock, Info, X, ArrowRight, ArrowLeft } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { useDepositFlow } from '../../context/deposit-flow-context';
 
 export default function PhoneConfirmationPage() {
   const navigate = useNavigate();
@@ -12,19 +11,19 @@ export default function PhoneConfirmationPage() {
 
   // Bank deposits skip phone confirmation entirely
   useEffect(() => {
-    if (deposit.method === "bank") {
-      navigate("/deposit/processing", { replace: true });
+    if (deposit.method === 'bank') {
+      navigate('/deposit/processing', { replace: true });
     }
   }, [deposit.method, navigate]);
 
   const handleCancel = () => {
     reset();
-    navigate("/deposit");
+    navigate('/deposit');
   };
 
   const handleConfirmed = () => {
     // TODO: déclenche le polling / websocket de statut réel côté API
-    navigate("/deposit/processing");
+    navigate('/deposit/processing');
   };
 
   return (
@@ -33,10 +32,15 @@ export default function PhoneConfirmationPage() {
 
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+          >
             <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Confirmation du paiement</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">
+            Confirmation du paiement
+          </h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Vous avez reçu une demande de paiement sur votre téléphone. Veuillez entrer votre code
@@ -50,7 +54,7 @@ export default function PhoneConfirmationPage() {
             </span>
             <p className="text-xs text-gray-400 mb-1">Confirmer le paiement de</p>
             <p className="text-2xl font-bold text-afrilink-dark mb-1">
-              {deposit.amount || "5 000"} FCFA
+              {deposit.amount || '5 000'} FCFA
             </p>
             <p className="text-xs text-gray-400">vers AfriLink Pay</p>
           </div>

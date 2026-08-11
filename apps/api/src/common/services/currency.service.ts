@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CurrencyService {
-
   private readonly currencies: Record<string, string> = {
     CAMEROUN: 'XAF',
     GABON: 'XAF',
@@ -18,12 +17,8 @@ export class CurrencyService {
     KENYA: 'KES',
   };
 
-
   getCurrencyByCountry(country: string): string {
-
-    const normalizedCountry = country
-      .trim()
-      .toUpperCase();
+    const normalizedCountry = country.trim().toUpperCase();
 
     return this.currencies[normalizedCountry] ?? 'XAF';
   }

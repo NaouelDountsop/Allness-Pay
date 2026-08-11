@@ -1,19 +1,27 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { PiggyBank, Coins, ShieldAlert, Target, Download, AlertTriangle, Loader2 } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Tabs, Badge } from "../../components/ui";
-import { adminService } from "../../lib/api/admin.service";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import {
+  PiggyBank,
+  Coins,
+  ShieldAlert,
+  Target,
+  Download,
+  AlertTriangle,
+  Loader2,
+} from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Tabs, Badge } from '../../components/ui';
+import { adminService } from '../../lib/api/admin.service';
 
 export default function TontinesSupervisionPage() {
-  const [tab, setTab] = useState("Toutes les Tontines");
+  const [tab, setTab] = useState('Toutes les Tontines');
 
   const { data: tontines, isLoading } = useQuery({
-    queryKey: ["admin-tontines"],
+    queryKey: ['admin-tontines'],
     queryFn: adminService.listTontines,
   });
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   return (
     <AdminLayout active="tontines">
@@ -48,7 +56,10 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Volume Total Épargné</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(tontines?.reduce((sum, t) => sum + Number(t.contributionAmount), 0) ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(tontines?.reduce((sum, t) => sum + Number(t.contributionAmount), 0) ?? 0)}{' '}
+            XAF
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -74,7 +85,7 @@ export default function TontinesSupervisionPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <Tabs tabs={["Toutes les Tontines", "Alertes Actives"]} active={tab} onChange={setTab} />
+        <Tabs tabs={['Toutes les Tontines', 'Alertes Actives']} active={tab} onChange={setTab} />
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -94,8 +105,10 @@ export default function TontinesSupervisionPage() {
             </thead>
             <tbody>
               {tontines?.map((t) => {
-                const progressPercent = t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
-                const statusTone = t.status === "active" ? "green" : t.status === "pending" ? "orange" : "red";
+                const progressPercent =
+                  t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
+                const statusTone =
+                  t.status === 'active' ? 'green' : t.status === 'pending' ? 'orange' : 'red';
                 return (
                   <tr key={t.id} className="border-b border-gray-50 last:border-0">
                     <td className="py-3.5">
@@ -105,7 +118,9 @@ export default function TontinesSupervisionPage() {
                       </p>
                     </td>
                     <td className="text-xs text-gray-600">{t.memberLimit}</td>
-                    <td className="text-xs text-gray-600">{formatNumber(Number(t.contributionAmount))} {t.currency ?? "CFA"}</td>
+                    <td className="text-xs text-gray-600">
+                      {formatNumber(Number(t.contributionAmount))} {t.currency ?? 'CFA'}
+                    </td>
                     <td className="text-xs text-gray-600">{t.frequency}</td>
                     <td>
                       <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden">
@@ -117,7 +132,11 @@ export default function TontinesSupervisionPage() {
                     </td>
                     <td>
                       <Badge tone={statusTone} dot>
-                        {t.status === "active" ? "Actif" : t.status === "pending" ? "En attente" : "Fermé"}
+                        {t.status === 'active'
+                          ? 'Actif'
+                          : t.status === 'pending'
+                            ? 'En attente'
+                            : 'Fermé'}
                       </Badge>
                     </td>
                   </tr>
@@ -134,9 +153,7 @@ export default function TontinesSupervisionPage() {
             </span>
             <div>
               <p className="text-xs font-semibold text-red-600">Détection d'activité suspecte</p>
-              <p className="text-[11px] text-red-400">
-                Aucune alerte pour le moment.
-              </p>
+              <p className="text-[11px] text-red-400">Aucune alerte pour le moment.</p>
             </div>
           </div>
           <button className="h-9 px-4 rounded-lg bg-red-500 text-white text-xs font-medium hover:opacity-90 transition-opacity shrink-0">

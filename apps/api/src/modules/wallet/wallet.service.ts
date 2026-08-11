@@ -20,9 +20,7 @@ export class WalletsService {
     private readonly kycRepository: Repository<Kyc>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-
   ) {}
-
 
   /**
    * @param externalManager - Si fourni, réutilise la transaction existante
@@ -35,10 +33,10 @@ export class WalletsService {
   ): Promise<Wallet> {
     const run = async (manager: EntityManager) => {
       const existingWallets = await manager
-       .createQueryBuilder(Wallet, 'wallet')
-       .setLock('pessimistic_write')
-       .where('wallet.userId = :userId', { userId })
-       .getMany();
+        .createQueryBuilder(Wallet, 'wallet')
+        .setLock('pessimistic_write')
+        .where('wallet.userId = :userId', { userId })
+        .getMany();
 
       const wallet = manager.create(Wallet, {
         userId,
@@ -56,9 +54,7 @@ export class WalletsService {
       return manager.save(wallet);
     };
 
-    return externalManager
-      ? run(externalManager)
-      : this.dataSource.transaction(run);
+    return externalManager ? run(externalManager) : this.dataSource.transaction(run);
   }
 
   /**
@@ -166,9 +162,7 @@ export class WalletsService {
 
     const kyc = await this.kycRepository.findOne({ where: { userId } });
     if (!kyc || kyc.status !== KycStatus.APPROVED) {
-      throw new BadRequestException(
-        "Votre KYC doit être approuvé avant d'activer votre wallet",
-      );
+      throw new BadRequestException("Votre KYC doit être approuvé avant d'activer votre wallet");
     }
 
     wallet.status = WalletStatus.ACTIVE;
@@ -183,7 +177,6 @@ export class WalletsService {
   }
 
   // garder l'atomicité (verrou + PIN + solde) d'un seul bloc.
-
 
   assertOwnership(wallet: Wallet, userId: number): void {
     if (wallet.userId !== userId) {
@@ -207,11 +200,7 @@ export class WalletsService {
 
   // SELECT ... FOR UPDATE : verrouille la ligne jusqu'à la fin de la
 
-  async lockWalletForUpdate(
-    manager: EntityManager,
-    id: string,
-    withPin = false,
-  ): Promise<Wallet> {
+  async lockWalletForUpdate(manager: EntityManager, id: string, withPin = false): Promise<Wallet> {
     const qb = manager
       .createQueryBuilder(Wallet, 'wallet')
       .setLock('pessimistic_write')
@@ -228,8 +217,6 @@ export class WalletsService {
     }
     return wallet;
   }
-
-
 
   private async generateUniqueWalletNumber(): Promise<string> {
     // Retry loop pour garantir l'unicité malgré la (très faible) probabilité de collision.

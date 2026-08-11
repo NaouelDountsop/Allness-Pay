@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Search,
   Users,
@@ -16,11 +16,11 @@ import {
   FileText,
   Plus,
   Loader2,
-} from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { Button } from "@/components/ui/button";
-import { tontineService, Tontine, TontineMember } from "@/lib/api/tontine.service";
+} from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { Button } from '@/components/ui/button';
+import { tontineService, Tontine, TontineMember } from '@/lib/api/tontine.service';
 
 interface Conversation {
   id: string;
@@ -51,121 +51,133 @@ interface Member {
   id: string;
   name: string;
   avatarUrl: string;
-  role: "Admin" | "Membre" | "Prochain tour";
+  role: 'Admin' | 'Membre' | 'Prochain tour';
 }
 
 const CONVERSATIONS: Conversation[] = [
   {
-    id: "1",
-    name: "Tontine Famille Unie",
-    avatarUrl: "https://i.pravatar.cc/150?img=1",
-    lastSenderName: "Awa",
+    id: '1',
+    name: 'Tontine Famille Unie',
+    avatarUrl: 'https://i.pravatar.cc/150?img=1',
+    lastSenderName: 'Awa',
     lastMessage: "N'oubliez pas le versement...",
-    time: "10:45",
+    time: '10:45',
     unreadCount: 3,
     active: true,
   },
   {
-    id: "2",
-    name: "Cagnotte Vacances",
-    avatarUrl: "https://i.pravatar.cc/150?img=2",
-    emoji: "🏖️",
-    lastSenderName: "Jean",
-    lastMessage: "Super, merci à tous !",
-    time: "09:32",
+    id: '2',
+    name: 'Cagnotte Vacances',
+    avatarUrl: 'https://i.pravatar.cc/150?img=2',
+    emoji: '🏖️',
+    lastSenderName: 'Jean',
+    lastMessage: 'Super, merci à tous !',
+    time: '09:32',
     unreadCount: 1,
   },
   {
-    id: "3",
-    name: "Tontine Entre Nous",
-    avatarUrl: "https://i.pravatar.cc/150?img=3",
-    lastSenderName: "Amélie",
-    lastMessage: "Qui est le tour ce mois-ci ?",
-    time: "Hier",
+    id: '3',
+    name: 'Tontine Entre Nous',
+    avatarUrl: 'https://i.pravatar.cc/150?img=3',
+    lastSenderName: 'Amélie',
+    lastMessage: 'Qui est le tour ce mois-ci ?',
+    time: 'Hier',
   },
   {
-    id: "4",
-    name: "Projet Maison",
-    avatarUrl: "https://i.pravatar.cc/150?img=4",
-    emoji: "🏠",
+    id: '4',
+    name: 'Projet Maison',
+    avatarUrl: 'https://i.pravatar.cc/150?img=4',
+    emoji: '🏠',
     lastSenderIsMe: true,
     lastMessage: "J'ai partagé un document",
-    time: "Hier",
+    time: 'Hier',
     hasAttachment: true,
   },
   {
-    id: "5",
-    name: "Tontine des Copines",
-    avatarUrl: "https://i.pravatar.cc/150?img=5",
-    emoji: "💜",
-    lastSenderName: "Fatou",
+    id: '5',
+    name: 'Tontine des Copines',
+    avatarUrl: 'https://i.pravatar.cc/150?img=5',
+    emoji: '💜',
+    lastSenderName: 'Fatou',
     lastMessage: "D'accord, merci !",
-    time: "12/05",
+    time: '12/05',
   },
   {
-    id: "6",
-    name: "Épargne Études",
-    avatarUrl: "https://i.pravatar.cc/150?img=6",
-    emoji: "🎓",
-    lastSenderName: "Moussa",
-    lastMessage: "Parfait",
-    time: "10/05",
+    id: '6',
+    name: 'Épargne Études',
+    avatarUrl: 'https://i.pravatar.cc/150?img=6',
+    emoji: '🎓',
+    lastSenderName: 'Moussa',
+    lastMessage: 'Parfait',
+    time: '10/05',
   },
 ];
 
 const MESSAGES: Message[] = [
   {
-    id: "m1",
-    author: "Awa Traoré",
-    avatarUrl: "https://i.pravatar.cc/150?img=5",
-    time: "10:30",
-    content: "Bonjour la famille 👋 N'oubliez pas le versement du mois de Mai. Date limite : 25/05 à 18h.",
+    id: 'm1',
+    author: 'Awa Traoré',
+    avatarUrl: 'https://i.pravatar.cc/150?img=5',
+    time: '10:30',
+    content:
+      "Bonjour la famille 👋 N'oubliez pas le versement du mois de Mai. Date limite : 25/05 à 18h.",
     reactions: [
-      { emoji: "👍", count: 4 },
-      { emoji: "❤️", count: 2 },
+      { emoji: '👍', count: 4 },
+      { emoji: '❤️', count: 2 },
     ],
   },
   {
-    id: "m2",
-    author: "Jean Dupont",
-    avatarUrl: "https://i.pravatar.cc/150?img=12",
-    time: "10:32",
+    id: 'm2',
+    author: 'Jean Dupont',
+    avatarUrl: 'https://i.pravatar.cc/150?img=12',
+    time: '10:32',
     content: "Merci pour le rappel Awa. Je vais effectuer mon versement aujourd'hui.",
-    reactions: [{ emoji: "👍", count: 1 }],
+    reactions: [{ emoji: '👍', count: 1 }],
   },
   {
-    id: "m3",
-    author: "Amélie Laurent",
-    avatarUrl: "https://i.pravatar.cc/150?img=9",
-    time: "10:35",
-    content: 'Parfait 👍 N\'oubliez pas d\'ajouter le motif : "Tontine Famille Unie" lors du paiement.',
+    id: 'm3',
+    author: 'Amélie Laurent',
+    avatarUrl: 'https://i.pravatar.cc/150?img=9',
+    time: '10:35',
+    content:
+      'Parfait 👍 N\'oubliez pas d\'ajouter le motif : "Tontine Famille Unie" lors du paiement.',
   },
   {
-    id: "m4",
-    author: "Moi",
-    avatarUrl: "https://i.pravatar.cc/150?img=8",
-    time: "10:36",
-    content: "Reçu, merci Amélie ! Je viens de faire le versement ✅",
+    id: 'm4',
+    author: 'Moi',
+    avatarUrl: 'https://i.pravatar.cc/150?img=8',
+    time: '10:36',
+    content: 'Reçu, merci Amélie ! Je viens de faire le versement ✅',
     isMine: true,
     read: true,
-    reactions: [{ emoji: "❤️", count: 2 }],
+    reactions: [{ emoji: '❤️', count: 2 }],
   },
   {
-    id: "m5",
-    author: "Moussa Koné",
-    avatarUrl: "https://i.pravatar.cc/150?img=3",
-    time: "10:45",
-    content: "Super, merci à tous pour votre ponctualité 🙏 On avance bien !",
-    reactions: [{ emoji: "🎉", count: 3 }],
+    id: 'm5',
+    author: 'Moussa Koné',
+    avatarUrl: 'https://i.pravatar.cc/150?img=3',
+    time: '10:45',
+    content: 'Super, merci à tous pour votre ponctualité 🙏 On avance bien !',
+    reactions: [{ emoji: '🎉', count: 3 }],
   },
 ];
 
 const MEMBERS: Member[] = [
-  { id: "u1", name: "Sophie D.", avatarUrl: "https://i.pravatar.cc/150?img=47", role: "Admin" },
-  { id: "u2", name: "Awa Traoré", avatarUrl: "https://i.pravatar.cc/150?img=5", role: "Prochain tour" },
-  { id: "u3", name: "Jean Dupont", avatarUrl: "https://i.pravatar.cc/150?img=12", role: "Membre" },
-  { id: "u4", name: "Amélie Laurent", avatarUrl: "https://i.pravatar.cc/150?img=9", role: "Membre" },
-  { id: "u5", name: "Moussa Koné", avatarUrl: "https://i.pravatar.cc/150?img=3", role: "Membre" },
+  { id: 'u1', name: 'Sophie D.', avatarUrl: 'https://i.pravatar.cc/150?img=47', role: 'Admin' },
+  {
+    id: 'u2',
+    name: 'Awa Traoré',
+    avatarUrl: 'https://i.pravatar.cc/150?img=5',
+    role: 'Prochain tour',
+  },
+  { id: 'u3', name: 'Jean Dupont', avatarUrl: 'https://i.pravatar.cc/150?img=12', role: 'Membre' },
+  {
+    id: 'u4',
+    name: 'Amélie Laurent',
+    avatarUrl: 'https://i.pravatar.cc/150?img=9',
+    role: 'Membre',
+  },
+  { id: 'u5', name: 'Moussa Koné', avatarUrl: 'https://i.pravatar.cc/150?img=3', role: 'Membre' },
 ];
 
 function ConversationItem({
@@ -187,8 +199,8 @@ function ConversationItem({
       onClick={onClick}
       className={`flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition ${
         conversation.active
-          ? "border-l-4 border-l-afrilink-green bg-afrilink-green/5"
-          : "hover:bg-gray-50"
+          ? 'border-l-4 border-l-afrilink-green bg-afrilink-green/5'
+          : 'hover:bg-gray-50'
       }`}
     >
       <div className="relative">
@@ -208,7 +220,7 @@ function ConversationItem({
         </div>
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="truncate text-xs text-gray-500">
-            {conversation.hasAttachment ? "📎 " : ""}
+            {conversation.hasAttachment ? '📎 ' : ''}
             {preview}
           </p>
           {conversation.unreadCount ? (
@@ -229,9 +241,7 @@ function MessageBubble({ message }: { message: Message }) {
         <div className="max-w-[70%]">
           <div className="flex items-center justify-end gap-1.5">
             <span className="text-[11px] text-gray-400">{message.time}</span>
-            {message.read ? (
-              <span className="text-[11px] text-afrilink-green">✓✓</span>
-            ) : null}
+            {message.read ? <span className="text-[11px] text-afrilink-green">✓✓</span> : null}
           </div>
           <div className="mt-1 rounded-2xl rounded-br-sm bg-afrilink-green px-4 py-2.5 text-sm text-white">
             {message.content}
@@ -290,7 +300,15 @@ function MessageBubble({ message }: { message: Message }) {
   );
 }
 
-function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex items-center justify-between py-2.5 text-sm">
       <div className="flex items-center gap-2">
@@ -313,9 +331,9 @@ function MemberRow({ member }: { member: Member }) {
         />
         <span className="text-sm font-medium text-gray-900">{member.name}</span>
       </div>
-      {member.role === "Admin" ? (
+      {member.role === 'Admin' ? (
         <span className="text-xs text-gray-400">Admin</span>
-      ) : member.role === "Prochain tour" ? (
+      ) : member.role === 'Prochain tour' ? (
         <span className="rounded-full bg-afrilink-green/10 px-2.5 py-1 text-[11px] font-semibold text-afrilink-green">
           Prochain tour
         </span>
@@ -334,15 +352,15 @@ function ChatArea({
   tontine?: Tontine | null;
 }) {
   const [pinnedVisible, setPinnedVisible] = useState(true);
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState('');
 
   const handleSend = () => {
     if (!draft.trim()) return;
-    setDraft("");
+    setDraft('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -363,14 +381,14 @@ function ChatArea({
                 {tontine?.name ?? conversation.name}
               </p>
               <span className="rounded-full bg-afrilink-green/10 px-2 py-0.5 text-[11px] font-semibold text-afrilink-green">
-                {tontine?.status === "ACTIVE" ? "Active" : tontine?.status ?? "Active"}
+                {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
               </span>
             </div>
             <p className="text-xs text-gray-500">
               {tontine?.membres?.length ?? 12} membres
               {tontine?.nextContributionAt
-                ? ` · Prochain tour : ${new Date(tontine.nextContributionAt).toLocaleDateString("fr-FR")}`
-                : " · Prochain tour : Awa · 25 Mai 2024"}
+                ? ` · Prochain tour : ${new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')}`
+                : ' · Prochain tour : Awa · 25 Mai 2024'}
             </p>
           </div>
         </div>
@@ -381,10 +399,7 @@ function ChatArea({
           >
             <Search className="h-4 w-4" />
           </button>
-          <button
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-50"
-            aria-label="Membres"
-          >
+          <button className="rounded-full p-2 text-gray-400 hover:bg-gray-50" aria-label="Membres">
             <Users className="h-4 w-4" />
           </button>
           <button
@@ -475,14 +490,14 @@ function TontineAboutPanel({
       <div className="mt-4 flex flex-col items-center text-center">
         <img
           src="https://i.pravatar.cc/150?img=47"
-          alt={tontine?.name ?? "Tontine"}
+          alt={tontine?.name ?? 'Tontine'}
           className="h-16 w-16 rounded-full object-cover"
         />
         <p className="mt-3 text-sm font-semibold text-gray-900">
-          {tontine?.name ?? "Tontine Famille Unie"}
+          {tontine?.name ?? 'Tontine Famille Unie'}
         </p>
         <span className="mt-1 rounded-full bg-afrilink-green/10 px-2.5 py-0.5 text-[11px] font-semibold text-afrilink-green">
-          {tontine?.status === "ACTIVE" ? "Active" : tontine?.status ?? "Active"}
+          {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
         </span>
       </div>
 
@@ -492,8 +507,8 @@ function TontineAboutPanel({
           label="Créée par"
           value={
             tontine?.creator
-              ? `${tontine.creator.prenom ?? ""} ${tontine.creator.nom ?? ""}`.trim() || "Inconnu"
-              : "Sophie D."
+              ? `${tontine.creator.prenom ?? ''} ${tontine.creator.nom ?? ''}`.trim() || 'Inconnu'
+              : 'Sophie D.'
           }
         />
         <InfoRow
@@ -501,26 +516,38 @@ function TontineAboutPanel({
           label="Date de création"
           value={
             tontine?.createdAt
-              ? new Date(tontine.createdAt).toLocaleDateString("fr-FR", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
+              ? new Date(tontine.createdAt).toLocaleDateString('fr-FR', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
                 })
-              : "12 Jan 2024"
+              : '12 Jan 2024'
           }
         />
-        <InfoRow icon={Users} label="Nombre de membres" value={String(tontine?.membres?.length ?? 12)} />
+        <InfoRow
+          icon={Users}
+          label="Nombre de membres"
+          value={String(tontine?.membres?.length ?? 12)}
+        />
         <InfoRow
           icon={Users}
           label="Montant de cotisation"
           value={
             tontine?.contributionAmount
-              ? `${Number(tontine.contributionAmount).toLocaleString("fr-FR")} ${tontine.currency ?? "FCFA"}`
-              : "25 000 FCFA"
+              ? `${Number(tontine.contributionAmount).toLocaleString('fr-FR')} ${tontine.currency ?? 'FCFA'}`
+              : '25 000 FCFA'
           }
         />
-        <InfoRow icon={Users} label="Fréquence" value={tontine?.frequency ?? "Mensuelle"} />
-        <InfoRow icon={Users} label="Prochain tour" value={tontine?.nextContributionAt ? new Date(tontine.nextContributionAt).toLocaleDateString("fr-FR") : "Awa Traoré (8/12) / 25 Mai 2024"} />
+        <InfoRow icon={Users} label="Fréquence" value={tontine?.frequency ?? 'Mensuelle'} />
+        <InfoRow
+          icon={Users}
+          label="Prochain tour"
+          value={
+            tontine?.nextContributionAt
+              ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')
+              : 'Awa Traoré (8/12) / 25 Mai 2024'
+          }
+        />
       </div>
 
       <div className="mt-5">
@@ -531,14 +558,19 @@ function TontineAboutPanel({
           <button className="text-xs font-medium text-afrilink-green">Voir tout</button>
         </div>
         <div className="mt-1 divide-y divide-gray-50">
-          {(members ?? MEMBERS).map((m:any) => {
+          {(members ?? MEMBERS).map((m: any) => {
             const mapped: Member = {
               id: String(m.id),
               name: m.user
-                ? `${m.user?.prenom ?? ""} ${m.user?.nom ?? ""}`.trim() || `Membre ${m.id}`
-                : m.name ?? `Membre ${m.id}`,
+                ? `${m.user?.prenom ?? ''} ${m.user?.nom ?? ''}`.trim() || `Membre ${m.id}`
+                : (m.name ?? `Membre ${m.id}`),
               avatarUrl: `https://i.pravatar.cc/150?u=${m.id}`,
-              role: m.role === "ADMIN" ? "Admin" : m.role === "BENEFICIARY" ? "Prochain tour" : "Membre",
+              role:
+                m.role === 'ADMIN'
+                  ? 'Admin'
+                  : m.role === 'BENEFICIARY'
+                    ? 'Prochain tour'
+                    : 'Membre',
             };
             return <MemberRow key={mapped.id} member={mapped} />;
           })}
@@ -571,8 +603,12 @@ export default function TontineChatPage() {
   const navigate = useNavigate();
   const isSingleTontine = !!id;
 
-  const { data: tontine, isLoading, error } = useQuery({
-    queryKey: ["tontine", id],
+  const {
+    data: tontine,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
@@ -607,7 +643,7 @@ export default function TontineChatPage() {
               variant="outline"
               size="sm"
               className="mt-4 rounded-full border-green-500 text-green-600 hover:bg-green-50"
-              onClick={() => navigate("/dashboard/tontines")}
+              onClick={() => navigate('/dashboard/tontines')}
             >
               Retour aux tontines
             </Button>
@@ -684,9 +720,9 @@ export default function TontineChatPage() {
               variant="outline"
               size="sm"
               className="w-full rounded-full border-green-500 text-green-600 hover:bg-green-50"
-              onClick={() => navigate("/dashboard/tontines/create")}
+              onClick={() => navigate('/dashboard/tontines/create')}
             >
-              <Plus className="mr-2 h-4 w-4" /> 
+              <Plus className="mr-2 h-4 w-4" />
               Créer une nouvelle tontine
             </Button>
           </div>

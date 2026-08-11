@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Tontine, TontineStatus } from '../entities/tontine.entity';
@@ -107,9 +103,7 @@ export class CycleService {
       throw new BadRequestException('Seul un cycle ACTIVE peut être complété');
     }
 
-    const allPaid = cycle.contributions.every(
-      (c) => c.status === TontineContributionStatus.PAID,
-    );
+    const allPaid = cycle.contributions.every((c) => c.status === TontineContributionStatus.PAID);
 
     cycle.status = allPaid ? TontineCycleStatus.COMPLETED : TontineCycleStatus.FAILED;
     cycle.completedAt = new Date();

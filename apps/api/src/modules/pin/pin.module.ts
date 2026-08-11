@@ -8,12 +8,7 @@ import { OtpModule } from '../otp/otp.module';
 import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Wallet]),
-    WalletsModule,
-    OtpModule,
-    MailModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Wallet]), WalletsModule, OtpModule, MailModule],
   controllers: [PinController],
   providers: [PinService],
   exports: [PinService],

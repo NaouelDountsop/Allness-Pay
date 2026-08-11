@@ -29,16 +29,23 @@ import { User } from '../users/entities/user.entity';
       inject: [ConfigService],
 
       useFactory: (config: ConfigService) => ({
-
-       secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
-       signOptions: {
-       expiresIn: config.getOrThrow<number>('JWT_ACCESS_TTL'),
-      },
-      }), 
+        secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
+        signOptions: {
+          expiresIn: config.getOrThrow<number>('JWT_ACCESS_TTL'),
+        },
+      }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, GoogleStrategy, JwtAuthGuard, LocalAuthGuard, GoogleAuthGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    LocalStrategy,
+    GoogleStrategy,
+    JwtAuthGuard,
+    LocalAuthGuard,
+    GoogleAuthGuard,
+  ],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

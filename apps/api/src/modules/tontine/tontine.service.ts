@@ -1,8 +1,17 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Tontine, TontineStatus } from './entities/tontine.entity';
-import { TontineMember, TontineMemberRole, TontineMemberStatus } from './entities/tontine-member.entity';
+import {
+  TontineMember,
+  TontineMemberRole,
+  TontineMemberStatus,
+} from './entities/tontine-member.entity';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { WalletsService } from '../wallet/wallet.service';
@@ -112,9 +121,7 @@ export class TontineService {
 
     const allowed = validTransitions[tontine.status];
     if (!allowed.includes(newStatus)) {
-      throw new BadRequestException(
-        `Transition invalide: ${tontine.status} → ${newStatus}`,
-      );
+      throw new BadRequestException(`Transition invalide: ${tontine.status} → ${newStatus}`);
     }
 
     tontine.status = newStatus;
@@ -170,7 +177,7 @@ export class TontineService {
     }
 
     if (member.role === TontineMemberRole.ADMIN) {
-      throw new BadRequestException('On ne peut pas retirer l\'admin');
+      throw new BadRequestException("On ne peut pas retirer l'admin");
     }
 
     member.status = TontineMemberStatus.REMOVED;
@@ -204,7 +211,9 @@ export class TontineService {
       throw new NotFoundException('Membre introuvable');
     }
     if (member.role === TontineMemberRole.ADMIN) {
-      throw new BadRequestException('L\'administrateur ne peut pas quitter la tontine. Transférez le rôle ou supprimez-la.');
+      throw new BadRequestException(
+        "L'administrateur ne peut pas quitter la tontine. Transférez le rôle ou supprimez-la.",
+      );
     }
     member.status = TontineMemberStatus.LEFT;
     await this.memberRepo.save(member);
@@ -213,7 +222,7 @@ export class TontineService {
   private assertMembership(tontine: Tontine, userId: number): void {
     const isMember = tontine.membres?.some((m) => m.userId === userId);
     if (!isMember) {
-      throw new ForbiddenException('Vous n\'êtes pas membre de cette tontine');
+      throw new ForbiddenException("Vous n'êtes pas membre de cette tontine");
     }
   }
 

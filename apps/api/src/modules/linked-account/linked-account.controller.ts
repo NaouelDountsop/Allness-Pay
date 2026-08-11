@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Get,
@@ -10,11 +9,7 @@ import {
   UseGuards,
   Request as Req,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { LinkedAccountsService } from './linked-account.service';
 import { CreateLinkedAccountDto } from './dto/create-linked-account.dto';
 import { UpdateLinkedAccountDto } from './dto/update-linked-account.dto';
@@ -31,10 +26,7 @@ export class LinkedAccountsController {
 
   @Post()
   @ApiOperation({ summary: 'Lier un compte externe (bancaire ou Mobile Money)' })
-  create(
-    @Body() createLinkedAccountDto: CreateLinkedAccountDto,
-    @Req() req: Request,
-  ) {
+  create(@Body() createLinkedAccountDto: CreateLinkedAccountDto, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.linkedAccountsService.create(user.idutilisateur, createLinkedAccountDto);
   }
@@ -47,11 +39,8 @@ export class LinkedAccountsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Détails d\'un compte lié' })
-  findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ) {
+  @ApiOperation({ summary: "Détails d'un compte lié" })
+  findOne(@Param('id') id: string, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.linkedAccountsService.findOne(id, user.idutilisateur);
   }
@@ -69,31 +58,21 @@ export class LinkedAccountsController {
 
   @Patch(':id/set-default')
   @ApiOperation({ summary: 'Définir comme compte par défaut' })
-  setDefault(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ) {
+  setDefault(@Param('id') id: string, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.linkedAccountsService.setDefault(id, user.idutilisateur);
   }
 
   @Post(':id/verify')
   @ApiOperation({ summary: 'Vérifier un compte avec le code reçu' })
-  verify(
-    @Param('id') id: string,
-    @Body() verifyDto: VerifyLinkedAccountDto,
-    @Req() req: Request,
-  ) {
+  verify(@Param('id') id: string, @Body() verifyDto: VerifyLinkedAccountDto, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.linkedAccountsService.verify(id, user.idutilisateur, verifyDto.code);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Supprimer un compte lié' })
-  remove(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ) {
+  remove(@Param('id') id: string, @Req() req: Request) {
     const user = req.user as { idutilisateur: number };
     return this.linkedAccountsService.remove(id, user.idutilisateur);
   }

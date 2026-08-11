@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { pinService } from "@/lib/api/pin.service";
+import { useState, useCallback } from 'react';
+import { pinService } from '@/lib/api/pin.service';
 
 export function usePin(walletId: string | null) {
   const [hasPin, setHasPin] = useState(false);
@@ -16,7 +16,7 @@ export function usePin(walletId: string | null) {
 
   const createPin = useCallback(
     async (pin: string) => {
-      if (!walletId) throw new Error("Aucun portefeuille sélectionné");
+      if (!walletId) throw new Error('Aucun portefeuille sélectionné');
       await pinService.create(walletId, pin);
       setHasPin(true);
     },

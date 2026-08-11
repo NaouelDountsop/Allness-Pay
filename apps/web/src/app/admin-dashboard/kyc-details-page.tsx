@@ -1,42 +1,45 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, IdCard, ScanFace, Home, Loader2 } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Avatar, Badge } from "../../components/ui";
-import { SectionCard, Field } from "../../components/ui/section-card";
-import { adminService } from "../../lib/api/admin.service";
-import type { AdminKycRecord } from "../../lib/api/admin.service";
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, IdCard, ScanFace, Home, Loader2 } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Avatar, Badge } from '../../components/ui';
+import { SectionCard, Field } from '../../components/ui/section-card';
+import { adminService } from '../../lib/api/admin.service';
+import type { AdminKycRecord } from '../../lib/api/admin.service';
 
 const DOC_LABELS: Record<string, string> = {
-  PASSPORT: "Passeport",
+  PASSPORT: 'Passeport',
   NATIONAL_ID: "Carte d'identité",
-  DRIVER_LICENSE: "Permis de conduire",
+  DRIVER_LICENSE: 'Permis de conduire',
 };
 
 const ADDRESS_DOC_LABELS: Record<string, string> = {
   UTILITY_BILL: "Facture d'électricité",
-  BANK_STATEMENT: "Relevé bancaire",
-  RESIDENCE_CERTIFICATE: "Certificat de résidence",
+  BANK_STATEMENT: 'Relevé bancaire',
+  RESIDENCE_CERTIFICATE: 'Certificat de résidence',
 };
 
-const STATUS_BADGE: Record<string, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
-  APPROVED: { tone: "green", label: "Validé" },
-  PENDING: { tone: "orange", label: "En attente" },
-  REJECTED: { tone: "red", label: "Rejeté" },
+const STATUS_BADGE: Record<
+  string,
+  { tone: 'green' | 'orange' | 'red' | 'blue' | 'amber'; label: string }
+> = {
+  APPROVED: { tone: 'green', label: 'Validé' },
+  PENDING: { tone: 'orange', label: 'En attente' },
+  REJECTED: { tone: 'red', label: 'Rejeté' },
 };
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 function fileUrl(path: string) {
-  if (!path) return "";
+  if (!path) return '';
   try {
     const url = new URL(path);
     return url.pathname;
@@ -51,7 +54,7 @@ export default function KycDetailPage() {
   const [record, setRecord] = useState<AdminKycRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reviewComment, setReviewComment] = useState("");
+  const [reviewComment, setReviewComment] = useState('');
   const [isReviewing, setIsReviewing] = useState(false);
 
   useEffect(() => {
@@ -62,11 +65,11 @@ export default function KycDetailPage() {
       .then((result) => {
         setRecord(result);
       })
-      .catch(() => setError("Dossier KYC introuvable."))
+      .catch(() => setError('Dossier KYC introuvable.'))
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleReview = async (status: "APPROVED" | "REJECTED") => {
+  const handleReview = async (status: 'APPROVED' | 'REJECTED') => {
     if (!record) return;
     setIsReviewing(true);
     setError(null);
@@ -78,9 +81,9 @@ export default function KycDetailPage() {
       setRecord((prev) =>
         prev ? { ...prev, status: result.status, reviewComment: result.reviewComment } : prev,
       );
-      setReviewComment("");
+      setReviewComment('');
     } catch {
-      setError("Erreur lors de la soumission de la décision.");
+      setError('Erreur lors de la soumission de la décision.');
     } finally {
       setIsReviewing(false);
     }
@@ -89,7 +92,7 @@ export default function KycDetailPage() {
   return (
     <AdminLayout active="kyc">
       <button
-        onClick={() => navigate("/admin/kyc")}
+        onClick={() => navigate('/admin/kyc')}
         className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -108,15 +111,24 @@ export default function KycDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-1 flex flex-col gap-5">
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center">
-              <Avatar initials={record.userName && record.userNom ? `${record.userName[0]}${record.userNom[0]}` : `U${record.userId}`} size="lg" />
+              <Avatar
+                initials={
+                  record.userName && record.userNom
+                    ? `${record.userName[0]}${record.userNom[0]}`
+                    : `U${record.userId}`
+                }
+                size="lg"
+              />
               <p className="text-sm font-bold text-afrilink-dark mt-3">
-                {record.userName && record.userNom ? `${record.userName} ${record.userNom}` : `Utilisateur #${record.userId}`}
+                {record.userName && record.userNom
+                  ? `${record.userName} ${record.userNom}`
+                  : `Utilisateur #${record.userId}`}
               </p>
               {record.userEmail && (
                 <p className="text-[11px] text-gray-400 mb-1">{record.userEmail}</p>
               )}
               <p className="text-[11px] text-gray-400 mb-2">Dossier #{record.id}</p>
-              <Badge tone={STATUS_BADGE[record.status]?.tone ?? "orange"}>
+              <Badge tone={STATUS_BADGE[record.status]?.tone ?? 'orange'}>
                 {STATUS_BADGE[record.status]?.label ?? record.status}
               </Badge>
             </div>
@@ -148,7 +160,10 @@ export default function KycDetailPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Date de soumission" value={formatDate(record.createdAt)} />
-                <Field label="Type de document" value={DOC_LABELS[record.IdentityDocumentType] || record.IdentityDocumentType} />
+                <Field
+                  label="Type de document"
+                  value={DOC_LABELS[record.IdentityDocumentType] || record.IdentityDocumentType}
+                />
               </div>
             </SectionCard>
 
@@ -180,12 +195,17 @@ export default function KycDetailPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Field label="Type de document" value={ADDRESS_DOC_LABELS[record.proofOfAddressType] || record.proofOfAddressType} />
+                  <Field
+                    label="Type de document"
+                    value={
+                      ADDRESS_DOC_LABELS[record.proofOfAddressType] || record.proofOfAddressType
+                    }
+                  />
                 </div>
               </div>
             </SectionCard>
 
-            {record.status === "PENDING" && (
+            {record.status === 'PENDING' && (
               <SectionCard title="Décision Finale">
                 {error && (
                   <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700 mb-4">
@@ -201,7 +221,7 @@ export default function KycDetailPage() {
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={() => handleReview("REJECTED")}
+                    onClick={() => handleReview('REJECTED')}
                     disabled={isReviewing}
                     className="h-10 px-5 rounded-lg bg-red-500 text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
                   >
@@ -209,7 +229,7 @@ export default function KycDetailPage() {
                     Rejeter
                   </button>
                   <button
-                    onClick={() => handleReview("APPROVED")}
+                    onClick={() => handleReview('APPROVED')}
                     disabled={isReviewing}
                     className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
                   >

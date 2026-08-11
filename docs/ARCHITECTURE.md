@@ -72,7 +72,7 @@ d'un nœud.
 
 **Machine à états.** Une transaction ne change de statut que par des transitions
 explicitement autorisées. Une opération sans réponse d'un opérateur reste dans un
-état *incertain* et est rejouée par le rapprochement — jamais présumée réussie.
+état _incertain_ et est rejouée par le rapprochement — jamais présumée réussie.
 
 **Concurrence.** Verrou pessimiste sur le portefeuille avant tout débit, et
 ordre de verrouillage stable (par identifiant) pour éviter les interblocages.

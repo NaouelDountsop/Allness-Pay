@@ -1,19 +1,19 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Send, Settings, MessageCircle, Loader2 } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { TontineDetailHeader } from "@/components/user_dashboard/tontines/tontine-detail-header";
-import { TontineDetailStats } from "@/components/user_dashboard/tontines/tontine-detail-stats";
-import { MembersTable } from "@/components/user_dashboard/tontines/members-table";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, Send, Settings, MessageCircle, Loader2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { TontineDetailHeader } from '@/components/user_dashboard/tontines/tontine-detail-header';
+import { TontineDetailStats } from '@/components/user_dashboard/tontines/tontine-detail-stats';
+import { MembersTable } from '@/components/user_dashboard/tontines/members-table';
+import { tontineService } from '@/lib/api/tontine.service';
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data: tontine, isLoading } = useQuery({
-    queryKey: ["tontine", id],
+    queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
@@ -40,7 +40,7 @@ export default function TontineDetailPage() {
               Le groupe d'épargne demandé est introuvable. Retournez à la liste des tontines.
             </p>
             <button
-              onClick={() => navigate("/dashboard/tontines")}
+              onClick={() => navigate('/dashboard/tontines')}
               className="mt-6 inline-flex items-center justify-center rounded-lg bg-afrilink-green px-4 py-2 text-sm font-medium text-white hover:bg-afrilink-greenHover"
             >
               Retour aux tontines
@@ -51,7 +51,8 @@ export default function TontineDetailPage() {
     );
   }
 
-  const progressPercent = tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
+  const progressPercent =
+    tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
 
   return (
     <DashboardLayout>
@@ -61,13 +62,15 @@ export default function TontineDetailPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <button
-              onClick={() => navigate("/dashboard/tontines")}
+              onClick={() => navigate('/dashboard/tontines')}
               className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
             >
               <ArrowLeft className="w-5 h-5" />
               Tontine {tontine.name}
             </button>
-            <p className="text-sm text-gray-500 mt-1">Groupe d'épargne collaborative · Cycle {tontine.frequency}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Groupe d'épargne collaborative · Cycle {tontine.frequency}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">

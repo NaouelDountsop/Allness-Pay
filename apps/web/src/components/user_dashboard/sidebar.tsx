@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Send,
@@ -10,20 +10,20 @@ import {
   User,
   Settings,
   LogOut,
-} from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
-import { authStorage } from "@/lib/auth-storage";
+} from 'lucide-react';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
 
 const navItems = [
-  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, end: true },
-  { to: "/dashboard/send", label: "Envoyer", icon: Send },
-  { to: "/dashboard/wallet", label: "Portefeuille", icon: Wallet },
-  { to: "/dashboard/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { to: "/dashboard/beneficiaries", label: "Bénéficiaires", icon: Users },
-  { to: "/dashboard/tontines", label: "Tontines", icon: PiggyBank },
-  { to: "/dashboard/payments", label: "Paiements", icon: CreditCard },
-  { to: "/dashboard/profile", label: "Profil", icon: User },
-  { to: "/dashboard/settings", label: "Settings", icon: Settings },
+  { to: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
+  { to: '/dashboard/send', label: 'Envoyer', icon: Send },
+  { to: '/dashboard/wallet', label: 'Portefeuille', icon: Wallet },
+  { to: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { to: '/dashboard/beneficiaries', label: 'Bénéficiaires', icon: Users },
+  { to: '/dashboard/tontines', label: 'Tontines', icon: PiggyBank },
+  { to: '/dashboard/payments', label: 'Paiements', icon: CreditCard },
+  { to: '/dashboard/profile', label: 'Profil', icon: User },
+  { to: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -36,7 +36,7 @@ export function Sidebar() {
       // Même si l'appel échoue, on déconnecte côté client
     } finally {
       authStorage.clearAll();
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   };
 
@@ -64,8 +64,8 @@ export function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? "bg-white text-afrilink-orange font-medium"
-                  : "text-white hover:bg-white/5"
+                  ? 'bg-white text-afrilink-orange font-medium'
+                  : 'text-white hover:bg-white/5'
               }`
             }
           >

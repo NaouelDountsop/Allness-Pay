@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Store } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge, Tabs } from "../../components/ui";
-import { MerchantCoordonneesTab } from "../../components/admin-dashboard/marchands/MerchantCoordonneesTab";
-import { MerchantTransactionsTab } from "../../components/admin-dashboard/marchands/MerchantTransactionsTab";
-import { MerchantQrCodesTab } from "../../components/admin-dashboard/marchands/MerchantQrCodesTab";
-import { MerchantPaymentIdTab } from "../../components/admin-dashboard/marchands/MerchantPaymentIdTab";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Store } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge, Tabs } from '../../components/ui';
+import { MerchantCoordonneesTab } from '../../components/admin-dashboard/marchands/MerchantCoordonneesTab';
+import { MerchantTransactionsTab } from '../../components/admin-dashboard/marchands/MerchantTransactionsTab';
+import { MerchantQrCodesTab } from '../../components/admin-dashboard/marchands/MerchantQrCodesTab';
+import { MerchantPaymentIdTab } from '../../components/admin-dashboard/marchands/MerchantPaymentIdTab';
 
-const TABS = ["Coordonnées", "Transactions", "QR Codes", "Paiement par Identifiant"];
+const TABS = ['Coordonnées', 'Transactions', 'QR Codes', 'Paiement par Identifiant'];
 
 export default function MerchantDetailPage() {
-  const [tab, setTab] = useState("Coordonnées");
+  const [tab, setTab] = useState('Coordonnées');
   const navigate = useNavigate();
 
   return (
     <AdminLayout active="marchands">
       <button
-        onClick={() => navigate("/admin/marchands")}
+        onClick={() => navigate('/admin/marchands')}
         className="flex items-center gap-2 text-xs text-gray-400 hover:text-afrilink-dark mb-4"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
@@ -53,10 +53,10 @@ export default function MerchantDetailPage() {
         <Tabs tabs={TABS} active={tab} onChange={setTab} />
       </div>
 
-      {tab === "Coordonnées" && <MerchantCoordonneesTab />}
-      {tab === "Transactions" && <MerchantTransactionsTab />}
-      {tab === "QR Codes" && <MerchantQrCodesTab />}
-      {tab === "Paiement par Identifiant" && <MerchantPaymentIdTab />}
+      {tab === 'Coordonnées' && <MerchantCoordonneesTab />}
+      {tab === 'Transactions' && <MerchantTransactionsTab />}
+      {tab === 'QR Codes' && <MerchantQrCodesTab />}
+      {tab === 'Paiement par Identifiant' && <MerchantPaymentIdTab />}
     </AdminLayout>
   );
 }

@@ -169,11 +169,7 @@ export class MailService {
     }
   }
 
-  async sendKycRejected(
-    email: string,
-    firstName: string,
-    reason?: string,
-  ): Promise<void> {
+  async sendKycRejected(email: string, firstName: string, reason?: string): Promise<void> {
     const reasonSection = reason
       ? `<p style="color: #555; font-size: 13px; margin-bottom: 12px;">
           <strong>Motif :</strong> ${reason}

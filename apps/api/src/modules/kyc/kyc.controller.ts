@@ -15,12 +15,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import {
-  ApiConsumes,
-  ApiBody,
-  ApiBearerAuth,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiConsumes, ApiBody, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UploadedFile } from '../../common/interfaces/uploaded-file.interface';
 import { KycService } from './kyc.service';
 import { CreateKycDto } from './dto/create-kyc.dto';
@@ -42,34 +37,32 @@ export class KycController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiConsumes('multipart/form-data')
-
-@ApiBody({
-  schema: {
-    type: 'object',
-    required: [
-      'IdentityDocumentType',
-      'proofOfAddressType',
-      'documentFront',
-      'selfie',
-      'proofOfAddress',
-    ],
-    properties: {
-      IdentityDocumentType: {
-        type: 'string',
-        enum: ['NATIONAL_ID', 'PASSPORT', 'DRIVER_LICENSE'],
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: [
+        'IdentityDocumentType',
+        'proofOfAddressType',
+        'documentFront',
+        'selfie',
+        'proofOfAddress',
+      ],
+      properties: {
+        IdentityDocumentType: {
+          type: 'string',
+          enum: ['NATIONAL_ID', 'PASSPORT', 'DRIVER_LICENSE'],
+        },
+        documentFront: { type: 'string', format: 'binary' },
+        documentBack: { type: 'string', format: 'binary' },
+        selfie: { type: 'string', format: 'binary' },
+        proofOfAddressType: {
+          type: 'string',
+          enum: ['UTILITY_BILL', 'BANK_STATEMENT', 'RESIDENCE_CERTIFICATE'],
+        },
+        proofOfAddress: { type: 'string', format: 'binary' },
       },
-      documentFront: { type: 'string', format: 'binary' },
-      documentBack: { type: 'string', format: 'binary' },
-      selfie: { type: 'string', format: 'binary' },
-      proofOfAddressType: {
-        type: 'string',
-        enum: ['UTILITY_BILL', 'BANK_STATEMENT', 'RESIDENCE_CERTIFICATE'],
-      },
-      proofOfAddress: { type: 'string', format: 'binary' },
     },
-  },
-})
-
+  })
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -94,11 +87,7 @@ export class KycController {
   ) {
     const user = req.user as { sub: number };
 
-    if (
-      !files.documentFront?.[0] ||
-      !files.selfie?.[0] ||
-      !files.proofOfAddress?.[0]
-    ) {
+    if (!files.documentFront?.[0] || !files.selfie?.[0] || !files.proofOfAddress?.[0]) {
       throw new BadRequestException(
         "Le document d'identité, le selfie et le justificatif de domicile sont obligatoires.",
       );
@@ -141,17 +130,16 @@ export class KycController {
     return this.kycService.findAll(status);
   }
 
-  
-@Get(':id')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
-@RequirePermissions('kyc:review')
-@ApiBearerAuth('access-token')
-findOne(@Param('id', ParseIntPipe) id: number) {
-  return this.kycService.findOne(id);
-}
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('kyc:review')
+  @ApiBearerAuth('access-token')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.kycService.findOne(id);
+  }
 
   @Patch(':id')
- @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   update(
     @Param('id', ParseIntPipe) id: number,

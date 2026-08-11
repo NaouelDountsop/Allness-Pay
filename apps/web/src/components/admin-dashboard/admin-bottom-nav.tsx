@@ -1,21 +1,14 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users,
-  ShieldCheck,
-  PiggyBank,
-  Store,
-  LogOut,
-} from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
-import { authStorage } from "@/lib/auth-storage";
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Users, ShieldCheck, PiggyBank, Store, LogOut } from 'lucide-react';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
 
 const tabs = [
-  { to: "/admin", label: "Accueil", icon: LayoutDashboard, end: true },
-  { to: "/admin/utilisateurs", label: "Utilisateurs", icon: Users },
-  { to: "/admin/kyc", label: "KYC", icon: ShieldCheck },
-  { to: "/admin/tontines", label: "Tontines", icon: PiggyBank },
-  { to: "/admin/marchands", label: "Marchands", icon: Store },
+  { to: '/admin', label: 'Accueil', icon: LayoutDashboard, end: true },
+  { to: '/admin/utilisateurs', label: 'Utilisateurs', icon: Users },
+  { to: '/admin/kyc', label: 'KYC', icon: ShieldCheck },
+  { to: '/admin/tontines', label: 'Tontines', icon: PiggyBank },
+  { to: '/admin/marchands', label: 'Marchands', icon: Store },
 ];
 
 export function AdminBottomNav() {
@@ -28,7 +21,7 @@ export function AdminBottomNav() {
       // Déconnecte quand même côté client
     } finally {
       authStorage.clearAll();
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   };
 
@@ -46,10 +39,10 @@ export function AdminBottomNav() {
               {({ isActive }) => (
                 <>
                   <Icon
-                    className={isActive ? "w-5 h-5 text-afrilink-orange" : "w-5 h-5 text-white/60"}
+                    className={isActive ? 'w-5 h-5 text-afrilink-orange' : 'w-5 h-5 text-white/60'}
                     strokeWidth={isActive ? 2.4 : 2}
                   />
-                  <span className={isActive ? "text-afrilink-orange font-medium" : "text-white/60"}>
+                  <span className={isActive ? 'text-afrilink-orange font-medium' : 'text-white/60'}>
                     {label}
                   </span>
                 </>

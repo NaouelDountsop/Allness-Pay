@@ -58,9 +58,14 @@ export class KycService {
     if (status) {
       const validStatuses = Object.values(KycStatus);
       if (!validStatuses.includes(status as KycStatus)) {
-        throw new BadRequestException(`Statut invalide. Valeurs autorisées : ${validStatuses.join(', ')}`);
+        throw new BadRequestException(
+          `Statut invalide. Valeurs autorisées : ${validStatuses.join(', ')}`,
+        );
       }
-      return this.kycRepository.find({ where: { status: status as KycStatus }, order: { createdAt: 'DESC' } });
+      return this.kycRepository.find({
+        where: { status: status as KycStatus },
+        order: { createdAt: 'DESC' },
+      });
     }
     return this.kycRepository.find({ order: { createdAt: 'DESC' } });
   }
@@ -177,11 +182,7 @@ export class KycService {
             await this.mailService.sendKycApproved(user.email, firstName);
             break;
           case KycStatus.REJECTED:
-            await this.mailService.sendKycRejected(
-              user.email,
-              firstName,
-              details.reviewComment,
-            );
+            await this.mailService.sendKycRejected(user.email, firstName, details.reviewComment);
             break;
           case KycStatus.REQUIRES_ADDITIONAL_INFO:
             await this.mailService.sendKycRequiresInfo(

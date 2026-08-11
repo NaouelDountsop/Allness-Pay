@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { TransactionsService } from '../../modules/transactions/transactions.service';
@@ -29,7 +25,8 @@ export class TranzakService {
     @InjectRepository(WalletTransaction)
     private readonly walletTransactionRepo: Repository<WalletTransaction>,
   ) {
-    const tranzakConfig = this.configService.getOrThrow<ProvidersConfig['tranzak']>('providers.tranzak');
+    const tranzakConfig =
+      this.configService.getOrThrow<ProvidersConfig['tranzak']>('providers.tranzak');
     this.baseUrl = tranzakConfig.baseUrl;
     this.appId = tranzakConfig.appId;
     this.appKey = tranzakConfig.appKey;
@@ -38,13 +35,10 @@ export class TranzakService {
 
   async getAccessToken(): Promise<string> {
     try {
-      const response = await axios.post(
-        `${this.baseUrl}/auth/token`,
-        {
-          appId: this.appId,
-          appKey: this.appKey,
-        },
-      );
+      const response = await axios.post(`${this.baseUrl}/auth/token`, {
+        appId: this.appId,
+        appKey: this.appKey,
+      });
 
       return response.data.data.token;
     } catch (error: unknown) {
@@ -66,17 +60,13 @@ export class TranzakService {
     try {
       const token = await this.getAccessToken();
 
-      const response = await axios.post(
-        `${this.baseUrl}/xp021/v1/request/create`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-ID': this.appId,
-            'Content-Type': 'application/json',
-          },
+      const response = await axios.post(`${this.baseUrl}/xp021/v1/request/create`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-App-ID': this.appId,
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       return response.data;
     } catch (error: unknown) {
@@ -146,11 +136,7 @@ export class TranzakService {
     };
   }
 
-  async handleCallback(
-    identifier: string,
-    _status: string,
-    isRequestId: boolean,
-  ) {
+  async handleCallback(identifier: string, _status: string, isRequestId: boolean) {
     // Vérifier directement auprès de Tranzak le statut réel du paiement
     const verifiedStatus = await this.verifyPaymentStatus(identifier);
 
@@ -172,9 +158,7 @@ export class TranzakService {
    * Le callback envoie providerTransactionId (TX...), mais l'API verify
    * utilise providerRequestId (REQ...). On cherche d'abord en DB.
    */
-  private async verifyPaymentStatus(
-    providerTransactionId: string,
-  ): Promise<string> {
+  private async verifyPaymentStatus(providerTransactionId: string): Promise<string> {
     // Chercher le providerRequestId en DB
     const transaction = await this.walletTransactionRepo.findOne({
       where: { provider: 'TRANZAK', providerTransactionId },
@@ -185,21 +169,20 @@ export class TranzakService {
     try {
       const token = await this.getAccessToken();
 
-      const response = await axios.get(
-        `${this.baseUrl}/xp021/v1/request/details`,
-        {
-          params: { requestId: requestIdToVerify },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-ID': this.appId,
-          },
+      const response = await axios.get(`${this.baseUrl}/xp021/v1/request/details`, {
+        params: { requestId: requestIdToVerify },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-App-ID': this.appId,
         },
-      );
+      });
 
-      return response.data?.data?.status
-        ?? 'FAILED';
+      return response.data?.data?.status ?? 'FAILED';
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: unknown; status?: number }; message?: string };
+      const axiosError = error as {
+        response?: { data?: unknown; status?: number };
+        message?: string;
+      };
       throw new InternalServerErrorException(
         `Impossible de vérifier le paiement Tranzak ${requestIdToVerify} (HTTP ${axiosError.response?.status ?? 'unknown'}): ${JSON.stringify(axiosError.response?.data ?? axiosError.message)}`,
       );

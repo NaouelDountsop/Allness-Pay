@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingDown } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { SectionCard } from "../../components/ui/section-card";
-import { Toggle } from "../../components/ui/toggle";
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, TrendingDown } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { SectionCard } from '../../components/ui/section-card';
+import { Toggle } from '../../components/ui/toggle';
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-[11px] text-gray-500 mb-1.5">{children}</label>;
@@ -31,7 +31,7 @@ export default function EditExchangeRatePage() {
   return (
     <AdminLayout active="parametres">
       <button
-        onClick={() => navigate("/admin/taux-de-change")}
+        onClick={() => navigate('/admin/taux-de-change')}
         className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -113,7 +113,7 @@ export default function EditExchangeRatePage() {
 
         <div className="flex items-center justify-end gap-3 pb-6">
           <button
-            onClick={() => navigate("/admin/taux-de-change")}
+            onClick={() => navigate('/admin/taux-de-change')}
             className="h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Annuler

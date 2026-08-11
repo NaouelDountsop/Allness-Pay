@@ -1,14 +1,14 @@
-import {
-  Injectable,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { TontineCycle } from '../entities/tontine-cycle.entity';
 import { TontineMember } from '../entities/tontine-member.entity';
 import { Tontine } from '../entities/tontine.entity';
 import { Wallet } from '../../wallet/entities/wallet.entity';
-import { WalletTransaction, WalletTransactionType } from '../../transactions/entities/wallet-transaction.entity';
+import {
+  WalletTransaction,
+  WalletTransactionType,
+} from '../../transactions/entities/wallet-transaction.entity';
 import { TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
 
@@ -30,9 +30,7 @@ export class PayoutService {
         throw new BadRequestException('Le cycle doit être terminé pour verser le pot');
       }
 
-      const allPaid = cycle.contributions.every(
-        (c) => c.status === TontineContributionStatus.PAID,
-      );
+      const allPaid = cycle.contributions.every((c) => c.status === TontineContributionStatus.PAID);
       if (!allPaid) {
         throw new BadRequestException('Toutes les contributions doivent être payées');
       }
@@ -51,7 +49,7 @@ export class PayoutService {
 
       if (!beneficiaryWallet) {
         throw new BadRequestException(
-          'Le bénéficiaire n\'a pas de wallet actif pour recevoir le pot',
+          "Le bénéficiaire n'a pas de wallet actif pour recevoir le pot",
         );
       }
 
@@ -88,7 +86,11 @@ export class PayoutService {
         this.recalculateBalance(manager, beneficiaryWallet.id),
       ]);
       await manager.update(Wallet, { id: tontineWallet.id }, { balance: newTontineBalance });
-      await manager.update(Wallet, { id: beneficiaryWallet.id }, { balance: newBeneficiaryBalance });
+      await manager.update(
+        Wallet,
+        { id: beneficiaryWallet.id },
+        { balance: newBeneficiaryBalance },
+      );
 
       cycle.collectedAmount = cycle.totalPot;
       cycle.status = TontineCycleStatus.COMPLETED;

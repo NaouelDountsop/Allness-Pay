@@ -1,39 +1,42 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Files, CheckCircle2, Clock, XCircle, SlidersHorizontal, Loader2 } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge, Tabs } from "../../components/ui";
-import { adminService } from "../../lib/api/admin.service";
-import type { AdminKycRecord } from "../../lib/api/admin.service";
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Files, CheckCircle2, Clock, XCircle, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge, Tabs } from '../../components/ui';
+import { adminService } from '../../lib/api/admin.service';
+import type { AdminKycRecord } from '../../lib/api/admin.service';
 
-const STATUS_TABS = ["Tous", "Validés", "En attente", "Rejetés"];
+const STATUS_TABS = ['Tous', 'Validés', 'En attente', 'Rejetés'];
 
 const STATUS_FILTER_MAP: Record<string, string | undefined> = {
   Tous: undefined,
-  "Validés": "APPROVED",
-  "En attente": "PENDING",
-  Rejetés: "REJECTED",
+  Validés: 'APPROVED',
+  'En attente': 'PENDING',
+  Rejetés: 'REJECTED',
 };
 
-const STATUS_BADGE: Record<string, { tone: "green" | "orange" | "red" | "blue" | "amber"; label: string }> = {
-  APPROVED: { tone: "green", label: "Validé" },
-  PENDING: { tone: "orange", label: "En attente" },
-  REJECTED: { tone: "red", label: "Rejeté" },
+const STATUS_BADGE: Record<
+  string,
+  { tone: 'green' | 'orange' | 'red' | 'blue' | 'amber'; label: string }
+> = {
+  APPROVED: { tone: 'green', label: 'Validé' },
+  PENDING: { tone: 'orange', label: 'En attente' },
+  REJECTED: { tone: 'red', label: 'Rejeté' },
 };
 
 const DOC_LABELS: Record<string, string> = {
-  PASSPORT: "Passeport",
+  PASSPORT: 'Passeport',
   NATIONAL_ID: "Carte d'identité",
-  DRIVER_LICENSE: "Permis de conduire",
+  DRIVER_LICENSE: 'Permis de conduire',
 };
 
 function formatDate(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 export default function KycListPage() {
-  const [tab, setTab] = useState("Tous");
+  const [tab, setTab] = useState('Tous');
   const navigate = useNavigate();
   const [records, setRecords] = useState<AdminKycRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +49,7 @@ export default function KycListPage() {
       const data = await adminService.listKyc(status);
       setRecords(data);
     } catch {
-      setError("Erreur lors du chargement des dossiers KYC.");
+      setError('Erreur lors du chargement des dossiers KYC.');
     } finally {
       setLoading(false);
     }
@@ -58,14 +61,13 @@ export default function KycListPage() {
 
   const counts = {
     total: records.length,
-    approved: records.filter((r) => r.status === "APPROVED").length,
-    pending: records.filter((r) => r.status === "PENDING").length,
-    rejected: records.filter((r) => r.status === "REJECTED").length,
+    approved: records.filter((r) => r.status === 'APPROVED').length,
+    pending: records.filter((r) => r.status === 'PENDING').length,
+    rejected: records.filter((r) => r.status === 'REJECTED').length,
   };
 
-  const filtered = tab === "Tous"
-    ? records
-    : records.filter((r) => r.status === STATUS_FILTER_MAP[tab]);
+  const filtered =
+    tab === 'Tous' ? records : records.filter((r) => r.status === STATUS_FILTER_MAP[tab]);
 
   return (
     <AdminLayout active="kyc">
@@ -118,11 +120,7 @@ export default function KycListPage() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
-          <Tabs
-            tabs={STATUS_TABS}
-            active={tab}
-            onChange={setTab}
-          />
+          <Tabs tabs={STATUS_TABS} active={tab} onChange={setTab} />
           <button className="h-8 px-3 rounded-lg border border-gray-200 text-[11px] text-gray-600 flex items-center gap-1.5 shrink-0">
             <SlidersHorizontal className="w-3.5 h-3.5" />
             Filtres
@@ -138,9 +136,7 @@ export default function KycListPage() {
             {error}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-10 text-sm text-gray-400">
-            Aucun dossier KYC trouvé.
-          </div>
+          <div className="text-center py-10 text-sm text-gray-400">Aucun dossier KYC trouvé.</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
@@ -154,7 +150,10 @@ export default function KycListPage() {
             </thead>
             <tbody>
               {filtered.map((row) => {
-                const badge = STATUS_BADGE[row.status] ?? { tone: "orange" as const, label: row.status };
+                const badge = STATUS_BADGE[row.status] ?? {
+                  tone: 'orange' as const,
+                  label: row.status,
+                };
                 const initials = `U${row.userId}`;
                 return (
                   <tr key={row.id} className="border-b border-gray-50 last:border-0">
@@ -164,13 +163,17 @@ export default function KycListPage() {
                           {initials}
                         </span>
                         <div>
-                          <p className="text-xs font-medium text-afrilink-dark">Utilisateur {row.userId}</p>
+                          <p className="text-xs font-medium text-afrilink-dark">
+                            Utilisateur {row.userId}
+                          </p>
                           <p className="text-[11px] text-gray-400">ID: {row.id}</p>
                         </div>
                       </div>
                     </td>
                     <td className="text-xs text-gray-500">{formatDate(row.createdAt)}</td>
-                    <td className="text-xs text-gray-500">{DOC_LABELS[row.IdentityDocumentType] || row.IdentityDocumentType}</td>
+                    <td className="text-xs text-gray-500">
+                      {DOC_LABELS[row.IdentityDocumentType] || row.IdentityDocumentType}
+                    </td>
                     <td>
                       <Badge tone={badge.tone}>{badge.label}</Badge>
                     </td>

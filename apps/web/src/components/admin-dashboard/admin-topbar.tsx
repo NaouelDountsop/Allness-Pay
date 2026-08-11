@@ -1,9 +1,9 @@
-import { Search, Bell, HelpCircle } from "lucide-react";
-import { Avatar } from "../ui/avatar";
+import { Search, Bell, HelpCircle } from 'lucide-react';
+import { Avatar } from '../ui/avatar';
 
 export function AdminTopbar({
-  adminName = "Admin Principal",
-  adminId = "PA-00431",
+  adminName = 'Admin Principal',
+  adminId = 'PA-00431',
 }: {
   adminName?: string;
   adminId?: string;
@@ -22,7 +22,10 @@ export function AdminTopbar({
       </div>
 
       <div className="flex items-center gap-3 md:gap-4 shrink-0">
-        <button className="sm:hidden text-gray-400 hover:text-afrilink-dark" aria-label="Rechercher">
+        <button
+          className="sm:hidden text-gray-400 hover:text-afrilink-dark"
+          aria-label="Rechercher"
+        >
           <Search className="w-5 h-5" />
         </button>
         <button className="text-gray-400 hover:text-afrilink-dark" aria-label="Notifications">
@@ -32,7 +35,12 @@ export function AdminTopbar({
           <HelpCircle className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2 pl-3 md:pl-4 border-l border-gray-100">
-          <Avatar initials={adminName.split(" ").map((n) => n[0]).join("")} />
+          <Avatar
+            initials={adminName
+              .split(' ')
+              .map((n) => n[0])
+              .join('')}
+          />
           <div className="leading-tight hidden sm:block">
             <p className="text-xs font-semibold text-afrilink-dark">{adminName}</p>
             <p className="text-[11px] text-gray-400">ID: {adminId}</p>

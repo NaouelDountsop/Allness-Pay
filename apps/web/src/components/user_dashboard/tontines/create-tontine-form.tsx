@@ -1,69 +1,65 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Info, AlertTriangle } from "lucide-react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Info, AlertTriangle } from 'lucide-react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { tontineService } from '@/lib/api/tontine.service';
 
-type Tab = "general" | "finances" | "regles" | "membres";
+type Tab = 'general' | 'finances' | 'regles' | 'membres';
 
 const tabs: { key: Tab; label: string; icon: string }[] = [
-  { key: "general", label: "Général", icon: "①" },
-  { key: "finances", label: "Finances", icon: "💰" },
-  { key: "regles", label: "Règles", icon: "📋" },
-  { key: "membres", label: "Membres", icon: "👥" },
+  { key: 'general', label: 'Général', icon: '①' },
+  { key: 'finances', label: 'Finances', icon: '💰' },
+  { key: 'regles', label: 'Règles', icon: '📋' },
+  { key: 'membres', label: 'Membres', icon: '👥' },
 ];
 
-const COUNTRY_CURRENCY_MAP: Record<string, "XAF" | "USD" | "EUR" | "GBP" | "CAD"> = {
-  Cameroun: "XAF",
-  Sénégal: "XAF",
-  "Côte d'Ivoire": "XAF",
-  France: "EUR",
-  "États-Unis": "USD",
-  "Royaume-Uni": "GBP",
-  Canada: "CAD",
+const COUNTRY_CURRENCY_MAP: Record<string, 'XAF' | 'USD' | 'EUR' | 'GBP' | 'CAD'> = {
+  Cameroun: 'XAF',
+  Sénégal: 'XAF',
+  "Côte d'Ivoire": 'XAF',
+  France: 'EUR',
+  'États-Unis': 'USD',
+  'Royaume-Uni': 'GBP',
+  Canada: 'CAD',
 };
 
 const generalSchema = z.object({
   name: z
     .string()
-    .min(3, "Minimum 3 caractères")
-    .max(100, "Maximum 100 caractères")
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, "Seules les lettres, espaces, tirets et apostrophes sont autorisés"),
-  description: z
-    .string()
-    .min(10, "Minimum 10 caractères")
-    .max(500, "Maximum 500 caractères"),
-  contribution: z
-    .string()
-    .refine((val) => {
-      const num = Number(val);
-      return !isNaN(num) && num >= 100;
-    }, "La contribution doit être d'au moins 100"),
-  memberLimit: z
-    .string()
-    .refine((val) => {
-      const num = Number(val);
-      return Number.isInteger(num) && num >= 2 && num <= 50;
-    }, "Le nombre de membres doit être entre 2 et 50"),
-  currency: z.enum(["XAF", "USD", "EUR", "GBP", "CAD"]),
+    .min(3, 'Minimum 3 caractères')
+    .max(100, 'Maximum 100 caractères')
+    .regex(
+      /^[a-zA-ZÀ-ÿ\s'-]+$/,
+      'Seules les lettres, espaces, tirets et apostrophes sont autorisés',
+    ),
+  description: z.string().min(10, 'Minimum 10 caractères').max(500, 'Maximum 500 caractères'),
+  contribution: z.string().refine((val) => {
+    const num = Number(val);
+    return !isNaN(num) && num >= 100;
+  }, "La contribution doit être d'au moins 100"),
+  memberLimit: z.string().refine((val) => {
+    const num = Number(val);
+    return Number.isInteger(num) && num >= 2 && num <= 50;
+  }, 'Le nombre de membres doit être entre 2 et 50'),
+  currency: z.enum(['XAF', 'USD', 'EUR', 'GBP', 'CAD']),
 });
 
 type GeneralFormData = z.infer<typeof generalSchema>;
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  XAF: "FCFA",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-  CAD: "CA$",
+  XAF: 'FCFA',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  CAD: 'CA$',
 };
 
 export function CreateTontineForm() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("general");
-  const [frequency, setFrequency] = useState("MONTHLY");
+  const [activeTab, setActiveTab] = useState<Tab>('general');
+  const [frequency, setFrequency] = useState('MONTHLY');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,20 +71,20 @@ export function CreateTontineForm() {
     formState: { errors, isValid },
   } = useForm<GeneralFormData>({
     resolver: zodResolver(generalSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      name: "",
-      description: "",
-      contribution: "500",
-      memberLimit: "12",
-      currency: "XAF",
+      name: '',
+      description: '',
+      contribution: '500',
+      memberLimit: '12',
+      currency: 'XAF',
     },
   });
 
-  const contribution = watch("contribution");
-  const currency = watch("currency");
+  const contribution = watch('contribution');
+  const currency = watch('currency');
   const estimatedPot = (parseFloat(contribution) || 0) * 12;
-  const symbol = CURRENCY_SYMBOLS[currency] || "$";
+  const symbol = CURRENCY_SYMBOLS[currency] || '$';
 
   const handleInitialize = async () => {
     setError(null);
@@ -105,9 +101,9 @@ export function CreateTontineForm() {
         memberLimit: Number(data.memberLimit),
         currency: data.currency,
       });
-      navigate("/dashboard/tontines");
+      navigate('/dashboard/tontines');
     } catch (createError) {
-      setError("Impossible de créer la tontine. Merci de réessayer.");
+      setError('Impossible de créer la tontine. Merci de réessayer.');
       console.error(createError);
     } finally {
       setIsSubmitting(false);
@@ -115,13 +111,13 @@ export function CreateTontineForm() {
   };
 
   const onGeneralSubmit = () => {
-    setActiveTab("finances");
+    setActiveTab('finances');
   };
 
   const onCountryChange = (country: string) => {
     const mapped = COUNTRY_CURRENCY_MAP[country];
     if (mapped) {
-      setValue("currency", mapped, { shouldValidate: true });
+      setValue('currency', mapped, { shouldValidate: true });
     }
   };
 
@@ -134,8 +130,8 @@ export function CreateTontineForm() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab.key
-                ? "border-afrilink-green text-afrilink-dark"
-                : "border-transparent text-gray-400"
+                ? 'border-afrilink-green text-afrilink-dark'
+                : 'border-transparent text-gray-400'
             }`}
           >
             {tab.label}
@@ -143,7 +139,7 @@ export function CreateTontineForm() {
         ))}
       </div>
 
-      {activeTab === "general" && (
+      {activeTab === 'general' && (
         <form onSubmit={handleSubmit(onGeneralSubmit)} noValidate>
           <div className="flex items-center gap-2 mb-4">
             <span className="w-5 h-5 rounded-full bg-afrilink-orange text-white text-[10px] font-semibold flex items-center justify-center">
@@ -158,7 +154,7 @@ export function CreateTontineForm() {
               <input
                 type="text"
                 placeholder="ex: Épargne Exécutive T4"
-                {...register("name")}
+                {...register('name')}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
               />
               {errors.name && (
@@ -186,7 +182,7 @@ export function CreateTontineForm() {
             <div>
               <label className="text-xs font-medium text-gray-500">Devise</label>
               <select
-                {...register("currency")}
+                {...register('currency')}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
               >
                 <option value="XAF">XAF - Franc CFA</option>
@@ -207,7 +203,7 @@ export function CreateTontineForm() {
             <textarea
               rows={3}
               placeholder="Décrivez brièvement le but de ce cercle d'épargne..."
-              {...register("description")}
+              {...register('description')}
               className="w-full rounded-lg border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange resize-none"
             />
             {errors.description && (
@@ -224,12 +220,14 @@ export function CreateTontineForm() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
             <div>
-              <label className="text-xs font-medium text-gray-500">Montant de la contribution</label>
+              <label className="text-xs font-medium text-gray-500">
+                Montant de la contribution
+              </label>
               <div className="flex items-center h-11 rounded-lg border border-gray-200 mt-1 px-3">
                 <span className="text-sm text-gray-500 mr-1">{symbol}</span>
                 <input
                   type="number"
-                  {...register("contribution")}
+                  {...register('contribution')}
                   className="flex-1 text-sm bg-transparent focus:outline-none text-gray-900"
                 />
               </div>
@@ -250,12 +248,14 @@ export function CreateTontineForm() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500">Nombre de membres de la tontine</label>
+              <label className="text-xs font-medium text-gray-500">
+                Nombre de membres de la tontine
+              </label>
               <input
                 type="number"
                 min={2}
                 placeholder="ex: 25"
-                {...register("memberLimit")}
+                {...register('memberLimit')}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
               />
               {errors.memberLimit && (
@@ -269,11 +269,17 @@ export function CreateTontineForm() {
               <p className="text-[11px] text-white/60">POT TOTAL ESTIMÉ</p>
               <p className="text-[10px] text-white/40">Basé sur 12 cycles et 12 membres</p>
             </div>
-            <p className="text-2xl font-bold">{symbol}{estimatedPot.toFixed(2)}</p>
+            <p className="text-2xl font-bold">
+              {symbol}
+              {estimatedPot.toFixed(2)}
+            </p>
           </div>
 
           <div className="flex justify-end gap-3">
-            <button type="button" className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
+            <button
+              type="button"
+              className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600"
+            >
               Enregistrer le brouillon
             </button>
             <button
@@ -287,18 +293,12 @@ export function CreateTontineForm() {
         </form>
       )}
 
-      {activeTab === "finances" && (
-        <FinancesTab onNext={() => setActiveTab("regles")} />
-      )}
+      {activeTab === 'finances' && <FinancesTab onNext={() => setActiveTab('regles')} />}
 
-      {activeTab === "regles" && <ReglesTab onNext={() => setActiveTab("membres")} />}
+      {activeTab === 'regles' && <ReglesTab onNext={() => setActiveTab('membres')} />}
 
-      {activeTab === "membres" && (
-        <MembresTab
-          onSubmit={handleInitialize}
-          isSubmitting={isSubmitting}
-          error={error}
-        />
+      {activeTab === 'membres' && (
+        <MembresTab onSubmit={handleInitialize} isSubmitting={isSubmitting} error={error} />
       )}
     </div>
   );
@@ -317,8 +317,8 @@ function FinancesTab({ onNext }: { onNext: () => void }) {
       <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-4 mb-6 text-xs text-blue-700">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
-          Les fonds seront transférés automatiquement vers le compte du bénéficiaire selon
-          l'ordre de passage défini à l'étape suivante.
+          Les fonds seront transférés automatiquement vers le compte du bénéficiaire selon l'ordre
+          de passage défini à l'étape suivante.
         </p>
       </div>
       <div className="flex justify-end">
@@ -345,9 +345,7 @@ function ReglesTab({ onNext }: { onNext: () => void }) {
       </div>
       <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-afrilink-orange">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-        <p>
-          Des frais de retard de 5% s'appliquent automatiquement après le délai de grâce.
-        </p>
+        <p>Des frais de retard de 5% s'appliquent automatiquement après le délai de grâce.</p>
       </div>
       <div className="flex justify-end">
         <button
@@ -397,7 +395,7 @@ function MembresTab({
           disabled={isSubmitting}
           className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium"
         >
-          {isSubmitting ? "Création en cours..." : "Initialiser la Tontine"}
+          {isSubmitting ? 'Création en cours...' : 'Initialiser la Tontine'}
         </button>
       </div>
     </div>

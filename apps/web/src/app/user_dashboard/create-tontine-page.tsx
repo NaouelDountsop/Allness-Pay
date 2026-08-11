@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { CreateTontineForm } from "@/components/user_dashboard/tontines/create-tontine-form";
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { CreateTontineForm } from '@/components/user_dashboard/tontines/create-tontine-form';
 
 export default function CreateTontinePage() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function CreateTontinePage() {
 
       <div>
         <button
-          onClick={() => navigate("/dashboard/tontines")}
+          onClick={() => navigate('/dashboard/tontines')}
           className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-6"
         >
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />

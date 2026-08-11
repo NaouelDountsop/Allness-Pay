@@ -23,18 +23,14 @@ export class ContributionReminderJob {
       relations: ['contributions'],
     });
 
-    this.logger.log(
-      `${upcomingCycles.length} cycles avec échéance proche`,
-    );
+    this.logger.log(`${upcomingCycles.length} cycles avec échéance proche`);
 
     for (const cycle of upcomingCycles) {
       const pendingContributions = cycle.contributions.filter(
         (c) => c.status === TontineContributionStatus.PENDING,
       );
 
-      this.logger.log(
-        `Cycle ${cycle.id}: ${pendingContributions.length} contributions en attente`,
-      );
+      this.logger.log(`Cycle ${cycle.id}: ${pendingContributions.length} contributions en attente`);
     }
   }
 }

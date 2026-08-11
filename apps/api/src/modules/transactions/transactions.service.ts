@@ -100,7 +100,12 @@ export class TransactionsService {
       await this.walletsService.lockWalletForUpdate(manager, firstId);
       await this.walletsService.lockWalletForUpdate(manager, secondId);
 
-      const fromWallet = await this.pinService.verifyPinWithManager(manager, fromId, userId, dto.pin);
+      const fromWallet = await this.pinService.verifyPinWithManager(
+        manager,
+        fromId,
+        userId,
+        dto.pin,
+      );
       this.walletsService.assertActive(fromWallet);
       this.assertNotTontine(fromWallet);
 
@@ -216,9 +221,7 @@ export class TransactionsService {
       });
 
       if (!transaction) {
-        throw new BadRequestException(
-          `Transaction ${provider}:${identifier} introuvable`,
-        );
+        throw new BadRequestException(`Transaction ${provider}:${identifier} introuvable`);
       }
 
       // Idempotence : si déjà COMPLETED, on ne fait rien
@@ -255,10 +258,7 @@ export class TransactionsService {
       .getMany();
   }
 
-  private async recalculateBalance(
-    manager: EntityManager,
-    walletId: string,
-  ): Promise<bigint> {
+  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
     const result = await manager
       .createQueryBuilder(WalletTransaction, 'wt')
       .select(

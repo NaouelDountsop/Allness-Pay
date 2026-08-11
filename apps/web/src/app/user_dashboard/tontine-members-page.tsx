@@ -1,17 +1,17 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { MembersTable } from "@/components/user_dashboard/tontines/members-table";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { MembersTable } from '@/components/user_dashboard/tontines/members-table';
+import { tontineService } from '@/lib/api/tontine.service';
 
 export default function TontineMembersPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data: tontine, isLoading } = useQuery({
-    queryKey: ["tontine", id],
+    queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
@@ -38,7 +38,7 @@ export default function TontineMembersPage() {
               Le groupe d'épargne demandé est introuvable. Retournez à la liste des tontines.
             </p>
             <button
-              onClick={() => navigate("/dashboard/tontines")}
+              onClick={() => navigate('/dashboard/tontines')}
               className="mt-6 inline-flex items-center justify-center rounded-lg bg-afrilink-green px-4 py-2 text-sm font-medium text-white hover:bg-afrilink-greenHover"
             >
               Retour aux tontines
@@ -73,7 +73,9 @@ export default function TontineMembersPage() {
             </div>
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Tour actuel</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.currentCycle} / {tontine.memberLimit}</p>
+              <p className="font-semibold text-afrilink-dark">
+                {tontine.currentCycle} / {tontine.memberLimit}
+              </p>
             </div>
           </div>
         </div>
@@ -86,7 +88,9 @@ export default function TontineMembersPage() {
             </div>
             <div className="text-right">
               <p className="text-xs text-gray-400">Devise</p>
-              <p className="text-sm font-semibold text-afrilink-dark">{tontine.currency ?? "CFA"}</p>
+              <p className="text-sm font-semibold text-afrilink-dark">
+                {tontine.currency ?? 'CFA'}
+              </p>
             </div>
           </div>
         </div>

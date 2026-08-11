@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -11,37 +11,34 @@ import {
   UserCog,
   TrendingUp,
   LogOut,
-} from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
-import { authStorage } from "@/lib/auth-storage";
+} from 'lucide-react';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
 const navItems: NavItem[] = [
-  { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, end: true },
-  { to: "/admin/utilisateurs", label: "Utilisateurs", icon: Users },
-  { to: "/admin/kyc", label: "Gestion KYC", icon: ShieldCheck },
-  { to: "/admin/tontines", label: "Tontines", icon: PiggyBank },
-  { to: "/admin/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { to: "/admin/marchands", label: "Marchands", icon: Store },
-  { to: "/admin/taux-de-change", label: "Taux de change", icon: TrendingUp },
-  { to: "/admin/partenaires", label: "Partenaires", icon: Handshake },
+  { to: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
+  { to: '/admin/utilisateurs', label: 'Utilisateurs', icon: Users },
+  { to: '/admin/kyc', label: 'Gestion KYC', icon: ShieldCheck },
+  { to: '/admin/tontines', label: 'Tontines', icon: PiggyBank },
+  { to: '/admin/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { to: '/admin/marchands', label: 'Marchands', icon: Store },
+  { to: '/admin/taux-de-change', label: 'Taux de change', icon: TrendingUp },
+  { to: '/admin/partenaires', label: 'Partenaires', icon: Handshake },
 ];
 
 const adminOnlyItems: NavItem[] = [
-  { to: "/admin/parametres", label: "Paramètres", icon: Settings },
+  { to: '/admin/parametres', label: 'Paramètres', icon: Settings },
 ];
 
 const superAdminItems: NavItem[] = [
-  { to: "/admin/administrateurs", label: "Gestion des Admins", icon: UserCog },
+  { to: '/admin/administrateurs', label: 'Gestion des Admins', icon: UserCog },
 ];
 
-export function AdminSidebar({ role = "admin" }: { role?: "admin" | "super-admin" }) {
+export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin' }) {
   const navigate = useNavigate();
-  const items = [
-    ...navItems,
-    ...(role === "super-admin" ? superAdminItems : adminOnlyItems),
-  ];
+  const items = [...navItems, ...(role === 'super-admin' ? superAdminItems : adminOnlyItems)];
 
   const handleLogout = async () => {
     try {
@@ -50,7 +47,7 @@ export function AdminSidebar({ role = "admin" }: { role?: "admin" | "super-admin
       // Même si l'appel échoue, on déconnecte côté client
     } finally {
       authStorage.clearAll();
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   };
 
@@ -58,7 +55,11 @@ export function AdminSidebar({ role = "admin" }: { role?: "admin" | "super-admin
     <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
       <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
         <div className="flex items-center gap-2">
-          <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-12 h-17 object-contain" />
+          <img
+            src="/afrilinkpay_logo1.svg"
+            alt="AfrilinkPay"
+            className="w-12 h-17 object-contain"
+          />
           <span className="font-bold text-md">
             Afrilink<span className="text-afrilink-orange">Pay</span>
           </span>
@@ -74,8 +75,8 @@ export function AdminSidebar({ role = "admin" }: { role?: "admin" | "super-admin
             className={({ isActive }) =>
               `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? "bg-white text-afrilink-orange font-medium"
-                  : "text-white hover:bg-white/5"
+                  ? 'bg-white text-afrilink-orange font-medium'
+                  : 'text-white hover:bg-white/5'
               }`
             }
           >

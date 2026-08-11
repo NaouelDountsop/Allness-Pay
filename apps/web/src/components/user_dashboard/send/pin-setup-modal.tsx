@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { X } from "lucide-react";
-import { PinPad } from "./pin-pad";
+import { useState } from 'react';
+import { X } from 'lucide-react';
+import { PinPad } from './pin-pad';
 
 interface PinSetupModalProps {
   onComplete: (pin: string) => void;
@@ -8,16 +8,16 @@ interface PinSetupModalProps {
 }
 
 export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
-  const [phase, setPhase] = useState<"create" | "confirm">("create");
-  const [pin, setPin] = useState("");
-  const [confirmPin, setConfirmPin] = useState("");
+  const [phase, setPhase] = useState<'create' | 'confirm'>('create');
+  const [pin, setPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
   const [error, setError] = useState(false);
 
   const handleChange = (value: string) => {
-    if (phase === "create") {
+    if (phase === 'create') {
       setPin(value);
       if (value.length === 4) {
-        setTimeout(() => setPhase("confirm"), 200);
+        setTimeout(() => setPhase('confirm'), 200);
       }
     } else {
       setConfirmPin(value);
@@ -27,7 +27,7 @@ export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
         } else {
           setError(true);
           setTimeout(() => {
-            setConfirmPin("");
+            setConfirmPin('');
             setError(false);
           }, 700);
         }
@@ -56,24 +56,22 @@ export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
 
         <div className="p-6 text-center">
           <h3 className="text-base font-semibold text-afrilink-dark mb-1">
-            {phase === "create" ? "Créer votre code PIN" : "Confirmer votre code PIN"}
+            {phase === 'create' ? 'Créer votre code PIN' : 'Confirmer votre code PIN'}
           </h3>
           <p className="text-xs text-gray-500 mb-6">
-            {phase === "create"
-              ? "Ce code à 4 chiffres sécurisera toutes vos transactions."
-              : "Veuillez ressaisir le même code pour confirmer."}
+            {phase === 'create'
+              ? 'Ce code à 4 chiffres sécurisera toutes vos transactions.'
+              : 'Veuillez ressaisir le même code pour confirmer.'}
           </p>
 
           <PinPad
-            value={phase === "create" ? pin : confirmPin}
+            value={phase === 'create' ? pin : confirmPin}
             onChange={handleChange}
             error={error}
           />
 
           {error && (
-            <p className="text-xs text-red-500 mt-4">
-              Les codes ne correspondent pas, réessayez.
-            </p>
+            <p className="text-xs text-red-500 mt-4">Les codes ne correspondent pas, réessayez.</p>
           )}
         </div>
       </div>

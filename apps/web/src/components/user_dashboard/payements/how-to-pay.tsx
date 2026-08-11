@@ -1,20 +1,18 @@
 const steps = [
   {
     number: 1,
-    title: "Scanner le QR Code du marchand",
-    description: "Utilisez la caméra pour scanner le code QR affiché par le marchand.",
+    title: 'Scanner le QR Code du marchand',
+    description: 'Utilisez la caméra pour scanner le code QR affiché par le marchand.',
   },
   {
     number: 2,
-    title: "Vérifier les informations",
-    description:
-      "Utilisez la caméra pour scanner le QR code affiché par le marchand.",
+    title: 'Vérifier les informations',
+    description: 'Utilisez la caméra pour scanner le QR code affiché par le marchand.',
   },
   {
     number: 3,
-    title: "Confirmer le paiement",
-    description:
-      "Utilisez la caméra pour scanner le QR code affiché par le marchand.",
+    title: 'Confirmer le paiement',
+    description: 'Utilisez la caméra pour scanner le QR code affiché par le marchand.',
   },
 ];
 

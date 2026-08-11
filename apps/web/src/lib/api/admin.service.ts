@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from '@/lib/api-client';
 
 export interface AdminDashboardStats {
   totalUsers: number;
@@ -41,7 +41,7 @@ export interface AdminKycRecord {
   documentBackUrl: string | null;
   selfieUrl: string;
   proofOfAddressUrl: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   reviewComment: string | null;
   verifiedBy: number | null;
   verifiedAt: string | null;
@@ -78,12 +78,12 @@ export interface AdminTontine {
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
-    const res = await apiClient.get<AdminDashboardStats>("/admin/dashboard/stats");
+    const res = await apiClient.get<AdminDashboardStats>('/admin/dashboard/stats');
     return res.data;
   },
 
   listUsers: async (): Promise<AdminUser[]> => {
-    const res = await apiClient.get<AdminUser[]>("/admin/users");
+    const res = await apiClient.get<AdminUser[]>('/admin/users');
     return res.data;
   },
 
@@ -94,7 +94,7 @@ export const adminService = {
 
   listKyc: async (status?: string): Promise<AdminKycRecord[]> => {
     const params = status ? { status } : undefined;
-    const res = await apiClient.get<AdminKycRecord[]>("/admin/kyc", { params });
+    const res = await apiClient.get<AdminKycRecord[]>('/admin/kyc', { params });
     return res.data;
   },
 
@@ -103,13 +103,16 @@ export const adminService = {
     return res.data;
   },
 
-  reviewKyc: async (id: number, data: { status: string; reviewComment?: string }): Promise<AdminKycRecord> => {
+  reviewKyc: async (
+    id: number,
+    data: { status: string; reviewComment?: string },
+  ): Promise<AdminKycRecord> => {
     const res = await apiClient.patch<AdminKycRecord>(`/kyc/${id}/review`, data);
     return res.data;
   },
 
   listTontines: async (): Promise<AdminTontine[]> => {
-    const res = await apiClient.get<AdminTontine[]>("/admin/tontines");
+    const res = await apiClient.get<AdminTontine[]>('/admin/tontines');
     return res.data;
   },
 };

@@ -11,7 +11,6 @@ import { MailService } from '../mail/mail.service';
 import { WalletsService } from '../wallet/wallet.service';
 import { getCurrencyByCountry } from '../../config/country-currency.config';
 
-
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -28,21 +27,18 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-  const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } = createUserDto;
+    const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } =
+      createUserDto;
 
-  const existing = await this.usersRepository.findOne({
-    where: [
-      { email },
-      { telephone },
-      ...(googleId ? [{ googleId }] : []),
-    ],
-  });
+    const existing = await this.usersRepository.findOne({
+      where: [{ email }, { telephone }, ...(googleId ? [{ googleId }] : [])],
+    });
 
-  if (existing) {
-    throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
-  }
+    if (existing) {
+      throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
+    }
 
-  const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
+    const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
 
     // Transaction atomique : user + wallet échouent ou réussissent ensemble
     const savedUser = await this.dataSource.transaction(async (manager) => {
@@ -74,7 +70,7 @@ export class UsersService {
     return savedUser;
   }
 
-  findAll() : Promise<User []> {
+  findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
@@ -149,7 +145,6 @@ export class UsersService {
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
 
-  
     await this.mailService.sendOtp(email, otpCode);
 
     return { message: 'OTP renvoyé, vérifiez votre email.' };

@@ -4,8 +4,12 @@ export class CreateTontineTables1785750000000 implements MigrationInterface {
   name = 'CreateTontineTables1785750000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`CREATE TYPE "public"."tontine_frequency_enum" AS ENUM('Hebdomadaire', 'Mensuelle')`);
-    await queryRunner.query(`CREATE TYPE "public"."tontine_status_enum" AS ENUM('active', 'paused', 'completed', 'cancelled')`);
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontine_frequency_enum" AS ENUM('Hebdomadaire', 'Mensuelle')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontine_status_enum" AS ENUM('active', 'paused', 'completed', 'cancelled')`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "tontines" (
@@ -60,8 +64,12 @@ export class CreateTontineTables1785750000000 implements MigrationInterface {
     `);
 
     await queryRunner.query(`CREATE INDEX "IDX_tontines_createurId" ON "tontines" ("createurId")`);
-    await queryRunner.query(`CREATE INDEX "IDX_tontine_members_tontineId" ON "tontine_members" ("tontineId")`);
-    await queryRunner.query(`CREATE INDEX "IDX_tontine_members_userId" ON "tontine_members" ("userId")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_tontine_members_tontineId" ON "tontine_members" ("tontineId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_tontine_members_userId" ON "tontine_members" ("userId")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

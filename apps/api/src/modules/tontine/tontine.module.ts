@@ -48,12 +48,6 @@ import { User } from '../users/entities/user.entity';
     PayoutJob,
     ContributionReminderJob,
   ],
-  exports: [
-    TontineService,
-    CycleService,
-    ContributionService,
-    InvitationService,
-    PayoutService,
-  ],
+  exports: [TontineService, CycleService, ContributionService, InvitationService, PayoutService],
 })
 export class TontineModule {}

@@ -1,33 +1,32 @@
-import { useNavigate } from "react-router-dom";
-import { Users } from "lucide-react";
-import type { Tontine } from "@/lib/api/tontine.service";
+import { useNavigate } from 'react-router-dom';
+import { Users } from 'lucide-react';
+import type { Tontine } from '@/lib/api/tontine.service';
 
 interface TontineCardProps {
   tontine: Tontine;
 }
 
 const avatarColors = [
-  "bg-afrilink-green/10 text-afrilink-green",
-  "bg-afrilink-orange/10 text-afrilink-orange",
-  "bg-blue-50 text-blue-500",
-  "bg-purple-50 text-purple-500",
+  'bg-afrilink-green/10 text-afrilink-green',
+  'bg-afrilink-orange/10 text-afrilink-orange',
+  'bg-blue-50 text-blue-500',
+  'bg-purple-50 text-purple-500',
 ];
 
 export function TontineCard({ tontine }: TontineCardProps) {
   const navigate = useNavigate();
   const members = tontine.membres ?? [];
   const extraMembers = tontine.memberLimit - 3;
-  const progressPercent = tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
+  const progressPercent =
+    tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
 
   return (
     <div className="min-h-[420px] flex flex-col rounded-xl border border-gray-100 bg-white p-6 hover:shadow-md hover:border-gray-200 transition-all">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm font-semibold text-gray-900 truncate pr-2">
-          {tontine.name}
-        </p>
+        <p className="text-sm font-semibold text-gray-900 truncate pr-2">{tontine.name}</p>
         <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-afrilink-green px-2 py-0.5 rounded-full whitespace-nowrap">
-            {tontine.frequency}
+          {tontine.frequency}
         </span>
       </div>
 
@@ -59,14 +58,14 @@ export function TontineCard({ tontine }: TontineCardProps) {
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
           style={{
-            WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
-            WebkitMaskSize: "contain",
-            WebkitMaskRepeat: "no-repeat",
-            WebkitMaskPosition: "center",
-            maskImage: "url(/afrilinkpay_logo1.svg)",
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            maskPosition: "center",
+            WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+            WebkitMaskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskImage: 'url(/afrilinkpay_logo1.svg)',
+            maskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            maskPosition: 'center',
           }}
         />
 
@@ -76,13 +75,15 @@ export function TontineCard({ tontine }: TontineCardProps) {
             <p className="text-xs text-white/60 tracking-wide">CAGNOTTE</p>
           </div>
           <span className="text-[10px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">
-          {tontine.frequency}
+            {tontine.frequency}
           </span>
         </div>
 
         <p className="text-2xl font-bold relative z-10">
-          {new Intl.NumberFormat("fr-FR").format(Number(tontine.contributionAmount))}{" "}
-          <span className="text-sm font-medium text-afrilink-orange">{tontine.currency ?? "CFA"}</span>
+          {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
+          <span className="text-sm font-medium text-afrilink-orange">
+            {tontine.currency ?? 'CFA'}
+          </span>
         </p>
       </div>
 
@@ -99,7 +100,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
               className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-semibold ${avatarColors[i % avatarColors.length]}`}
               title={m.user?.prenom}
             >
-              {m.user?.prenom?.charAt(0)?.toUpperCase() ?? "?"}
+              {m.user?.prenom?.charAt(0)?.toUpperCase() ?? '?'}
             </span>
           ))}
           {extraMembers > 0 && (
@@ -116,11 +117,10 @@ export function TontineCard({ tontine }: TontineCardProps) {
       {/* Progression */}
       <div className="mb-2 flex items-center justify-between text-[11px]">
         <span className="text-gray-400">
-          Tour <span className="font-medium text-gray-600">{tontine.currentCycle}</span> / {tontine.memberLimit}
+          Tour <span className="font-medium text-gray-600">{tontine.currentCycle}</span> /{' '}
+          {tontine.memberLimit}
         </span>
-        <span className="text-afrilink-green font-semibold">
-          {progressPercent}%
-        </span>
+        <span className="text-afrilink-green font-semibold">{progressPercent}%</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden mb-6">
         <div

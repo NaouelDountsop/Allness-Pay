@@ -1,6 +1,6 @@
-import { X, Wallet, MapPin, History, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
-import { Badge } from "../../components/ui";
-import { SectionCard, Field } from "../../components/ui/section-card";
+import { X, Wallet, MapPin, History, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
+import { Badge } from '../../components/ui';
+import { SectionCard, Field } from '../../components/ui/section-card';
 
 export interface TransactionTimeline {
   label: string;
@@ -10,7 +10,7 @@ export interface TransactionTimeline {
 export interface TransactionDetail {
   reference: string;
   date: string;
-  status: "Complété" | "En attente" | "Bloqué";
+  status: 'Complété' | 'En attente' | 'Bloqué';
   amount: string;
   type: string;
   fees: string;
@@ -19,10 +19,10 @@ export interface TransactionDetail {
   timeline: TransactionTimeline[];
 }
 
-const STATUS_TONE: Record<string, "green" | "orange" | "red"> = {
-  Complété: "green",
-  "En attente": "orange",
-  Bloqué: "red",
+const STATUS_TONE: Record<string, 'green' | 'orange' | 'red'> = {
+  Complété: 'green',
+  'En attente': 'orange',
+  Bloqué: 'red',
 };
 
 export function TransactionDetailModal({
@@ -32,7 +32,7 @@ export function TransactionDetailModal({
   transaction: TransactionDetail;
   onClose: () => void;
 }) {
-  const tone = STATUS_TONE[transaction.status] ?? "orange";
+  const tone = STATUS_TONE[transaction.status] ?? 'orange';
 
   return (
     <div
@@ -54,11 +54,7 @@ export function TransactionDetailModal({
               <span className="text-white/40 text-[11px]">{transaction.date}</span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white/40 hover:text-white"
-            aria-label="Fermer"
-          >
+          <button onClick={onClose} className="text-white/40 hover:text-white" aria-label="Fermer">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -101,7 +97,7 @@ export function TransactionDetailModal({
             </div>
           </SectionCard>
 
-          {transaction.status === "Bloqué" && (
+          {transaction.status === 'Bloqué' && (
             <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
               <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
               <div>
