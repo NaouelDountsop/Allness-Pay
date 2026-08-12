@@ -19,9 +19,9 @@ export const appConfig = registerAs('app', () => ({
 export const databaseConfig = registerAs('database', () => ({
   host: process.env.DB_HOST ?? 'localhost',
   port: parseInt(process.env.DB_PORT ?? '5432', 10),
-  username: process.env.DB_USERNAME ?? 'afrilinkpay',
-  password: process.env.DB_PASSWORD ?? 'afrilinkpay',
-  database: process.env.DB_DATABASE ?? 'afrilinkpay',
+  username: (process.env.DB_USERNAME ?? 'afrilinkpay').trim(),
+  password: (process.env.DB_PASSWORD ?? 'afrilinkpay').trim(),
+  database: (process.env.DB_DATABASE ?? 'afrilinkpay').trim(),
   ssl: process.env.DB_SSL === 'true',
   // Volontairement non configurable a `true` ailleurs qu'en test : le schema
   // de production est pilote exclusivement par les migrations.
@@ -60,6 +60,28 @@ export const providersConfig = registerAs('providers', () => ({
     clientId: process.env.ORANGE_MONEY_CLIENT_ID ?? '',
     clientSecret: process.env.ORANGE_MONEY_CLIENT_SECRET ?? '',
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    callbackUrl:
+      process.env.GOOGLE_CALLBACK_URL ?? 'http://localhost:3000/api/v1/auth/google/callback',
+  },
+  tranzak: {
+    baseUrl: process.env.TRANZAK_BASE_URL ?? '',
+    appId: process.env.TRANZAK_APP_ID ?? '',
+    appKey: process.env.TRANZAK_APP_KEY ?? '',
+    callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+  },
+}));
+
+export const mailConfig = registerAs('mail', () => ({
+  host: process.env.SMTP_HOST ?? 'localhost',
+  port: parseInt(process.env.SMTP_PORT ?? '587', 10),
+  secure: process.env.SMTP_SECURE === 'true',
+  user: process.env.SMTP_USER ?? '',
+  pass: process.env.SMTP_PASS ?? '',
+  from: process.env.SMTP_FROM ?? 'noreply@afrilinkpay.com',
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
 }));
 
 export const configurations = [
@@ -69,6 +91,7 @@ export const configurations = [
   redisConfig,
   throttleConfig,
   providersConfig,
+  mailConfig,
 ];
 
 export type AppConfig = ReturnType<typeof appConfig>;
@@ -77,3 +100,4 @@ export type AuthConfig = ReturnType<typeof authConfig>;
 export type RedisConfig = ReturnType<typeof redisConfig>;
 export type ThrottleConfig = ReturnType<typeof throttleConfig>;
 export type ProvidersConfig = ReturnType<typeof providersConfig>;
+export type MailConfig = ReturnType<typeof mailConfig> & { frontendUrl: string };

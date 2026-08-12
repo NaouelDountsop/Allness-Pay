@@ -2,25 +2,34 @@ import 'reflect-metadata';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { join } from 'node:path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestContextInterceptor } from './common/interceptors/request-context.interceptor';
+import { BigIntSerializerInterceptor } from './common/interceptors/bigint-serializer.interceptor';
 import type { AppConfig } from './config/configuration';
+import { KYC_UPLOADS_DIR } from './common/config/uploads.config';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
   const config = app.get(ConfigService);
   const appConfig = config.getOrThrow<AppConfig>('app');
   const logger = new Logger('Bootstrap');
 
   // --- Securite ------------------------------------------------------------
-  app.use(helmet({ contentSecurityPolicy: appConfig.env === 'production' }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: appConfig.env === 'production',
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+    }),
+  );
 
-  // CORS par liste blanche explicite. Un `origin: true` reflechirait n'importe
-  // quel domaine appelant, ce qui annule la protection.
   app.enableCors({
     origin: appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins : false,
     credentials: true,
@@ -30,6 +39,11 @@ async function bootstrap(): Promise<void> {
     maxAge: 86_400,
   });
 
+  // --- Fichiers statiques (uploads KYC, etc.) -------------------------------
+  app.useStaticAssets(join(KYC_UPLOADS_DIR, '..'), {
+    prefix: '/uploads',
+  });
+
   // --- Routage -------------------------------------------------------------
   app.setGlobalPrefix(appConfig.prefix);
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: appConfig.version });
@@ -37,8 +51,6 @@ async function bootstrap(): Promise<void> {
   // --- Validation ----------------------------------------------------------
   app.useGlobalPipes(
     new ValidationPipe({
-      // `whitelist` retire les champs non declares ; `forbidNonWhitelisted`
-      // les refuse. Ensemble, ils bloquent l'affectation de masse.
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
@@ -48,7 +60,11 @@ async function bootstrap(): Promise<void> {
   );
 
   // --- Interception --------------------------------------------------------
-  app.useGlobalInterceptors(new RequestContextInterceptor(), new LoggingInterceptor());
+  app.useGlobalInterceptors(
+    new RequestContextInterceptor(),
+    new LoggingInterceptor(),
+    new BigIntSerializerInterceptor(),
+  );
   app.useGlobalFilters(new AllExceptionsFilter());
 
   // --- Documentation -------------------------------------------------------
@@ -58,7 +74,7 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('AfriLinkPay API')
         .setDescription(
-          'API de la plateforme de transfert d\'argent avec portefeuille electronique.',
+          "API de la plateforme de transfert d'argent avec portefeuille electronique.",
         )
         .setVersion(appConfig.version)
         .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
@@ -71,7 +87,6 @@ async function bootstrap(): Promise<void> {
     logger.log(`Documentation : http://localhost:${appConfig.port}/${appConfig.prefix}/docs`);
   }
 
-  // Laisse aux requetes en cours le temps de se terminer avant l'arret.
   app.enableShutdownHooks();
 
   await app.listen(appConfig.port);

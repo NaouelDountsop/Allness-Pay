@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { X, ScanLine } from "lucide-react";
+import { useEffect, useRef, useState } from 'react';
+import { X, ScanLine } from 'lucide-react';
 
 interface QrScannerModalProps {
   onClose: () => void;
@@ -8,7 +8,7 @@ interface QrScannerModalProps {
 
 export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [scanning, setScanning] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
     const startCamera = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
+          video: { facingMode: 'environment' },
         });
         if (videoRef.current) videoRef.current.srcObject = stream;
       } catch {
@@ -38,8 +38,8 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
     // À remplacer par une vraie librairie de décodage (ex: jsQR) branchée
     // sur les frames vidéo pour une lecture automatique en production.
     onScanSuccess({
-      merchant: "SuperMarket Bafoussam",
-      reference: "CMD123456",
+      merchant: 'SuperMarket Bafoussam',
+      reference: 'CMD123456',
       amount: 15000,
     });
   };
@@ -58,13 +58,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
         <p className="text-white text-sm text-center max-w-xs">{error}</p>
       ) : (
         <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-gray-900">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
+          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
           <div className="absolute inset-8 border-2 border-afrilink-orange rounded-xl" />
         </div>
       )}

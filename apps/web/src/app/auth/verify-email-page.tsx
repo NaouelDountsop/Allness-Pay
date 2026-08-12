@@ -1,20 +1,33 @@
-import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
-import { authService } from "@/lib/api/auth.service";
+import { useState, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
+import { authService } from '@/lib/api/auth.service';
 
 const RESEND_DELAY = 58;
 
 export default function VerifyEmailPage() {
-  const { state } = useLocation() as { state?: { email: string } };
+  const location = useLocation();
   const navigate = useNavigate();
-  const email = state?.email ?? "votre email";
+  const [email, setEmail] = useState<string>('');
 
-  const [code, setCode] = useState<string[]>(Array(6).fill(""));
+  const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(RESEND_DELAY);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    const emailFromState = (location.state as { email?: string })?.email || '';
+    const queryEmail = new URLSearchParams(location.search).get('email') || '';
+    const resolvedEmail = emailFromState || queryEmail;
+
+    if (!resolvedEmail) {
+      navigate('/signup', { replace: true });
+      return;
+    }
+
+    setEmail(resolvedEmail);
+  }, [location.search, location.state, navigate]);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -23,7 +36,7 @@ export default function VerifyEmailPage() {
   }, [countdown]);
 
   const formatTime = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -34,34 +47,37 @@ export default function VerifyEmailPage() {
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
+    if (e.key === 'Backspace' && !code[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     if (!pasted) return;
     e.preventDefault();
-    const next = Array(6).fill("");
-    pasted.split("").forEach((digit, i) => (next[i] = digit));
+    const next = Array(6).fill('');
+    pasted.split('').forEach((digit, i) => (next[i] = digit));
     setCode(next);
     inputsRef.current[Math.min(pasted.length, 5)]?.focus();
   };
 
   const handleVerify = async () => {
-    const fullCode = code.join("");
+    const fullCode = code.join('');
     if (fullCode.length < 6) {
-      setError("Veuillez saisir les 6 chiffres du code");
+      setError('Veuillez saisir les 6 chiffres du code');
       return;
     }
     try {
       setLoading(true);
-      setError("");
+      setError('');
       await authService.verifyEmail(email, fullCode);
-      navigate("/login");
-    } catch (e: any) {
-      setError(e?.response?.data?.message ?? "Code invalide, veuillez réessayer");
+      navigate('/login');
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string | string[] } }; message?: string };
+      const msg =
+        err?.response?.data?.message || err?.message || 'Code invalide, veuillez réessayer';
+      setError(Array.isArray(msg) ? msg.join(', ') : msg);
     } finally {
       setLoading(false);
     }
@@ -72,12 +88,26 @@ export default function VerifyEmailPage() {
     try {
       await authService.resendCode(email);
       setCountdown(RESEND_DELAY);
-      setCode(Array(6).fill(""));
+      setCode(Array(6).fill(''));
       inputsRef.current[0]?.focus();
-    } catch {
-      setError("Impossible de renvoyer le code pour le moment");
+      setError('');
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string | string[] } } };
+      const msg = err?.response?.data?.message || 'Impossible de renvoyer le code pour le moment';
+      setError(Array.isArray(msg) ? msg.join(', ') : msg);
     }
   };
+
+  useEffect(() => {
+    const emailFromState = (location.state as { email?: string })?.email || '';
+
+    if (!emailFromState) {
+      navigate('/signup', { replace: true });
+      return;
+    }
+
+    setEmail(emailFromState);
+  }, [location.state, navigate]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
@@ -96,12 +126,12 @@ export default function VerifyEmailPage() {
             <br />
             renforcée.
           </h1>
+
           <p className="text-sm text-white/70 leading-relaxed mb-10">
-            Votre sécurité est notre priorité absolue. Vérifiez votre identité pour accéder à
-            la gestion de vos finances mondiales.
+            Votre sécurité est notre priorité absolue. Vérifiez votre identité pour accéder à la
+            gestion de vos finances mondiales.
           </p>
 
-          {/* Badge de confiance */}
           <div className="mt-auto space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 rounded-full bg-afrilink-orange/15 flex items-center justify-center shrink-0">
@@ -117,20 +147,21 @@ export default function VerifyEmailPage() {
 
             <div className="w-full bg-white/5 border border-white/10 rounded-lg p-4 relative">
               <p className="text-xs text-white/70 italic leading-relaxed">
-                "En quelques secondes, mon compte était vérifié. Simple, rapide et
-                rassurant."
+                "En quelques secondes, mon compte était vérifié. Simple, rapide et rassurant."
               </p>
               <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
             </div>
           </div>
-</div>
+        </div>
+
         {/* Panneau droit */}
         <div className="flex-1 p-8 sm:p-10 flex flex-col justify-center">
           <h2 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-3">
             Vérifiez votre adresse e-mail
           </h2>
+
           <p className="text-sm text-gray-500 leading-relaxed mb-6">
-            Nous avons envoyé un code de vérification à 6 chiffres à{" "}
+            Nous avons envoyé un code de vérification à 6 chiffres à{' '}
             <span className="font-medium text-gray-700">{email}</span>. Veuillez le saisir
             ci-dessous pour continuer.
           </p>
@@ -139,7 +170,9 @@ export default function VerifyEmailPage() {
             {code.map((digit, i) => (
               <input
                 key={i}
-                ref={(el) => (inputsRef.current[i] = el)}
+                ref={(el) => {
+                  inputsRef.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -149,8 +182,8 @@ export default function VerifyEmailPage() {
                 onPaste={handlePaste}
                 className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-semibold rounded-lg border bg-white text-gray-900 focus:outline-none focus:ring-2 transition-colors ${
                   i === 0
-                    ? "border-blue-400 focus:ring-blue-300"
-                    : "border-afrilink-orange/50 focus:ring-afrilink-orange/40"
+                    ? 'border-blue-400 focus:ring-blue-300'
+                    : 'border-afrilink-orange/50 focus:ring-afrilink-orange/40'
                 }`}
               />
             ))}
@@ -161,7 +194,7 @@ export default function VerifyEmailPage() {
           <div className="h-px bg-gray-100 my-4" />
 
           <p className="text-sm text-gray-500 mb-6">
-            Ce n'est pas votre adresse ?{" "}
+            Ce n'est pas votre adresse ?{' '}
             <a href="/signup" className="text-blue-600 font-medium hover:underline">
               Modifier l'e-mail
             </a>
@@ -173,7 +206,7 @@ export default function VerifyEmailPage() {
             className="w-full h-12 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
-            {loading ? "Vérification..." : "Vérifier le code"}
+            {loading ? 'Vérification...' : 'Vérifier le code'}
           </button>
 
           <div className="text-center mt-5">
@@ -182,16 +215,14 @@ export default function VerifyEmailPage() {
               disabled={countdown > 0}
               className={`text-sm ${
                 countdown > 0
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-afrilink-green font-medium hover:underline"
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-afrilink-green font-medium hover:underline'
               }`}
             >
               Renvoyer le code
             </button>
             {countdown > 0 && (
-              <p className="text-xs text-gray-400 mt-1">
-                Disponible dans {formatTime(countdown)}
-              </p>
+              <p className="text-xs text-gray-400 mt-1">Disponible dans {formatTime(countdown)}</p>
             )}
           </div>
         </div>
@@ -199,4 +230,3 @@ export default function VerifyEmailPage() {
     </div>
   );
 }
-

@@ -1,0 +1,583 @@
+import type { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class InitialSchema1786096495515 implements MigrationInterface {
+  name = 'InitialSchema1786096495515';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "tontines" DROP CONSTRAINT "FK_fa226ae0f4779e130fc05264e82"`,
+    );
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP CONSTRAINT "admin_roles_roleId_fkey"`);
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP CONSTRAINT "admin_roles_adminId_fkey"`);
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" DROP CONSTRAINT "FK_linked_accounts_walletId"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" DROP CONSTRAINT "FK_linked_accounts_userId"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_permissionId_fkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_roleId_fkey"`,
+    );
+    await queryRunner.query(`DROP INDEX "public"."IDX_linked_accounts_userId"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_linked_accounts_walletId"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_linked_accounts_status"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_linked_accounts_type"`);
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" DROP CONSTRAINT "admin_roles_adminId_roleId_key"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "createdAt"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "updatedAt"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "targetAmount"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "contributionAmount"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "memberLimit"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "frequency"`);
+    await queryRunner.query(`DROP TYPE "public"."tontines_frequency_enum"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "status"`);
+    await queryRunner.query(`DROP TYPE "public"."tontines_status_enum"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "currentCycle"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "nextContributionAt"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "creatorId"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" DROP CONSTRAINT "REL_fa226ae0f4779e130fc05264e8"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "walletId"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "version"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "currency"`);
+    await queryRunner.query(
+      `CREATE TYPE "public"."wallet_transactions_operator_enum" AS ENUM('mtn_momo', 'orange_money', 'wave', 'free_money', 'moov_money', 'airtel_money', 'bank_app', 'other')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "wallet_transactions" ADD "operator" "public"."wallet_transactions_operator_enum"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "wallet_transactions" ADD "phoneNumber" character varying`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "tourOrdre" integer NOT NULL DEFAULT '0'`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "aPayeTourActuel" boolean NOT NULL DEFAULT false`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "dateRejoint" TIMESTAMP NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "montantCotisation" bigint NOT NULL`);
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontines_frequence_enum" AS ENUM('Hebdomadaire', 'Bimensuelle', 'Mensuelle')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "frequence" "public"."tontines_frequence_enum" NOT NULL DEFAULT 'Mensuelle'`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "nombreMembres" integer NOT NULL DEFAULT '12'`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontines_statut_enum" AS ENUM('DRAFT', 'ACTIVE', 'CLOSED')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "statut" "public"."tontines_statut_enum" NOT NULL DEFAULT 'DRAFT'`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "tourActuel" integer NOT NULL DEFAULT '0'`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "devise" character varying NOT NULL DEFAULT 'XAF'`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "createurId" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "utilisateur" ALTER COLUMN "adresse" SET NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "wallets" ALTER COLUMN "status" SET DEFAULT 'inactive'`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" DROP CONSTRAINT "FK_915c2366d8e0361da088d004f1d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" DROP CONSTRAINT "PK_ce19bf19aa8305318d5dcf6b613"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD CONSTRAINT "PK_ce19bf19aa8305318d5dcf6b613" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" ADD "tontineId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ALTER COLUMN "status" SET DEFAULT 'ACTIVE'`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" DROP CONSTRAINT "FK_7737d881c42db78d4a3cc1be51a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" DROP CONSTRAINT "FK_06b400c5c042020c33933379763"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" DROP CONSTRAINT "PK_e2ba1a485e389feb1e552d44b06"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD CONSTRAINT "PK_e2ba1a485e389feb1e552d44b06" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "name"`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "name" character varying(100) NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "description"`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "description" character varying(255)`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "createdAt"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "createdAt" TIMESTAMP NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "updatedAt"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "updatedAt" TIMESTAMP NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" DROP CONSTRAINT "PK_b50cabf30ed8d6de4a02ed9c745"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" ADD CONSTRAINT "PK_b50cabf30ed8d6de4a02ed9c745" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" ADD "tontineId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP CONSTRAINT "FK_3cf900ee567f801bd886e22e72c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP CONSTRAINT "PK_701b6ad102d93129a36e690745a"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD CONSTRAINT "PK_701b6ad102d93129a36e690745a" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "cycleId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "cycleId" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "memberId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "memberId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP COLUMN "walletTransactionId"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD "walletTransactionId" integer`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" DROP CONSTRAINT "PK_d76cc943c78a115d77bf5847c50"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" ADD CONSTRAINT "PK_d76cc943c78a115d77bf5847c50" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" ADD "tontineId" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "beneficiaryId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" ADD "beneficiaryId" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "permissions" DROP CONSTRAINT "permissions_pkey"`);
+    await queryRunner.query(`ALTER TABLE "permissions" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "permissions" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "permissions" ADD CONSTRAINT "PK_920331560282b8bd21bb02290df" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "roles" DROP CONSTRAINT "roles_pkey"`);
+    await queryRunner.query(`ALTER TABLE "roles" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "roles" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ADD CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP CONSTRAINT "admin_roles_pkey"`);
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "PK_091baca34754e848b9f8c4e7be9" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP COLUMN "roleId"`);
+    await queryRunner.query(`ALTER TABLE "admin_roles" ADD "roleId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TYPE "public"."kyc_status_enum" RENAME TO "kyc_status_enum_old"`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."kyc_status_enum" AS ENUM('PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'REQUIRES_ADDITIONAL_INFO')`,
+    );
+    await queryRunner.query(`ALTER TABLE "kyc" ALTER COLUMN "status" DROP DEFAULT`);
+    await queryRunner.query(
+      `ALTER TABLE "kyc" ALTER COLUMN "status" TYPE "public"."kyc_status_enum" USING "status"::"text"::"public"."kyc_status_enum"`,
+    );
+    await queryRunner.query(`ALTER TABLE "kyc" ALTER COLUMN "status" SET DEFAULT 'PENDING'`);
+    await queryRunner.query(`DROP TYPE "public"."kyc_status_enum_old"`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_pkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("permissionId")`,
+    );
+    await queryRunner.query(`ALTER TABLE "role_permissions" DROP COLUMN "roleId"`);
+    await queryRunner.query(`ALTER TABLE "role_permissions" ADD "roleId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_pkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("permissionId", "roleId")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_pkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "PK_b4599f8b8f548d35850afa2d12c" PRIMARY KEY ("roleId")`,
+    );
+    await queryRunner.query(`ALTER TABLE "role_permissions" DROP COLUMN "permissionId"`);
+    await queryRunner.query(`ALTER TABLE "role_permissions" ADD "permissionId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "PK_b4599f8b8f548d35850afa2d12c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "PK_d430a02aad006d8a70f3acd7d03" PRIMARY KEY ("roleId", "permissionId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_2c77d2a0c06eeab6e62dc35af6" ON "linked_accounts" ("userId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_8988344d8eeb391772ccfed7cd" ON "linked_accounts" ("walletId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_b4599f8b8f548d35850afa2d12" ON "role_permissions" ("roleId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_06792d0c62ce6b0203c03643cd" ON "role_permissions" ("permissionId") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "UQ_67395220ef147312a68be2e8b94" UNIQUE ("adminId", "roleId")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD CONSTRAINT "FK_915c2366d8e0361da088d004f1d" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD CONSTRAINT "FK_7bb961c1731490d5579663a4687" FOREIGN KEY ("userId") REFERENCES "utilisateur"("idutilisateur") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD CONSTRAINT "FK_8a954de4e10dc8a84db6be738d2" FOREIGN KEY ("createurId") REFERENCES "utilisateur"("idutilisateur") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" ADD CONSTRAINT "FK_06b400c5c042020c33933379763" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD CONSTRAINT "FK_3cf900ee567f801bd886e22e72c" FOREIGN KEY ("cycleId") REFERENCES "tontine_cycles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" ADD CONSTRAINT "FK_7737d881c42db78d4a3cc1be51a" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "FK_99157dcf6bebe887c615e879f85" FOREIGN KEY ("adminId") REFERENCES "administrateurs"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "FK_19708b93e7167e5070026524914" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" ADD CONSTRAINT "FK_2c77d2a0c06eeab6e62dc35af64" FOREIGN KEY ("userId") REFERENCES "utilisateur"("idutilisateur") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" ADD CONSTRAINT "FK_8988344d8eeb391772ccfed7cd4" FOREIGN KEY ("walletId") REFERENCES "wallets"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "FK_b4599f8b8f548d35850afa2d12c" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "FK_06792d0c62ce6b0203c03643cdd" FOREIGN KEY ("permissionId") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "FK_06792d0c62ce6b0203c03643cdd"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "FK_b4599f8b8f548d35850afa2d12c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" DROP CONSTRAINT "FK_8988344d8eeb391772ccfed7cd4"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" DROP CONSTRAINT "FK_2c77d2a0c06eeab6e62dc35af64"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" DROP CONSTRAINT "FK_19708b93e7167e5070026524914"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" DROP CONSTRAINT "FK_99157dcf6bebe887c615e879f85"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" DROP CONSTRAINT "FK_7737d881c42db78d4a3cc1be51a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP CONSTRAINT "FK_3cf900ee567f801bd886e22e72c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" DROP CONSTRAINT "FK_06b400c5c042020c33933379763"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" DROP CONSTRAINT "FK_8a954de4e10dc8a84db6be738d2"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" DROP CONSTRAINT "FK_7bb961c1731490d5579663a4687"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" DROP CONSTRAINT "FK_915c2366d8e0361da088d004f1d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" DROP CONSTRAINT "UQ_67395220ef147312a68be2e8b94"`,
+    );
+    await queryRunner.query(`DROP INDEX "public"."IDX_06792d0c62ce6b0203c03643cd"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_b4599f8b8f548d35850afa2d12"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_8988344d8eeb391772ccfed7cd"`);
+    await queryRunner.query(`DROP INDEX "public"."IDX_2c77d2a0c06eeab6e62dc35af6"`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "PK_d430a02aad006d8a70f3acd7d03"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "PK_b4599f8b8f548d35850afa2d12c" PRIMARY KEY ("roleId")`,
+    );
+    await queryRunner.query(`ALTER TABLE "role_permissions" DROP COLUMN "permissionId"`);
+    await queryRunner.query(`ALTER TABLE "role_permissions" ADD "permissionId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "PK_b4599f8b8f548d35850afa2d12c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("permissionId", "roleId")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_pkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("permissionId")`,
+    );
+    await queryRunner.query(`ALTER TABLE "role_permissions" DROP COLUMN "roleId"`);
+    await queryRunner.query(`ALTER TABLE "role_permissions" ADD "roleId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" DROP CONSTRAINT "role_permissions_pkey"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("permissionId", "roleId")`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."kyc_status_enum_old" AS ENUM('PENDING', 'APPROVED', 'REJECTED')`,
+    );
+    await queryRunner.query(`ALTER TABLE "kyc" ALTER COLUMN "status" DROP DEFAULT`);
+    await queryRunner.query(
+      `ALTER TABLE "kyc" ALTER COLUMN "status" TYPE "public"."kyc_status_enum_old" USING "status"::"text"::"public"."kyc_status_enum_old"`,
+    );
+    await queryRunner.query(`ALTER TABLE "kyc" ALTER COLUMN "status" SET DEFAULT 'PENDING'`);
+    await queryRunner.query(`DROP TYPE "public"."kyc_status_enum"`);
+    await queryRunner.query(
+      `ALTER TYPE "public"."kyc_status_enum_old" RENAME TO "kyc_status_enum"`,
+    );
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP COLUMN "roleId"`);
+    await queryRunner.query(`ALTER TABLE "admin_roles" ADD "roleId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" DROP CONSTRAINT "PK_091baca34754e848b9f8c4e7be9"`,
+    );
+    await queryRunner.query(`ALTER TABLE "admin_roles" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "admin_roles" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "admin_roles_pkey" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "roles" DROP CONSTRAINT "PK_c1433d71a4838793a49dcad46ab"`);
+    await queryRunner.query(`ALTER TABLE "roles" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "roles" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "roles" ADD CONSTRAINT "roles_pkey" PRIMARY KEY ("id")`);
+    await queryRunner.query(
+      `ALTER TABLE "permissions" DROP CONSTRAINT "PK_920331560282b8bd21bb02290df"`,
+    );
+    await queryRunner.query(`ALTER TABLE "permissions" DROP COLUMN "id"`);
+    await queryRunner.query(`ALTER TABLE "permissions" ADD "id" SERIAL NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "permissions" ADD CONSTRAINT "permissions_pkey" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "beneficiaryId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" ADD "beneficiaryId" uuid NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" ADD "tontineId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" DROP CONSTRAINT "PK_d76cc943c78a115d77bf5847c50"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_cycles" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" ADD CONSTRAINT "PK_d76cc943c78a115d77bf5847c50" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP COLUMN "walletTransactionId"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "walletTransactionId" uuid`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "memberId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "memberId" uuid NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "cycleId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" ADD "cycleId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" DROP CONSTRAINT "PK_701b6ad102d93129a36e690745a"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_contributions" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD CONSTRAINT "PK_701b6ad102d93129a36e690745a" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_contributions" ADD CONSTRAINT "FK_3cf900ee567f801bd886e22e72c" FOREIGN KEY ("cycleId") REFERENCES "tontine_cycles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" ADD "tontineId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" DROP CONSTRAINT "PK_b50cabf30ed8d6de4a02ed9c745"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_invitations" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" ADD CONSTRAINT "PK_b50cabf30ed8d6de4a02ed9c745" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "updatedAt"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "createdAt"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "description"`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "description" character varying(500)`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "name"`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "name" character varying(120) NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" DROP CONSTRAINT "PK_e2ba1a485e389feb1e552d44b06"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD CONSTRAINT "PK_e2ba1a485e389feb1e552d44b06" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_invitations" ADD CONSTRAINT "FK_06b400c5c042020c33933379763" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_cycles" ADD CONSTRAINT "FK_7737d881c42db78d4a3cc1be51a" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ALTER COLUMN "status" SET DEFAULT 'PENDING'`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "tontineId"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" ADD "tontineId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" DROP CONSTRAINT "PK_ce19bf19aa8305318d5dcf6b613"`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "id" uuid NOT NULL DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD CONSTRAINT "PK_ce19bf19aa8305318d5dcf6b613" PRIMARY KEY ("id")`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD CONSTRAINT "FK_915c2366d8e0361da088d004f1d" FOREIGN KEY ("tontineId") REFERENCES "tontines"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(`ALTER TABLE "wallets" ALTER COLUMN "status" SET DEFAULT 'active'`);
+    await queryRunner.query(`ALTER TABLE "utilisateur" ALTER COLUMN "adresse" DROP NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "createurId"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "devise"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "tourActuel"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "statut"`);
+    await queryRunner.query(`DROP TYPE "public"."tontines_statut_enum"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "nombreMembres"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "frequence"`);
+    await queryRunner.query(`DROP TYPE "public"."tontines_frequence_enum"`);
+    await queryRunner.query(`ALTER TABLE "tontines" DROP COLUMN "montantCotisation"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "dateRejoint"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "aPayeTourActuel"`);
+    await queryRunner.query(`ALTER TABLE "tontine_members" DROP COLUMN "tourOrdre"`);
+    await queryRunner.query(`ALTER TABLE "wallet_transactions" DROP COLUMN "phoneNumber"`);
+    await queryRunner.query(`ALTER TABLE "wallet_transactions" DROP COLUMN "operator"`);
+    await queryRunner.query(`DROP TYPE "public"."wallet_transactions_operator_enum"`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "currency" character varying(10) NOT NULL DEFAULT 'XAF'`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "version" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "walletId" uuid NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD CONSTRAINT "REL_fa226ae0f4779e130fc05264e8" UNIQUE ("walletId")`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "creatorId" integer NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "nextContributionAt" TIMESTAMP WITH TIME ZONE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "currentCycle" integer NOT NULL DEFAULT '0'`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontines_status_enum" AS ENUM('DRAFT', 'ACTIVE', 'CLOSED')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "status" "public"."tontines_status_enum" NOT NULL DEFAULT 'DRAFT'`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."tontines_frequency_enum" AS ENUM('WEEKLY', 'BIWEEKLY', 'MONTHLY')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD "frequency" "public"."tontines_frequency_enum" NOT NULL`,
+    );
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "memberLimit" integer NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "contributionAmount" bigint NOT NULL`);
+    await queryRunner.query(`ALTER TABLE "tontines" ADD "targetAmount" bigint NOT NULL`);
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontine_members" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "admin_roles_adminId_roleId_key" UNIQUE ("adminId", "roleId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_linked_accounts_type" ON "linked_accounts" ("type") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_linked_accounts_status" ON "linked_accounts" ("status") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_linked_accounts_walletId" ON "linked_accounts" ("walletId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_linked_accounts_userId" ON "linked_accounts" ("userId") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" ADD CONSTRAINT "FK_linked_accounts_userId" FOREIGN KEY ("userId") REFERENCES "utilisateur"("idutilisateur") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "linked_accounts" ADD CONSTRAINT "FK_linked_accounts_walletId" FOREIGN KEY ("walletId") REFERENCES "wallets"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "admin_roles_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "administrateurs"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "admin_roles" ADD CONSTRAINT "admin_roles_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tontines" ADD CONSTRAINT "FK_fa226ae0f4779e130fc05264e82" FOREIGN KEY ("walletId") REFERENCES "wallets"("id") ON DELETE RESTRICT ON UPDATE NO ACTION`,
+    );
+  }
+}

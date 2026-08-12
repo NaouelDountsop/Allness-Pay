@@ -1,11 +1,15 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { hash, verify } from 'argon2';
+import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from '../otp/redis.service';
+import { MailService } from '../mail/mail.service';
+import { WalletsService } from '../wallet/wallet.service';
+import { getCurrencyByCountry } from '../../config/country-currency.config';
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -17,40 +21,56 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
+    private readonly walletsService: WalletsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, telephone, motdepasse, datenaissance, profession, ...rest } = createUserDto;
+    const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } =
+      createUserDto;
 
     const existing = await this.usersRepository.findOne({
-      where: [{ email }, { telephone }],
+      where: [{ email }, { telephone }, ...(googleId ? [{ googleId }] : [])],
     });
 
     if (existing) {
-      throw new ConflictException('Email ou téléphone déjà utilisé, veuillez entrer un inexistant.');
+      throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
     }
 
-    const user = this.usersRepository.create({
-      ...rest,
-      email,
-      telephone,
-      profession,
-      datenaissance: new Date(datenaissance),
-      motdepasse: await hash(motdepasse),
-      verificationotp: false,
+    const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
+
+    // Transaction atomique : user + wallet échouent ou réussissent ensemble
+    const savedUser = await this.dataSource.transaction(async (manager) => {
+      const user = manager.create(User, {
+        ...rest,
+        email,
+        telephone,
+        pays,
+        profession,
+        datenaissance: new Date(datenaissance),
+        motdepasse: hashedPassword,
+        verificationotp: false,
+      });
+
+      const saved = await manager.save(user);
+
+      // Création du wallet principal selon le pays (même transaction)
+      const currency = getCurrencyByCountry(pays);
+      await this.walletsService.create(saved.idutilisateur, { currency }, manager);
+
+      return saved;
     });
 
-    const saved = await this.usersRepository.save(user);
-
+    // OTP en dehors de la transaction (Redis + email, pas critique)
     const otpCode = generateOtp();
-    await this.redisService.set(`otp:email:${email}`, otpCode, 5 * 60);
+    await this.redisService.set(`otp:email:${email}`, otpCode, 3 * 60);
+    await this.mailService.sendOtp(email, otpCode);
 
-    // TODO: envoyer l'OTP par email via un service MailService
-
-    return saved;
+    return savedUser;
   }
 
-  findAll() : Promise<User []> {
+  findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
@@ -60,6 +80,18 @@ export class UsersService {
       throw new NotFoundException('Utilisateur introuvable.');
     }
     return user;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { googleId } });
+  }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -77,7 +109,11 @@ export class UsersService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.motdepasse')
+      .where('user.email = :email', { email })
+      .getOne();
     if (!user) return null;
 
     const valid = await verify(user.motdepasse, password);
@@ -109,7 +145,7 @@ export class UsersService {
     const otpCode = generateOtp();
     await this.redisService.set(`otp:email:${email}`, otpCode, 10 * 60);
 
-    // TODO: envoyer l'OTP par email via un service MailService
+    await this.mailService.sendOtp(email, otpCode);
 
     return { message: 'OTP renvoyé, vérifiez votre email.' };
   }

@@ -36,11 +36,11 @@ export default {
         input: 'var(--input)',
         ring: 'var(--ring)',
         chart: {
-          '1': 'var(--chart-1)',
-          '2': 'var(--chart-2)',
-          '3': 'var(--chart-3)',
-          '4': 'var(--chart-4)',
-          '5': 'var(--chart-5)',
+          1: 'var(--chart-1)',
+          2: 'var(--chart-2)',
+          3: 'var(--chart-3)',
+          4: 'var(--chart-4)',
+          5: 'var(--chart-5)',
         },
         sidebar: {
           DEFAULT: 'var(--sidebar)',
@@ -52,14 +52,15 @@ export default {
           border: 'var(--sidebar-border)',
           ring: 'var(--sidebar-ring)',
         },
-
-        // Palette custom AfrilinkPay (charte graphique du projet)
+        // Palette officielle AfrilinkPay
         afrilink: {
           dark: '#0F2E33',
           darker: '#0A2226',
-          green: '#1E8449',
-          greenHover: '#166638',
-          orange: '#F5A623',
+          green: '#006C49',
+          greenHover: '#00563A',
+          orange: '#D28E2F',
+          orangeHover: '#B3771F',
+          red: '#580E0E',
           gray: '#6B7280',
           border: '#E5E7EB',
         },

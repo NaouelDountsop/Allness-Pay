@@ -1,32 +1,40 @@
-import { useState } from "react";
-import { Globe, IdCard, Car, Info } from "lucide-react";
-import { DocumentDropzone } from "./document-dropzone";
+import { useState } from 'react';
+import { Globe, IdCard, Car, Info } from 'lucide-react';
+import { DocumentDropzone } from './document-dropzone';
 
-type DocType = "passport" | "national_id" | "license";
+type DocType = 'passport' | 'national_id' | 'license';
 
 interface KycDocumentStepProps {
+  initialDocType?: DocType;
+  initialFront?: File | null;
+  initialBack?: File | null;
   onNext: (data: { docType: DocType; front: File | null; back: File | null }) => void;
 }
 
 const docTypes: { value: DocType; label: string; icon: typeof Globe }[] = [
-  { value: "passport", label: "Passeport", icon: Globe },
-  { value: "national_id", label: "Carte Nationale", icon: IdCard },
-  { value: "license", label: "Permis de conduire", icon: Car },
+  { value: 'passport', label: 'Passeport', icon: Globe },
+  { value: 'national_id', label: 'Carte Nationale', icon: IdCard },
+  { value: 'license', label: 'Permis de conduire', icon: Car },
 ];
 
-export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
-  const [docType, setDocType] = useState<DocType>("passport");
-  const [front, setFront] = useState<File | null>(null);
-  const [back, setBack] = useState<File | null>(null);
+export function KycDocumentStep({
+  initialDocType = 'passport',
+  initialFront = null,
+  initialBack = null,
+  onNext,
+}: KycDocumentStepProps) {
+  const [docType, setDocType] = useState<DocType>(initialDocType);
+  const [front, setFront] = useState<File | null>(initialFront);
+  const [back, setBack] = useState<File | null>(initialBack);
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-afrilink-dark mb-1">
+      {/* <h2 className="text-xl font-bold text-afrilink-dark mb-1">
         Téléverser votre document
-      </h2>
+      </h2> */}
       <p className="text-sm text-gray-500 mb-5">
-        Veuillez sélectionner le type de document que vous souhaitez utiliser pour
-        confirmer votre identité.
+        Veuillez sélectionner le type de document que vous souhaitez utiliser pour confirmer votre
+        identité.
       </p>
 
       <div className="grid grid-cols-3 gap-3 mb-5">
@@ -36,8 +44,8 @@ export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm transition-colors ${
               docType === value
-                ? "bg-afrilink-dark text-white border-afrilink-dark"
-                : "border-gray-200 text-gray-600 hover:border-gray-300"
+                ? 'bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange'
+                : 'border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
             <Icon className="w-5 h-5" />
@@ -67,11 +75,7 @@ export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
         </div>
         <div>
           <p className="text-xs font-medium text-gray-500 mb-2">Verso du document</p>
-          <DocumentDropzone
-            label="Cliquez ou glissez-déposez"
-            file={back}
-            onFileSelect={setBack}
-          />
+          <DocumentDropzone label="Cliquez ou glissez-déposez" file={back} onFileSelect={setBack} />
         </div>
       </div>
 
@@ -84,8 +88,8 @@ export function KycDocumentStep({ onNext }: KycDocumentStepProps) {
       </button>
 
       <p className="text-center text-xs text-gray-400 mt-4">
-        En continuant, vous acceptez que Afrilink pay traite vos données personnelles
-        conformément à notre{" "}
+        En continuant, vous acceptez que Afrilink pay traite vos données personnelles conformément à
+        notre{' '}
         <a href="/confidentialite" className="text-afrilink-green font-medium">
           Politique de Confidentialité
         </a>

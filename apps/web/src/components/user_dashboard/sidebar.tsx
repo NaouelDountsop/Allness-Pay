@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Send,
@@ -10,69 +10,62 @@ import {
   User,
   Settings,
   LogOut,
-  X,
-} from "lucide-react";
+} from 'lucide-react';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
 
 const navItems = [
-  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, end: true },
-  { to: "/dashboard/send", label: "Envoyer de l'argent", icon: Send },
-  { to: "/dashboard/wallet", label: "Portefeuille", icon: Wallet },
-  { to: "/dashboard/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { to: "/dashboard/beneficiaries", label: "Bénéficiaires", icon: Users },
-  { to: "/dashboard/tontines", label: "Tontines", icon: PiggyBank },
-  { to: "/dashboard/payments", label: "Paiements", icon: CreditCard },
-  { to: "/dashboard/profile", label: "Profil", icon: User },
-  { to: "/dashboard/settings", label: "Settings", icon: Settings },
+  { to: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
+  { to: '/dashboard/send', label: 'Envoyer', icon: Send },
+  { to: '/dashboard/wallet', label: 'Portefeuille', icon: Wallet },
+  { to: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { to: '/dashboard/beneficiaries', label: 'Bénéficiaires', icon: Users },
+  { to: '/dashboard/tontines', label: 'Tontines', icon: PiggyBank },
+  { to: '/dashboard/payments', label: 'Paiements', icon: CreditCard },
+  { to: '/dashboard/profile', label: 'Profil', icon: User },
+  { to: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
-interface SidebarProps {
-  mobileOpen?: boolean;
-  onClose?: () => void;
-}
+export function Sidebar() {
+  const navigate = useNavigate();
 
-export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Même si l'appel échoue, on déconnecte côté client
+    } finally {
+      authStorage.clearAll();
+      navigate('/login', { replace: true });
+    }
+  };
+
   return (
-    <>
-      <div
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 md:hidden ${
-          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={onClose}
-      />
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-full bg-afrilink-dark text-white flex flex-col transform transition-transform duration-300 md:static md:translate-x-0 md:flex ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
-      >
-        <div className="flex items-center justify-between gap-2 px-6 py-6 md:justify-start">
-          <div className="flex items-center gap-2">
-            <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-7 h-7 object-contain" />
-            <span className="font-bold text-sm">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
-            </span>
-          </div>
-          {mobileOpen && onClose ? (
-            <button
-              onClick={onClose}
-              className="md:hidden text-white/70 hover:text-white"
-              aria-label="Fermer le menu"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          ) : null}
-        </div>
+    // sticky (pas fixed) : la sidebar reste "clouée" à l'écran pendant le scroll,
+    // mais reste dans le flux normal du layout. Résultat : aucune page n'a besoin
+    // d'un padding/margin compensatoire, contrairement à une sidebar en "fixed".
+    // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
+    // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
+    // presque toujours le cas pour un layout sidebar+contenu classique.
+    <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
+      <div className="flex items-center gap-3 px-6 py-4">
+        <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-14 h-20 object-contain" />
+        <span className="font-bold text-lg">
+          Afrilink<span className="text-afrilink-orange">Pay</span>
+        </span>
+      </div>
 
-        <nav className="flex-1 px-3 space-y-1 overflow-y-auto pb-6">
+      <nav className="flex-1 px-3 space-y-3 overflow-y-auto pb-6">
         {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? "bg-white text-afrilink-dark font-medium"
-                  : "text-white/70 hover:bg-white/5 hover:text-white"
+                  ? 'bg-white text-afrilink-orange font-medium'
+                  : 'text-white hover:bg-white/5'
               }`
             }
           >
@@ -83,12 +76,14 @@ export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
       </nav>
 
       <div className="p-3">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>
       </div>
     </aside>
-  </>
   );
 }

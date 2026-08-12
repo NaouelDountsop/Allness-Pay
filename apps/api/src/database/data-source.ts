@@ -19,14 +19,19 @@ export const dataSourceOptions = {
   password: process.env.DB_PASSWORD ?? 'afrilinkpay',
   database: process.env.DB_DATABASE ?? 'afrilinkpay',
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-  // Toujours false : le schema est pilote par les migrations. Activer la
-  // synchronisation sur une base contenant des soldes est une perte de donnees
-  // en puissance.
   synchronize: false,
   logging: process.env.DB_LOGGING === 'true',
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
   migrationsTableName: 'typeorm_migrations',
+  extra: {
+    max: 5,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 30_000,
+    statement_timeout: 15_000,
+    keepalives: true,
+    keepalives_idle: 10,
+  },
 };
 
 export default new DataSource(dataSourceOptions);

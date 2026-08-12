@@ -9,6 +9,19 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { MailService } from './modules/mail/mail.service';
+import { MailModule } from './modules/mail/mail.module';
+import { KycModule } from './modules/kyc/kyc.module';
+import { WalletsModule } from './modules/wallet/wallet.module';
+import { PinModule } from './modules/pin/pin.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { RolesModule } from './modules/role/role.module';
+import { TontineModule } from './modules/tontine/tontine.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
+import { TranzakModule } from './payments/tranzak/tranzak.module';
+
+import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 
 @Module({
   imports: [
@@ -31,12 +44,21 @@ import { OtpModule } from './modules/otp/otp.module';
     UsersModule,
     AuthModule,
     OtpModule,
+    MailModule,
+    KycModule,
+    WalletsModule,
+    PinModule,
+    TransactionsModule,
+    RolesModule,
+    TontineModule,
+    AdminModule,
+    BeneficiaireModule,
+    TranzakModule,
 
-    // --- Modules metier ------------------------------------------------------
-    // Chaque domaine s'ajoute ici, sous `src/modules/<domaine>/`, en respectant
-    // le decoupage Controller -> Service -> Repository decrit dans
+    LinkedAccountModule,
+
     // `src/modules/README.md`.
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }, MailService],
 })
 export class AppModule {}

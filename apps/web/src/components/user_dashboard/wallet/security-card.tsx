@@ -1,4 +1,4 @@
-import { ShieldCheck, ChevronRight } from "lucide-react";
+import { ShieldCheck, ChevronRight } from 'lucide-react';
 
 export function SecurityCard() {
   return (

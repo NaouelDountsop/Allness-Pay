@@ -1,6 +1,7 @@
-import { forwardRef, InputHTMLAttributes } from "react";
-import { Input as ShadInput } from "@/components/ui/input";
-import { LucideIcon } from "lucide-react";
+import { forwardRef } from 'react';
+import type { InputHTMLAttributes } from 'react';
+import { Input as ShadInput } from '@/components/ui/input';
+import type { LucideIcon } from 'lucide-react';
 
 interface AppInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -9,7 +10,7 @@ interface AppInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
-  ({ label, icon: Icon, error, className = "", ...props }, ref) => {
+  ({ label, icon: Icon, error, className = '', ...props }, ref) => {
     return (
       <div className="w-full space-y-1">
         <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -19,8 +20,8 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
           )}
           <ShadInput
             ref={ref}
-            className={`${Icon ? "pl-9" : ""} h-11 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:border-afrilink-orange focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange ${
-              error ? "border-red-500" : ""
+            className={`${Icon ? 'pl-9' : ''} h-11 rounded-lg border border-gray-200 text-sm text-gray-900 ${
+              error ? '!border-destructive' : ''
             } ${className}`}
             {...props}
           />
@@ -28,6 +29,6 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     );
-  }
+  },
 );
-AppInput.displayName = "AppInput";
+AppInput.displayName = 'AppInput';

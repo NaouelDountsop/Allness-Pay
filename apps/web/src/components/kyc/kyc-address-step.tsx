@@ -1,31 +1,35 @@
-import { useState } from "react";
-import { Zap, Landmark, MapPin, Lightbulb } from "lucide-react";
-import { DocumentDropzone } from "./document-dropzone";
+import { useState } from 'react';
+import { Zap, Landmark, MapPin, Lightbulb } from 'lucide-react';
+import { DocumentDropzone } from './document-dropzone';
 
-type AddressDocType = "utility_bill" | "bank_statement" | "residence_certificate";
+type AddressDocType = 'utility_bill' | 'bank_statement' | 'residence_certificate';
 
 interface KycAddressStepProps {
+  initialDocType?: AddressDocType;
+  initialFile?: File | null;
   onNext: (data: { docType: AddressDocType; file: File | null }) => void;
 }
 
 const docTypes: { value: AddressDocType; label: string; icon: typeof Zap }[] = [
-  { value: "utility_bill", label: "Facture de services publics", icon: Zap },
-  { value: "bank_statement", label: "Relevé bancaire", icon: Landmark },
-  { value: "residence_certificate", label: "Certificat de résidence", icon: MapPin },
+  { value: 'utility_bill', label: 'Facture de services publics', icon: Zap },
+  { value: 'bank_statement', label: 'Relevé bancaire', icon: Landmark },
+  { value: 'residence_certificate', label: 'Certificat de résidence', icon: MapPin },
 ];
 
-export function KycAddressStep({ onNext }: KycAddressStepProps) {
-  const [docType, setDocType] = useState<AddressDocType>("utility_bill");
-  const [file, setFile] = useState<File | null>(null);
+export function KycAddressStep({
+  initialDocType = 'utility_bill',
+  initialFile = null,
+  onNext,
+}: KycAddressStepProps) {
+  const [docType, setDocType] = useState<AddressDocType>(initialDocType);
+  const [file, setFile] = useState<File | null>(initialFile);
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-afrilink-dark mb-1">
-        Justificatif de domicile
-      </h2>
+      <h2 className="text-xl font-bold text-afrilink-dark mb-1">Justificatif de domicile</h2>
       <p className="text-sm text-gray-500 mb-5">
-        Veuillez fournir un document de moins de 3 mois (facture d'électricité, eau,
-        gaz ou relevé bancaire) pour confirmer votre adresse.
+        Veuillez fournir un document de moins de 3 mois (facture d'électricité, eau, gaz ou relevé
+        bancaire) pour confirmer votre adresse.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
@@ -35,8 +39,8 @@ export function KycAddressStep({ onNext }: KycAddressStepProps) {
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm text-center transition-colors ${
               docType === value
-                ? "bg-afrilink-dark text-white border-afrilink-dark"
-                : "border-gray-200 text-gray-600 hover:border-gray-300"
+                ? 'bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange'
+                : 'border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
             <Icon className="w-5 h-5" />
@@ -74,8 +78,8 @@ export function KycAddressStep({ onNext }: KycAddressStepProps) {
       </button>
 
       <p className="text-center text-xs text-gray-400 mt-4">
-        En continuant, vous acceptez que Afrilink pay traite vos données personnelles
-        conformément à notre{" "}
+        En continuant, vous acceptez que Afrilink pay traite vos données personnelles conformément à
+        notre{' '}
         <a href="/confidentialite" className="text-afrilink-green font-medium">
           Politique de Confidentialité
         </a>

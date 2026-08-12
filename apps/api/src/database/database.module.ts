@@ -33,8 +33,10 @@ import type { DatabaseConfig } from '@/config/configuration';
           extra: {
             max: 20,
             idleTimeoutMillis: 30_000,
-            connectionTimeoutMillis: 5_000,
+            connectionTimeoutMillis: 30_000,
             statement_timeout: 15_000,
+            keepalives: true,
+            keepalives_idle: 10,
           },
         };
       },

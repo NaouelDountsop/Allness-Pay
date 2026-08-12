@@ -1,0 +1,183 @@
+@startuml Authentification AfriLinkPay
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 20
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+
+skinparam sequence {
+  LifeLineBorderColor #3B82F6
+  LifeLineBackgroundColor #EFF6FF
+  ParticipantBorderColor #1E40AF
+  ParticipantBackgroundColor #DBEAFE
+  ParticipantFontSizeBold true
+  ArrowColor #374151
+  ArrowThickness 2
+  TitleFontSize 20
+  TitleFontColor #1E3A5F
+}
+
+skinparam note {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+  FontColor #92400E
+}
+
+title **Connexion & Inscription — AfriLinkPay**
+
+actor " Client" as C #D1FAE5
+
+box "AfriLinkPay" #F0F9FF
+  participant "Page\nConnexion" as UI #BFDBFE
+  participant "Système\nd'Authentification" as Auth #93C5FD
+  participant "Messagerie" as Mail #A7F3D0
+end box
+
+database "Base de\nDonnées" as DB #E5E7EB
+database "Cache\nSécurisé" as Cache #FDE68A
+
+' ═══════════════════════════════════════════
+' CONNEXION CLASSIQUE
+' ═══════════════════════════════════════════
+
+== Connexion ==
+
+C -> UI : Je saisis mon email\net mot de passe
+UI -> Auth : Vérifier mes accès
+Auth -> DB : Chercher le compte
+DB --> Auth : Compte trouvé
+Auth -> Auth : Vérifier le mot de passe
+Auth -> Auth : Mon compte est-il vérifié ?
+
+alt Mot de passe incorrect
+  Auth --> UI : Mot de passe incorrect
+  UI --> C : Veuillez réessayer
+end
+
+alt Compte non vérifié
+  Auth --> C : Vérifiez votre email\npuis saisissez le code OTP
+end
+
+Auth -> Auth : Créer mes clés\nd'accès sécurisées
+Auth -> Cache : Sauvegarder ma session
+Cache --> Auth : OK
+Auth --> UI : Bienvenue !
+UI --> C : Redirection vers\nmon tableau de bord
+
+' ═══════════════════════════════════════════
+' INSCRIPTION
+' ═══════════════════════════════════════════
+
+== Inscription ==
+
+C -> UI : Je remplis le formulaire\n(nom, email, mot de passe...)
+UI -> Auth : Créer mon compte
+Auth -> DB : Vérifier que l'email\nn'est pas déjà utilisé
+Auth -> Auth : Sécuriser le mot de passe
+Auth -> DB : Sauvegarder mon profil\n+ créer mon portefeuille
+DB --> Auth : Compte créé
+Auth -> Cache : Générer un code\nde vérification
+Auth -> Mail : Envoyer le code\npar email
+Mail --> C : Vous recevez un code\nà 6 chiffres
+Auth --> UI : Compte créé !
+UI --> C : Saisissez le code\nreçu par email
+
+' ═══════════════════════════════════════════
+' VÉRIFICATION OTP
+' ═══════════════════════════════════════════
+
+== Vérification du code ==
+
+C -> UI : Je saisis le code\nreçu par email
+UI -> Auth : Vérifier le code
+Auth -> Cache : Le code est-il\nencore valide ?
+Auth -> Auth : Le code\ncorrespond-il ?
+
+alt Code invalide ou expiré
+  Auth --> UI : Code incorrect\nou expiré
+  UI --> C : Demandez un\nnouveau code
+else Code correct
+  Auth -> DB : Activer mon compte
+  Auth -> Cache : Supprimer le code
+  DB --> UI : Compte vérifié !
+  UI --> C : Bienvenue dans\nAfriLinkPay !
+end
+
+' ═══════════════════════════════════════════
+' MOT DE PASSE OUBLIÉ
+' ═══════════════════════════════════════════
+
+== Mot de passe oublié (resend OTP) ==
+
+C -> UI : Je n'ai pas reçu\nle code
+UI -> Auth : Renvoyer le code
+Auth -> Cache : Générer un\nnouveau code
+Auth -> Mail : Envoyer le\nnouveau code
+Mail --> C : Nouveau code\nenvoyé !
+
+' ═══════════════════════════════════════════
+' GOOGLE
+' ═══════════════════════════════════════════
+
+== Connexion avec Google ==
+
+C -> UI : Je clique sur\n"Se connecter avec Google"
+UI -> Auth : Rediriger vers Google
+Auth --> C : Page Google\n(Je me connecte)
+C --> Auth : Autorisation accordée
+
+Auth -> DB : Ce compte existe-t-il ?
+
+alt Compte existant
+  Auth -> Auth : Créer mes clés\nd'accès
+  Auth --> C : Redirection vers\nle tableau de bord
+else Nouveau compte
+  Auth -> Cache : Sauvegarder mes\ninfos Google (15 min)
+  Auth --> C : Finalisez votre\ninscription
+  C -> UI : Je complète le formulaire
+  UI -> Auth : Créer mon compte
+  Auth -> DB : Sauvegarder + créer\nle portefeuille
+  Auth -> Mail : Envoyer le code\nde vérification
+  Mail --> C : Code envoyé par email
+end
+
+' ═══════════════════════════════════════════
+' RAFRAÎCHIR
+' ═══════════════════════════════════════════
+
+== Session prolongée ==
+
+C -> UI : J'utilise l'application\npendant longtemps
+UI -> Auth : Renouveler ma session\n(en arrière-plan)
+Auth -> Cache : Vérifier ma session
+Auth -> Auth : Créer de nouvelles\nclés d'accès
+Auth --> UI : Session renouvelée
+note right of UI : Aucune interruption\npour l'utilisateur
+
+' ═══════════════════════════════════════════
+' DÉCONNEXION
+' ═══════════════════════════════════════════
+
+== Déconnexion ==
+
+C -> UI : Je clique sur\n"Déconnexion"
+UI -> Auth : Fermer ma session
+Auth -> Cache : Supprimer ma session
+Cache --> Auth : Session fermée
+Auth --> UI : Déconnecté
+UI --> C : À bientôt !
+
+' ═══════════════════════════════════════════
+' RÉSUMÉ
+' ═══════════════════════════════════════════
+
+note over C, Cache
+  **En résumé pour vous :**
+  • Vos données sont protégées par un code secret (mot de passe sécurisé)
+  • Vous recevez un code par email pour confirmer votre identité
+  • Votre session se renouvelle automatiquement
+  • Vous pouvez aussi vous connecter directement avec Google
+  • Déconnectez-vous à tout moment en un clic
+end note
+
+@enduml

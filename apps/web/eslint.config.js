@@ -5,7 +5,16 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'eslint.config.js', 'postcss.config.js'] },
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'eslint.config.js',
+      'postcss.config.js',
+      'vite.config.ts',
+      'scripts/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -13,6 +22,10 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -32,7 +45,7 @@ export default tseslint.config(
           paths: [
             {
               name: 'axios',
-              message: 'Utilisez `@/lib/api-client` plutot qu\'une instance axios directe.',
+              message: "Utilisez `@/lib/api-client` plutot qu'une instance axios directe.",
             },
           ],
         },

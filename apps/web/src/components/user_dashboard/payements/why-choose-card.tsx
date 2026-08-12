@@ -1,4 +1,4 @@
-import { Zap, ShieldCheck } from "lucide-react";
+import { Zap, ShieldCheck } from 'lucide-react';
 
 export function WhyChooseCard() {
   return (

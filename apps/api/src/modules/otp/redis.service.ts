@@ -8,13 +8,20 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client: Redis;
 
   constructor(private readonly configService: ConfigService) {
-    const redis = this.configService.getOrThrow<RedisConfig>('redis');
-    this.client = new Redis({
-      host: redis.host,
-      port: redis.port,
-      password: redis.password ?? undefined,
-      lazyConnect: true,
-    });
+    // Prefer a full Redis URL (eg. Upstash) when provided via REDIS_URL.
+    // This supports schemes like: redis://:password@host:port or rediss://:password@host:port
+    const url = process.env.REDIS_URL?.trim();
+    if (url) {
+      this.client = new Redis(url, { lazyConnect: true });
+    } else {
+      const redis = this.configService.getOrThrow<RedisConfig>('redis');
+      this.client = new Redis({
+        host: redis.host,
+        port: redis.port,
+        password: redis.password ?? undefined,
+        lazyConnect: true,
+      });
+    }
   }
 
   async onModuleInit() {
