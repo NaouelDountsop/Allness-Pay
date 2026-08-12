@@ -115,7 +115,7 @@ export default function MakeContributionPage() {
       })
     : '—';
 
-  const activeMembers = tontine.members?.filter((m) => m.status === "ACTIVE").length ?? 0;
+  const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;
 
   return (
     <DashboardLayout>

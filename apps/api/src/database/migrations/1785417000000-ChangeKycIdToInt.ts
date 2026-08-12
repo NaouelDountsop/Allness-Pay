@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class ChangeKycIdToInt1785417000000 implements MigrationInterface {
   name = 'ChangeKycIdToInt1785417000000';

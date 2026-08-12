@@ -17,16 +17,16 @@ export default function TontinesSupervisionPage() {
   const [tab, setTab] = useState('Toutes les Tontines');
 
   const { data: tontines, isLoading: loadingTontines } = useQuery({
-    queryKey: ["admin-tontines"],
+    queryKey: ['admin-tontines'],
     queryFn: adminService.listTontines,
   });
 
   const { data: tontineStats, isLoading: loadingStats } = useQuery({
-    queryKey: ["admin-tontine-stats"],
+    queryKey: ['admin-tontine-stats'],
     queryFn: adminService.getTontineStats,
   });
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   const isLoading = loadingTontines || loadingStats;
 
@@ -64,7 +64,9 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Tontines Totales</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(tontineStats?.totalTontines ?? 0)}</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(tontineStats?.totalTontines ?? 0)}
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -74,7 +76,9 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Volume Total Cotisé</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(tontineStats?.totalVolume ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(tontineStats?.totalVolume ?? 0)} XAF
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -95,7 +99,9 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Tontines Actives</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(tontineStats?.activeTontines ?? 0)}</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(tontineStats?.activeTontines ?? 0)}
+          </p>
         </div>
       </div>
 
@@ -115,8 +121,10 @@ export default function TontinesSupervisionPage() {
           </thead>
           <tbody>
             {tontines?.map((t) => {
-              const progressPercent = t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
-              const statusTone = t.status === "active" ? "green" : t.status === "pending" ? "orange" : "red";
+              const progressPercent =
+                t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
+              const statusTone =
+                t.status === 'active' ? 'green' : t.status === 'pending' ? 'orange' : 'red';
               return (
                 <tr key={t.id} className="border-b border-gray-50 last:border-0">
                   <td className="py-3.5">
@@ -126,7 +134,9 @@ export default function TontinesSupervisionPage() {
                     </p>
                   </td>
                   <td className="text-xs text-gray-600 hidden lg:table-cell">{t.memberLimit}</td>
-                  <td className="text-xs text-gray-600">{formatNumber(Number(t.contributionAmount))} {t.currency ?? "CFA"}</td>
+                  <td className="text-xs text-gray-600">
+                    {formatNumber(Number(t.contributionAmount))} {t.currency ?? 'CFA'}
+                  </td>
                   <td className="text-xs text-gray-600 hidden lg:table-cell">{t.frequency}</td>
                   <td>
                     <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden">
@@ -138,7 +148,11 @@ export default function TontinesSupervisionPage() {
                   </td>
                   <td>
                     <Badge tone={statusTone} dot>
-                      {t.status === "active" ? "Actif" : t.status === "pending" ? "En attente" : "Fermé"}
+                      {t.status === 'active'
+                        ? 'Actif'
+                        : t.status === 'pending'
+                          ? 'En attente'
+                          : 'Fermé'}
                     </Badge>
                   </td>
                 </tr>

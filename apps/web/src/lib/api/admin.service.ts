@@ -154,12 +154,12 @@ export const adminService = {
     activeTontines: number;
     totalVolume: number;
   }> => {
-    const res = await apiClient.get("/admin/tontines/stats");
+    const res = await apiClient.get('/admin/tontines/stats');
     return res.data;
   },
 
   listTransactions: async (): Promise<AdminTransaction[]> => {
-    const res = await apiClient.get<AdminTransaction[]>("/admin/transactions");
+    const res = await apiClient.get<AdminTransaction[]>('/admin/transactions');
     return res.data;
   },
 
@@ -168,22 +168,22 @@ export const adminService = {
     completedCount: number;
     totalVolume: number;
   }> => {
-    const res = await apiClient.get("/admin/transactions/stats");
+    const res = await apiClient.get('/admin/transactions/stats');
     return res.data;
   },
 
   getRecentActivities: async (): Promise<AdminActivity[]> => {
-    const res = await apiClient.get<AdminActivity[]>("/admin/activities");
+    const res = await apiClient.get<AdminActivity[]>('/admin/activities');
     return res.data;
   },
 
   getKycPending: async (): Promise<AdminKycPending[]> => {
-    const res = await apiClient.get<AdminKycPending[]>("/admin/kyc/pending");
+    const res = await apiClient.get<AdminKycPending[]>('/admin/kyc/pending');
     return res.data;
   },
 
   getChartWeekly: async (): Promise<AdminChartPoint[]> => {
-    const res = await apiClient.get<AdminChartPoint[]>("/admin/chart/weekly");
+    const res = await apiClient.get<AdminChartPoint[]>('/admin/chart/weekly');
     return res.data;
   },
 };

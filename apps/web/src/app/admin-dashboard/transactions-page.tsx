@@ -221,7 +221,8 @@ export default function AdminTransactionsPage() {
           <p className="text-sm font-semibold text-red-600">Audit des Alertes</p>
         </div>
         <p className="text-xs text-gray-500">
-          Les alertes de comportement suspect seront affichées ici une fois détectées par le système.
+          Les alertes de comportement suspect seront affichées ici une fois détectées par le
+          système.
         </p>
       </div>
 

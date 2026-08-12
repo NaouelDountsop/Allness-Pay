@@ -1,18 +1,23 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { LocalStrategy } from './local.strategy';
+import { Test } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { LocalStrategy } from './local.strategy';
+import { AuthService } from '../auth.service';
 
-// describe('LocalStrategy', () => {
-//   let provider: LocalStrategy;
+describe('LocalStrategy', () => {
+  let provider: LocalStrategy;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [LocalStrategy],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        LocalStrategy,
+        { provide: AuthService, useValue: {} },
+      ],
+    }).compile();
 
-//     provider = module.get<LocalStrategy>(LocalStrategy);
-//   });
+    provider = module.get<LocalStrategy>(LocalStrategy);
+  });
 
-//   it('should be defined', () => {
-//     expect(provider).toBeDefined();
-//   });
-// });
+  it('should be defined', () => {
+    expect(provider).toBeDefined();
+  });
+});

@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateKycTable1785326437049 implements MigrationInterface {
   name = 'CreateKycTable1785326437049';

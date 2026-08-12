@@ -1,3 +1,4 @@
+import type { EntityManager } from 'typeorm';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
@@ -148,10 +149,7 @@ export class ContributionService {
     return this.contributionRepo.save(contribution);
   }
 
-  private async recalculateBalance(
-    manager: import('typeorm').EntityManager,
-    walletId: string,
-  ): Promise<bigint> {
+  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
     const result = await manager
       .createQueryBuilder(WalletTransaction, 'wt')
       .select(

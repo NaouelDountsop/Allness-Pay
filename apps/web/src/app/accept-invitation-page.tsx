@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { tontineService } from "@/lib/api/tontine.service";
-import { Loader2, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { tontineService } from '@/lib/api/tontine.service';
+import { Loader2, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function AcceptInvitationPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [errorMessage, setErrorMessage] = useState('');
   const hasCalled = useRef(false);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function AcceptInvitationPage() {
         setStatus('error');
         setErrorMessage(
           err?.response?.data?.message ||
-            "Une erreur est survenue lors de l'activation de l'invitation."
+            "Une erreur est survenue lors de l'activation de l'invitation.",
         );
       });
   }, [token]);

@@ -1,10 +1,15 @@
-import { Check, Lock, Send, Wallet, Plane } from "lucide-react";
+import { Check, Lock, Send, Wallet, Plane } from 'lucide-react';
 
-const HERO_IMG = "https://media.base44.com/images/public/6a79f10b5afc47c1eeaa932f/5b0727994_generated_image.png";
+const HERO_IMG =
+  'https://media.base44.com/images/public/6a79f10b5afc47c1eeaa932f/5b0727994_generated_image.png';
 
 export default function Hero() {
   return (
-    <section id="accueil" className="relative text-white overflow-hidden" style={{ background: "linear-gradient(160deg, #0f2e33 0%, #14382e 40%, #0f2e33 100%)" }}>
+    <section
+      id="accueil"
+      className="relative text-white overflow-hidden"
+      style={{ background: 'linear-gradient(160deg, #0f2e33 0%, #14382e 40%, #0f2e33 100%)' }}
+    >
       <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-afrilink-green/20 blur-[120px]" />
       <div className="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-afrilink-orange/8 blur-[100px]" />
 
@@ -12,19 +17,25 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
           <div className="animate-fade-up">
             <h1 className="font-heading font-extrabold text-[clamp(2.1rem,5.5vw,4rem)] leading-[1.08] text-balance">
-              Gérez votre patrimoine global{" "}
+              Gérez votre patrimoine global{' '}
               <span className="text-afrilink-orange">en toute simplicité.</span>
             </h1>
             <p className="mt-6 text-base lg:text-lg text-white/75 max-w-xl leading-relaxed">
-              Envoyez de l'argent, payez vos services et gérez vos tontines en
-              toute sécurité, partout dans le monde avec AfriLink Pay.
+              Envoyez de l'argent, payez vos services et gérez vos tontines en toute sécurité,
+              partout dans le monde avec AfriLink Pay.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a href="/signup" className="bg-afrilink-green text-white font-semibold px-7 py-3.5 rounded-full hover:bg-afrilink-green/90 transition-all duration-300 shadow-lg shadow-afrilink-green/25 hover:shadow-xl hover:shadow-afrilink-green/35 hover:scale-105 active:scale-95">
+              <a
+                href="/signup"
+                className="bg-afrilink-green text-white font-semibold px-7 py-3.5 rounded-full hover:bg-afrilink-green/90 transition-all duration-300 shadow-lg shadow-afrilink-green/25 hover:shadow-xl hover:shadow-afrilink-green/35 hover:scale-105 active:scale-95"
+              >
                 Créer un compte
               </a>
-              <a href="#fonctionnalites" className="border-2 border-afrilink-orange text-white font-semibold px-7 py-3.5 rounded-full hover:bg-afrilink-orange hover:text-afrilink-dark transition-all duration-300 hover:scale-105 active:scale-95">
+              <a
+                href="#fonctionnalites"
+                className="border-2 border-afrilink-orange text-white font-semibold px-7 py-3.5 rounded-full hover:bg-afrilink-orange hover:text-afrilink-dark transition-all duration-300 hover:scale-105 active:scale-95"
+              >
                 Découvrir
               </a>
             </div>
@@ -37,7 +48,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="relative animate-fade-up" style={{ animationDelay: "150ms" }}>
+          <div className="relative animate-fade-up" style={{ animationDelay: '150ms' }}>
             <div className="relative mx-auto max-w-md">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
@@ -76,18 +87,28 @@ export default function Hero() {
                     className="animate-dash"
                   />
                 </svg>
-                <span className="bg-afrilink-orange rounded-full p-2.5 ml-1 shadow-lg animate-float" style={{ animationDelay: "0.9s" }}>
+                <span
+                  className="bg-afrilink-orange rounded-full p-2.5 ml-1 shadow-lg animate-float"
+                  style={{ animationDelay: '0.9s' }}
+                >
                   <Plane className="h-5 w-5 text-white" />
                 </span>
               </div>
 
-              <div className="absolute top-4 -left-4 lg:-left-8 bg-white text-afrilink-dark rounded-xl shadow-xl px-3 py-2 flex items-center gap-2 animate-float" style={{ animationDelay: "1s" }}>
+              <div
+                className="absolute top-4 -left-4 lg:-left-8 bg-white text-afrilink-dark rounded-xl shadow-xl px-3 py-2 flex items-center gap-2 animate-float"
+                style={{ animationDelay: '1s' }}
+              >
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-afrilink-dark">
                   <Lock className="h-4 w-4 text-afrilink-orange" />
                 </span>
                 <div>
-                  <div className="text-[11px] font-semibold leading-tight">Transactions sécurisées</div>
-                  <div className="text-[10px] text-foreground/55 leading-tight">Chiffrement de bout en bout</div>
+                  <div className="text-[11px] font-semibold leading-tight">
+                    Transactions sécurisées
+                  </div>
+                  <div className="text-[10px] text-foreground/55 leading-tight">
+                    Chiffrement de bout en bout
+                  </div>
                 </div>
               </div>
             </div>

@@ -102,7 +102,7 @@ export class PinService {
     }
     this.walletsService.assertOwnership(wallet, userId);
 
-    if ((wallet.user as any).kycVerified === false) {
+    if ('kycVerified' in wallet.user && wallet.user.kycVerified === false) {
       throw new ForbiddenException(
         'Vérification KYC requise avant de pouvoir réinitialiser le PIN',
       );

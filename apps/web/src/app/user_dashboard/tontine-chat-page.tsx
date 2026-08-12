@@ -524,7 +524,11 @@ function TontineAboutPanel({
               : '12 Jan 2024'
           }
         />
-        <InfoRow icon={Users} label="Nombre de membres" value={String(tontine?.members?.length ?? 12)} />
+        <InfoRow
+          icon={Users}
+          label="Nombre de membres"
+          value={String(tontine?.members?.length ?? 12)}
+        />
         <InfoRow
           icon={Users}
           label="Montant de cotisation"
@@ -559,8 +563,9 @@ function TontineAboutPanel({
             const mapped: Member = {
               id: String(m.id),
               name: hasUser
-                ? `${(m as TontineMember).user?.prenom ?? ''} ${(m as TontineMember).user?.nom ?? ''}`.trim() || `Membre ${m.id}`
-                : ('name' in m ? (m as Member).name : `Membre ${m.id}`) ?? `Membre ${m.id}`,
+                ? `${(m as TontineMember).user?.prenom ?? ''} ${(m as TontineMember).user?.nom ?? ''}`.trim() ||
+                  `Membre ${m.id}`
+                : (('name' in m ? (m as Member).name : `Membre ${m.id}`) ?? `Membre ${m.id}`),
               avatarUrl: `https://i.pravatar.cc/150?u=${m.id}`,
               role:
                 m.role === 'ADMIN'
@@ -640,7 +645,7 @@ export default function TontineChatPage() {
               variant="outline"
               size="sm"
               className="mt-4 rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
-              onClick={() => navigate("/dashboard/tontines")}
+              onClick={() => navigate('/dashboard/tontines')}
             >
               Retour aux tontines
             </Button>
@@ -717,7 +722,7 @@ export default function TontineChatPage() {
               variant="outline"
               size="sm"
               className="w-full rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
-              onClick={() => navigate("/dashboard/tontines/create")}
+              onClick={() => navigate('/dashboard/tontines/create')}
             >
               <Plus className="mr-2 h-4 w-4" />
               Créer une nouvelle tontine

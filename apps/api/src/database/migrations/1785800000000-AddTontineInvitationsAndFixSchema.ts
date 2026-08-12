@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddTontineInvitationsAndFixSchema1785800000000 implements MigrationInterface {
   name = 'AddTontineInvitationsAndFixSchema1785800000000';

@@ -184,7 +184,7 @@ export class InvitationService {
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }
-async acceptByToken(token: string, userId: number): Promise<TontineMember> {
+  async acceptByToken(token: string, userId: number): Promise<TontineMember> {
     const invitation = await this.findByToken(token);
     if (!invitation) {
       throw new NotFoundException('Invitation introuvable');

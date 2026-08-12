@@ -17,9 +17,7 @@ export function WalletBalanceCard({
   const [visible, setVisible] = useState(true);
   const formatted = new Intl.NumberFormat('fr-FR').format(balance);
 
-  const maskedWalletId = walletId.length > 3
-    ? walletId.slice(0, 3) + ' ••••••••'
-    : '••••••••';
+  const maskedWalletId = walletId.length > 3 ? walletId.slice(0, 3) + ' ••••••••' : '••••••••';
 
   return (
     <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-4 sm:p-6 relative overflow-hidden">

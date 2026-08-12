@@ -1,45 +1,46 @@
-import { ArrowRight, Users, ShieldCheck, Lock, RefreshCw, Bell, TrendingUp } from "lucide-react";
+import { ArrowRight, Users, ShieldCheck, Lock, RefreshCw, Bell, TrendingUp } from 'lucide-react';
 
-const PIGGY_IMG = "https://media.base44.com/images/public/6a79f10b5afc47c1eeaa932f/9f042be5e_generated_image.png";
+const PIGGY_IMG =
+  'https://media.base44.com/images/public/6a79f10b5afc47c1eeaa932f/9f042be5e_generated_image.png';
 
 const STATS = [
   {
     icon: ShieldCheck,
-    title: "100% Transparent",
-    desc: "Suivi en temps réel de toutes les opérations",
+    title: '100% Transparent',
+    desc: 'Suivi en temps réel de toutes les opérations',
   },
   {
     icon: Lock,
-    title: "Sécurisé Garanti",
-    desc: "Vos fonds protégés et sécurisés",
+    title: 'Sécurisé Garanti',
+    desc: 'Vos fonds protégés et sécurisés',
   },
   {
     icon: RefreshCw,
-    title: "Flexible Cycle libre",
-    desc: "Tontines adaptées à vos besoins",
+    title: 'Flexible Cycle libre',
+    desc: 'Tontines adaptées à vos besoins',
   },
 ];
 
 const FEATURES = [
   {
     icon: Users,
-    title: "Créez ou rejoignez",
-    desc: "une tontine en quelques clics",
+    title: 'Créez ou rejoignez',
+    desc: 'une tontine en quelques clics',
   },
   {
     icon: ShieldCheck,
-    title: "Invitez et gérez",
-    desc: "les membres facilement",
+    title: 'Invitez et gérez',
+    desc: 'les membres facilement',
   },
   {
     icon: Bell,
-    title: "Notifications",
-    desc: "à chaque étape clé",
+    title: 'Notifications',
+    desc: 'à chaque étape clé',
   },
   {
     icon: TrendingUp,
-    title: "Réseau de confiance",
-    desc: "pour plus de sérénité",
+    title: 'Réseau de confiance',
+    desc: 'pour plus de sérénité',
   },
 ];
 
@@ -65,9 +66,8 @@ export default function Tontines() {
 
             {/* Description */}
             <p className="mt-5 text-foreground/70 text-base lg:text-lg leading-relaxed max-w-lg">
-              Épargnez à plusieurs, atteignez vos objectifs plus vite. Notre
-              plateforme de tontines digitales sécurisée et transparente vous permet
-              de bâtir votre avenir ensemble.
+              Épargnez à plusieurs, atteignez vos objectifs plus vite. Notre plateforme de tontines
+              digitales sécurisée et transparente vous permet de bâtir votre avenir ensemble.
             </p>
 
             {/* Button */}
@@ -93,9 +93,7 @@ export default function Tontines() {
                     <p className="mt-3 font-heading font-bold text-sm text-afrilink-dark leading-tight">
                       {s.title}
                     </p>
-                    <p className="mt-1 text-[11px] text-foreground/55 leading-relaxed">
-                      {s.desc}
-                    </p>
+                    <p className="mt-1 text-[11px] text-foreground/55 leading-relaxed">{s.desc}</p>
                   </div>
                 );
               })}
@@ -119,13 +117,16 @@ export default function Tontines() {
           </div>
 
           {/* Right: piggy bank image */}
-          <div className="relative animate-fade-up" style={{ animationDelay: "150ms" }}>
+          <div className="relative animate-fade-up" style={{ animationDelay: '150ms' }}>
             <div className="relative mx-auto max-w-md">
               {/* Green circle background */}
               <div className="absolute inset-4 bg-afrilink-green/10 rounded-full blur-2xl" />
               <div className="absolute top-10 right-10 w-64 h-64 bg-afrilink-green/8 rounded-full" />
               {/* Dotted arc decoration */}
-              <svg className="absolute -top-6 -right-4 w-32 h-24 overflow-visible" viewBox="0 0 120 80">
+              <svg
+                className="absolute -top-6 -right-4 w-32 h-24 overflow-visible"
+                viewBox="0 0 120 80"
+              >
                 <path
                   d="M10 70 Q 60 -10, 110 40"
                   stroke="#D28E2F"

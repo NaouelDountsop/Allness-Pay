@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeftRight,
   Pencil,
@@ -18,12 +18,12 @@ import {
   AlertTriangle,
   Grid2x2,
   RefreshCw,
-} from "lucide-react";
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { Button } from "@/components/ui/button";
-import { AdminLayout } from "@/components/admin-dashboard/admin-layout";
+} from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { Button } from '@/components/ui/button';
+import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
 
-const TABS = ["Tous les taux", "Taux actifs", "Taux inactifs", "Historique"];
+const TABS = ['Tous les taux', 'Taux actifs', 'Taux inactifs', 'Historique'];
 
 interface Rate {
   id: string;
@@ -37,38 +37,182 @@ interface Rate {
   change: string;
   isUp: boolean;
   source: string;
-  mode: "Automatique" | "Manuel";
+  mode: 'Automatique' | 'Manuel';
   updatedAt: string;
-  status: "Actif" | "Inactif";
+  status: 'Actif' | 'Inactif';
 }
 
 const RATES: Rate[] = [
-  { id: "1", base: "EUR", baseLabel: "Euro", baseFlag: "\u{1F1EA}\u{1F1FA}", target: "XAF", targetLabel: "Franc CFA", targetFlag: "\u{1F30D}", rate: "655,9578", change: "+0,45%", isUp: true, source: "Banque Centrale", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "2", base: "USD", baseLabel: "Dollar US", baseFlag: "\u{1F1FA}\u{1F1F8}", target: "XAF", targetLabel: "Franc CFA", targetFlag: "\u{1F30D}", rate: "603,2500", change: "-0,12%", isUp: false, source: "Banque Centrale", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "3", base: "GBP", baseLabel: "Livre Sterling", baseFlag: "\u{1F1EC}\u{1F1E7}", target: "XAF", targetLabel: "Franc CFA", targetFlag: "\u{1F30D}", rate: "787,6543", change: "+0,32%", isUp: true, source: "API Forex", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "4", base: "EUR", baseLabel: "Euro", baseFlag: "\u{1F1EA}\u{1F1FA}", target: "USD", targetLabel: "Dollar US", targetFlag: "\u{1F1FA}\u{1F1F8}", rate: "1,0876", change: "+0,18%", isUp: true, source: "API Forex", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "5", base: "USD", baseLabel: "Dollar US", baseFlag: "\u{1F1FA}\u{1F1F8}", target: "EUR", targetLabel: "Euro", targetFlag: "\u{1F1EA}\u{1F1FA}", rate: "0,9194", change: "-0,20%", isUp: false, source: "API Forex", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "6", base: "XAF", baseLabel: "Franc CFA", baseFlag: "\u{1F30D}", target: "NGN", targetLabel: "Naira", targetFlag: "\u{1F1F3}\u{1F1EC}", rate: "2,5789", change: "+0,78%", isUp: true, source: "Manuel", mode: "Manuel", updatedAt: "07:30", status: "Actif" },
-  { id: "7", base: "XAF", baseLabel: "Franc CFA", baseFlag: "\u{1F30D}", target: "GHS", targetLabel: "Cedi", targetFlag: "\u{1F1EC}\u{1F1ED}", rate: "3,1254", change: "+0,15%", isUp: true, source: "API Forex", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
-  { id: "8", base: "XAF", baseLabel: "Franc CFA", baseFlag: "\u{1F30D}", target: "USD", targetLabel: "Dollar US", targetFlag: "\u{1F1FA}\u{1F1F8}", rate: "0,001658", change: "-0,10%", isUp: false, source: "Banque Centrale", mode: "Automatique", updatedAt: "08:45", status: "Actif" },
+  {
+    id: '1',
+    base: 'EUR',
+    baseLabel: 'Euro',
+    baseFlag: '\u{1F1EA}\u{1F1FA}',
+    target: 'XAF',
+    targetLabel: 'Franc CFA',
+    targetFlag: '\u{1F30D}',
+    rate: '655,9578',
+    change: '+0,45%',
+    isUp: true,
+    source: 'Banque Centrale',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '2',
+    base: 'USD',
+    baseLabel: 'Dollar US',
+    baseFlag: '\u{1F1FA}\u{1F1F8}',
+    target: 'XAF',
+    targetLabel: 'Franc CFA',
+    targetFlag: '\u{1F30D}',
+    rate: '603,2500',
+    change: '-0,12%',
+    isUp: false,
+    source: 'Banque Centrale',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '3',
+    base: 'GBP',
+    baseLabel: 'Livre Sterling',
+    baseFlag: '\u{1F1EC}\u{1F1E7}',
+    target: 'XAF',
+    targetLabel: 'Franc CFA',
+    targetFlag: '\u{1F30D}',
+    rate: '787,6543',
+    change: '+0,32%',
+    isUp: true,
+    source: 'API Forex',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '4',
+    base: 'EUR',
+    baseLabel: 'Euro',
+    baseFlag: '\u{1F1EA}\u{1F1FA}',
+    target: 'USD',
+    targetLabel: 'Dollar US',
+    targetFlag: '\u{1F1FA}\u{1F1F8}',
+    rate: '1,0876',
+    change: '+0,18%',
+    isUp: true,
+    source: 'API Forex',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '5',
+    base: 'USD',
+    baseLabel: 'Dollar US',
+    baseFlag: '\u{1F1FA}\u{1F1F8}',
+    target: 'EUR',
+    targetLabel: 'Euro',
+    targetFlag: '\u{1F1EA}\u{1F1FA}',
+    rate: '0,9194',
+    change: '-0,20%',
+    isUp: false,
+    source: 'API Forex',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '6',
+    base: 'XAF',
+    baseLabel: 'Franc CFA',
+    baseFlag: '\u{1F30D}',
+    target: 'NGN',
+    targetLabel: 'Naira',
+    targetFlag: '\u{1F1F3}\u{1F1EC}',
+    rate: '2,5789',
+    change: '+0,78%',
+    isUp: true,
+    source: 'Manuel',
+    mode: 'Manuel',
+    updatedAt: '07:30',
+    status: 'Actif',
+  },
+  {
+    id: '7',
+    base: 'XAF',
+    baseLabel: 'Franc CFA',
+    baseFlag: '\u{1F30D}',
+    target: 'GHS',
+    targetLabel: 'Cedi',
+    targetFlag: '\u{1F1EC}\u{1F1ED}',
+    rate: '3,1254',
+    change: '+0,15%',
+    isUp: true,
+    source: 'API Forex',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
+  {
+    id: '8',
+    base: 'XAF',
+    baseLabel: 'Franc CFA',
+    baseFlag: '\u{1F30D}',
+    target: 'USD',
+    targetLabel: 'Dollar US',
+    targetFlag: '\u{1F1FA}\u{1F1F8}',
+    rate: '0,001658',
+    change: '-0,10%',
+    isUp: false,
+    source: 'Banque Centrale',
+    mode: 'Automatique',
+    updatedAt: '08:45',
+    status: 'Actif',
+  },
 ];
 
 const EVOLUTION_DATA = [
-  { day: "21", value: 645 },
-  { day: "22", value: 649 },
-  { day: "23", value: 644 },
-  { day: "24", value: 652 },
-  { day: "25", value: 648 },
-  { day: "26", value: 654 },
-  { day: "27", value: 655.9578 },
+  { day: '21', value: 645 },
+  { day: '22', value: 649 },
+  { day: '23', value: 644 },
+  { day: '24', value: 652 },
+  { day: '25', value: 648 },
+  { day: '26', value: 654 },
+  { day: '27', value: 655.9578 },
 ];
 
 const STATS = [
-  { label: "Paires", value: "132", change: "+12 ce mois", icon: Grid2x2, color: "text-green-400" },
-  { label: "Mis \u00e0 jour", value: "08:45", change: "Derni\u00e8re mise \u00e0 jour", icon: RefreshCw, color: "text-blue-400" },
-  { label: "Taux actifs", value: "128", change: "97% du total", icon: ArrowLeftRight, color: "text-purple-400" },
-  { label: "Taux manuels", value: "24", change: "18% du total", icon: Pencil, color: "text-amber-400" },
-  { label: "Statut", value: "Actif", change: "March\u00e9 ouvert", icon: CircleCheck, color: "text-green-400" },
+  { label: 'Paires', value: '132', change: '+12 ce mois', icon: Grid2x2, color: 'text-green-400' },
+  {
+    label: 'Mis \u00e0 jour',
+    value: '08:45',
+    change: 'Derni\u00e8re mise \u00e0 jour',
+    icon: RefreshCw,
+    color: 'text-blue-400',
+  },
+  {
+    label: 'Taux actifs',
+    value: '128',
+    change: '97% du total',
+    icon: ArrowLeftRight,
+    color: 'text-purple-400',
+  },
+  {
+    label: 'Taux manuels',
+    value: '24',
+    change: '18% du total',
+    icon: Pencil,
+    color: 'text-amber-400',
+  },
+  {
+    label: 'Statut',
+    value: 'Actif',
+    change: 'March\u00e9 ouvert',
+    icon: CircleCheck,
+    color: 'text-green-400',
+  },
 ];
 
 export default function ExchangeRatesPage() {
@@ -90,7 +234,12 @@ export default function ExchangeRatesPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="rounded-lg text-xs" onClick={() => navigate("/admin/taux-de-change/parametres")}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-lg text-xs"
+            onClick={() => navigate('/admin/taux-de-change/parametres')}
+          >
             <Settings className="mr-1.5 h-3.5 w-3.5" />
             Param\u00e8tres
           </Button>
@@ -98,7 +247,11 @@ export default function ExchangeRatesPage() {
             <Upload className="mr-1.5 h-3.5 w-3.5" />
             Importer
           </Button>
-          <Button size="sm" className="rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs" onClick={() => navigate("/admin/taux-de-change/nouveau")}>
+          <Button
+            size="sm"
+            className="rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs"
+            onClick={() => navigate('/admin/taux-de-change/nouveau')}
+          >
             <Plus className="mr-1.5 h-3.5 w-3.5" />
             Ajouter
           </Button>
@@ -135,8 +288,8 @@ export default function ExchangeRatesPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`border-b-2 pb-2 text-xs font-medium transition whitespace-nowrap ${
                   activeTab === tab
-                    ? "border-afrilink-orange text-afrilink-orange"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
+                    ? 'border-afrilink-orange text-afrilink-orange'
+                    : 'border-transparent text-gray-400 hover:text-gray-600'
                 }`}
               >
                 {tab}
@@ -203,13 +356,23 @@ export default function ExchangeRatesPage() {
                       </td>
                       <td className="px-3 py-2.5 font-medium text-gray-900">{rate.rate}</td>
                       <td className="px-3 py-2.5">
-                        <span className={`inline-flex items-center gap-0.5 font-medium ${rate.isUp ? "text-afrilink-green" : "text-red-500"}`}>
+                        <span
+                          className={`inline-flex items-center gap-0.5 font-medium ${rate.isUp ? 'text-afrilink-green' : 'text-red-500'}`}
+                        >
                           {rate.change}
-                          {rate.isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                          {rate.isUp ? (
+                            <TrendingUp className="h-3 w-3" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3" />
+                          )}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 text-gray-500 hidden lg:table-cell">{rate.source}</td>
-                      <td className="px-3 py-2.5 text-gray-500 hidden lg:table-cell">{rate.mode}</td>
+                      <td className="px-3 py-2.5 text-gray-500 hidden lg:table-cell">
+                        {rate.source}
+                      </td>
+                      <td className="px-3 py-2.5 text-gray-500 hidden lg:table-cell">
+                        {rate.mode}
+                      </td>
                       <td className="px-3 py-2.5">
                         <span className="rounded-full bg-afrilink-green/10 px-2 py-0.5 text-[10px] font-semibold text-afrilink-green">
                           {rate.status}
@@ -217,7 +380,10 @@ export default function ExchangeRatesPage() {
                       </td>
                       <td className="px-3 py-2.5 text-right">
                         <button
-                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/taux-de-change/${rate.id}/modifier`); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/taux-de-change/${rate.id}/modifier`);
+                          }}
                           className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                         >
                           <Pencil className="h-3.5 w-3.5" />
@@ -232,22 +398,36 @@ export default function ExchangeRatesPage() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 px-3 py-2">
               <p className="text-[11px] text-gray-400">
-                {(page - 1) * pageSize + 1}\u2013{Math.min(page * pageSize, totalRates)} / {totalRates}
+                {(page - 1) * pageSize + 1}\u2013{Math.min(page * pageSize, totalRates)} /{' '}
+                {totalRates}
               </p>
               <div className="flex items-center gap-1">
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50"
+                >
                   Prev
                 </button>
                 {[1, 2, 3].map((n) => (
-                  <button key={n} onClick={() => setPage(n)} className={`rounded px-2 py-1 text-[11px] font-medium ${page === n ? "bg-afrilink-dark text-white" : "border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                  <button
+                    key={n}
+                    onClick={() => setPage(n)}
+                    className={`rounded px-2 py-1 text-[11px] font-medium ${page === n ? 'bg-afrilink-dark text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                  >
                     {n}
                   </button>
                 ))}
                 <span className="px-1 text-[11px] text-gray-400">...</span>
-                <button onClick={() => setPage(14)} className={`rounded px-2 py-1 text-[11px] font-medium ${page === 14 ? "bg-afrilink-dark text-white" : "border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                <button
+                  onClick={() => setPage(14)}
+                  className={`rounded px-2 py-1 text-[11px] font-medium ${page === 14 ? 'bg-afrilink-dark text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                >
                   14
                 </button>
-                <button onClick={() => setPage((p) => Math.min(14, p + 1))} className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50">
+                <button
+                  onClick={() => setPage((p) => Math.min(14, p + 1))}
+                  className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50"
+                >
                   Next
                 </button>
               </div>
@@ -279,11 +459,11 @@ export default function ExchangeRatesPage() {
             </div>
             <div className="divide-y divide-gray-100 border-y border-gray-100 text-xs">
               {[
-                ["Taux", `${selectedRate.rate} ${selectedRate.target}`],
-                ["Variation", selectedRate.change],
-                ["Source", selectedRate.source],
-                ["Mode", selectedRate.mode],
-                ["Derni\u00e8re MAJ", `Aujourd'hui ${selectedRate.updatedAt}`],
+                ['Taux', `${selectedRate.rate} ${selectedRate.target}`],
+                ['Variation', selectedRate.change],
+                ['Source', selectedRate.source],
+                ['Mode', selectedRate.mode],
+                ['Derni\u00e8re MAJ', `Aujourd'hui ${selectedRate.updatedAt}`],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-center justify-between py-2">
                   <span className="text-gray-400">{label}</span>
@@ -292,7 +472,10 @@ export default function ExchangeRatesPage() {
               ))}
             </div>
             <div className="mt-3 space-y-2">
-              <Button className="w-full rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs" onClick={() => navigate(`/admin/taux-de-change/${selectedRate.id}/modifier`)}>
+              <Button
+                className="w-full rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs"
+                onClick={() => navigate(`/admin/taux-de-change/${selectedRate.id}/modifier`)}
+              >
                 Modifier le taux
               </Button>
               <Button variant="outline" className="w-full rounded-lg text-xs">
@@ -305,18 +488,42 @@ export default function ExchangeRatesPage() {
           {/* Evolution chart */}
           <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-gray-900">\u00c9volution ({selectedRate.base}/{selectedRate.target})</p>
+              <p className="text-xs font-semibold text-gray-900">
+                \u00c9volution ({selectedRate.base}/{selectedRate.target})
+              </p>
               <button className="flex items-center gap-1 rounded border border-gray-200 px-2 py-0.5 text-[10px] text-gray-600">
                 7J <ChevronDown className="h-3 w-3 text-gray-400" />
               </button>
             </div>
             <div className="h-32">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={EVOLUTION_DATA} margin={{ left: -20, right: 5, top: 5, bottom: 0 }}>
-                  <XAxis dataKey="day" tick={{ fontSize: 9, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[640, 660]} tick={{ fontSize: 9, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 8, fontSize: 11, border: "1px solid #e5e7eb" }} />
-                  <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={false} activeDot={{ r: 3, fill: "#22c55e" }} />
+                <LineChart
+                  data={EVOLUTION_DATA}
+                  margin={{ left: -20, right: 5, top: 5, bottom: 0 }}
+                >
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fontSize: 9, fill: '#9ca3af' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    domain={[640, 660]}
+                    tick={{ fontSize: 9, fill: '#9ca3af' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 8, fontSize: 11, border: '1px solid #e5e7eb' }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 3, fill: '#22c55e' }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -327,9 +534,19 @@ export default function ExchangeRatesPage() {
             <p className="text-xs font-semibold text-gray-900 mb-2">Stats rapides</p>
             <div className="space-y-2">
               {[
-                { icon: Star, color: "text-amber-400", label: "Taux populaires", value: "EUR/XAF, USD/XAF" },
-                { icon: Clock, color: "text-blue-400", label: "MAJ aujourd'hui", value: "18" },
-                { icon: AlertTriangle, color: "text-red-400", label: "Alertes actives", value: "2" },
+                {
+                  icon: Star,
+                  color: 'text-amber-400',
+                  label: 'Taux populaires',
+                  value: 'EUR/XAF, USD/XAF',
+                },
+                { icon: Clock, color: 'text-blue-400', label: "MAJ aujourd'hui", value: '18' },
+                {
+                  icon: AlertTriangle,
+                  color: 'text-red-400',
+                  label: 'Alertes actives',
+                  value: '2',
+                },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2 rounded-lg bg-gray-50 p-2">
                   <item.icon className={`mt-0.5 h-3.5 w-3.5 ${item.color}`} />

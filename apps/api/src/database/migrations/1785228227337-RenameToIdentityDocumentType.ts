@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class RenameToIdentityDocumentType1785228227337 implements MigrationInterface {
   name = 'RenameToIdentityDocumentType1785228227337';

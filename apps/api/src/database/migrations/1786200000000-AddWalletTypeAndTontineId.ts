@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddWalletTypeAndTontineId1786200000000 implements MigrationInterface {
   name = 'AddWalletTypeAndTontineId1786200000000';

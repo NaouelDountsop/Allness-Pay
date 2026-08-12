@@ -287,9 +287,7 @@ export class MailService {
         // pour les emails transactionnels.
       });
 
-      this.logger.log(
-        `Email envoyé avec succès à ${params.to} — ${params.subject}`,
-      );
+      this.logger.log(`Email envoyé avec succès à ${params.to} — ${params.subject}`);
     } catch (error) {
       this.logger.error(
         `Échec d'envoi de l'email à ${params.to}`,
@@ -304,10 +302,7 @@ export class MailService {
   // OTP
   // ============================================================
 
-  async sendOtp(
-    email: string,
-    otpCode: string,
-  ): Promise<void> {
+  async sendOtp(email: string, otpCode: string): Promise<void> {
     const safeOtp = this.escapeHtml(otpCode);
 
     const html = this.buildTemplate(
@@ -409,10 +404,7 @@ AfriLinkPay
   // KYC - SOUMIS
   // ============================================================
 
-  async sendKycSubmitted(
-    email: string,
-    firstName: string,
-  ): Promise<void> {
+  async sendKycSubmitted(email: string, firstName: string): Promise<void> {
     const safeFirstName = this.escapeHtml(firstName);
 
     const html = this.buildTemplate(
@@ -518,10 +510,7 @@ AfriLinkPay
   // KYC - EN COURS
   // ============================================================
 
-  async sendKycUnderReview(
-    email: string,
-    firstName: string,
-  ): Promise<void> {
+  async sendKycUnderReview(email: string, firstName: string): Promise<void> {
     const safeFirstName = this.escapeHtml(firstName);
 
     const html = this.buildTemplate(
@@ -624,10 +613,7 @@ AfriLinkPay
   // KYC - APPROUVÉ
   // ============================================================
 
-  async sendKycApproved(
-    email: string,
-    firstName: string,
-  ): Promise<void> {
+  async sendKycApproved(email: string, firstName: string): Promise<void> {
     const safeFirstName = this.escapeHtml(firstName);
 
     const html = this.buildTemplate(
@@ -702,7 +688,7 @@ AfriLinkPay
         preheader: "Votre vérification d'identité a été approuvée",
       },
     );
-    
+
     const text = `
 AfriLinkPay
 
@@ -731,16 +717,10 @@ AfriLinkPay
   // KYC - REFUSÉ
   // ============================================================
 
-  async sendKycRejected(
-    email: string,
-    firstName: string,
-    reason?: string,
-  ): Promise<void> {
+  async sendKycRejected(email: string, firstName: string, reason?: string): Promise<void> {
     const safeFirstName = this.escapeHtml(firstName);
 
-    const safeReason = reason
-      ? this.escapeHtml(reason)
-      : undefined;
+    const safeReason = reason ? this.escapeHtml(reason) : undefined;
 
     const reasonSection = safeReason
       ? `
@@ -860,14 +840,11 @@ AfriLinkPay
     tontineName: string,
     token: string,
   ): Promise<void> {
-    const safeInviterName =
-      this.escapeHtml(inviterName);
+    const safeInviterName = this.escapeHtml(inviterName);
 
-    const safeTontineName =
-      this.escapeHtml(tontineName);
+    const safeTontineName = this.escapeHtml(tontineName);
 
-    const acceptUrl =
-      `${this.frontendUrl}/invitations/accept?token=${encodeURIComponent(token)}`;
+    const acceptUrl = `${this.frontendUrl}/invitations/accept?token=${encodeURIComponent(token)}`;
 
     const html = this.buildTemplate(
       `
@@ -1024,8 +1001,7 @@ AfriLinkPay
         </div>
       `,
       {
-        preheader:
-          `${inviterName} vous invite à rejoindre la tontine ${tontineName}`,
+        preheader: `${inviterName} vous invite à rejoindre la tontine ${tontineName}`,
       },
     );
 
@@ -1065,13 +1041,9 @@ AfriLinkPay
     firstName: string,
     requestDetails?: string,
   ): Promise<void> {
-    const safeFirstName =
-      this.escapeHtml(firstName);
+    const safeFirstName = this.escapeHtml(firstName);
 
-    const safeRequestDetails =
-      requestDetails
-        ? this.escapeHtml(requestDetails)
-        : undefined;
+    const safeRequestDetails = requestDetails ? this.escapeHtml(requestDetails) : undefined;
 
     const detailsSection = safeRequestDetails
       ? `
@@ -1159,8 +1131,7 @@ AfriLinkPay
         </div>
       `,
       {
-        preheader:
-          'Des informations complémentaires sont nécessaires pour votre KYC',
+        preheader: 'Des informations complémentaires sont nécessaires pour votre KYC',
       },
     );
 
