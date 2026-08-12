@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AdminProtectedRoute } from "@/components/common/admin-protected-route";
+import { UserProtectedRoute } from "@/components/common/user-protected-route";
 import LandingPage from "@/app/landing-page";
 import SignupPage from "@/app/auth/signup-page";
 import VerifyEmailPage from "@/app/auth/verify-email-page";
@@ -61,27 +62,27 @@ export function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/invitations/accept" element={<AcceptInvitationPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/kyc" element={<KycPage />} />
-        <Route path="/dashboard/wallet" element={<WalletPage />} />
-        <Route path="/dashboard/send" element={<SendMoneyPage />} />
-        <Route path="/dashboard/payments" element={<PaymentsPage />} />
-        <Route path="/dashboard/payments/scan" element={<QrScanPage />} />
-        <Route path="/dashboard/payments/qr-result" element={<QrPaymentPage />} />
-        <Route path="/dashboard/payments/:category" element={<BillPaymentPage />} />
-        <Route path="/dashboard/tontines" element={<TontinesPage />} />
-        <Route path="/dashboard/tontines/create" element={<CreateTontinePage />} />
-        <Route path="/dashboard/tontines/:id" element={<TontineDetailPage />} />
-        <Route path="/dashboard/tontines/:id/members" element={<TontineMembersPage />} />
-        <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
-        <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
-        <Route path="/dashboard/tontines/:id/chat" element={<TontineChatPage />} />
-        <Route path="/dashboard/tontines/chat" element={<TontineChatPage />} />
-        <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
-        <Route path="/dashboard/transactions" element={<TransactionsPage />} />
-        <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
-        <Route path="/dashboard/profile" element={<ProfilePage />} />
-        <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/dashboard" element={<UserProtectedRoute><DashboardPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/kyc" element={<UserProtectedRoute><KycPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/wallet" element={<UserProtectedRoute><WalletPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/send" element={<UserProtectedRoute><SendMoneyPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments" element={<UserProtectedRoute><PaymentsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/scan" element={<UserProtectedRoute><QrScanPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/qr-result" element={<UserProtectedRoute><QrPaymentPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/:category" element={<UserProtectedRoute><BillPaymentPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines" element={<UserProtectedRoute><TontinesPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/create" element={<UserProtectedRoute><CreateTontinePage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id" element={<UserProtectedRoute><TontineDetailPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/members" element={<UserProtectedRoute><TontineMembersPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/history" element={<UserProtectedRoute><ContributionHistoryPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/contribute" element={<UserProtectedRoute><MakeContributionPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/settings" element={<UserProtectedRoute><TontineSettingsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/transactions" element={<UserProtectedRoute><TransactionsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/beneficiaries" element={<UserProtectedRoute><BeneficiariesPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/profile" element={<UserProtectedRoute><ProfilePage /></UserProtectedRoute>} />
+        <Route path="/dashboard/settings" element={<UserProtectedRoute><SettingsPage /></UserProtectedRoute>} />
 
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />

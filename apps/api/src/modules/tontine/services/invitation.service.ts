@@ -181,6 +181,24 @@ export class InvitationService {
     });
   }
 
+  async findPendingForUser(userId: number, email: string): Promise<TontineInvitation[]> {
+    const byUserId = await this.invitationRepo.find({
+      where: { inviteeUserId: userId, status: 'PENDING' },
+      order: { createdAt: 'DESC' },
+    });
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email, status: 'PENDING' },
+      order: { createdAt: 'DESC' },
+    });
+    const merged = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return merged.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
+    });
+  }
+
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }

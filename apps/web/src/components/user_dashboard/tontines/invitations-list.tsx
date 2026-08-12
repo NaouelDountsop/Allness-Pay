@@ -27,10 +27,10 @@ function InvitationUser({ userId }: { userId?: number }) {
   );
 }
 
-function InvitationTontine({ tontineId }: { tontineId: number }) {
+function InvitationTontine({ tontineId }: { tontineId: string }) {
   const { data: tontine } = useQuery({
     queryKey: ["tontine", tontineId],
-    queryFn: () => tontineService.getById(String(tontineId)),
+    queryFn: () => tontineService.getById(tontineId),
   });
 
   if (!tontine) return <span className="animate-pulse">Chargement...</span>;

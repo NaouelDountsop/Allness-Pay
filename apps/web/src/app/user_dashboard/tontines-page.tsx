@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Loader2, MessageCircle } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
@@ -12,6 +12,7 @@ import { tontineService } from "@/lib/api/tontine.service";
 
 export default function TontinesPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: tontines, isLoading } = useQuery({
     queryKey: ["tontines"],
@@ -21,6 +22,15 @@ export default function TontinesPage() {
   const { data: invitations } = useQuery({
     queryKey: ["pending-invitations"],
     queryFn: tontineService.listPendingInvitations,
+  });
+
+  const respondMutation = useMutation({
+    mutationFn: ({ id, response }: { id: number; response: "ACCEPT" | "DECLINE" }) =>
+      tontineService.respondInvitation(id, response),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pending-invitations"] });
+      queryClient.invalidateQueries({ queryKey: ["tontines"] });
+    },
   });
 
   if (isLoading) {
@@ -44,12 +54,24 @@ export default function TontinesPage() {
       <DashboardHeader />
 
       <div>
-        {!hasTontines ? (
+        {!hasTontines && (
           <TontinesEmptyState
             onCreate={() => navigate("/dashboard/tontines/create")}
             onJoin={() => {}}
           />
-        ) : (
+        )}
+
+        {invitations && invitations.length > 0 && (
+          <div className={!hasTontines ? "mt-6" : ""}>
+            <InvitationsList
+              invitations={invitations}
+              onAccept={(id) => respondMutation.mutate({ id, response: "ACCEPT" })}
+              onDecline={(id) => respondMutation.mutate({ id, response: "DECLINE" })}
+            />
+          </div>
+        )}
+
+        {hasTontines && (
           <>
             <div className="flex items-center justify-between mb-1">
               <div>
@@ -93,8 +115,6 @@ export default function TontinesPage() {
               ))}
               <NewInitiativeCard />
             </div>
-
-            <InvitationsList invitations={invitations ?? []} />
           </>
         )}
       </div>

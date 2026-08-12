@@ -54,7 +54,7 @@ export interface CreateTontinePayload {
 
 export interface TontineInvitation {
   id: number;
-  tontineId: number;
+  tontineId: string;
   inviterUserId: number;
   inviteeUserId?: number;
   inviteeEmail?: string;
@@ -107,12 +107,17 @@ export const tontineService = {
   },
 
   listPendingInvitations: async (): Promise<TontineInvitation[]> => {
-    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations/pending`);
+    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations/pending/me`);
     return res.data;
   },
 
   acceptByToken: async (token: string): Promise<TontineMember> => {
     const res = await apiClient.post<TontineMember>(`${basePath}/invitations/accept`, { token });
+    return res.data;
+  },
+
+  respondInvitation: async (invitationId: number, response: "ACCEPT" | "DECLINE"): Promise<TontineInvitation> => {
+    const res = await apiClient.post<TontineInvitation>(`${basePath}/invitations/${invitationId}/respond`, { response });
     return res.data;
   },
 };

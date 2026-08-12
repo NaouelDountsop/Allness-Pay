@@ -151,7 +151,7 @@ export const adminService = {
     activeTontines: number;
     totalVolume: number;
   }> => {
-    const res = await apiClient.get("/admin/tontines/stats");
+    const res = await apiClient.get("/admin/tontines");
     return res.data;
   },
 
@@ -165,12 +165,12 @@ export const adminService = {
     completedCount: number;
     totalVolume: number;
   }> => {
-    const res = await apiClient.get("/admin/transactions/stats");
+    const res = await apiClient.get("/admin/transactions");
     return res.data;
   },
 
   getRecentActivities: async (): Promise<AdminActivity[]> => {
-    const res = await apiClient.get<AdminActivity[]>("/admin/activities");
+    const res = await apiClient.get<AdminActivity[]>("/admin");
     return res.data;
   },
 
@@ -180,7 +180,7 @@ export const adminService = {
   },
 
   getChartWeekly: async (): Promise<AdminChartPoint[]> => {
-    const res = await apiClient.get<AdminChartPoint[]>("/admin/chart/weekly");
+    const res = await apiClient.get<AdminChartPoint[]>("/admin");
     return res.data;
   },
 };
