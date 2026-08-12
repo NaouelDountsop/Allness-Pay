@@ -8,6 +8,29 @@ interface AuthenticatedRequest extends Request {
   user: { id: number };
 }
 
+interface TranzakCallbackBody {
+  resource?: {
+    requestId?: string;
+    transactionId?: string;
+    status?: string;
+    transactionStatus?: string;
+    data?: {
+      requestId?: string;
+      transactionId?: string;
+      status?: string;
+    };
+  };
+  requestId?: string;
+  transactionId?: string;
+  status?: string;
+  transactionStatus?: string;
+  data?: {
+    requestId?: string;
+    transactionId?: string;
+    status?: string;
+  };
+}
+
 @ApiTags('tranzak')
 @Controller('payments/tranzak')
 export class TranzakController {
@@ -53,7 +76,7 @@ export class TranzakController {
 
   @Post('callback')
   @ApiOperation({ summary: 'Callback de confirmation Tranzak (pas de JWT)' })
-  async handleCallback(@Body() body: any) {
+  async handleCallback(@Body() body: TranzakCallbackBody) {
     this.logger.log(`Callback Tranzak reçu: ${JSON.stringify(body)}`);
 
     // Tranzak envoie les données dans body.resource
@@ -71,7 +94,7 @@ export class TranzakController {
     }
 
     // Priorité au requestId (REQ...) car c'est ce qu'on stocke au moment de la création
-    const identifier = requestId ?? transactionId;
+    const identifier = requestId ?? transactionId ?? '';
     return this.tranzakService.handleCallback(identifier, status ?? 'UNKNOWN', !!requestId);
   }
 }
