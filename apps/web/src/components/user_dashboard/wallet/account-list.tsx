@@ -31,7 +31,7 @@ export function AccountList({ wallets, onAddAccount }: AccountListProps) {
                 </div>
               </div>
               <span className="text-sm font-semibold text-gray-800">
-                {new Intl.NumberFormat('fr-FR').format(w.balance)} {w.currency}
+                {new Intl.NumberFormat('fr-FR').format(Number(w.balance))} {w.currency}
               </span>
             </li>
           ))}

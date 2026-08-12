@@ -40,6 +40,7 @@ export default function LoginPage() {
       if (refresh_token) {
         authStorage.setRefreshToken(refresh_token);
       }
+      authStorage.setRole(role);
       navigate(role === 'admin' ? '/admin' : '/dashboard');
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string | string[] } }; message?: string };

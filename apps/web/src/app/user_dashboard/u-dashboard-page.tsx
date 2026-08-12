@@ -39,7 +39,7 @@ export default function DashboardPage() {
     );
   }
 
-  const balance = wallet?.balance ?? 0;
+  const balance = Number(wallet?.balance) || 0;
   const currency = wallet?.currency ?? 'XAF';
   const walletNumber = wallet?.walletNumber ?? '---';
   const walletStatus =

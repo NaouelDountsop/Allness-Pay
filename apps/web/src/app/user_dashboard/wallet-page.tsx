@@ -22,7 +22,7 @@ export default function WalletPage() {
   });
 
   const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
-  const totalBalance = wallets.reduce((sum, w) => sum + w.balance, 0);
+  const totalBalance = wallets.reduce((sum, w) => sum + Number(w.balance), 0);
 
   if (walletsLoading) {
     return (

@@ -20,7 +20,7 @@ import {
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { Button } from '@/components/ui/button';
-import { tontineService, Tontine, TontineMember } from '@/lib/api/tontine.service';
+import { tontineService, type Tontine, type TontineMember } from '@/lib/api/tontine.service';
 
 interface Conversation {
   id: string;
@@ -554,12 +554,13 @@ function TontineAboutPanel({
           <button className="text-xs font-medium text-afrilink-green">Voir tout</button>
         </div>
         <div className="mt-1 divide-y divide-gray-50">
-          {(members ?? MEMBERS).map((m: any) => {
+          {(members ?? MEMBERS).map((m) => {
+            const hasUser = 'user' in m && m.user;
             const mapped: Member = {
               id: String(m.id),
-              name: m.user
-                ? `${m.user?.prenom ?? ''} ${m.user?.nom ?? ''}`.trim() || `Membre ${m.id}`
-                : (m.name ?? `Membre ${m.id}`),
+              name: hasUser
+                ? `${(m as TontineMember).user?.prenom ?? ''} ${(m as TontineMember).user?.nom ?? ''}`.trim() || `Membre ${m.id}`
+                : ('name' in m ? (m as Member).name : `Membre ${m.id}`) ?? `Membre ${m.id}`,
               avatarUrl: `https://i.pravatar.cc/150?u=${m.id}`,
               role:
                 m.role === 'ADMIN'

@@ -92,44 +92,7 @@ export default function AdminTransactionsPage() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<TransactionDetail | null>(null);
 
-  const { data: transactions, isLoading: loadingTx } = useQuery({
-    queryKey: ["admin-transactions"],
-    queryFn: adminService.listTransactions,
-  });
-
-  const { data: stats, isLoading: loadingStats } = useQuery({
-    queryKey: ["admin-transaction-stats"],
-    queryFn: adminService.getTransactionStats,
-  });
-
-  const formatXAF = (value: number) =>
-    new Intl.NumberFormat("fr-FR").format(value) + " XAF";
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const isLoading = loadingTx || loadingStats;
-
-  if (isLoading) {
-    return (
-      <AdminLayout active="Transactions">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
-        </div>
-      </AdminLayout>
-    );
-  }
-
-  const paginatedTx = transactions?.slice((page - 1) * 10, page * 10) ?? [];
-  const totalPages = Math.ceil((transactions?.length ?? 0) / 10);
+  const totalPages = Math.ceil(TRANSACTIONS.length / 10);
 
   return (
     <AdminLayout active="Transactions">
@@ -147,7 +110,7 @@ export default function AdminTransactionsPage() {
             </span>
             <span className="text-sm text-gray-300">Volume total</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatXAF(stats?.totalVolume ?? 0)}</p>
+          <p className="text-2xl font-bold text-white">218 000 XAF</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -157,7 +120,7 @@ export default function AdminTransactionsPage() {
             </span>
             <span className="text-sm text-gray-300">Complétées</span>
           </div>
-          <p className="text-2xl font-bold text-white">{stats?.completedCount ?? 0}</p>
+          <p className="text-2xl font-bold text-white">2</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -167,7 +130,7 @@ export default function AdminTransactionsPage() {
             </span>
             <span className="text-sm text-gray-300">Total transactions</span>
           </div>
-          <p className="text-2xl font-bold text-white">{stats?.totalTransactions ?? 0}</p>
+          <p className="text-2xl font-bold text-white">4</p>
         </div>
       </div>
 

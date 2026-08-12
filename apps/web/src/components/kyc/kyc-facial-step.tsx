@@ -48,7 +48,6 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
     if (!captured) {
       startCamera();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [captured]);
 
   useEffect(() => {

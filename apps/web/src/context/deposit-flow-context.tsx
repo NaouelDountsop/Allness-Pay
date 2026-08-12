@@ -4,12 +4,14 @@ export type MobileMoneyOperator = 'mtn' | 'orange';
 export type DepositMethod = 'mobile_money' | 'bank';
 export type Currency = 'XAF' | 'EUR' | 'USD';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   XAF: 'FCFA',
   EUR: '€',
   USD: '$',
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const BANK_LABELS: Record<string, string> = {
   sgbc: 'SGBC (Société Générale Cameroun)',
   uba: 'UBA Cameroun',
@@ -140,6 +142,7 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDepositFlow() {
   const ctx = useContext(DepositContext);
   if (!ctx) throw new Error('useDepositFlow doit être utilisé sous <DepositFlowProvider>');
