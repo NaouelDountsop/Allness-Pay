@@ -1,13 +1,13 @@
-import { Zap, Droplet, Wifi, Tv, Shield, GraduationCap, PlusCircle } from "lucide-react";
+import { Zap, Droplet, Wifi, Tv, Shield, GraduationCap, PlusCircle } from 'lucide-react';
 
 const SERVICES = [
-  { icon: Zap, label: "Électricité" },
-  { icon: Droplet, label: "Eau" },
-  { icon: Wifi, label: "Internet" },
-  { icon: Tv, label: "Télévision" },
-  { icon: Shield, label: "Assurance" },
-  { icon: GraduationCap, label: "Éducation" },
-  { icon: PlusCircle, label: "Plus encore" },
+  { icon: Zap, label: 'Électricité' },
+  { icon: Droplet, label: 'Eau' },
+  { icon: Wifi, label: 'Internet' },
+  { icon: Tv, label: 'Télévision' },
+  { icon: Shield, label: 'Assurance' },
+  { icon: GraduationCap, label: 'Éducation' },
+  { icon: PlusCircle, label: 'Plus encore' },
 ];
 
 export default function Services() {
@@ -27,11 +27,16 @@ export default function Services() {
           {SERVICES.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.label} className="group flex flex-col items-center gap-3 p-4 rounded-2xl border border-border hover:border-afrilink-green hover:bg-muted/50 transition-all cursor-pointer">
+              <div
+                key={s.label}
+                className="group flex flex-col items-center gap-3 p-4 rounded-2xl border border-border hover:border-afrilink-green hover:bg-muted/50 transition-all cursor-pointer"
+              >
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-afrilink-dark group-hover:bg-afrilink-green transition-colors">
                   <Icon className="h-7 w-7 text-afrilink-orange" />
                 </span>
-                <span className="text-xs lg:text-sm font-medium text-afrilink-dark text-center">{s.label}</span>
+                <span className="text-xs lg:text-sm font-medium text-afrilink-dark text-center">
+                  {s.label}
+                </span>
               </div>
             );
           })}

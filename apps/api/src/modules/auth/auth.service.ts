@@ -151,9 +151,21 @@ export class AuthService {
     const user = await this.userRepo.findOne({
       where: { idutilisateur: userId },
       select: [
-        'idutilisateur', 'nom', 'prenom', 'datenaissance', 'sexe',
-        'pays', 'ville', 'telephone', 'adresse', 'email',
-        'profession', 'statut', 'verificationotp', 'dateinscription', 'datemodification',
+        'idutilisateur',
+        'nom',
+        'prenom',
+        'datenaissance',
+        'sexe',
+        'pays',
+        'ville',
+        'telephone',
+        'adresse',
+        'email',
+        'profession',
+        'statut',
+        'verificationotp',
+        'dateinscription',
+        'datemodification',
       ],
     });
     if (!user) {
@@ -170,7 +182,14 @@ export class AuthService {
     if (!admin) {
       throw new UnauthorizedException('Administrateur introuvable.');
     }
-    return { idutilisateur: admin.id, nom: admin.nom, prenom: '', email: admin.email, profession: 'Administrateur', statut: admin.statut };
+    return {
+      idutilisateur: admin.id,
+      nom: admin.nom,
+      prenom: '',
+      email: admin.email,
+      profession: 'Administrateur',
+      statut: admin.statut,
+    };
   }
 
   async verifyOtp(email: string, otp: string) {
@@ -181,7 +200,6 @@ export class AuthService {
     return this.usersService.resendOtp(email);
   }
 
-
   private parseTtlToSeconds(ttl: string): number {
     const match = ttl.match(/^(\d+)([smhd])$/);
     if (!match) return 30 * 24 * 60 * 60;
@@ -191,68 +209,68 @@ export class AuthService {
     return value * multipliers[unit];
   }
 
-
-
   // Cherche un compte lié à ce googleId, sinon par email (et lie le googleId si trouvé par email)
-async resolveGoogleUser(googleId: string, email: string): Promise<User | null> {
-  let user = await this.userRepo.findOne({ where: { googleId } });
-  if (user) return user;
+  async resolveGoogleUser(googleId: string, email: string): Promise<User | null> {
+    let user = await this.userRepo.findOne({ where: { googleId } });
+    if (user) return user;
 
-  user = await this.userRepo.findOne({ where: { email } });
-  if (user) {
-    user.googleId = googleId;
-    await this.userRepo.save(user);
-    return user;
+    user = await this.userRepo.findOne({ where: { email } });
+    if (user) {
+      user.googleId = googleId;
+      await this.userRepo.save(user);
+      return user;
+    }
+
+    return null;
   }
 
-  return null;
-}
-
-// Stocke le profil Google vérifié en attendant que l'utilisateur complète le formulaire
-async createGooglePendingSignup(profile: {
-  googleId: string;
-  email: string;
-  prenom: string;
-  nom: string;
-}): Promise<string> {
-  const token = randomUUID();
-  await this.redisService.set(`google_pending:${token}`, JSON.stringify(profile), 15 * 60);
-  return token;
-}
-
-// Relit le profil en attente (utilisé par le front pour préremplir le formulaire)
-async getGooglePendingSignup(token: string) {
-  const raw = await this.redisService.get(`google_pending:${token}`);
-  if (!raw) {
-    throw new UnauthorizedException("Session d'inscription Google expirée, veuillez recommencer.");
+  // Stocke le profil Google vérifié en attendant que l'utilisateur complète le formulaire
+  async createGooglePendingSignup(profile: {
+    googleId: string;
+    email: string;
+    prenom: string;
+    nom: string;
+  }): Promise<string> {
+    const token = randomUUID();
+    await this.redisService.set(`google_pending:${token}`, JSON.stringify(profile), 15 * 60);
+    return token;
   }
-  return JSON.parse(raw) as { googleId: string; email: string; prenom: string; nom: string };
-}
 
-// Finalise l'inscription : fusionne le profil Google + le formulaire, crée le user, envoie l'OTP
-async completeGoogleSignup(token: string, dto: CreateUserDto) {
-  const pending = await this.getGooglePendingSignup(token);
+  // Relit le profil en attente (utilisé par le front pour préremplir le formulaire)
+  async getGooglePendingSignup(token: string) {
+    const raw = await this.redisService.get(`google_pending:${token}`);
+    if (!raw) {
+      throw new UnauthorizedException(
+        "Session d'inscription Google expirée, veuillez recommencer.",
+      );
+    }
+    return JSON.parse(raw) as { googleId: string; email: string; prenom: string; nom: string };
+  }
 
-  const user = await this.usersService.create({
-    nom: pending.nom ?? dto.nom,
-    prenom: pending.prenom ?? dto.prenom,
-    email: pending.email,
-    googleId: pending.googleId,
-    datenaissance: dto.datenaissance,
-    sexe: dto.sexe,
-    pays: dto.pays,
-    ville: dto.ville,
-    telephone: dto.telephone,
-    adresse: dto.adresse,
-    profession: dto.profession,
-    motdepasse: dto.motdepasse,
-  });
+  // Finalise l'inscription : fusionne le profil Google + le formulaire, crée le user, envoie l'OTP
+  async completeGoogleSignup(token: string, dto: CreateUserDto) {
+    const pending = await this.getGooglePendingSignup(token);
 
-  await this.redisService.del(`google_pending:${token}`);
+    const user = await this.usersService.create({
+      nom: pending.nom ?? dto.nom,
+      prenom: pending.prenom ?? dto.prenom,
+      email: pending.email,
+      googleId: pending.googleId,
+      datenaissance: dto.datenaissance,
+      sexe: dto.sexe,
+      pays: dto.pays,
+      ville: dto.ville,
+      telephone: dto.telephone,
+      adresse: dto.adresse,
+      profession: dto.profession,
+      motdepasse: dto.motdepasse,
+    });
 
-  return {
-    message: 'Compte créé. Un code de vérification a été envoyé à votre email.',
-    email: user.email,
-  };
-}
+    await this.redisService.del(`google_pending:${token}`);
+
+    return {
+      message: 'Compte créé. Un code de vérification a été envoyé à votre email.',
+      email: user.email,
+    };
+  }
 }

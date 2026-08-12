@@ -1,18 +1,19 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { WalletService } from './wallet.service';
+import { Test } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { WalletsService } from './wallet.service';
 
-// describe('WalletService', () => {
-//   let service: WalletService;
+describe('WalletsService', () => {
+  let service: WalletsService;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [WalletService],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [{ provide: WalletsService, useValue: {} }],
+    }).compile();
 
-//     service = module.get<WalletService>(WalletService);
-//   });
+    service = module.get<WalletsService>(WalletsService);
+  });
 
-//   it('should be defined', () => {
-//     expect(service).toBeDefined();
-//   });
-// });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});

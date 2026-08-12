@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddWalletTypeAndTontineId1786200000000 implements MigrationInterface {
   name = 'AddWalletTypeAndTontineId1786200000000';
@@ -13,9 +13,7 @@ export class AddWalletTypeAndTontineId1786200000000 implements MigrationInterfac
     await queryRunner.query(
       `ALTER TABLE "wallets" ADD "type" "public"."wallets_type_enum" NOT NULL DEFAULT 'PERSONAL'`,
     );
-    await queryRunner.query(
-      `ALTER TABLE "wallets" ADD "tontineId" uuid`,
-    );
+    await queryRunner.query(`ALTER TABLE "wallets" ADD "tontineId" uuid`);
 
     // Corriger la FK walletId sur tontines : pointer vers wallets au lieu de utilisateur
     // (supprimer l'ancienne contrainte si elle existe encore)

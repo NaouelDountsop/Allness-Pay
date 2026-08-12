@@ -1,4 +1,3 @@
-
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LinkedAccountType } from '../enums/linked-account-type.enum';

@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { UserPlus, QrCode, Smartphone, FileText } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, QrCode, Smartphone, FileText } from 'lucide-react';
 
 const quickActions = [
-  { label: "Enregistrer un contact", icon: UserPlus, path: "/dashboard/beneficiaries" },
-  { label: "Scanner un QR", icon: QrCode, path: "/dashboard/payments/scan" },
-  { label: "Recharge de crédit", icon: Smartphone, path: "/dashboard/payments" },
-  { label: "Factures & services", icon: FileText, path: "/dashboard/payments" },
+  { label: 'Enregistrer un contact', icon: UserPlus, path: '/dashboard/beneficiaries' },
+  { label: 'Scanner un QR', icon: QrCode, path: '/dashboard/payments/scan' },
+  { label: 'Recharge de crédit', icon: Smartphone, path: '/dashboard/payments' },
+  { label: 'Factures & services', icon: FileText, path: '/dashboard/payments' },
 ];
 
 export function QuickActionsGrid() {
@@ -24,9 +24,7 @@ export function QuickActionsGrid() {
             <span className="w-9 h-9 rounded-lg bg-[#D28E2F]/10 flex items-center justify-center text-[#D28E2F]">
               <Icon className="w-4 h-4" />
             </span>
-            <span className="text-[11px] text-center text-[#082B37]/70 leading-tight">
-              {label}
-            </span>
+            <span className="text-[11px] text-center text-[#082B37]/70 leading-tight">{label}</span>
           </button>
         ))}
       </div>

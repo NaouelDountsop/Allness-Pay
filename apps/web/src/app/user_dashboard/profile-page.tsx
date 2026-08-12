@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import type { UserProfile } from "@afrilinkpay/shared";
+import { useMemo, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import type { UserProfile } from '@afrilinkpay/shared';
 import {
   CheckCircle2,
   Mail,
@@ -12,13 +12,13 @@ import {
   ShieldCheck,
   Camera,
   Trash2,
-} from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar } from "@/components/ui/avatar";
+} from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Avatar } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -27,14 +27,14 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog";
-import { userService } from "@/lib/api/user.service";
+} from '@/components/ui/dialog';
+import { userService } from '@/lib/api/user.service';
 
 function ProfileField({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-3xl border border-gray-100 bg-gray-50 p-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{label}</p>
-      <p className="mt-2 text-sm font-medium text-gray-900">{value || "Non renseigné"}</p>
+      <p className="mt-2 text-sm font-medium text-gray-900">{value || 'Non renseigné'}</p>
     </div>
   );
 }
@@ -43,18 +43,18 @@ const MAX_AVATAR_SIZE_MB = 5;
 
 export default function ProfilePage() {
   const { data: profile } = useQuery<UserProfile>({
-    queryKey: ["profile"],
+    queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : "Utilisateur Afrilink"),
+    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Afrilink'),
     [profile],
   );
 
   const initials = useMemo(() => {
-    if (!profile) return "UA";
-    return `${profile.prenom?.[0] ?? "U"}${profile.nom?.[0] ?? "A"}`.toUpperCase();
+    if (!profile) return 'UA';
+    return `${profile.prenom?.[0] ?? 'U'}${profile.nom?.[0] ?? 'A'}`.toUpperCase();
   }, [profile]);
 
   // --- État des pop-ups ---
@@ -62,17 +62,17 @@ export default function ProfilePage() {
   const [editContactOpen, setEditContactOpen] = useState(false);
 
   // --- État local des formulaires (initialisé depuis le profil, à brancher sur userService) ---
-  const [prenom, setPrenom] = useState(profile?.prenom ?? "");
-  const [nom, setNom] = useState(profile?.nom ?? "");
-  const [dateNaissance, setDateNaissance] = useState(profile?.datenaissance ?? "");
-  const [sexe, setSexe] = useState(profile?.sexe ?? "");
-  const [profession, setProfession] = useState(profile?.profession ?? "");
-  const [adresse, setAdresse] = useState(profile?.adresse ?? "");
+  const [prenom, setPrenom] = useState(profile?.prenom ?? '');
+  const [nom, setNom] = useState(profile?.nom ?? '');
+  const [dateNaissance, setDateNaissance] = useState(profile?.datenaissance ?? '');
+  const [sexe, setSexe] = useState(profile?.sexe ?? '');
+  const [profession, setProfession] = useState(profile?.profession ?? '');
+  const [adresse, setAdresse] = useState(profile?.adresse ?? '');
 
-  const [email, setEmail] = useState(profile?.email ?? "");
-  const [telephone, setTelephone] = useState(profile?.telephone ?? "");
-  const [ville, setVille] = useState(profile?.ville ?? "");
-  const [pays, setPays] = useState(profile?.pays ?? "");
+  const [email, setEmail] = useState(profile?.email ?? '');
+  const [telephone, setTelephone] = useState(profile?.telephone ?? '');
+  const [ville, setVille] = useState(profile?.ville ?? '');
+  const [pays, setPays] = useState(profile?.pays ?? '');
 
   // --- Photo de profil ---
   // NB: si votre UserProfile expose déjà un champ avatar (ex: avatarUrl), remplacez
@@ -85,8 +85,8 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      setAvatarError("Veuillez sélectionner un fichier image.");
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Veuillez sélectionner un fichier image.');
       return;
     }
     if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
@@ -109,7 +109,7 @@ export default function ProfilePage() {
   const removeAvatar = () => {
     if (avatarPreview) URL.revokeObjectURL(avatarPreview);
     setAvatarPreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = '';
     // TODO: brancher sur userService.removeAvatar()
   };
 
@@ -123,11 +123,7 @@ export default function ProfilePage() {
             <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Avatar
-                    initials={initials}
-                    src={avatarPreview ?? undefined}
-                    size="lg"
-                  />
+                  <Avatar initials={initials} src={avatarPreview ?? undefined} size="lg" />
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -148,14 +144,16 @@ export default function ProfilePage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-afrilink-orange">
                     Mon profil
                   </p>
-                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark truncate">{fullName}</h1>
-                  <p className="mt-2 text-sm text-gray-500">{profile?.profession ?? "Client Afrilink"}</p>
+                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark truncate">
+                    {fullName}
+                  </h1>
+                  <p className="mt-2 text-sm text-gray-500">
+                    {profile?.profession ?? 'Client Afrilink'}
+                  </p>
                 </div>
               </div>
 
-              {avatarError ? (
-                <p className="mt-3 text-xs text-red-500">{avatarError}</p>
-              ) : null}
+              {avatarError ? <p className="mt-3 text-xs text-red-500">{avatarError}</p> : null}
               {avatarPreview ? (
                 <button
                   type="button"
@@ -172,7 +170,9 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Statut</p>
-                      <p className="mt-2 text-lg font-semibold text-afrilink-dark">{profile?.statut || "Actif"}</p>
+                      <p className="mt-2 text-lg font-semibold text-afrilink-dark">
+                        {profile?.statut || 'Actif'}
+                      </p>
                     </div>
                     <span className="inline-flex items-center gap-2 rounded-full bg-afrilink-green/10 px-3 py-1 text-xs font-semibold text-afrilink-green">
                       <CheckCircle2 className="w-4 h-4" /> Vérifié
@@ -212,15 +212,17 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-gray-700">
                     <Mail className="w-4 h-4 text-afrilink-orange" />
-                    <span className="text-sm">{profile?.email ?? "-"}</span>
+                    <span className="text-sm">{profile?.email ?? '-'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Phone className="w-4 h-4 text-afrilink-orange" />
-                    <span className="text-sm">{profile?.telephone ?? "-"}</span>
+                    <span className="text-sm">{profile?.telephone ?? '-'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <MapPin className="w-4 h-4 text-afrilink-orange" />
-                    <span className="text-sm">{profile ? `${profile.ville}, ${profile.pays}` : "-"}</span>
+                    <span className="text-sm">
+                      {profile ? `${profile.ville}, ${profile.pays}` : '-'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -233,11 +235,17 @@ export default function ProfilePage() {
                 <div className="grid gap-4">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Inscription</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{profile?.dateinscription ?? "-"}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {profile?.dateinscription ?? '-'}
+                    </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Dernière modification</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{profile?.datemodification ?? "-"}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                      Dernière modification
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {profile?.datemodification ?? '-'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -248,8 +256,12 @@ export default function ProfilePage() {
             <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-gray-400">Données utilisateur</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-afrilink-dark">Informations personnelles</h2>
+                  <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                    Données utilisateur
+                  </p>
+                  <h2 className="mt-3 text-2xl font-semibold text-afrilink-dark">
+                    Informations personnelles
+                  </h2>
                 </div>
                 <Button variant="secondary" size="sm" className="rounded-full px-4">
                   Exporter le PDF
@@ -258,11 +270,11 @@ export default function ProfilePage() {
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <ProfileField label="Nom complet" value={fullName} />
-                <ProfileField label="Date de naissance" value={profile?.datenaissance ?? "-"} />
-                <ProfileField label="Sexe" value={profile?.sexe ?? "-"} />
-                <ProfileField label="Profession" value={profile?.profession ?? "-"} />
-                <ProfileField label="Adresse" value={profile?.adresse ?? "-"} />
-                <ProfileField label="Statut compte" value={profile?.statut ?? "-"} />
+                <ProfileField label="Date de naissance" value={profile?.datenaissance ?? '-'} />
+                <ProfileField label="Sexe" value={profile?.sexe ?? '-'} />
+                <ProfileField label="Profession" value={profile?.profession ?? '-'} />
+                <ProfileField label="Adresse" value={profile?.adresse ?? '-'} />
+                <ProfileField label="Statut compte" value={profile?.statut ?? '-'} />
               </div>
             </div>
 
@@ -283,28 +295,36 @@ export default function ProfilePage() {
                     <User className="w-4 h-4 text-afrilink-orange" />
                     <p className="text-sm font-semibold text-afrilink-dark">Profil</p>
                   </div>
-                  <p className="text-sm text-gray-500">Modifiez vos informations personnelles et votre avatar.</p>
+                  <p className="text-sm text-gray-500">
+                    Modifiez vos informations personnelles et votre avatar.
+                  </p>
                 </div>
                 <div className="rounded-3xl bg-afrilink-green/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <ShieldCheck className="w-4 h-4 text-afrilink-green" />
                     <p className="text-sm font-semibold text-afrilink-dark">Sécurité</p>
                   </div>
-                  <p className="text-sm text-gray-500">Activez l’authentification à deux facteurs et gérez vos accès.</p>
+                  <p className="text-sm text-gray-500">
+                    Activez l’authentification à deux facteurs et gérez vos accès.
+                  </p>
                 </div>
                 <div className="rounded-3xl bg-afrilink-dark/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <CalendarDays className="w-4 h-4 text-afrilink-dark" />
                     <p className="text-sm font-semibold text-afrilink-dark">Notifications</p>
                   </div>
-                  <p className="text-sm text-gray-500">Recevez les alertes de transactions et les rappels.</p>
+                  <p className="text-sm text-gray-500">
+                    Recevez les alertes de transactions et les rappels.
+                  </p>
                 </div>
                 <div className="rounded-3xl bg-gray-50 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <Briefcase className="w-4 h-4 text-afrilink-orange" />
                     <p className="text-sm font-semibold text-afrilink-dark">Préférences</p>
                   </div>
-                  <p className="text-sm text-gray-500">Choisissez votre devise et vos options d’interface.</p>
+                  <p className="text-sm text-gray-500">
+                    Choisissez votre devise et vos options d’interface.
+                  </p>
                 </div>
               </div>
             </div>
@@ -324,11 +344,7 @@ export default function ProfilePage() {
           </DialogHeader>
 
           <div className="flex items-center gap-4 mb-2">
-            <Avatar
-              initials={initials}
-              src={avatarPreview ?? undefined}
-              size="lg"
-            />
+            <Avatar initials={initials} src={avatarPreview ?? undefined} size="lg" />
             <div className="space-y-1">
               <Button
                 type="button"
@@ -378,7 +394,11 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="profession">Profession</Label>
-              <Input id="profession" value={profession} onChange={(e) => setProfession(e.target.value)} />
+              <Input
+                id="profession"
+                value={profession}
+                onChange={(e) => setProfession(e.target.value)}
+              />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="adresse">Adresse</Label>
@@ -417,11 +437,20 @@ export default function ProfilePage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="telephone">Téléphone</Label>
-              <Input id="telephone" value={telephone} onChange={(e) => setTelephone(e.target.value)} />
+              <Input
+                id="telephone"
+                value={telephone}
+                onChange={(e) => setTelephone(e.target.value)}
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">

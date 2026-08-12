@@ -1,10 +1,19 @@
-import { useState, useMemo, useRef } from "react";
-import { ShieldCheck, Lock, Banknote, ArrowRight, AlertCircle, Wallet, Building2, Smartphone } from "lucide-react";
-import { EXCHANGE_RATE_CAD_XAF } from "@/lib/mock/send-money-data";
-import { CountrySelect } from "@/components/common/country-select";
-import { getCountryByCode, getFlagUrl, type Country } from "@/data/countries";
+import { useState, useMemo, useRef } from 'react';
+import {
+  ShieldCheck,
+  Lock,
+  Banknote,
+  ArrowRight,
+  AlertCircle,
+  Wallet,
+  Building2,
+  Smartphone,
+} from 'lucide-react';
+import { EXCHANGE_RATE_CAD_XAF } from '@/lib/mock/send-money-data';
+import { CountrySelect } from '@/components/common/country-select';
+import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 
-export type ReceptionMode = "wallet" | "mtn" | "orange" | "bank";
+export type ReceptionMode = 'wallet' | 'mtn' | 'orange' | 'bank';
 
 interface FormState {
   beneficiaryContact: string;
@@ -19,11 +28,35 @@ interface BeneficiaryAmountFormProps {
   onSubmit: () => void;
 }
 
-const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; image?: string; icon: typeof Wallet; color: string }[] = [
-  { id: "wallet", label: "Wallet AfriLinkPay", image: "/afrilinkpay_logo1.svg", icon: Wallet, color: "text-afrilink-green" },
-  { id: "mtn", label: "MTN Mobile Money", image: "/mtn-momo.png", icon: Smartphone, color: "text-yellow-500" },
-  { id: "orange", label: "Orange Money", image: "/orange-money.png", icon: Smartphone, color: "text-orange-500" },
-  { id: "bank", label: "Compte bancaire", icon: Building2, color: "text-blue-600" },
+const RECEPTION_OPTIONS: {
+  id: ReceptionMode;
+  label: string;
+  image?: string;
+  icon: typeof Wallet;
+  color: string;
+}[] = [
+  {
+    id: 'wallet',
+    label: 'Wallet AfriLinkPay',
+    image: '/afrilinkpay_logo1.svg',
+    icon: Wallet,
+    color: 'text-afrilink-green',
+  },
+  {
+    id: 'mtn',
+    label: 'MTN Mobile Money',
+    image: '/mtn-momo.png',
+    icon: Smartphone,
+    color: 'text-yellow-500',
+  },
+  {
+    id: 'orange',
+    label: 'Orange Money',
+    image: '/orange-money.png',
+    icon: Smartphone,
+    color: 'text-orange-500',
+  },
+  { id: 'bank', label: 'Compte bancaire', icon: Building2, color: 'text-blue-600' },
 ];
 
 // Découpe le placeholder du pays (ex. "6XX XXX XXX") en groupes de longueurs [3, 3, 3]
@@ -31,7 +64,7 @@ const RECEPTION_OPTIONS: { id: ReceptionMode; label: string; image?: string; ico
 // chiffres qu'il contient, car un pays peut avoir un chiffre fixe en tête (ex. le "6" du
 // Cameroun) sans que ça réduise le nombre total de chiffres attendus.
 function getGroupLengths(placeholder: string): number[] {
-  return placeholder.split(" ").map((group) => group.length);
+  return placeholder.split(' ').map((group) => group.length);
 }
 
 // Formate une suite de chiffres bruts selon les groupes du pays (ex. "612345678" -> "612 345 678")
@@ -43,7 +76,7 @@ function formatDigitsToPattern(digits: string, groupLengths: number[]): string {
     parts.push(digits.slice(cursor, cursor + len));
     cursor += len;
   }
-  return parts.join(" ");
+  return parts.join(' ');
 }
 
 export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryAmountFormProps) {
@@ -51,7 +84,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
   const received = amountNumber * EXCHANGE_RATE_CAD_XAF;
 
   const selectedCountry = useMemo(
-    () => getCountryByCode(form.country) ?? getCountryByCode("CM")!,
+    () => getCountryByCode(form.country) ?? getCountryByCode('CM')!,
     [form.country],
   );
   const [touched, setTouched] = useState(false);
@@ -67,7 +100,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
     [groupLengths],
   );
 
-  const localDigits = form.beneficiaryContact.replace(/\D/g, "");
+  const localDigits = form.beneficiaryContact.replace(/\D/g, '');
   const isComplete = walletMode
     ? form.beneficiaryContact.length > 0
     : localDigits.length === expectedDigitCount;
@@ -77,11 +110,12 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
     (walletMode && form.beneficiaryContact.length > 0) ||
     localDigits.length === expectedDigitCount;
 
-  const showPhoneError = touched && !walletMode && form.beneficiaryContact.length > 0 && !isPhoneValid;
+  const showPhoneError =
+    touched && !walletMode && form.beneficiaryContact.length > 0 && !isPhoneValid;
 
   const handleCountryChange = (country: Country) => {
-    onChange("country", country.code);
-    onChange("beneficiaryContact", "");
+    onChange('country', country.code);
+    onChange('beneficiaryContact', '');
     setWalletMode(false);
     setTouched(false);
     requestAnimationFrame(() => inputRef.current?.focus());
@@ -89,11 +123,11 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
 
   const handleContactChange = (raw: string) => {
     if (walletMode) {
-      onChange("beneficiaryContact", raw);
+      onChange('beneficiaryContact', raw);
       return;
     }
-    const digitsOnly = raw.replace(/\D/g, "").slice(0, expectedDigitCount);
-    onChange("beneficiaryContact", formatDigitsToPattern(digitsOnly, groupLengths));
+    const digitsOnly = raw.replace(/\D/g, '').slice(0, expectedDigitCount);
+    onChange('beneficiaryContact', formatDigitsToPattern(digitsOnly, groupLengths));
   };
 
   return (
@@ -116,10 +150,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
 
           <div className="space-y-1.5">
             <div className="space-y-1.5">
-              <CountrySelect
-                value={form.country}
-                onChange={handleCountryChange}
-              />
+              <CountrySelect value={form.country} onChange={handleCountryChange} />
             </div>
 
             <div>
@@ -129,13 +160,13 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                     type="button"
                     onClick={() => {
                       setWalletMode(false);
-                      onChange("beneficiaryContact", "");
+                      onChange('beneficiaryContact', '');
                       setTouched(false);
                     }}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition-colors border-b-2 -mb-[2px] ${
                       !walletMode
-                        ? "border-afrilink-green text-afrilink-green"
-                        : "border-transparent text-gray-400 hover:text-gray-600"
+                        ? 'border-afrilink-green text-afrilink-green'
+                        : 'border-transparent text-gray-400 hover:text-gray-600'
                     }`}
                   >
                     <Smartphone className="w-3.5 h-3.5" />
@@ -145,13 +176,13 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                     type="button"
                     onClick={() => {
                       setWalletMode(true);
-                      onChange("beneficiaryContact", "");
+                      onChange('beneficiaryContact', '');
                       setTouched(false);
                     }}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition-colors border-b-2 -mb-[2px] ${
                       walletMode
-                        ? "border-afrilink-green text-afrilink-green"
-                        : "border-transparent text-gray-400 hover:text-gray-600"
+                        ? 'border-afrilink-green text-afrilink-green'
+                        : 'border-transparent text-gray-400 hover:text-gray-600'
                     }`}
                   >
                     <Wallet className="w-3.5 h-3.5" />
@@ -162,10 +193,10 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
               <div
                 className={`flex items-center w-full h-12 rounded-xl border bg-white overflow-hidden focus-within:ring-2 transition-colors ${
                   showPhoneError
-                    ? "border-red-300 focus-within:border-red-400 focus-within:ring-red-200"
+                    ? 'border-red-300 focus-within:border-red-400 focus-within:ring-red-200'
                     : isComplete
-                    ? "border-afrilink-green focus-within:ring-afrilink-green/30"
-                    : "border-gray-200 focus-within:border-afrilink-green focus-within:ring-afrilink-green/30"
+                      ? 'border-afrilink-green focus-within:ring-afrilink-green/30'
+                      : 'border-gray-200 focus-within:border-afrilink-green focus-within:ring-afrilink-green/30'
                 }`}
               >
                 {!walletMode && (
@@ -180,9 +211,9 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                 )}
                 <input
                   ref={inputRef}
-                  type={walletMode ? "text" : "tel"}
-                  inputMode={walletMode ? "text" : "numeric"}
-                  placeholder={walletMode ? "Identifiant wallet" : selectedCountry.phonePlaceholder}
+                  type={walletMode ? 'text' : 'tel'}
+                  inputMode={walletMode ? 'text' : 'numeric'}
+                  placeholder={walletMode ? 'Identifiant wallet' : selectedCountry.phonePlaceholder}
                   value={form.beneficiaryContact}
                   onChange={(e) => handleContactChange(e.target.value)}
                   onBlur={() => setTouched(true)}
@@ -193,8 +224,8 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
                 <div className="flex items-start gap-1.5 mt-1.5 text-xs text-red-600">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   <span>
-                    Le numéro doit contenir {expectedDigitCount} chiffres pour{" "}
-                    {selectedCountry.name} (ex. {selectedCountry.dialCode}{" "}
+                    Le numéro doit contenir {expectedDigitCount} chiffres pour{' '}
+                    {selectedCountry.name} (ex. {selectedCountry.dialCode}{' '}
                     {selectedCountry.phonePlaceholder}).
                   </span>
                 </div>
@@ -215,23 +246,27 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
               <button
                 key={option.id}
                 type="button"
-                onClick={() => onChange("receptionMode", option.id)}
+                onClick={() => onChange('receptionMode', option.id)}
                 className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                   isSelected
-                    ? "border-afrilink-green bg-afrilink-green/[0.05] shadow-sm"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    ? 'border-afrilink-green bg-afrilink-green/[0.05] shadow-sm'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  isSelected ? "bg-afrilink-green/10" : "bg-gray-100"
-                }`}>
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    isSelected ? 'bg-afrilink-green/10' : 'bg-gray-100'
+                  }`}
+                >
                   {option.image ? (
                     <img src={option.image} alt={option.label} className="w-6 h-6 object-contain" />
                   ) : (
-                    <Icon className={`w-5 h-5 ${isSelected ? option.color : "text-gray-400"}`} />
+                    <Icon className={`w-5 h-5 ${isSelected ? option.color : 'text-gray-400'}`} />
                   )}
                 </div>
-                <span className={`text-sm font-medium ${isSelected ? "text-afrilink-dark" : "text-gray-600"}`}>
+                <span
+                  className={`text-sm font-medium ${isSelected ? 'text-afrilink-dark' : 'text-gray-600'}`}
+                >
                   {option.label}
                 </span>
               </button>
@@ -249,7 +284,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
             type="number"
             placeholder="0.00"
             value={form.amount}
-            onChange={(e) => onChange("amount", e.target.value)}
+            onChange={(e) => onChange('amount', e.target.value)}
             className="flex-1 h-16 min-w-0 px-3 text-xl sm:text-2xl font-semibold text-afrilink-dark bg-white focus:outline-none"
           />
           <span className="px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold text-gray-600 border-l border-gray-100 bg-gray-50 shrink-0">
@@ -276,7 +311,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
           Le bénéficiaire reçoit
         </span>
         <span className="text-xl sm:text-2xl font-bold text-afrilink-orange">
-          {new Intl.NumberFormat("fr-FR").format(received)} XAF
+          {new Intl.NumberFormat('fr-FR').format(received)} XAF
         </span>
       </div>
 
@@ -300,8 +335,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
           <div>
             <p className="text-xs font-medium text-gray-700">Fonds Protégés</p>
             <p className="text-[11px] text-gray-500">
-              Vos fonds sont séquestrés et protégés par la réglementation financière
-              canadienne.
+              Vos fonds sont séquestrés et protégés par la réglementation financière canadienne.
             </p>
           </div>
         </div>
@@ -310,8 +344,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit }: BeneficiaryA
           <div>
             <p className="text-xs font-medium text-gray-700">Transaction Sécurisée</p>
             <p className="text-[11px] text-gray-500">
-              Chiffrement AES-256 de bout en bout pour toutes vos données
-              transactionnelles.
+              Chiffrement AES-256 de bout en bout pour toutes vos données transactionnelles.
             </p>
           </div>
         </div>

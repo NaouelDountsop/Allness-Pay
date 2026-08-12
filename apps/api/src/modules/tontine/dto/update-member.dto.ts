@@ -1,4 +1,3 @@
-
 import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TontineMemberRole } from '../enums/tontine-member-role.enum';

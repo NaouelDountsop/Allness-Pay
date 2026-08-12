@@ -29,7 +29,7 @@ export interface Wallet {
   id: string;
   walletNumber: string;
   userId: number;
-  balance: number;
+  balance: string;
   currency: string;
   status: WalletStatus;
   isPrimary: boolean;

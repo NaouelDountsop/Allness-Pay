@@ -1,12 +1,12 @@
-import { apiClient } from "@/lib/api-client";
-import type { UserProfile } from "@afrilinkpay/shared";
+import { apiClient } from '@/lib/api-client';
+import type { UserProfile } from '@afrilinkpay/shared';
 
 export const userService = {
   /**
    * Récupérer le profil de l'utilisateur connecté (via JWT).
    */
   getProfile: async (): Promise<UserProfile> => {
-    const res = await apiClient.get<UserProfile>("/auth/profile");
+    const res = await apiClient.get<UserProfile>('/auth/profile');
     return res.data;
   },
 
@@ -21,10 +21,7 @@ export const userService = {
   /**
    * Mettre à jour le profil utilisateur.
    */
-  update: async (
-    id: number,
-    data: Partial<UserProfile>,
-  ): Promise<UserProfile> => {
+  update: async (id: number, data: Partial<UserProfile>): Promise<UserProfile> => {
     const res = await apiClient.patch<UserProfile>(`/users/${id}`, data);
     return res.data;
   },

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Camera, RotateCcw, Check } from "lucide-react";
+import { useEffect, useRef, useState } from 'react';
+import { Camera, RotateCcw, Check } from 'lucide-react';
 
 interface KycFacialStepProps {
   onNext: (selfie: File) => void;
@@ -10,7 +10,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
   const [captured, setCaptured] = useState(false);
   const [capturedUrl, setCapturedUrl] = useState<string | null>(null);
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -18,10 +18,10 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+        video: { facingMode: 'user' },
         audio: false,
       });
-      setError("");
+      setError('');
       streamRef.current = mediaStream;
       setStream(mediaStream);
     } catch {
@@ -65,16 +65,16 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext('2d');
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
     }
 
     const blob = await new Promise<Blob>((resolve) =>
-      canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.9),
+      canvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.9),
     );
     const file = new File([blob], `selfie-${Date.now()}.jpg`, {
-      type: "image/jpeg",
+      type: 'image/jpeg',
     });
 
     const url = URL.createObjectURL(blob);
@@ -103,7 +103,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
           <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-afrilink-dark/20 flex items-center justify-center relative overflow-hidden bg-black shrink-0">
             <video
               ref={videoRef}
-              className={`w-full h-full object-cover ${captured ? "hidden" : ""}`}
+              className={`w-full h-full object-cover ${captured ? 'hidden' : ''}`}
               autoPlay
               playsInline
               muted
@@ -130,7 +130,11 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
           <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-afrilink-dark/20 flex items-center justify-center relative overflow-hidden bg-gray-100 shrink-0">
             {captured && capturedUrl ? (
               <>
-                <img src={capturedUrl} alt="Selfie capturé" className="w-full h-full object-cover" />
+                <img
+                  src={capturedUrl}
+                  alt="Selfie capturé"
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute bottom-3 left-0 right-0 text-center">
                   <span className="text-[10px] text-white/80 bg-black/40 px-2 py-1 rounded-full">
                     Photo prise

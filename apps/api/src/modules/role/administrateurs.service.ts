@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hash } from 'argon2';
@@ -34,8 +30,7 @@ export class AdministrateursService {
     });
 
     const saved = await this.adminRepo.save(admin);
-    const { motdepasse: _, ...result } = saved as Administrateur & { motdepasse: string };
-    return result;
+    return saved as AdminWithoutPassword;
   }
 
   async findAll(): Promise<AdminWithoutPassword[]> {
@@ -72,8 +67,7 @@ export class AdministrateursService {
 
     Object.assign(admin, dto);
     const saved = await this.adminRepo.save(admin);
-    const { motdepasse: _, ...result } = saved as Administrateur & { motdepasse: string };
-    return result;
+    return saved as AdminWithoutPassword;
   }
 
   async remove(id: number): Promise<void> {

@@ -1,36 +1,36 @@
-import { useState } from "react";
-import { Store, UserCheck, Clock, Coins, Plus, ChevronDown, Eye } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge, Pagination } from "../../components/ui";
+import { useState } from 'react';
+import { Store, UserCheck, Clock, Coins, Plus, ChevronDown, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge, Pagination } from '../../components/ui';
 
 const MERCHANTS = [
   {
-    initials: "ES",
-    name: "E-Shop Excellence",
-    contact: "Marc Benard",
-    category: "Commerce en ligne",
-    categoryTone: "blue" as const,
-    status: "Actif",
-    statusTone: "green" as const,
+    initials: 'ES',
+    name: 'E-Shop Excellence',
+    contact: 'Marc Benard',
+    category: 'Commerce en ligne',
+    categoryTone: 'blue' as const,
+    status: 'Actif',
+    statusTone: 'green' as const,
   },
   {
-    initials: "BC",
-    name: "Boulangerie Centrale",
-    contact: "Bernard K.",
-    category: "Alimentation",
-    categoryTone: "orange" as const,
-    status: "Actif",
-    statusTone: "green" as const,
+    initials: 'BC',
+    name: 'Boulangerie Centrale',
+    contact: 'Bernard K.',
+    category: 'Alimentation',
+    categoryTone: 'orange' as const,
+    status: 'Actif',
+    statusTone: 'green' as const,
   },
   {
-    initials: "SW",
-    name: "Shop & Wine",
-    contact: "Alain Fauve",
-    category: "Boissons",
-    categoryTone: "purple" as const,
-    status: "En attente",
-    statusTone: "orange" as const,
+    initials: 'SW',
+    name: 'Shop & Wine',
+    contact: 'Alain Fauve',
+    category: 'Boissons',
+    categoryTone: 'purple' as const,
+    status: 'En attente',
+    statusTone: 'orange' as const,
   },
 ];
 
@@ -48,7 +48,7 @@ export default function MerchantsListPage() {
           </p>
         </div>
         <button
-          onClick={() => navigate("/admin/marchands/nouveau")}
+          onClick={() => navigate('/admin/marchands/nouveau')}
           className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -142,7 +142,7 @@ export default function MerchantsListPage() {
                 </td>
                 <td className="text-right">
                   <button
-                    onClick={() => navigate("/admin/marchands/1")}
+                    onClick={() => navigate('/admin/marchands/1')}
                     className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
                     aria-label="Voir"
                   >

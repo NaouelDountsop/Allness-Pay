@@ -12,34 +12,34 @@ import { useUserProfile } from "../../hooks/use-user-profile";
 import { getCurrenciesForCountry } from "../../utils/country-currency";
 
 const DEPOSIT_METHODS: { key: DepositMethod; label: string; icon: React.ReactNode }[] = [
-  { key: "mobile_money", label: "Mobile Money", icon: <Phone className="w-5 h-5" /> },
-  { key: "bank", label: "Compte bancaire", icon: <Landmark className="w-5 h-5" /> },
+  { key: 'mobile_money', label: 'Mobile Money', icon: <Phone className="w-5 h-5" /> },
+  { key: 'bank', label: 'Compte bancaire', icon: <Landmark className="w-5 h-5" /> },
 ];
 
 const MOBILE_OPERATORS = [
-  { key: "mtn" as const, label: "MTN Mobile Money", image: "/mtn-momo.png" },
-  { key: "orange" as const, label: "Orange Money", image: "/orange-money.png" },
+  { key: 'mtn' as const, label: 'MTN Mobile Money', image: '/mtn-momo.png' },
+  { key: 'orange' as const, label: 'Orange Money', image: '/orange-money.png' },
 ];
 
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
 
 function isValidPhoneForOperator(phone: string, operator: string): boolean {
-  const digits = phone.replace(/\s/g, "");
+  const digits = phone.replace(/\s/g, '');
   if (digits.length !== 9 || !/^\d{9}$/.test(digits)) return false;
 
-  if (operator === "mtn") {
+  if (operator === 'mtn') {
     return /^6[5-9]\d{7}$/.test(digits);
   }
-  if (operator === "orange") {
+  if (operator === 'orange') {
     return /^6[9]\d{7}$/.test(digits);
   }
   return false;
 }
 
 function getPhoneHint(operator: string): string {
-  if (operator === "mtn") return "Commence par 67x, 65x, 68x";
-  if (operator === "orange") return "Commence par 69x";
-  return "9 chiffres après +237";
+  if (operator === 'mtn') return 'Commence par 67x, 65x, 68x';
+  if (operator === 'orange') return 'Commence par 69x';
+  return '9 chiffres après +237';
 }
 
 export default function InitiateDepositPage() {
@@ -59,24 +59,28 @@ export default function InitiateDepositPage() {
     submitDepositRequest,
   } = useDepositFlow();
 
-  const isMobileMoney = deposit.method === "mobile_money";
-  const phoneValid = deposit.phoneNumber.trim().length >= 9
-    ? isValidPhoneForOperator(deposit.phoneNumber, deposit.operator)
-    : false;
+  const isMobileMoney = deposit.method === 'mobile_money';
+  const phoneValid =
+    deposit.phoneNumber.trim().length >= 9
+      ? isValidPhoneForOperator(deposit.phoneNumber, deposit.operator)
+      : false;
   const phoneTouched = deposit.phoneNumber.trim().length > 0;
 
   const canSubmit = isMobileMoney
     ? deposit.operator && phoneValid && Number(deposit.amount) > 0
-    : deposit.bankName && deposit.iban.trim().length >= 8 && deposit.accountHolder.trim().length >= 2 && Number(deposit.amount) > 0;
+    : deposit.bankName &&
+      deposit.iban.trim().length >= 8 &&
+      deposit.accountHolder.trim().length >= 2 &&
+      Number(deposit.amount) > 0;
 
-  const countryCode = profile?.pays || "CM";
+  const countryCode = profile?.pays || 'CM';
   const currencies = getCurrenciesForCountry(countryCode);
   const currencySymbol = CURRENCY_SYMBOLS[deposit.currency];
 
   const handleSubmit = () => {
     if (!canSubmit) return;
     submitDepositRequest();
-    navigate("/deposit/request-sent");
+    navigate('/deposit/request-sent');
   };
 
   return (
@@ -86,9 +90,12 @@ export default function InitiateDepositPage() {
       <div>
         {/* Header de page */}
         <div className="flex items-center gap-3 mb-2">
-            <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center">
-              <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
-            </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+          >
+            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+          </button>
           <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Initier le dépôt</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
@@ -102,8 +109,8 @@ export default function InitiateDepositPage() {
             <ShieldCheck className="w-4 h-4 text-afrilink-green" />
           </div>
           <p className="text-xs text-green-700 leading-relaxed">
-            Vous recevrez une notification sur votre téléphone pour confirmer ce paiement.
-            Aucun montant ne sera débité sans votre validation.
+            Vous recevrez une notification sur votre téléphone pour confirmer ce paiement. Aucun
+            montant ne sera débité sans votre validation.
           </p>
         </div>
 
@@ -120,13 +127,17 @@ export default function InitiateDepositPage() {
                   onClick={() => setMethod(m.key)}
                   className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
                     deposit.method === m.key
-                      ? "border-afrilink-green bg-green-50/50 shadow-sm"
-                      : "border-gray-100 hover:border-gray-200"
+                      ? 'border-afrilink-green bg-green-50/50 shadow-sm'
+                      : 'border-gray-100 hover:border-gray-200'
                   }`}
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    deposit.method === m.key ? "bg-afrilink-green/10 text-afrilink-green" : "bg-gray-100 text-gray-500"
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      deposit.method === m.key
+                        ? 'bg-afrilink-green/10 text-afrilink-green'
+                        : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
                     {m.icon}
                   </div>
                   <span className="text-xs font-semibold text-afrilink-dark">{m.label}</span>
@@ -155,12 +166,14 @@ export default function InitiateDepositPage() {
                           onClick={() => setOperator(op.key)}
                           className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
                             deposit.operator === op.key
-                              ? "border-afrilink-green bg-green-50/50 shadow-sm"
-                              : "border-gray-100 hover:border-gray-200"
+                              ? 'border-afrilink-green bg-green-50/50 shadow-sm'
+                              : 'border-gray-100 hover:border-gray-200'
                           }`}
                         >
                           <img src={op.image} alt={op.label} className="w-7 h-7 object-contain" />
-                          <span className="text-xs font-semibold text-afrilink-dark">{op.label}</span>
+                          <span className="text-xs font-semibold text-afrilink-dark">
+                            {op.label}
+                          </span>
                           {deposit.operator === op.key && (
                             <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-afrilink-green" />
                           )}
@@ -174,11 +187,13 @@ export default function InitiateDepositPage() {
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                       Numéro de téléphone
                     </label>
-                    <div className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
-                      phoneTouched && !phoneValid
-                        ? "border-red-400 focus-within:ring-2 focus-within:ring-red-200"
-                        : "border-gray-200 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange"
-                    }`}>
+                    <div
+                      className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
+                        phoneTouched && !phoneValid
+                          ? 'border-red-400 focus-within:ring-2 focus-within:ring-red-200'
+                          : 'border-gray-200 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange'
+                      }`}
+                    >
                       <span className="flex items-center gap-1.5 px-3.5 h-full bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-600 shrink-0">
                         🇨🇲 +237
                       </span>
@@ -187,14 +202,18 @@ export default function InitiateDepositPage() {
                         type="tel"
                         value={deposit.phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder={deposit.operator === "mtn" ? "670 00 00 00" : "690 00 00 00"}
+                        placeholder={deposit.operator === 'mtn' ? '670 00 00 00' : '690 00 00 00'}
                         className="flex-1 h-full px-2.5 text-sm text-afrilink-dark focus:outline-none"
                       />
                     </div>
-                    <p className={`text-[11px] mt-1.5 ml-1 ${
-                      phoneTouched && !phoneValid ? "text-red-500" : "text-gray-400"
-                    }`}>
-                      {phoneTouched && !phoneValid ? getPhoneHint(deposit.operator) : getPhoneHint(deposit.operator)}
+                    <p
+                      className={`text-[11px] mt-1.5 ml-1 ${
+                        phoneTouched && !phoneValid ? 'text-red-500' : 'text-gray-400'
+                      }`}
+                    >
+                      {phoneTouched && !phoneValid
+                        ? getPhoneHint(deposit.operator)
+                        : getPhoneHint(deposit.operator)}
                     </p>
                   </div>
                 </>
@@ -288,7 +307,9 @@ export default function InitiateDepositPage() {
                     className="h-full px-2 text-xs font-medium text-gray-500 border-l border-gray-200 bg-gray-50 focus:outline-none cursor-pointer"
                   >
                     {currencies.map((c) => (
-                      <option key={c.key} value={c.key}>{c.label}</option>
+                      <option key={c.key} value={c.key}>
+                        {c.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -299,26 +320,29 @@ export default function InitiateDepositPage() {
                       onClick={() => setAmount(String(amt))}
                       className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors ${
                         Number(deposit.amount) === amt
-                          ? "bg-afrilink-orange text-white border-afrilink-orange"
-                          : "border-gray-200 text-gray-600 hover:border-gray-300"
+                          ? 'bg-afrilink-orange text-white border-afrilink-orange'
+                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}
                     >
-                      {new Intl.NumberFormat("fr-FR").format(amt)} {currencySymbol}
+                      {new Intl.NumberFormat('fr-FR').format(amt)} {currencySymbol}
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Récapitulatif */}
-              {(isMobileMoney ? deposit.operator && Number(deposit.amount) > 0 : deposit.bankName && Number(deposit.amount) > 0) && (
-                <div className="rounded-xl p-4" style={{ backgroundColor: "#082B37" }}>
+              {(isMobileMoney
+                ? deposit.operator && Number(deposit.amount) > 0
+                : deposit.bankName && Number(deposit.amount) > 0) && (
+                <div className="rounded-xl p-4" style={{ backgroundColor: '#082B37' }}>
                   <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wide mb-2">
                     Récapitulatif
                   </p>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-white/60">Montant</span>
                     <span className="font-bold text-white">
-                      {new Intl.NumberFormat("fr-FR").format(Number(deposit.amount))} {currencySymbol}
+                      {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))}{' '}
+                      {currencySymbol}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm mt-1.5">

@@ -1,4 +1,5 @@
-import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
+import { TableColumn } from 'typeorm';
 
 export class AddGoogleIdToUser1753920000000 implements MigrationInterface {
   name = 'AddGoogleIdToUser1753920000000';

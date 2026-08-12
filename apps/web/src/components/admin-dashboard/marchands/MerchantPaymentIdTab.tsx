@@ -1,5 +1,5 @@
-import { Copy, Hash, Smartphone } from "lucide-react";
-import { SectionCard } from "../../ui/section-card";
+import { Copy, Hash, Smartphone } from 'lucide-react';
+import { SectionCard } from '../../ui/section-card';
 
 export function MerchantPaymentIdTab() {
   return (

@@ -11,11 +11,7 @@ export const KycStatusEnum = z.enum([
 ]);
 export type KycStatus = z.infer<typeof KycStatusEnum>;
 
-export const IdentityDocumentTypeEnum = z.enum([
-  'NATIONAL_ID',
-  'PASSPORT',
-  'DRIVER_LICENSE',
-]);
+export const IdentityDocumentTypeEnum = z.enum(['NATIONAL_ID', 'PASSPORT', 'DRIVER_LICENSE']);
 export type IdentityDocumentType = z.infer<typeof IdentityDocumentTypeEnum>;
 
 export const ProofOfAddressTypeEnum = z.enum([

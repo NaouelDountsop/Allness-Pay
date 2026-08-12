@@ -1,12 +1,12 @@
-import { QrCode, Download, RefreshCcw, Plus } from "lucide-react";
-import { SectionCard } from "../../ui/section-card";
+import { QrCode, Download, RefreshCcw, Plus } from 'lucide-react';
+import { SectionCard } from '../../ui/section-card';
 
 export function MerchantQrCodesTab() {
   return (
     <div className="flex flex-col gap-5">
       <SectionCard title="Codes Généraux">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {["Compte Principal", "Point de Vente 2"].map((label) => (
+          {['Compte Principal', 'Point de Vente 2'].map((label) => (
             <div
               key={label}
               className="rounded-xl border border-gray-100 p-5 flex flex-col items-center text-center"

@@ -30,8 +30,4 @@ export type {
 
 export { WalletStatusEnum } from './contracts/user-wallet';
 
-export type {
-  UserProfile,
-  Wallet,
-  WalletStatus,
-} from './contracts/user-wallet';
+export type { UserProfile, Wallet, WalletStatus } from './contracts/user-wallet';

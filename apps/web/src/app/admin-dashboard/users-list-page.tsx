@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Users,
   CheckCircle2,
@@ -13,22 +13,22 @@ import {
   Pencil,
   Ban,
   Loader2,
-} from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Pagination, Badge } from "../../components/ui";
-import { UserDetailPanel } from "./user-detail-panel";
-import { adminService } from "../../lib/api/admin.service";
+} from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Pagination, Badge } from '../../components/ui';
+import { UserDetailPanel } from './user-detail-panel';
+import { adminService } from '../../lib/api/admin.service';
 
 export default function UsersListPage() {
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ["admin-users"],
+    queryKey: ['admin-users'],
     queryFn: adminService.listUsers,
   });
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   return (
     <AdminLayout active="utilisateurs">
@@ -129,9 +129,10 @@ export default function UsersListPage() {
             </thead>
             <tbody>
               {users?.map((u) => {
-                const initials = `${u.prenom?.charAt(0) ?? ""}${u.nom?.charAt(0) ?? ""}`.toUpperCase();
-                const statusTone = u.verificationotp ? "green" as const : "orange" as const;
-                const statusLabel = u.verificationotp ? "Actif" : "En attente";
+                const initials =
+                  `${u.prenom?.charAt(0) ?? ''}${u.nom?.charAt(0) ?? ''}`.toUpperCase();
+                const statusTone = u.verificationotp ? ('green' as const) : ('orange' as const);
+                const statusLabel = u.verificationotp ? 'Actif' : 'En attente';
                 return (
                   <tr key={u.idutilisateur} className="border-b border-gray-50 last:border-0">
                     <td className="py-3.5">
@@ -140,7 +141,9 @@ export default function UsersListPage() {
                           {initials}
                         </span>
                         <div>
-                          <p className="text-xs font-medium text-afrilink-dark">{u.prenom} {u.nom}</p>
+                          <p className="text-xs font-medium text-afrilink-dark">
+                            {u.prenom} {u.nom}
+                          </p>
                           <p className="text-[11px] text-gray-400">{u.email}</p>
                         </div>
                       </div>
@@ -152,7 +155,7 @@ export default function UsersListPage() {
                     </td>
                     <td className="text-xs text-gray-600">{u.telephone}</td>
                     <td className="text-xs text-gray-500">
-                      {new Date(u.dateinscription).toLocaleDateString("fr-FR")}
+                      {new Date(u.dateinscription).toLocaleDateString('fr-FR')}
                     </td>
                     <td>
                       <div className="flex items-center justify-end gap-2">
@@ -184,7 +187,11 @@ export default function UsersListPage() {
           </table>
         )}
 
-        <Pagination page={page} totalPages={Math.ceil((users?.length ?? 0) / 10)} onChange={setPage} />
+        <Pagination
+          page={page}
+          totalPages={Math.ceil((users?.length ?? 0) / 10)}
+          onChange={setPage}
+        />
       </div>
 
       {selectedUser && <UserDetailPanel onClose={() => setSelectedUser(null)} />}

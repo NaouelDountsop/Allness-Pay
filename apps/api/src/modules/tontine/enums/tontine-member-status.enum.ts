@@ -1,4 +1,3 @@
-
 export enum TontineMemberStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',

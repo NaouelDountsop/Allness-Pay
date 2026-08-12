@@ -1,18 +1,17 @@
 const FLAGS = [
-  { code: "ca", name: "Canada" },
-  { code: "sn", name: "Sénégal" },
-  { code: "gh", name: "Ghana" },
-  { code: "ci", name: "Côte d'Ivoire" },
-  { code: "fr", name: "France" },
-  { code: "it", name: "Italie" },
-  { code: "us", name: "USA" },
+  { code: 'ca', name: 'Canada' },
+  { code: 'sn', name: 'Sénégal' },
+  { code: 'gh', name: 'Ghana' },
+  { code: 'ci', name: "Côte d'Ivoire" },
+  { code: 'fr', name: 'France' },
+  { code: 'it', name: 'Italie' },
+  { code: 'us', name: 'USA' },
 ];
 
 export default function Trust() {
   return (
     <section className="bg-muted py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center">
-
         <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-afrilink-dark">
           Ils nous font confiance
         </h2>
@@ -23,10 +22,7 @@ export default function Trust() {
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-8 lg:gap-12">
           {FLAGS.map((f) => (
-            <div
-              key={f.name}
-              className="group cursor-default flex flex-col items-center gap-2"
-            >
+            <div key={f.name} className="group cursor-default flex flex-col items-center gap-2">
               {/* Drapeau */}
               <div className="overflow-hidden rounded-md shadow-sm transition-transform duration-300 group-hover:scale-125 group-hover:shadow-lg">
                 <img
@@ -43,7 +39,6 @@ export default function Trust() {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

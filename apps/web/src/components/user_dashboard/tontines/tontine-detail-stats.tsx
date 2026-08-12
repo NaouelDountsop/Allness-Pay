@@ -1,5 +1,5 @@
-import { Users, Repeat } from "lucide-react";
-import type { Tontine } from "@/lib/api/tontine.service";
+import { Users, Repeat } from 'lucide-react';
+import type { Tontine } from '@/lib/api/tontine.service';
 
 interface TontineDetailStatsProps {
   tontine: Tontine;

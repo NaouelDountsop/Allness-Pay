@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface WalletBalanceCardProps {
   walletId: string;
@@ -12,10 +12,10 @@ export function WalletBalanceCard({
   walletId,
   balance,
   currency,
-  status = "Actif",
+  status = 'Actif',
 }: WalletBalanceCardProps) {
   const [visible, setVisible] = useState(true);
-  const formatted = new Intl.NumberFormat("fr-FR").format(balance);
+  const formatted = new Intl.NumberFormat('fr-FR').format(balance);
 
   return (
     <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-6 relative overflow-hidden">
@@ -24,11 +24,11 @@ export function WalletBalanceCard({
         aria-hidden="true"
         className="pointer-events-none select-none absolute inset-0 opacity-20"
         style={{
-          backgroundImage: "url(/word.png)",
-          backgroundSize: "130%",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          filter: "brightness(1.4)",
+          backgroundImage: 'url(/word.png)',
+          backgroundSize: '130%',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          filter: 'brightness(1.4)',
         }}
       />
 
@@ -37,14 +37,14 @@ export function WalletBalanceCard({
         aria-hidden="true"
         className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
         style={{
-          WebkitMaskImage: "url(/afrilinkpay_logo1.svg)",
-          WebkitMaskSize: "contain",
-          WebkitMaskRepeat: "no-repeat",
-          WebkitMaskPosition: "center",
-          maskImage: "url(/afrilinkpay_logo1.svg)",
-          maskSize: "contain",
-          maskRepeat: "no-repeat",
-          maskPosition: "center",
+          WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+          WebkitMaskSize: 'contain',
+          WebkitMaskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskImage: 'url(/afrilinkpay_logo1.svg)',
+          maskSize: 'contain',
+          maskRepeat: 'no-repeat',
+          maskPosition: 'center',
         }}
       />
 
@@ -64,7 +64,7 @@ export function WalletBalanceCard({
       <p className="text-xs text-white/60 mb-1 relative z-10">Solde Total</p>
       <div className="flex items-center gap-3 relative z-10">
         <p className="text-3xl font-bold">
-          {visible ? formatted : "•••••••"}{" "}
+          {visible ? formatted : '•••••••'}{' '}
           <span className="text-base font-medium text-afrilink-orange">{currency}</span>
         </p>
         <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">

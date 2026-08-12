@@ -59,7 +59,7 @@ export class InvitationService {
     }
 
     if (tontine.status !== TontineStatus.DRAFT) {
-      throw new BadRequestException('On ne peut inviter qu\'une tontine en DRAFT');
+      throw new BadRequestException("On ne peut inviter qu'une tontine en DRAFT");
     }
 
     if (dto.inviteeUserId) {
@@ -202,7 +202,7 @@ export class InvitationService {
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }
-async acceptByToken(token: string, userId: number): Promise<TontineMember> {
+  async acceptByToken(token: string, userId: number): Promise<TontineMember> {
     const invitation = await this.findByToken(token);
     if (!invitation) {
       throw new NotFoundException('Invitation introuvable');
@@ -257,9 +257,7 @@ async acceptByToken(token: string, userId: number): Promise<TontineMember> {
       throw new BadRequestException('Vous êtes déjà membre de cette tontine');
     }
 
-    const activeCount = members.filter(
-      (m) => m.status === TontineMemberStatus.ACTIVE,
-    ).length;
+    const activeCount = members.filter((m) => m.status === TontineMemberStatus.ACTIVE).length;
     if (activeCount >= tontine.memberLimit) {
       throw new BadRequestException('La tontine est pleine');
     }

@@ -1,22 +1,22 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
 export function SectionCard({
   title,
   icon: Icon,
-  tone = "default",
+  tone = 'default',
   children,
-  className = "",
+  className = '',
 }: {
   title?: string;
   icon?: LucideIcon;
-  tone?: "default" | "orange" | "green";
+  tone?: 'default' | 'orange' | 'green';
   children: React.ReactNode;
   className?: string;
 }) {
   const toneStyles = {
-    default: "bg-white border-gray-100",
-    orange: "bg-white border-afrilink-orange/30",
-    green: "bg-green-50/60 border-green-100",
+    default: 'bg-white border-gray-100',
+    orange: 'bg-white border-afrilink-orange/30',
+    green: 'bg-green-50/60 border-green-100',
   };
 
   return (
@@ -24,9 +24,7 @@ export function SectionCard({
       {title && (
         <div className="flex items-center gap-2 mb-4">
           {Icon && <Icon className="w-4 h-4 text-afrilink-orange" />}
-          <p className="text-xs font-bold uppercase tracking-wide text-afrilink-dark">
-            {title}
-          </p>
+          <p className="text-xs font-bold uppercase tracking-wide text-afrilink-dark">{title}</p>
         </div>
       )}
       {children}

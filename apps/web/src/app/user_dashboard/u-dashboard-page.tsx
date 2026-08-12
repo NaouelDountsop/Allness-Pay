@@ -1,27 +1,30 @@
-import { useQuery } from "@tanstack/react-query";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { KycBanner } from "@/components/user_dashboard/kyc-banner";
-import { WalletBalanceCard } from "@/components/user_dashboard/wallet/wallet-balance-card";
-import { QuickSend } from "@/components/user_dashboard/quick-send";
-import { TransactionsList } from "@/components/user_dashboard/transactions-list";
-import { MonthlySummary } from "@/components/user_dashboard/spending-charts";
-import { mockMonthlyTrend, mockMonthlySummaryHeader } from "@/components/user_dashboard//mock-monthly-trend";
-import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
-import { mockContacts } from "@/lib/mock/dashboard-data";
-import { walletService } from "@/lib/api/wallet.service";
-import { kycService } from "@/lib/api/kyc.service";
+import { useQuery } from '@tanstack/react-query';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { KycBanner } from '@/components/user_dashboard/kyc-banner';
+import { WalletBalanceCard } from '@/components/user_dashboard/wallet/wallet-balance-card';
+import { QuickSend } from '@/components/user_dashboard/quick-send';
+import { TransactionsList } from '@/components/user_dashboard/transactions-list';
+import { MonthlySummary } from '@/components/user_dashboard/spending-charts';
+import {
+  mockMonthlyTrend,
+  mockMonthlySummaryHeader,
+} from '@/components/user_dashboard//mock-monthly-trend';
+import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
+import { mockContacts } from '@/lib/mock/dashboard-data';
+import { walletService } from '@/lib/api/wallet.service';
+import { kycService } from '@/lib/api/kyc.service';
 
-const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
 export default function DashboardPage() {
   const { data: wallet, isLoading: walletLoading } = useQuery({
-    queryKey: ["wallet-primary"],
+    queryKey: ['wallet-primary'],
     queryFn: walletService.getPrimary,
   });
 
   const { data: kyc } = useQuery({
-    queryKey: ["kyc-me"],
+    queryKey: ['kyc-me'],
     queryFn: () => kycService.getMine(),
     retry: false,
   });
@@ -36,19 +39,20 @@ export default function DashboardPage() {
     );
   }
 
-  const balance = wallet?.balance ?? 0;
-  const currency = wallet?.currency ?? "XAF";
-  const walletNumber = wallet?.walletNumber ?? "---";
-  const walletStatus = wallet?.status === "active" ? "Actif" : wallet?.status === "suspended" ? "Suspendu" : "Fermé";
+  const balance = Number(wallet?.balance) || 0;
+  const currency = wallet?.currency ?? 'XAF';
+  const walletNumber = wallet?.walletNumber ?? '---';
+  const walletStatus =
+    wallet?.status === 'active' ? 'Actif' : wallet?.status === 'suspended' ? 'Suspendu' : 'Fermé';
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div>
-          <KycBanner status={kyc?.status ?? null} />
+        <KycBanner status={kyc?.status ?? null} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="space-y-3">
               <WalletBalanceCard
@@ -62,9 +66,11 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0 rounded-2xl bg-afrilink-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
                   <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-[#D28E2F]" />
                   <div>
-                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">ENTRÉES</p>
+                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">
+                      ENTRÉES
+                    </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">+{formatNumber(0)}</span>{" "}
+                      <span className="text-white">+{formatNumber(0)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -72,9 +78,11 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0 rounded-2xl bg-afrilink-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
                   <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-[#D28E2F]" />
                   <div>
-                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">SORTIES</p>
+                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">
+                      SORTIES
+                    </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">-{formatNumber(0)}</span>{" "}
+                      <span className="text-white">-{formatNumber(0)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>

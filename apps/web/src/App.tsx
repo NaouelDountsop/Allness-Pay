@@ -42,15 +42,14 @@ import TransactionsPage from "@/app/user_dashboard/transaction-page";
 import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
 import PartnersPage from "@/app/admin-dashboard/partners-page";
 
-import { DepositFlowProvider } from "./context/deposit-flow-context";
-import InitiateDepositPage from "@/app/user_dashboard/initiate-deposit-page";
-import RequestSentPage from "@/app/user_dashboard/request-sent-page";
-import PhoneConfirmationPage from "@/app/user_dashboard/phone-confirmation-page";
-import ProcessingPage from "@/app/user_dashboard/processing-page";
-import DepositSuccessPage from "@/app/user_dashboard/deposit-success-page";
-import BeneficiariesPage from "./app/user_dashboard/beneficiary-page";
-import AcceptInvitationPage from "@/app/accept-invitation-page";
-
+import { DepositFlowProvider } from './context/deposit-flow-context';
+import InitiateDepositPage from '@/app/user_dashboard/initiate-deposit-page';
+import RequestSentPage from '@/app/user_dashboard/request-sent-page';
+import PhoneConfirmationPage from '@/app/user_dashboard/phone-confirmation-page';
+import ProcessingPage from '@/app/user_dashboard/processing-page';
+import DepositSuccessPage from '@/app/user_dashboard/deposit-success-page';
+import BeneficiariesPage from './app/user_dashboard/beneficiary-page';
+import AcceptInvitationPage from '@/app/accept-invitation-page';
 
 export function App() {
   return (
@@ -85,27 +84,167 @@ export function App() {
         <Route path="/dashboard/settings" element={<UserProtectedRoute><SettingsPage /></UserProtectedRoute>} />
 
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route path="/admin" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
-        <Route path="/admin/utilisateurs" element={<AdminProtectedRoute><UsersListPage /></AdminProtectedRoute>} />
-        <Route path="/admin/transactions" element={<AdminProtectedRoute><AdminTransactionsPage /></AdminProtectedRoute>} />
-        <Route path="/admin/tontines" element={<AdminProtectedRoute><TontinesSupervisionPage /></AdminProtectedRoute>} />
-        <Route path="/admin/marchands" element={<AdminProtectedRoute><MerchantsListPage /></AdminProtectedRoute>} />
-        <Route path="/admin/marchands/nouveau" element={<AdminProtectedRoute><AddMerchantPage /></AdminProtectedRoute>} />
-        <Route path="/admin/marchands/:id" element={<AdminProtectedRoute><MerchantDetailPage /></AdminProtectedRoute>} />
-        <Route path="/admin/kyc" element={<AdminProtectedRoute><KycListPage /></AdminProtectedRoute>} />
-        <Route path="/admin/kyc/:id" element={<AdminProtectedRoute><KycDetailPage /></AdminProtectedRoute>} />
-        <Route path="/admin/taux-de-change" element={<AdminProtectedRoute><ExchangeRatesPage /></AdminProtectedRoute>} />
-        <Route path="/admin/taux-de-change/nouveau" element={<AdminProtectedRoute><AddExchangeRatePage /></AdminProtectedRoute>} />
-        <Route path="/admin/taux-de-change/historique" element={<AdminProtectedRoute><ExchangeRateHistoryPage /></AdminProtectedRoute>} />
-        <Route path="/admin/taux-de-change/parametres" element={<AdminProtectedRoute><ExchangeRateSettingsPage /></AdminProtectedRoute>} />
-        <Route path="/admin/taux-de-change/:id/modifier" element={<AdminProtectedRoute><EditExchangeRatePage /></AdminProtectedRoute>} />
-        <Route path="/admin/partenaires" element={<AdminProtectedRoute><PartnersPage /></AdminProtectedRoute>} />
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboardPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/utilisateurs"
+          element={
+            <AdminProtectedRoute>
+              <UsersListPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/transactions"
+          element={
+            <AdminProtectedRoute>
+              <AdminTransactionsPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/tontines"
+          element={
+            <AdminProtectedRoute>
+              <TontinesSupervisionPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/marchands"
+          element={
+            <AdminProtectedRoute>
+              <MerchantsListPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/marchands/nouveau"
+          element={
+            <AdminProtectedRoute>
+              <AddMerchantPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/marchands/:id"
+          element={
+            <AdminProtectedRoute>
+              <MerchantDetailPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/kyc"
+          element={
+            <AdminProtectedRoute>
+              <KycListPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/kyc/:id"
+          element={
+            <AdminProtectedRoute>
+              <KycDetailPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/taux-de-change"
+          element={
+            <AdminProtectedRoute>
+              <ExchangeRatesPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/taux-de-change/nouveau"
+          element={
+            <AdminProtectedRoute>
+              <AddExchangeRatePage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/taux-de-change/historique"
+          element={
+            <AdminProtectedRoute>
+              <ExchangeRateHistoryPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/taux-de-change/parametres"
+          element={
+            <AdminProtectedRoute>
+              <ExchangeRateSettingsPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/taux-de-change/:id/modifier"
+          element={
+            <AdminProtectedRoute>
+              <EditExchangeRatePage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/partenaires"
+          element={
+            <AdminProtectedRoute>
+              <PartnersPage />
+            </AdminProtectedRoute>
+          }
+        />
 
-        <Route path="/deposit" element={<DepositFlowProvider><InitiateDepositPage /></DepositFlowProvider>} />
-        <Route path="/deposit/request-sent" element={<DepositFlowProvider><RequestSentPage /></DepositFlowProvider>} />
-        <Route path="/deposit/confirm" element={<DepositFlowProvider><PhoneConfirmationPage /></DepositFlowProvider>} />
-        <Route path="/deposit/processing" element={<DepositFlowProvider><ProcessingPage /></DepositFlowProvider>} />
-        <Route path="/deposit/success" element={<DepositFlowProvider><DepositSuccessPage /></DepositFlowProvider>} />
+        <Route
+          path="/deposit"
+          element={
+            <DepositFlowProvider>
+              <InitiateDepositPage />
+            </DepositFlowProvider>
+          }
+        />
+        <Route
+          path="/deposit/request-sent"
+          element={
+            <DepositFlowProvider>
+              <RequestSentPage />
+            </DepositFlowProvider>
+          }
+        />
+        <Route
+          path="/deposit/confirm"
+          element={
+            <DepositFlowProvider>
+              <PhoneConfirmationPage />
+            </DepositFlowProvider>
+          }
+        />
+        <Route
+          path="/deposit/processing"
+          element={
+            <DepositFlowProvider>
+              <ProcessingPage />
+            </DepositFlowProvider>
+          }
+        />
+        <Route
+          path="/deposit/success"
+          element={
+            <DepositFlowProvider>
+              <DepositSuccessPage />
+            </DepositFlowProvider>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

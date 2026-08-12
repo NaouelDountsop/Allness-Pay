@@ -1,10 +1,10 @@
-import { Search, Filter } from "lucide-react";
-import type { Contribution } from "@/lib/mock/tontines-data";
+import { Search, Filter } from 'lucide-react';
+import type { Contribution } from '@/lib/mock/tontines-data';
 
-const statusStyles: Record<Contribution["status"], { label: string; className: string }> = {
-  valide: { label: "Validé", className: "bg-green-50 text-afrilink-green" },
-  en_attente: { label: "En attente", className: "bg-orange-50 text-afrilink-orange" },
-  echoue: { label: "Échoué", className: "bg-red-50 text-red-600" },
+const statusStyles: Record<Contribution['status'], { label: string; className: string }> = {
+  valide: { label: 'Validé', className: 'bg-green-50 text-afrilink-green' },
+  en_attente: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
+  echoue: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
 };
 
 interface ContributionsTableProps {
@@ -61,23 +61,23 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
                   <div className="flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[9px] font-medium text-gray-500">
                       {c.memberName
-                        .split(" ")
+                        .split(' ')
                         .map((n) => n[0])
-                        .join("")}
+                        .join('')}
                     </span>
                     <span className="text-gray-800">{c.memberName}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-800">
-                  {c.amount.toFixed(2)} CFA
-                </td>
+                <td className="px-4 py-3 font-medium text-gray-800">{c.amount.toFixed(2)} CFA</td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}
+                  >
                     {status.label}
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {c.status !== "echoue" ? (
+                  {c.status !== 'echoue' ? (
                     <a href="#" className="text-xs text-afrilink-green font-medium">
                       View Receipt →
                     </a>
@@ -96,7 +96,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
           <button
             key={n}
             className={`w-7 h-7 rounded-lg ${
-              n === 1 ? "bg-afrilink-orange text-white" : "hover:bg-gray-50"
+              n === 1 ? 'bg-afrilink-orange text-white' : 'hover:bg-gray-50'
             }`}
           >
             {n}

@@ -1,6 +1,6 @@
-import { EXCHANGE_RATE_CAD_XAF, mockRecentTransfers } from "@/lib/mock/send-money-data";
-import { getCountryByCode, getFlagUrl } from "@/data/countries";
-import { Info, ArrowLeft } from "lucide-react";
+import { EXCHANGE_RATE_CAD_XAF, mockRecentTransfers } from '@/lib/mock/send-money-data';
+import { getCountryByCode, getFlagUrl } from '@/data/countries';
+import { Info, ArrowLeft } from 'lucide-react';
 
 interface ReviewStepProps {
   beneficiaryContact: string;
@@ -13,10 +13,10 @@ interface ReviewStepProps {
 }
 
 const RECEPTION_LABELS: Record<string, string> = {
-  wallet: "Wallet AfriLinkPay",
-  mtn: "MTN Mobile Money",
-  orange: "Orange Money",
-  bank: "Compte bancaire",
+  wallet: 'Wallet AfriLinkPay',
+  mtn: 'MTN Mobile Money',
+  orange: 'Orange Money',
+  bank: 'Compte bancaire',
 };
 
 interface ReviewStepProps {
@@ -28,21 +28,36 @@ interface ReviewStepProps {
   onBack: () => void;
 }
 
-export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode, receptionMode, amount, onSend, onBack }: ReviewStepProps) {
+export function ReviewStep({
+  beneficiaryContact,
+  senderCountryCode,
+  countryCode,
+  receptionMode,
+  amount,
+  onSend,
+  onBack,
+}: ReviewStepProps) {
   const received = amount * EXCHANGE_RATE_CAD_XAF;
   const senderCountry = getCountryByCode(senderCountryCode);
-  const senderCountryName = senderCountry?.name?.toUpperCase() ?? "EXPÉDITEUR";
+  const senderCountryName = senderCountry?.name?.toUpperCase() ?? 'EXPÉDITEUR';
   const country = getCountryByCode(countryCode);
-  const countryName = country?.name?.toUpperCase() ?? "PAYS INCONNU";
-  const currency = countryCode === "CM" || countryCode === "GA" || countryCode === "CG" || countryCode === "CD"
-    ? "XAF"
-    : countryCode === "SN" || countryCode === "CI" || countryCode === "NE" || countryCode === "ML" || countryCode === "BF" || countryCode === "TG" || countryCode === "BJ"
-      ? "XOF"
-      : countryCode === "FR"
-        ? "EUR"
-        : countryCode === "US" || countryCode === "CA"
-          ? "USD"
-          : "XAF";
+  const countryName = country?.name?.toUpperCase() ?? 'PAYS INCONNU';
+  const currency =
+    countryCode === 'CM' || countryCode === 'GA' || countryCode === 'CG' || countryCode === 'CD'
+      ? 'XAF'
+      : countryCode === 'SN' ||
+          countryCode === 'CI' ||
+          countryCode === 'NE' ||
+          countryCode === 'ML' ||
+          countryCode === 'BF' ||
+          countryCode === 'TG' ||
+          countryCode === 'BJ'
+        ? 'XOF'
+        : countryCode === 'FR'
+          ? 'EUR'
+          : countryCode === 'US' || countryCode === 'CA'
+            ? 'USD'
+            : 'XAF';
 
   return (
     <div className="text-base">
@@ -57,10 +72,9 @@ export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode,
       <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
         <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-500" />
         <p>
-          <span className="font-semibold">L'expéditeur doit vérifier</span> l'exactitude
-          des informations du bénéficiaire (nom, numéro) avant de valider l'opération.
-          Aucun remboursement ne sera effectué si les fonds sont envoyés à un tiers par
-          erreur.
+          <span className="font-semibold">L'expéditeur doit vérifier</span> l'exactitude des
+          informations du bénéficiaire (nom, numéro) avant de valider l'opération. Aucun
+          remboursement ne sera effectué si les fonds sont envoyés à un tiers par erreur.
         </p>
       </div>
 
@@ -105,7 +119,7 @@ export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode,
             </div>
           </div>
           <p className="text-lg font-semibold text-gray-800">
-            {beneficiaryContact || "Marie-Thérèse Ngono"}
+            {beneficiaryContact || 'Marie-Thérèse Ngono'}
           </p>
           <p className="text-sm text-gray-500">{currency}</p>
         </div>
@@ -113,8 +127,12 @@ export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode,
 
       {/* Mode de réception */}
       <div className="mb-5 rounded-xl border-2 border-afrilink-green/20 bg-afrilink-green/[0.03] p-4">
-        <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1">Mode de réception</p>
-        <p className="text-base font-semibold text-afrilink-dark">{RECEPTION_LABELS[receptionMode] ?? "Wallet AfriLinkPay"}</p>
+        <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1">
+          Mode de réception
+        </p>
+        <p className="text-base font-semibold text-afrilink-dark">
+          {RECEPTION_LABELS[receptionMode] ?? 'Wallet AfriLinkPay'}
+        </p>
       </div>
 
       <div className="mb-4">
@@ -125,7 +143,9 @@ export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode,
       <div className="space-y-3 mb-6 text-base">
         <div className="flex items-center justify-between text-gray-600">
           <span className="font-medium">Taux de change</span>
-          <span>1 CAD = {EXCHANGE_RATE_CAD_XAF.toFixed(2)} {currency}</span>
+          <span>
+            1 CAD = {EXCHANGE_RATE_CAD_XAF.toFixed(2)} {currency}
+          </span>
         </div>
         <div className="flex items-center justify-between text-gray-600">
           <span className="font-medium">Frais de transfert (AfriLink Pay)</span>
@@ -136,7 +156,7 @@ export function ReviewStep({ beneficiaryContact, senderCountryCode, countryCode,
       <div className="flex items-center justify-between rounded-2xl bg-afrilink-dark text-white px-5 py-4 mb-6">
         <span className="text-base font-medium">Le bénéficiaire reçoit</span>
         <span className="text-2xl font-bold">
-          {new Intl.NumberFormat("fr-FR").format(received)} {currency}
+          {new Intl.NumberFormat('fr-FR').format(received)} {currency}
         </span>
       </div>
 

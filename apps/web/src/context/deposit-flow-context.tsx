@@ -1,5 +1,42 @@
-import { createContext, useContext, useState, useCallback } from "react";
-import type { DepositState, MobileMoneyOperator, DepositMethod, Currency } from "./deposit-flow.constants";
+import { createContext, useContext, useState, useCallback } from 'react';
+
+export type MobileMoneyOperator = 'mtn' | 'orange';
+export type DepositMethod = 'mobile_money' | 'bank';
+export type Currency = 'XAF' | 'EUR' | 'USD';
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  XAF: 'FCFA',
+  EUR: '€',
+  USD: '$',
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const BANK_LABELS: Record<string, string> = {
+  sgbc: 'SGBC (Société Générale Cameroun)',
+  uba: 'UBA Cameroun',
+  afriland: 'Afriland First Bank',
+  beac: 'BEAC',
+  ecobank: 'Ecobank Cameroun',
+  bicec: 'BICEC',
+  btc: 'BTCI (Banque Camerounaise des Travailleurs)',
+  autres: 'Autres',
+};
+
+export interface DepositState {
+  method: DepositMethod;
+  operator: MobileMoneyOperator;
+  phoneNumber: string;
+  bankName: string;
+  iban: string;
+  accountHolder: string;
+  amount: string;
+  currency: Currency;
+  description: string;
+  reference: string;
+  transactionId: string;
+  createdAt: Date | null;
+}
 
 interface DepositContextValue {
   deposit: DepositState;
@@ -17,17 +54,17 @@ interface DepositContextValue {
 }
 
 const INITIAL_STATE: DepositState = {
-  method: "mobile_money",
-  operator: "mtn",
-  phoneNumber: "",
-  bankName: "",
-  iban: "",
-  accountHolder: "",
-  amount: "",
-  currency: "XAF",
-  description: "",
-  reference: "",
-  transactionId: "",
+  method: 'mobile_money',
+  operator: 'mtn',
+  phoneNumber: '',
+  bankName: '',
+  iban: '',
+  accountHolder: '',
+  amount: '',
+  currency: 'XAF',
+  description: '',
+  reference: '',
+  transactionId: '',
   createdAt: null,
 };
 
@@ -108,6 +145,6 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
 // eslint-disable-next-line react-refresh/only-export-components
 export function useDepositFlow() {
   const ctx = useContext(DepositContext);
-  if (!ctx) throw new Error("useDepositFlow doit être utilisé sous <DepositFlowProvider>");
+  if (!ctx) throw new Error('useDepositFlow doit être utilisé sous <DepositFlowProvider>');
   return ctx;
 }

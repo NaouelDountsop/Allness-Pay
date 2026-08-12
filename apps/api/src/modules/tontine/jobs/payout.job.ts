@@ -28,21 +28,15 @@ export class PayoutJob {
       cycle.contributions.every((c) => c.status === TontineContributionStatus.PAID),
     );
 
-    this.logger.log(
-      `${readyForPayout.length} cycles prêts pour versement`,
-    );
+    this.logger.log(`${readyForPayout.length} cycles prêts pour versement`);
 
     for (const cycle of readyForPayout) {
       try {
         await this.payoutService.processPayout(cycle.id);
-        this.logger.log(
-          `Pot versé pour cycle ${cycle.id} (tontine ${cycle.tontineId})`,
-        );
+        this.logger.log(`Pot versé pour cycle ${cycle.id} (tontine ${cycle.tontineId})`);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        this.logger.error(
-          `Erreur versement cycle ${cycle.id}: ${message}`,
-        );
+        this.logger.error(`Erreur versement cycle ${cycle.id}: ${message}`);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Users } from "lucide-react";
+import { Users } from 'lucide-react';
 
 interface TontineSummaryCardProps {
   frequency: string;
@@ -37,7 +37,7 @@ export function TontineSummaryCard({
           <div className="flex items-center justify-between">
             <dt className="text-gray-400">Total versé</dt>
             <dd className="font-medium text-gray-800">
-              {new Intl.NumberFormat("fr-FR").format(totalPaid)} €
+              {new Intl.NumberFormat('fr-FR').format(totalPaid)} €
             </dd>
           </div>
         </dl>

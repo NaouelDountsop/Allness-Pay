@@ -13,11 +13,16 @@ const PHONE_REGEX = /^(\d{9}|237\d{9}|\+237\d{9})$/;
 // `pin`, déclenchée à la première ouverture du wallet.
 export class DepositDto {
   @IsString()
-  @Matches(AMOUNT_REGEX, { message: 'amount doit être un nombre strictement positif avec 2 décimales max' })
+  @Matches(AMOUNT_REGEX, {
+    message: 'amount doit être un nombre strictement positif avec 2 décimales max',
+  })
   amount: string;
 
   @IsString()
-  @Matches(PHONE_REGEX, { message: 'phone_number doit être un numéro camerounais valide (9 chiffres ou avec indicatif 237)' })
+  @Matches(PHONE_REGEX, {
+    message:
+      'phone_number doit être un numéro camerounais valide (9 chiffres ou avec indicatif 237)',
+  })
   phone_number: string;
 
   @IsOptional()
@@ -28,7 +33,9 @@ export class DepositDto {
 
 export class WithdrawDto {
   @IsString()
-  @Matches(AMOUNT_REGEX, { message: 'amount doit être un nombre strictement positif avec 2 décimales max' })
+  @Matches(AMOUNT_REGEX, {
+    message: 'amount doit être un nombre strictement positif avec 2 décimales max',
+  })
   amount: string;
 
   @IsOptional()
@@ -36,7 +43,6 @@ export class WithdrawDto {
   @Length(1, 255)
   description?: string;
 
-  
   @IsString()
   @Length(4, 4)
   @Matches(PIN_REGEX, { message: 'Le PIN doit contenir exactement 4 chiffres' })
@@ -48,7 +54,9 @@ export class TransferDto {
   toWalletId: string;
 
   @IsString()
-  @Matches(AMOUNT_REGEX, { message: 'amount doit être un nombre strictement positif avec 2 décimales max' })
+  @Matches(AMOUNT_REGEX, {
+    message: 'amount doit être un nombre strictement positif avec 2 décimales max',
+  })
   amount: string;
 
   @IsOptional()

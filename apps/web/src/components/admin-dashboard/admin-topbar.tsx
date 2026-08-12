@@ -1,7 +1,7 @@
-import { Search, Bell, HelpCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { Avatar } from "../ui/avatar";
-import { apiClient } from "@/lib/api-client";
+import { Search, Bell, HelpCircle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Avatar } from '../ui/avatar';
+import { apiClient } from '@/lib/api-client';
 
 interface AdminProfile {
   idutilisateur: number;
@@ -14,24 +14,24 @@ interface AdminProfile {
 }
 
 async function fetchAdminProfile(): Promise<AdminProfile> {
-  const res = await apiClient.get<AdminProfile>("/auth/profile");
+  const res = await apiClient.get<AdminProfile>('/auth/profile');
   return res.data;
 }
 
 export function AdminTopbar() {
   const { data: admin } = useQuery({
-    queryKey: ["admin-profile"],
+    queryKey: ['admin-profile'],
     queryFn: fetchAdminProfile,
     staleTime: 5 * 60 * 1000,
   });
 
   const displayName = admin
-    ? `${admin.prenom || ""} ${admin.nom || ""}`.trim() || "Admin"
-    : "Admin";
+    ? `${admin.prenom || ''} ${admin.nom || ''}`.trim() || 'Admin'
+    : 'Admin';
   const initials = displayName
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .slice(0, 2)
     .toUpperCase();
 
@@ -49,7 +49,10 @@ export function AdminTopbar() {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4 shrink-0">
-        <button className="sm:hidden text-gray-400 hover:text-afrilink-dark" aria-label="Rechercher">
+        <button
+          className="sm:hidden text-gray-400 hover:text-afrilink-dark"
+          aria-label="Rechercher"
+        >
           <Search className="w-5 h-5" />
         </button>
         <button className="text-gray-400 hover:text-afrilink-dark" aria-label="Notifications">
@@ -62,7 +65,7 @@ export function AdminTopbar() {
           <Avatar initials={initials} />
           <div className="leading-tight hidden sm:block">
             <p className="text-xs font-semibold text-afrilink-dark">{displayName}</p>
-            <p className="text-[11px] text-gray-400">{admin?.profession || "Administrateur"}</p>
+            <p className="text-[11px] text-gray-400">{admin?.profession || 'Administrateur'}</p>
           </div>
         </div>
       </div>

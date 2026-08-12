@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Role } from './entities/role.entity';
@@ -42,7 +47,11 @@ export class RolesService {
     }
 
     const permissions = await this.resolvePermissions(dto.permissionIds);
-    const role = this.roleRepo.create({ name: dto.name, description: dto.description, permissions });
+    const role = this.roleRepo.create({
+      name: dto.name,
+      description: dto.description,
+      permissions,
+    });
     return this.roleRepo.save(role);
   }
 

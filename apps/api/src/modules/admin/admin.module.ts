@@ -10,10 +10,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Kyc, Wallet, WalletTransaction, Tontine]),
-    RolesModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User, Kyc, Wallet, WalletTransaction, Tontine]), RolesModule],
   controllers: [AdminController],
   providers: [AdminService],
 })

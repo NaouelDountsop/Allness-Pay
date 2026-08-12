@@ -1,5 +1,5 @@
-import { ArrowDownLeft, ArrowUpRight, ChevronRight } from "lucide-react";
-import type { Transaction } from "@/lib/mock/dashboard-data";
+import { ArrowDownLeft, ArrowUpRight, ChevronRight } from 'lucide-react';
+import type { Transaction } from '@/lib/mock/dashboard-data';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -29,7 +29,7 @@ export function TransactionsList({ transactions, onSelect }: TransactionsListPro
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#082B37]/10">
-                  {t.type === "credit" ? (
+                  {t.type === 'credit' ? (
                     <ArrowDownLeft className="w-4 h-4 text-[#082B37]" />
                   ) : (
                     <ArrowUpRight className="w-4 h-4 text-[#082B37]" />
@@ -44,11 +44,12 @@ export function TransactionsList({ transactions, onSelect }: TransactionsListPro
               <div className="flex items-center gap-2 shrink-0 pl-2">
                 <span
                   className={`text-xs sm:text-sm font-semibold text-right whitespace-nowrap ${
-                    t.type === "credit" ? "text-afrilink-green" : "text-red-500"
+                    t.type === 'credit' ? 'text-afrilink-green' : 'text-red-500'
                   }`}
                 >
-                  {t.type === "credit" ? "+" : ""}
-                  {new Intl.NumberFormat("fr-FR").format(t.amount)} <span className="hidden sm:inline">FCFA</span>
+                  {t.type === 'credit' ? '+' : ''}
+                  {new Intl.NumberFormat('fr-FR').format(t.amount)}{' '}
+                  <span className="hidden sm:inline">FCFA</span>
                 </span>
                 <ChevronRight className="w-4 h-4 text-[#082B37]/25 hidden sm:block" />
               </div>

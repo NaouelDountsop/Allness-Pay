@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { join } from 'node:path';
@@ -21,12 +21,14 @@ async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
 
   // --- Securite ------------------------------------------------------------
-  app.use(helmet({
-    contentSecurityPolicy: appConfig.env === 'production',
-    crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false,
-    crossOriginResourcePolicy: false,
-  }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: appConfig.env === 'production',
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+    }),
+  );
 
   app.enableCors({
     origin: appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins : false,
@@ -72,7 +74,7 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('AfriLinkPay API')
         .setDescription(
-          'API de la plateforme de transfert d\'argent avec portefeuille electronique.',
+          "API de la plateforme de transfert d'argent avec portefeuille electronique.",
         )
         .setVersion(appConfig.version)
         .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
@@ -92,4 +94,3 @@ async function bootstrap(): Promise<void> {
 }
 
 void bootstrap();
-

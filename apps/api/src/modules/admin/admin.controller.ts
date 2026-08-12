@@ -55,45 +55,35 @@ export class AdminController {
     return this.adminService.findAllTontines();
   }
 
-  @Get('tontines/stats')
-  @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Statistiques des tontines (admin)' })
-  getTontineStats() {
-    return this.adminService.getTontineStats();
-  }
-
   @Get('transactions')
   @RequirePermissions('kyc:review')
   @ApiOperation({ summary: 'Liste des transactions (admin)' })
-  findAllTransactions() {
-    return this.adminService.findAllTransactions();
-  }
-
-  @Get('transactions/stats')
-  @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Statistiques des transactions (admin)' })
-  getTransactionStats() {
-    return this.adminService.getTransactionStats();
-  }
-
-  @Get('activities')
-  @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Activités récentes (admin)' })
-  getRecentActivities() {
-    return this.adminService.getRecentActivities();
-  }
-
-  @Get('kyc/pending')
-  @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'KYC en attente pour le dashboard' })
-  getKycPending() {
-    return this.adminService.getKycPending();
-  }
-
-  @Get('chart/weekly')
-  @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Données graphique hebdomadaire' })
-  getChartWeekly() {
-    return this.adminService.getChartWeekly();
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['pending', 'completed', 'failed', 'cancelled'],
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ['deposit', 'withdrawal', 'transfer_in', 'transfer_out'],
+  })
+  @ApiQuery({ name: 'provider', required: false })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'pageSize', required: false })
+  findAllTransactions(
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+    @Query('provider') provider?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.adminService.findAllTransactions({
+      status,
+      type,
+      provider,
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined,
+    });
   }
 }

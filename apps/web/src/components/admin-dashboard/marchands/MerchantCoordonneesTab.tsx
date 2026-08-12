@@ -1,5 +1,5 @@
-import { FileText } from "lucide-react";
-import { SectionCard, Field } from "../../ui/section-card";
+import { FileText } from 'lucide-react';
+import { SectionCard, Field } from '../../ui/section-card';
 
 export function MerchantCoordonneesTab() {
   return (

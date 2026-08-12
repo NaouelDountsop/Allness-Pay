@@ -1,23 +1,23 @@
 export function Avatar({
   initials,
   src,
-  size = "md",
+  size = 'md',
 }: {
   initials?: string;
   src?: string;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
 }) {
   const sizes = {
-    sm: "w-8 h-8 text-[11px]",
-    md: "w-10 h-10 text-xs",
-    lg: "w-16 h-16 text-base",
+    sm: 'w-8 h-8 text-[11px]',
+    md: 'w-10 h-10 text-xs',
+    lg: 'w-16 h-16 text-base',
   };
 
   if (src) {
     return (
       <img
         src={src}
-        alt={initials ?? ""}
+        alt={initials ?? ''}
         className={`${sizes[size]} rounded-full object-cover shrink-0`}
       />
     );

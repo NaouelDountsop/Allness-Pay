@@ -1,21 +1,13 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import type { UserProfile } from "@afrilinkpay/shared";
-import {
-  Sparkles,
-  CreditCard,
-  Users,
-  LifeBuoy,
-  ShieldAlert,
-  Plus,
-  Trash2,
-} from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Toggle } from "@/components/ui/toggle";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import type { UserProfile } from '@afrilinkpay/shared';
+import { Sparkles, CreditCard, Users, LifeBuoy, ShieldAlert, Plus, Trash2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Toggle } from '@/components/ui/toggle';
 import {
   Dialog,
   DialogContent,
@@ -24,8 +16,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog";
-import { userService } from "@/lib/api/user.service";
+} from '@/components/ui/dialog';
+import { userService } from '@/lib/api/user.service';
 
 function SettingCard({
   title,
@@ -74,7 +66,7 @@ function ToggleRow({
         <p className="text-xs text-gray-500">{hint}</p>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500">{checked ? "Activé" : "Désactivé"}</span>
+        <span className="text-xs text-gray-500">{checked ? 'Activé' : 'Désactivé'}</span>
         <Toggle checked={checked} onChange={onCheckedChange} />
       </div>
     </div>
@@ -89,12 +81,12 @@ interface PaymentMethod {
 
 export default function SettingsPage() {
   const { data: profile } = useQuery<UserProfile>({
-    queryKey: ["profile"],
+    queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : "Utilisateur Afrilink"),
+    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Afrilink'),
     [profile],
   );
 
@@ -121,17 +113,17 @@ export default function SettingsPage() {
   const [notifLatePayment, setNotifLatePayment] = useState(true);
 
   // --- Préférences de compte ---
-  const [currency, setCurrency] = useState("CFA");
-  const [theme, setTheme] = useState("Clair");
-  const [language, setLanguage] = useState("Français");
-  const [timezone, setTimezone] = useState("Afrique/Douala (GMT+1)");
+  const [currency, setCurrency] = useState('CFA');
+  const [theme, setTheme] = useState('Clair');
+  const [language, setLanguage] = useState('Français');
+  const [timezone, setTimezone] = useState('Afrique/Douala (GMT+1)');
 
   // --- Moyens de paiement ---
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
-    { id: "1", type: "Orange Money", identifier: "+237 6XX XX XX XX" },
+    { id: '1', type: 'Orange Money', identifier: '+237 6XX XX XX XX' },
   ]);
-  const [newMethodType, setNewMethodType] = useState("Orange Money");
-  const [newMethodIdentifier, setNewMethodIdentifier] = useState("");
+  const [newMethodType, setNewMethodType] = useState('Orange Money');
+  const [newMethodIdentifier, setNewMethodIdentifier] = useState('');
 
   const addPaymentMethod = () => {
     if (!newMethodIdentifier.trim()) return;
@@ -139,7 +131,7 @@ export default function SettingsPage() {
       ...prev,
       { id: crypto.randomUUID(), type: newMethodType, identifier: newMethodIdentifier },
     ]);
-    setNewMethodIdentifier("");
+    setNewMethodIdentifier('');
     // TODO: brancher sur userService.addPaymentMethod({ type: newMethodType, identifier: newMethodIdentifier })
   };
 
@@ -149,11 +141,11 @@ export default function SettingsPage() {
   };
 
   // --- Préférences tontine ---
-  const [reminderDays, setReminderDays] = useState("2");
+  const [reminderDays, setReminderDays] = useState('2');
   const [profileVisibleToMembers, setProfileVisibleToMembers] = useState(true);
 
   // --- Confidentialité ---
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   return (
     <DashboardLayout>
@@ -166,25 +158,33 @@ export default function SettingsPage() {
               <div className="flex items-center gap-4">
                 <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-afrilink-dark text-3xl font-semibold text-white">
                   {fullName
-                    .split(" ")
+                    .split(' ')
                     .map((part) => part[0])
                     .slice(0, 2)
-                    .join("")}
+                    .join('')}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-afrilink-orange">Paramètres</p>
-                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark">Compte Afrilink</h1>
+                  <p className="text-xs uppercase tracking-[0.24em] text-afrilink-orange">
+                    Paramètres
+                  </p>
+                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark">
+                    Compte Afrilink
+                  </h1>
                 </div>
               </div>
 
               <div className="mt-6 space-y-5">
                 <div className="rounded-3xl bg-afrilink-orange/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Email principal</p>
-                  <p className="mt-3 text-sm font-medium text-gray-900">{profile?.email ?? "-"}</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                    Email principal
+                  </p>
+                  <p className="mt-3 text-sm font-medium text-gray-900">{profile?.email ?? '-'}</p>
                 </div>
                 <div className="rounded-3xl bg-afrilink-green/5 p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-gray-500">2FA</p>
-                  <p className="mt-3 text-sm font-medium text-gray-900">{twoFaEnabled ? "Activée" : "Désactivée"}</p>
+                  <p className="mt-3 text-sm font-medium text-gray-900">
+                    {twoFaEnabled ? 'Activée' : 'Désactivée'}
+                  </p>
                 </div>
               </div>
 
@@ -212,24 +212,32 @@ export default function SettingsPage() {
               <SettingCard
                 title="Sécurité du compte"
                 description="Mot de passe, 2FA, PIN transactionnel et biométrie"
-                badge={twoFaEnabled ? "Activée" : "Désactivée"}
+                badge={twoFaEnabled ? 'Activée' : 'Désactivée'}
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Authentification</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                      Authentification
+                    </p>
                     <p className="mt-2 text-sm font-medium text-afrilink-green">
-                      {twoFaEnabled ? "2FA activée" : "2FA désactivée"}
+                      {twoFaEnabled ? '2FA activée' : '2FA désactivée'}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">PIN transactionnel</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                      PIN transactionnel
+                    </p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      {pinEnabled ? "Configuré" : "Non configuré"}
+                      {pinEnabled ? 'Configuré' : 'Non configuré'}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Historique de connexion</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">Dernière connexion aujourd'hui</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                      Historique de connexion
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      Dernière connexion aujourd'hui
+                    </p>
                   </div>
                   <Button
                     variant="outline"
@@ -252,19 +260,19 @@ export default function SettingsPage() {
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Email</p>
                     <p className="mt-2 text-sm font-medium text-afrilink-dark">
-                      {emailNotifs ? "Activées" : "Désactivées"}
+                      {emailNotifs ? 'Activées' : 'Désactivées'}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">SMS</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      {smsNotifs ? "Activées" : "Désactivées"}
+                      {smsNotifs ? 'Activées' : 'Désactivées'}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Push</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      {pushNotifs ? "Activées" : "Désactivées"}
+                      {pushNotifs ? 'Activées' : 'Désactivées'}
                     </p>
                   </div>
                   <Button
@@ -316,9 +324,12 @@ export default function SettingsPage() {
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
                     <CreditCard className="w-4 h-4 text-afrilink-orange shrink-0" />
                     <div>
-                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Moyens liés</p>
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                        Moyens liés
+                      </p>
                       <p className="mt-2 text-sm font-medium text-gray-900">
-                        {paymentMethods.length} moyen{paymentMethods.length > 1 ? "s" : ""} de paiement
+                        {paymentMethods.length} moyen{paymentMethods.length > 1 ? 's' : ''} de
+                        paiement
                       </p>
                     </div>
                   </div>
@@ -341,8 +352,12 @@ export default function SettingsPage() {
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
                     <Users className="w-4 h-4 text-afrilink-green shrink-0" />
                     <div>
-                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Rappel avant mon tour</p>
-                      <p className="mt-2 text-sm font-medium text-gray-900">{reminderDays} jour(s) avant</p>
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                        Rappel avant mon tour
+                      </p>
+                      <p className="mt-2 text-sm font-medium text-gray-900">
+                        {reminderDays} jour(s) avant
+                      </p>
                     </div>
                   </div>
                   <Button
@@ -445,9 +460,7 @@ export default function SettingsPage() {
                 placeholder="••••"
                 onChange={() => setPinEnabled(true)}
               />
-              <p className="text-xs text-gray-400">
-                Requis pour valider vos dépôts et retraits.
-              </p>
+              <p className="text-xs text-gray-400">Requis pour valider vos dépôts et retraits.</p>
             </div>
           </div>
 
@@ -479,7 +492,9 @@ export default function SettingsPage() {
           </DialogHeader>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Canaux</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+              Canaux
+            </p>
             <ToggleRow
               label="Notifications par email"
               hint="Recevez les alertes importantes par email"
@@ -783,7 +798,7 @@ export default function SettingsPage() {
             </Button>
             <Button
               className="bg-red-600 text-white hover:bg-red-700"
-              disabled={deleteConfirmText !== "SUPPRIMER"}
+              disabled={deleteConfirmText !== 'SUPPRIMER'}
               onClick={() => {
                 // TODO: brancher sur userService.deleteAccount()
                 setDeleteAccountOpen(false);
@@ -797,4 +812,3 @@ export default function SettingsPage() {
     </DashboardLayout>
   );
 }
- 

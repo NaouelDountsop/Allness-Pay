@@ -7,13 +7,13 @@ export function Pagination({
   totalPages: number;
   onChange?: (page: number) => void;
 }) {
-  const pages: (number | "...")[] = [];
+  const pages: (number | '...')[] = [];
   pages.push(1);
-  if (page > 3) pages.push("...");
+  if (page > 3) pages.push('...');
   for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p++) {
     pages.push(p);
   }
-  if (page < totalPages - 2) pages.push("...");
+  if (page < totalPages - 2) pages.push('...');
   if (totalPages > 1) pages.push(totalPages);
 
   return (
@@ -27,7 +27,7 @@ export function Pagination({
       </button>
       <div className="flex items-center gap-1.5">
         {pages.map((p, i) =>
-          p === "..." ? (
+          p === '...' ? (
             <span key={`dots-${i}`} className="text-xs text-gray-400 px-1">
               …
             </span>
@@ -36,14 +36,12 @@ export function Pagination({
               key={p}
               onClick={() => onChange?.(p)}
               className={`w-6 h-6 rounded text-xs font-medium flex items-center justify-center transition-colors ${
-                p === page
-                  ? "bg-afrilink-orange text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                p === page ? 'bg-afrilink-orange text-white' : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
               {p}
             </button>
-          )
+          ),
         )}
       </div>
       <button

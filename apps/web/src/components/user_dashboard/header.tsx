@@ -1,10 +1,10 @@
-﻿import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut } from "lucide-react";
-import { userService } from "@/lib/api/user.service";
-import { authService } from "@/lib/api/auth.service";
-import { authStorage } from "@/lib/auth-storage";
+﻿import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { userService } from '@/lib/api/user.service';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
 
 export function DashboardHeader() {
   const navigate = useNavigate();
@@ -12,13 +12,13 @@ export function DashboardHeader() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: user } = useQuery({
-    queryKey: ["profile"],
+    queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
 
-  const firstName = user?.prenom ?? "";
-  const userName = user ? `${firstName} ${user.nom}` : "";
-  const memberLabel = user?.profession || "Membre";
+  const firstName = user?.prenom ?? '';
+  const userName = user ? `${firstName} ${user.nom}` : '';
+  const memberLabel = user?.profession || 'Membre';
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -26,8 +26,8 @@ export function DashboardHeader() {
         setDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -37,7 +37,7 @@ export function DashboardHeader() {
       // Déconnecte quand même côté client
     } finally {
       authStorage.clearAll();
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   };
 
@@ -54,7 +54,10 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-        <button className="text-afrilink-orange hover:text-afrilink-orange/80" aria-label="Notifications">
+        <button
+          className="text-afrilink-orange hover:text-afrilink-orange/80"
+          aria-label="Notifications"
+        >
           <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
         <button className="text-afrilink-orange hover:text-afrilink-orange/80" aria-label="Aide">
@@ -81,7 +84,9 @@ export function DashboardHeader() {
             <div className="w-7 h-7 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
               {userName.charAt(0)}
             </div>
-            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+            />
           </button>
 
           {dropdownOpen && (
@@ -93,7 +98,7 @@ export function DashboardHeader() {
               <button
                 onClick={() => {
                   setDropdownOpen(false);
-                  navigate("/dashboard/profile");
+                  navigate('/dashboard/profile');
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
@@ -103,7 +108,7 @@ export function DashboardHeader() {
               <button
                 onClick={() => {
                   setDropdownOpen(false);
-                  navigate("/dashboard/settings");
+                  navigate('/dashboard/settings');
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >

@@ -18,6 +18,13 @@ export enum WalletTransactionType {
   TRANSFER_OUT = 'transfer_out',
 }
 
+export enum WalletTransactionStatus {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  CANCELLED = 'cancelled',
+}
+
 @Entity('wallet_transactions')
 @Index(['walletId', 'createdAt'])
 @Index(['type'])
@@ -52,6 +59,18 @@ export class WalletTransaction {
   @Column({ type: 'varchar', nullable: true })
   reference: string | null;
 
+  /** Fournisseur de paiement externe : TRANZAK, CAMPAY, etc. */
+  @Column({ type: 'varchar', nullable: true })
+  provider: string | null;
+
+  /** Identifiant de la demande chez le fournisseur. */
+  @Column({ type: 'varchar', nullable: true })
+  providerRequestId: string | null;
+
+  /** Identifiant de la transaction exécutée chez le fournisseur. */
+  @Column({ type: 'varchar', nullable: true })
+  providerTransactionId: string | null;
+
   /** Opérateur mobile money utilisé (MTN, Orange, etc.). */
   @Column({ type: 'enum', enum: LinkedAccountOperator, nullable: true })
   operator: LinkedAccountOperator | null;
@@ -63,6 +82,14 @@ export class WalletTransaction {
   /** Description lisible de l'opération. */
   @Column({ type: 'text', nullable: true })
   description: string | null;
+
+  /** Statut de la transaction (pending, completed, failed, cancelled). */
+  @Column({
+    type: 'enum',
+    enum: WalletTransactionStatus,
+    default: WalletTransactionStatus.COMPLETED,
+  })
+  status: WalletTransactionStatus;
 
   @CreateDateColumn()
   createdAt: Date;

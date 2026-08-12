@@ -1,15 +1,15 @@
-import { useState, useMemo } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useMemo } from 'react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DayEvent {
   day: number;
-  type: "collecte" | "levee" | "retard";
+  type: 'collecte' | 'levee' | 'retard';
 }
 
-const dotColor: Record<DayEvent["type"], string> = {
-  collecte: "bg-afrilink-green",
-  levee: "bg-afrilink-orange",
-  retard: "bg-red-500",
+const dotColor: Record<DayEvent['type'], string> = {
+  collecte: 'bg-afrilink-green',
+  levee: 'bg-afrilink-orange',
+  retard: 'bg-red-500',
 };
 
 function generateEvents(year: number, month: number, frequence: string): DayEvent[] {
@@ -25,12 +25,12 @@ function generateEvents(year: number, month: number, frequence: string): DayEven
   const interval = intervals[frequence] ?? daysInMonth;
 
   for (let day = 1; day <= daysInMonth; day += interval) {
-    events.push({ day, type: "collecte" });
+    events.push({ day, type: 'collecte' });
     if (day + 5 <= daysInMonth) {
-      events.push({ day: day + 5, type: "levee" });
+      events.push({ day: day + 5, type: 'levee' });
     }
     if (day + 10 <= daysInMonth) {
-      events.push({ day: day + 10, type: "retard" });
+      events.push({ day: day + 10, type: 'retard' });
     }
   }
 
@@ -38,9 +38,9 @@ function generateEvents(year: number, month: number, frequence: string): DayEven
 }
 
 function getMonthLabel(year: number, month: number): string {
-  return new Date(year, month).toLocaleDateString("fr-FR", {
-    month: "long",
-    year: "numeric",
+  return new Date(year, month).toLocaleDateString('fr-FR', {
+    month: 'long',
+    year: 'numeric',
   });
 }
 
@@ -58,7 +58,10 @@ interface ScheduleCalendarModalProps {
   frequence?: string;
 }
 
-export function ScheduleCalendarModal({ onClose, frequence = "Mensuelle" }: ScheduleCalendarModalProps) {
+export function ScheduleCalendarModal({
+  onClose,
+  frequence = 'Mensuelle',
+}: ScheduleCalendarModalProps) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -95,23 +98,35 @@ export function ScheduleCalendarModal({ onClose, frequence = "Mensuelle" }: Sche
       <div className="w-full max-w-sm rounded-2xl bg-white p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-900">Calendrier des Échéances</h3>
-          <button onClick={onClose} aria-label="Fermer" className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={onClose}
+            aria-label="Fermer"
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="flex items-center justify-between mb-3">
-          <button onClick={goToPrev} aria-label="Mois précédent" className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={goToPrev}
+            aria-label="Mois précédent"
+            className="text-gray-400 hover:text-gray-600"
+          >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-sm font-medium text-gray-800">{monthLabel}</span>
-          <button onClick={goToNext} aria-label="Mois suivant" className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={goToNext}
+            aria-label="Mois suivant"
+            className="text-gray-400 hover:text-gray-600"
+          >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
         <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-gray-400 mb-1">
-          {["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"].map((d) => (
+          {['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'].map((d) => (
             <span key={d}>{d}</span>
           ))}
         </div>
@@ -127,7 +142,7 @@ export function ScheduleCalendarModal({ onClose, frequence = "Mensuelle" }: Sche
               <div
                 key={day}
                 className={`aspect-square rounded-lg flex items-center justify-center text-xs relative ${
-                  event ? "bg-gray-50 font-medium text-gray-800" : "text-gray-600"
+                  event ? 'bg-gray-50 font-medium text-gray-800' : 'text-gray-600'
                 }`}
               >
                 {day}
@@ -158,10 +173,19 @@ export function ScheduleCalendarModal({ onClose, frequence = "Mensuelle" }: Sche
             <p className="text-xs text-gray-400 mb-2">Événements à venir</p>
             <div className="space-y-2 mb-4">
               {upcoming.map((e) => {
-                const label = e.type === "collecte" ? "Cotisation" : e.type === "levee" ? "Levée" : "Retard";
-                const color = e.type === "collecte" ? "text-afrilink-green" : e.type === "levee" ? "text-afrilink-orange" : "text-red-500";
+                const label =
+                  e.type === 'collecte' ? 'Cotisation' : e.type === 'levee' ? 'Levée' : 'Retard';
+                const color =
+                  e.type === 'collecte'
+                    ? 'text-afrilink-green'
+                    : e.type === 'levee'
+                      ? 'text-afrilink-orange'
+                      : 'text-red-500';
                 return (
-                  <div key={`${e.day}-${e.type}`} className="flex items-center justify-between text-xs">
+                  <div
+                    key={`${e.day}-${e.type}`}
+                    className="flex items-center justify-between text-xs"
+                  >
                     <span className="text-gray-600">
                       {e.day} {monthLabel}
                     </span>

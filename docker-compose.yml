@@ -13,7 +13,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-afrilinkpay} -d ${DB_DATABASE:-afrilinkpay}']
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-afrilinkpay} -d ${DB_DATABASE:-afrilinkpay}']
       interval: 10s
       timeout: 5s
       retries: 5

@@ -13,7 +13,7 @@ import {
   MoreHorizontal,
   Wallet,
   CheckCircle2,
-} from "lucide-react";
+} from 'lucide-react';
 
 const FEATURES = [
   {
@@ -23,25 +23,35 @@ const FEATURES = [
   },
   {
     icon: Users,
-    title: "Tontines digitales",
-    desc: "Créez ou rejoignez une tontine en quelques clics et gérez vos cotisations facilement.",
+    title: 'Tontines digitales',
+    desc: 'Créez ou rejoignez une tontine en quelques clics et gérez vos cotisations facilement.',
   },
   {
     icon: CreditCard,
-    title: "Paiement de services",
-    desc: "Payez vos factures (électricité, eau, internet, TV...) et bien plus encore.",
+    title: 'Paiement de services',
+    desc: 'Payez vos factures (électricité, eau, internet, TV...) et bien plus encore.',
   },
   {
     icon: BarChart3,
-    title: "Gestion de portefeuille",
-    desc: "Suivez vos transactions et gérez votre argent en toute simplicité.",
+    title: 'Gestion de portefeuille',
+    desc: 'Suivez vos transactions et gérez votre argent en toute simplicité.',
   },
 ];
 
 const TRANSACTIONS = [
-  { label: "Transfert reçu", sub: "Aujourd'hui", amount: "+50 000 XAF", color: "text-afrilink-green" },
-  { label: "Paiement facture", sub: "Hier", amount: "-15 000 XAF", color: "text-afrilink-red" },
-  { label: "Tontine - Ma famille", sub: "12 Mai", amount: "-10 000 XAF", color: "text-afrilink-red" },
+  {
+    label: 'Transfert reçu',
+    sub: "Aujourd'hui",
+    amount: '+50 000 XAF',
+    color: 'text-afrilink-green',
+  },
+  { label: 'Paiement facture', sub: 'Hier', amount: '-15 000 XAF', color: 'text-afrilink-red' },
+  {
+    label: 'Tontine - Ma famille',
+    sub: '12 Mai',
+    amount: '-10 000 XAF',
+    color: 'text-afrilink-red',
+  },
 ];
 
 export default function Features() {
@@ -62,8 +72,8 @@ export default function Features() {
             </h2>
 
             <p className="mt-4 text-foreground/60 text-base lg:text-lg leading-relaxed max-w-lg">
-              Une plateforme complète pour simplifier votre quotidien financier.
-              Envoyez, recevez, payez et gérez votre argent en toute confiance.
+              Une plateforme complète pour simplifier votre quotidien financier. Envoyez, recevez,
+              payez et gérez votre argent en toute confiance.
             </p>
 
             {/* Trust badges */}
@@ -90,7 +100,7 @@ export default function Features() {
           </div>
 
           {/* Right: phone mockup with wallet */}
-          <div className="relative animate-fade-up" style={{ animationDelay: "150ms" }}>
+          <div className="relative animate-fade-up" style={{ animationDelay: '150ms' }}>
             <div className="relative mx-auto max-w-sm">
               {/* Shield behind phone */}
               <div className="absolute -left-6 top-1/2 -translate-y-1/2 z-0">
@@ -124,7 +134,9 @@ export default function Features() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-xs text-foreground/50">Bonjour, 👋</p>
-                          <p className="text-[10px] text-foreground/40">Bienvenue sur AfriLink Pay</p>
+                          <p className="text-[10px] text-foreground/40">
+                            Bienvenue sur AfriLink Pay
+                          </p>
                         </div>
                         <div className="h-8 w-8 rounded-full bg-afrilink-dark/10 flex items-center justify-center">
                           <div className="h-6 w-6 rounded-full bg-afrilink-green/20" />
@@ -135,7 +147,13 @@ export default function Features() {
                       <div className="mt-4">
                         <p className="text-[10px] text-foreground/50 flex items-center gap-1">
                           Solde disponible
-                          <svg className="h-3 w-3 text-foreground/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg
+                            className="h-3 w-3 text-foreground/30"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
                             <circle cx="12" cy="12" r="10" />
                             <path d="M12 16v-4M12 8h.01" />
                           </svg>
@@ -149,16 +167,20 @@ export default function Features() {
                       {/* Action buttons */}
                       <div className="mt-4 grid grid-cols-4 gap-2">
                         {[
-                          { icon: ArrowUpRight, label: "Envoyer", bg: "bg-afrilink-green" },
-                          { icon: ArrowDownLeft, label: "Recevoir", bg: "bg-afrilink-dark" },
-                          { icon: Receipt, label: "Payer", bg: "bg-afrilink-dark" },
-                          { icon: MoreHorizontal, label: "Plus", bg: "bg-afrilink-dark/10" },
+                          { icon: ArrowUpRight, label: 'Envoyer', bg: 'bg-afrilink-green' },
+                          { icon: ArrowDownLeft, label: 'Recevoir', bg: 'bg-afrilink-dark' },
+                          { icon: Receipt, label: 'Payer', bg: 'bg-afrilink-dark' },
+                          { icon: MoreHorizontal, label: 'Plus', bg: 'bg-afrilink-dark/10' },
                         ].map((a) => (
                           <div key={a.label} className="flex flex-col items-center gap-1.5">
-                            <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${a.bg} transition-transform duration-200 hover:scale-105 active:scale-95`}>
+                            <span
+                              className={`flex h-10 w-10 items-center justify-center rounded-xl ${a.bg} transition-transform duration-200 hover:scale-105 active:scale-95`}
+                            >
                               <a.icon className="h-4.5 w-4.5 text-white" />
                             </span>
-                            <span className="text-[9px] text-foreground/60 font-medium">{a.label}</span>
+                            <span className="text-[9px] text-foreground/60 font-medium">
+                              {a.label}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -166,7 +188,9 @@ export default function Features() {
 
                     {/* Transactions */}
                     <div className="px-5 pb-5">
-                      <p className="text-[11px] font-semibold text-afrilink-dark mb-2">Transactions récentes</p>
+                      <p className="text-[11px] font-semibold text-afrilink-dark mb-2">
+                        Transactions récentes
+                      </p>
                       <div className="space-y-2">
                         {TRANSACTIONS.map((t) => (
                           <div key={t.label} className="flex items-center justify-between py-1.5">
@@ -175,7 +199,9 @@ export default function Features() {
                                 <Wallet className="h-3.5 w-3.5 text-afrilink-green" />
                               </span>
                               <div>
-                                <p className="text-[11px] font-medium text-afrilink-dark leading-tight">{t.label}</p>
+                                <p className="text-[11px] font-medium text-afrilink-dark leading-tight">
+                                  {t.label}
+                                </p>
                                 <p className="text-[9px] text-foreground/40">{t.sub}</p>
                               </div>
                             </div>
@@ -189,20 +215,30 @@ export default function Features() {
               </div>
 
               {/* Floating transfer success card */}
-              <div className="absolute -top-2 -right-4 lg:-right-8 z-20 animate-float" style={{ animationDelay: "0.5s" }}>
+              <div
+                className="absolute -top-2 -right-4 lg:-right-8 z-20 animate-float"
+                style={{ animationDelay: '0.5s' }}
+              >
                 <div className="bg-white rounded-xl shadow-xl px-3 py-2.5 flex items-center gap-2.5 border border-border">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-afrilink-green/10">
                     <CheckCircle2 className="h-4 w-4 text-afrilink-green" />
                   </span>
                   <div>
-                    <p className="text-[10px] font-semibold text-afrilink-dark leading-tight">Transfert réussi</p>
-                    <p className="text-[11px] font-bold text-afrilink-green leading-tight">+50 000 XAF</p>
+                    <p className="text-[10px] font-semibold text-afrilink-dark leading-tight">
+                      Transfert réussi
+                    </p>
+                    <p className="text-[11px] font-bold text-afrilink-green leading-tight">
+                      +50 000 XAF
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Dotted arc decoration */}
-              <svg className="absolute -top-4 -right-2 w-24 h-16 overflow-visible" viewBox="0 0 100 60">
+              <svg
+                className="absolute -top-4 -right-2 w-24 h-16 overflow-visible"
+                viewBox="0 0 100 60"
+              >
                 <path
                   d="M10 50 Q 50 -10, 90 30"
                   stroke="#D28E2F"
@@ -233,7 +269,8 @@ export default function Features() {
                 </h3>
                 <p className="mt-2 text-sm text-foreground/60 leading-relaxed">{f.desc}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-afrilink-dark group-hover:text-afrilink-green transition-colors duration-300">
-                  En savoir plus <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  En savoir plus{' '}
+                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </span>
               </div>
             );

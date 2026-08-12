@@ -1,4 +1,4 @@
-import { authStorage } from "@/lib/auth-storage";
+import { authStorage } from '@/lib/auth-storage';
 
 let _isRefreshing = false;
 let _failedQueue: Array<{
@@ -18,8 +18,12 @@ export const processQueue = (error: unknown, token: string | null = null) => {
 };
 
 export const isRefreshing = {
-  get value() { return _isRefreshing; },
-  set value(v: boolean) { _isRefreshing = v; },
+  get value() {
+    return _isRefreshing;
+  },
+  set value(v: boolean) {
+    _isRefreshing = v;
+  },
 };
 
 export const failedQueue = {
@@ -31,7 +35,7 @@ export const failedQueue = {
 export async function handleRefreshToken(): Promise<string> {
   const refreshToken = authStorage.getRefreshToken();
   if (!refreshToken) {
-    throw new Error("Pas de refresh token");
+    throw new Error('Pas de refresh token');
   }
 
   const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
@@ -43,7 +47,7 @@ export async function handleRefreshToken(): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error("Refresh token invalide");
+    throw new Error('Refresh token invalide');
   }
 
   const data = await response.json();

@@ -1,4 +1,3 @@
-
 export enum TontineCycleStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',

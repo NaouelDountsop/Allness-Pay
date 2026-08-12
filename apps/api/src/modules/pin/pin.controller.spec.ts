@@ -1,20 +1,21 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { PinController } from './pin.controller';
-// import { PinService } from './pin.service';
+import { Test } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { PinController } from './pin.controller';
+import { PinService } from './pin.service';
 
-// describe('PinController', () => {
-//   let controller: PinController;
+describe('PinController', () => {
+  let controller: PinController;
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [PinController],
-//       providers: [PinService],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [PinController],
+      providers: [{ provide: PinService, useValue: {} }],
+    }).compile();
 
-//     controller = module.get<PinController>(PinController);
-//   });
+    controller = module.get<PinController>(PinController);
+  });
 
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//   });
-// });
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});

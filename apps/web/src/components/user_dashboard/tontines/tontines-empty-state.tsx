@@ -1,4 +1,4 @@
-import { PiggyBank, ShieldCheck, Target, Plus } from "lucide-react";
+import { PiggyBank, ShieldCheck, Target, Plus } from 'lucide-react';
 
 interface TontinesEmptyStateProps {
   onCreate: () => void;
@@ -8,18 +8,18 @@ interface TontinesEmptyStateProps {
 const benefits = [
   {
     icon: PiggyBank,
-    title: "Épargnez ensemble",
+    title: 'Épargnez ensemble',
     description: "Mettez de l'argent de côté régulièrement et atteignez vos objectifs plus vite.",
   },
   {
     icon: ShieldCheck,
-    title: "Sécurisé et fiable",
-    description: "Vos fonds sont protégés et la gestion est transparente.",
+    title: 'Sécurisé et fiable',
+    description: 'Vos fonds sont protégés et la gestion est transparente.',
   },
   {
     icon: Target,
-    title: "Réalisez vos projets",
-    description: "Financez vos projets personnels, familiaux ou professionnels en toute sérénité.",
+    title: 'Réalisez vos projets',
+    description: 'Financez vos projets personnels, familiaux ou professionnels en toute sérénité.',
   },
 ];
 
@@ -38,8 +38,8 @@ export function TontinesEmptyState({ onCreate, onJoin }: TontinesEmptyStateProps
       <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8">
         <h2 className="text-lg font-bold text-afrilink-dark mb-2">Aucune tontine active</h2>
         <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
-          Vous n'avez pas encore rejoint ou créé de tontine. Lancez-vous et atteignez vos
-          objectifs financiers ensemble !
+          Vous n'avez pas encore rejoint ou créé de tontine. Lancez-vous et atteignez vos objectifs
+          financiers ensemble !
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
@@ -75,7 +75,8 @@ export function TontinesEmptyState({ onCreate, onJoin }: TontinesEmptyStateProps
           fonctionnement des tontines.
         </p>
 
-        <a  href="/help/tontines"
+        <a
+          href="/help/tontines"
           className="shrink-0 ml-4 h-9 px-4 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center"
         >
           Voir le guide

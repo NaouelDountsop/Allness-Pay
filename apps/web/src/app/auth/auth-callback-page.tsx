@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { authStorage } from "@/lib/auth-storage";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authStorage } from '@/lib/auth-storage';
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -8,17 +8,17 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    const accessToken = params.get("access_token");
-    const refreshToken = params.get("refresh_token");
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
 
     if (accessToken) {
       authStorage.setToken(accessToken);
       if (refreshToken) {
         authStorage.setRefreshToken(refreshToken);
       }
-      navigate("/dashboard", { replace: true });
+      navigate('/dashboard', { replace: true });
     } else {
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [navigate]);
 

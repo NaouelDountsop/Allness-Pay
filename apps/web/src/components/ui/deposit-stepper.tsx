@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { Check, ArrowLeft } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { Check, ArrowLeft } from 'lucide-react';
 
 const DEPOSIT_STEPS = [
-  { step: 1, label: "Initier le dépôt", href: "/deposit" },
-  { step: 2, label: "Demande envoyée", href: "/deposit/request-sent" },
-  { step: 3, label: "Notification utilisateur", href: "/deposit/confirm" },
-  { step: 4, label: "Traitement en cours", href: "/deposit/processing" },
-  { step: 5, label: "Dépôt réussi", href: "/deposit/success" },
+  { step: 1, label: 'Initier le dépôt', href: '/deposit' },
+  { step: 2, label: 'Demande envoyée', href: '/deposit/request-sent' },
+  { step: 3, label: 'Notification utilisateur', href: '/deposit/confirm' },
+  { step: 4, label: 'Traitement en cours', href: '/deposit/processing' },
+  { step: 5, label: 'Dépôt réussi', href: '/deposit/success' },
 ];
 
 export function DepositStepper({ current }: { current: number }) {
@@ -32,24 +32,26 @@ export function DepositStepper({ current }: { current: number }) {
                 <span
                   className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0 ${
                     isDone
-                      ? "bg-afrilink-green text-white"
+                      ? 'bg-afrilink-green text-white'
                       : isActive
-                        ? "bg-afrilink-orange text-white"
-                        : "bg-gray-100 text-gray-400"
+                        ? 'bg-afrilink-orange text-white'
+                        : 'bg-gray-100 text-gray-400'
                   }`}
                 >
                   {isDone ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : s.step}
                 </span>
                 <span
                   className={`text-[9px] sm:text-[10px] text-center max-w-[60px] sm:max-w-[90px] leading-tight hidden sm:block ${
-                    isActive ? "text-afrilink-dark font-medium" : "text-gray-400"
+                    isActive ? 'text-afrilink-dark font-medium' : 'text-gray-400'
                   }`}
                 >
                   {s.label}
                 </span>
               </div>
               {i < DEPOSIT_STEPS.length - 1 && (
-                <div className={`h-px flex-1 mx-1 sm:mx-2 mb-4 ${isDone ? "bg-afrilink-green" : "bg-gray-200"}`} />
+                <div
+                  className={`h-px flex-1 mx-1 sm:mx-2 mb-4 ${isDone ? 'bg-afrilink-green' : 'bg-gray-200'}`}
+                />
               )}
             </div>
           );

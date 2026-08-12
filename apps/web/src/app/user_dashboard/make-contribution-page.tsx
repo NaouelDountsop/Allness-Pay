@@ -1,67 +1,75 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Lock, Info, Loader2 } from "lucide-react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { z } from "zod";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, Lock, Info, Loader2 } from 'lucide-react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { z } from 'zod';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
 import {
   PaymentMethodsGrid,
   type PaymentMethod,
-} from "@/components/user_dashboard/tontines/payment-methods-grid";
-import { TontineSummaryCard } from "@/components/user_dashboard/tontines/tontine-summary-card";
-import { tontineService } from "@/lib/api/tontine.service";
+} from '@/components/user_dashboard/tontines/payment-methods-grid';
+import { TontineSummaryCard } from '@/components/user_dashboard/tontines/tontine-summary-card';
+import { tontineService } from '@/lib/api/tontine.service';
 
 const contributionSchema = z.object({
-  amount: z
-    .string()
-    .refine(
-      (val) => {
-        const num = Number(val);
-        return !isNaN(num) && num >= 100 && Number.isInteger(num);
-      },
-      "Le montant doit être un nombre entier d'au moins 100",
-    ),
-  method: z.enum(["wallet", "mtn_momo", "orange_money", "bank_transfer"]),
-  currency: z.enum(["XAF", "USD", "EUR"]),
+  amount: z.string().refine((val) => {
+    const num = Number(val);
+    return !isNaN(num) && num >= 100 && Number.isInteger(num);
+  }, "Le montant doit être un nombre entier d'au moins 100"),
+  method: z.enum(['wallet', 'mtn_momo', 'orange_money', 'bank_transfer']),
+  currency: z.enum(['XAF', 'USD', 'EUR']),
 });
 
 type ContributionFormData = z.infer<typeof contributionSchema>;
 
-const PAYMENT_TO_METHOD: Record<PaymentMethod, ContributionFormData["method"]> = {
-  wallet: "wallet",
-  card: "wallet",
-  mobile_money: "mtn_momo",
-  bank_transfer: "bank_transfer",
+const PAYMENT_TO_METHOD: Record<PaymentMethod, ContributionFormData['method']> = {
+  wallet: 'wallet',
+  card: 'wallet',
+  mobile_money: 'mtn_momo',
+  bank_transfer: 'bank_transfer',
 };
 
 const CURRENCY_OPTIONS = [
-  { value: "XAF" as const, label: "CFA" },
-  { value: "EUR" as const, label: "€ EUR" },
-  { value: "USD" as const, label: "USD" },
+  { value: 'XAF' as const, label: 'CFA' },
+  { value: 'EUR' as const, label: '€ EUR' },
+  { value: 'USD' as const, label: 'USD' },
 ];
 
 export default function MakeContributionPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [amount, setAmount] = useState("500");
-  const [method, setMethod] = useState<PaymentMethod>("wallet");
-  const [currency, setCurrency] = useState<ContributionFormData["currency"]>("XAF");
+  const [amount, setAmount] = useState('500');
+  const [method, setMethod] = useState<PaymentMethod>('wallet');
+  const [currency, setCurrency] = useState<ContributionFormData['currency']>('XAF');
 
-  const { data: tontine, isLoading, error: fetchError } = useQuery({
-    queryKey: ["tontine", id],
+  const {
+    data: tontine,
+    isLoading,
+    error: fetchError,
+  } = useQuery({
+    queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
 
-  const formValidation = contributionSchema.safeParse({ amount, method: PAYMENT_TO_METHOD[method], currency });
+  const formValidation = contributionSchema.safeParse({
+    amount,
+    method: PAYMENT_TO_METHOD[method],
+    currency,
+  });
   const isFormValid = formValidation.success;
   const fieldErrors = !isFormValid ? formValidation.error.flatten().fieldErrors : null;
 
   const contributionMutation = useMutation({
     mutationFn: () => {
-      return Promise.resolve({ tontineId: id, amount: Number(amount), method: PAYMENT_TO_METHOD[method], currency });
+      return Promise.resolve({
+        tontineId: id,
+        amount: Number(amount),
+        method: PAYMENT_TO_METHOD[method],
+        currency,
+      });
     },
   });
 
@@ -87,7 +95,7 @@ export default function MakeContributionPage() {
         <DashboardHeader />
         <div className="px-4 sm:px-8 pb-10">
           <button
-            onClick={() => navigate("/dashboard/tontines")}
+            onClick={() => navigate('/dashboard/tontines')}
             className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-1"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -100,10 +108,14 @@ export default function MakeContributionPage() {
   }
 
   const nextDueDate = tontine.nextContributionAt
-    ? new Date(tontine.nextContributionAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })
-    : "—";
+    ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : '—';
 
-  const activeMembers = tontine.members?.filter((m) => m.status === "ACTIVE").length ?? 0;
+  const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;
 
   return (
     <DashboardLayout>
@@ -139,13 +151,13 @@ export default function MakeContributionPage() {
                   onChange={(e) => setAmount(e.target.value)}
                   className={`flex-1 h-11 rounded-lg border px-3 text-sm bg-white text-gray-900 focus:outline-none focus:ring-1 ${
                     fieldErrors?.amount
-                      ? "border-red-400 focus:border-red-400 focus:ring-red-400"
-                      : "border-gray-200 focus:border-afrilink-orange focus:ring-afrilink-orange"
+                      ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
+                      : 'border-gray-200 focus:border-afrilink-orange focus:ring-afrilink-orange'
                   }`}
                 />
                 <select
                   value={currency}
-                  onChange={(e) => setCurrency(e.target.value as ContributionFormData["currency"])}
+                  onChange={(e) => setCurrency(e.target.value as ContributionFormData['currency'])}
                   className="h-11 rounded-lg border border-gray-200 px-2 text-sm bg-white text-gray-900"
                 >
                   {CURRENCY_OPTIONS.map((opt) => (
@@ -187,7 +199,7 @@ export default function MakeContributionPage() {
               ) : (
                 <Lock className="w-4 h-4" />
               )}
-              {contributionMutation.isPending ? "Versement en cours..." : "Confirmer le versement"}
+              {contributionMutation.isPending ? 'Versement en cours...' : 'Confirmer le versement'}
             </button>
           </div>
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 import {
   Users,
   ShieldAlert,
@@ -10,13 +10,11 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Send,
-} from "lucide-react";
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Badge } from "../../components/ui";
-import { adminService } from "../../lib/api/admin.service";
-
-
+} from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Badge } from '../../components/ui';
+import { adminService } from '../../lib/api/admin.service';
 
 const ACTIVITY_ICONS: Record<string, typeof RefreshCcw> = {
   deposit: ArrowDownLeft,
@@ -26,40 +24,40 @@ const ACTIVITY_ICONS: Record<string, typeof RefreshCcw> = {
   user_registered: UserPlus,
 };
 
-const ACTIVITY_TONES: Record<string, "green" | "blue" | "red" | "gray"> = {
-  deposit: "green",
-  withdrawal: "red",
-  transfer_in: "green",
-  transfer_out: "blue",
-  user_registered: "blue",
+const ACTIVITY_TONES: Record<string, 'green' | 'blue' | 'red' | 'gray'> = {
+  deposit: 'green',
+  withdrawal: 'red',
+  transfer_in: 'green',
+  transfer_out: 'blue',
+  user_registered: 'blue',
 };
 
-const ACTIVITY_TAGS: Record<string, { label: string; tone: "green" | "blue" | "red" | "gray" }> = {
-  deposit: { label: "Dépôt", tone: "green" },
-  withdrawal: { label: "Retrait", tone: "red" },
-  transfer_in: { label: "Reçu", tone: "green" },
-  transfer_out: { label: "Envoyé", tone: "blue" },
-  user_registered: { label: "Inscription", tone: "blue" },
+const ACTIVITY_TAGS: Record<string, { label: string; tone: 'green' | 'blue' | 'red' | 'gray' }> = {
+  deposit: { label: 'Dépôt', tone: 'green' },
+  withdrawal: { label: 'Retrait', tone: 'red' },
+  transfer_in: { label: 'Reçu', tone: 'green' },
+  transfer_out: { label: 'Envoyé', tone: 'blue' },
+  user_registered: { label: 'Inscription', tone: 'blue' },
 };
 
 export default function DashboardPage() {
   const { data: stats, isLoading: loadingStats } = useQuery({
-    queryKey: ["admin-dashboard-stats"],
+    queryKey: ['admin-dashboard-stats'],
     queryFn: adminService.getDashboardStats,
   });
 
   const { data: activities, isLoading: loadingActivities } = useQuery({
-    queryKey: ["admin-activities"],
+    queryKey: ['admin-activities'],
     queryFn: adminService.getRecentActivities,
   });
 
   const { data: kycPending } = useQuery({
-    queryKey: ["admin-kyc-pending"],
+    queryKey: ['admin-kyc-pending'],
     queryFn: adminService.getKycPending,
   });
 
   const { data: chartData } = useQuery({
-    queryKey: ["admin-chart-weekly"],
+    queryKey: ['admin-chart-weekly'],
     queryFn: adminService.getChartWeekly,
   });
 
@@ -75,7 +73,7 @@ export default function DashboardPage() {
     );
   }
 
-  const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+  const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   const getTimeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -125,7 +123,9 @@ export default function DashboardPage() {
             </span>
             <span className="text-sm text-gray-300">Volume Mensuel</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.monthlyVolume ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(stats?.monthlyVolume ?? 0)} XAF
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -135,7 +135,9 @@ export default function DashboardPage() {
             </span>
             <span className="text-sm text-gray-300">Liquidité Système</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalLiquidity ?? 0)} XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(stats?.totalLiquidity ?? 0)} XAF
+          </p>
           <p className="text-xs text-green-400 mt-1">Seuil: Optimal</p>
         </div>
       </div>
@@ -152,17 +154,17 @@ export default function DashboardPage() {
                 <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
                   <XAxis
                     dataKey="day"
-                    tick={{ fontSize: 10, fill: "#9ca3af" }}
+                    tick={{ fontSize: 10, fill: '#9ca3af' }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 10, fill: "#9ca3af" }}
+                    tick={{ fontSize: 10, fill: '#9ca3af' }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ borderRadius: 12, fontSize: 12, border: "1px solid #e5e7eb" }}
+                    contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e5e7eb' }}
                   />
                   <Line
                     type="monotone"
@@ -170,7 +172,7 @@ export default function DashboardPage() {
                     stroke="#006C49"
                     strokeWidth={2}
                     dot={false}
-                    activeDot={{ r: 4, fill: "#006C49" }}
+                    activeDot={{ r: 4, fill: '#006C49' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -188,8 +190,8 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-4 flex-1">
             {activities?.map((a, i) => {
               const Icon = ACTIVITY_ICONS[a.type] ?? RefreshCcw;
-              const tone = ACTIVITY_TONES[a.type] ?? "gray";
-              const tag = ACTIVITY_TAGS[a.type] ?? { label: "Autre", tone: "gray" as const };
+              const tone = ACTIVITY_TONES[a.type] ?? 'gray';
+              const tag = ACTIVITY_TAGS[a.type] ?? { label: 'Autre', tone: 'gray' as const };
               return (
                 <div key={i} className="flex items-start gap-3">
                   <span className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
@@ -197,7 +199,9 @@ export default function DashboardPage() {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-afrilink-dark truncate">{a.title}</p>
-                    <p className="text-[11px] text-gray-400">{a.meta} · {getTimeAgo(a.createdAt)}</p>
+                    <p className="text-[11px] text-gray-400">
+                      {a.meta} · {getTimeAgo(a.createdAt)}
+                    </p>
                   </div>
                   <Badge tone={tone}>{tag.label}</Badge>
                 </div>
@@ -233,18 +237,21 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-afrilink-dark truncate">{kyc.userName}</p>
-                  <p className="text-[11px] text-gray-400">{kyc.documentType ?? 'KYC'} · {getTimeAgo(kyc.createdAt)}</p>
+                  <p className="text-[11px] text-gray-400">
+                    {kyc.documentType ?? 'KYC'} · {getTimeAgo(kyc.createdAt)}
+                  </p>
                 </div>
-                <a href="/admin/kyc" className="text-[11px] text-afrilink-green font-medium hover:underline shrink-0">
+                <a
+                  href="/admin/kyc"
+                  className="text-[11px] text-afrilink-green font-medium hover:underline shrink-0"
+                >
                   Vérifier
                 </a>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-400">
-            Aucune demande KYC en attente.
-          </p>
+          <p className="text-xs text-gray-400">Aucune demande KYC en attente.</p>
         )}
       </div>
     </AdminLayout>

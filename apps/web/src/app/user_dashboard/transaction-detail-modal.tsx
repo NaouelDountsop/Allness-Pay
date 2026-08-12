@@ -1,14 +1,14 @@
-import { X, Wallet, MapPin, History, CheckCircle2 } from "lucide-react";
-import { Badge } from "../../components/ui";
-import { SectionCard, Field } from "../../components/ui/section-card";
-import type { WalletTransaction } from "../../lib/api/transaction.service";
-import { transactionService } from "../../lib/api/transaction.service";
+import { X, Wallet, MapPin, History, CheckCircle2 } from 'lucide-react';
+import { Badge } from '../../components/ui';
+import { SectionCard, Field } from '../../components/ui/section-card';
+import type { WalletTransaction } from '../../lib/api/transaction.service';
+import { transactionService } from '../../lib/api/transaction.service';
 
 const STATUS_TONE = {
-  deposit: "green" as const,
-  withdrawal: "green" as const,
-  transfer_in: "green" as const,
-  transfer_out: "orange" as const,
+  deposit: 'green' as const,
+  withdrawal: 'green' as const,
+  transfer_in: 'green' as const,
+  transfer_out: 'orange' as const,
 };
 
 export function TransactionDetailModal({
@@ -21,9 +21,9 @@ export function TransactionDetailModal({
   onClose: () => void;
 }) {
   const credit = transactionService.isCredit(transaction.type);
-  const tone = STATUS_TONE[transaction.type] ?? "orange";
+  const tone = STATUS_TONE[transaction.type] ?? 'orange';
   const date = new Date(transaction.createdAt);
-  const formattedAmount = new Intl.NumberFormat("fr-FR").format(transaction.amount);
+  const formattedAmount = new Intl.NumberFormat('fr-FR').format(transaction.amount);
 
   return (
     <div
@@ -43,9 +43,9 @@ export function TransactionDetailModal({
           <div className="relative z-10">
             <p className="text-white text-lg font-bold mb-1.5">Détail de la transaction</p>
             <p className="text-white/50 text-[11px] mb-3">
-              {date.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}
-              {" à "}
-              {date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+              {date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              {' à '}
+              {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
             </p>
             <Badge tone={tone} dot>
               {transactionService.getTypeLabel(transaction.type)}
@@ -63,8 +63,8 @@ export function TransactionDetailModal({
         {/* Montant en avant */}
         <div className="px-6 py-5 border-b border-gray-100 shrink-0">
           <p className="text-[11px] text-gray-400 mb-1">Montant</p>
-          <p className={`text-3xl font-bold ${credit ? "text-afrilink-green" : "text-gray-900"}`}>
-            {credit ? "+" : "-"} {formattedAmount}{" "}
+          <p className={`text-3xl font-bold ${credit ? 'text-afrilink-green' : 'text-gray-900'}`}>
+            {credit ? '+' : '-'} {formattedAmount}{' '}
             <span className="text-base font-medium text-gray-400">{currency}</span>
           </p>
         </div>
@@ -78,7 +78,7 @@ export function TransactionDetailModal({
                 label="Référence"
                 value={transaction.reference ?? transaction.id.slice(0, 8)}
               />
-              <Field label="Description" value={transaction.description ?? "—"} />
+              <Field label="Description" value={transaction.description ?? '—'} />
             </div>
           </SectionCard>
 
@@ -87,7 +87,7 @@ export function TransactionDetailModal({
               <Field label="Portefeuille" value={transaction.walletId.slice(0, 8)} />
               <Field
                 label="Portefeuille lié"
-                value={transaction.relatedWalletId?.slice(0, 8) ?? "—"}
+                value={transaction.relatedWalletId?.slice(0, 8) ?? '—'}
               />
             </div>
           </SectionCard>
@@ -99,7 +99,7 @@ export function TransactionDetailModal({
                 <div>
                   <p className="text-xs font-medium text-afrilink-dark">Transaction créée</p>
                   <p className="text-[11px] text-gray-500">
-                    {date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               </div>

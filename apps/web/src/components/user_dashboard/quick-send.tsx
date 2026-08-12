@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, Plus, ChevronDown, Check } from "lucide-react";
-import type { QuickContact } from "@/lib/mock/dashboard-data";
+import { useState, useRef, useEffect } from 'react';
+import { Send, Plus, ChevronDown, Check } from 'lucide-react';
+import type { QuickContact } from '@/lib/mock/dashboard-data';
 
 interface QuickSendProps {
   contacts: QuickContact[];
 }
 
-const CURRENCIES = ["USD", "XAF", "EUR"];
+const CURRENCIES = ['USD', 'XAF', 'EUR'];
 
 export function QuickSend({ contacts }: QuickSendProps) {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -20,8 +20,8 @@ export function QuickSend({ contacts }: QuickSendProps) {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -51,9 +51,7 @@ export function QuickSend({ contacts }: QuickSendProps) {
                 c.name.charAt(0)
               )}
             </div>
-            <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">
-              {c.name}
-            </span>
+            <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">{c.name}</span>
           </button>
         ))}
         <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
@@ -90,7 +88,7 @@ export function QuickSend({ contacts }: QuickSendProps) {
             {currency}
             <ChevronDown
               className={`w-4 h-4 text-[#082B37]/50 transition-transform ${
-                open ? "rotate-180" : ""
+                open ? 'rotate-180' : ''
               }`}
             />
           </button>

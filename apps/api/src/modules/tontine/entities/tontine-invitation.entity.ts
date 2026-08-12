@@ -31,7 +31,11 @@ export class TontineInvitation {
   @Column({ type: 'varchar', length: 100, unique: true })
   token: string;
 
-  @Column({ type: 'enum', enum: ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED'], default: 'PENDING' })
+  @Column({
+    type: 'enum',
+    enum: ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED'],
+    default: 'PENDING',
+  })
   status: string;
 
   @Column({ type: 'timestamptz' })

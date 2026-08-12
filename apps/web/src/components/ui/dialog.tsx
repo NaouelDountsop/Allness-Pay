@@ -1,6 +1,6 @@
-import * as React from "react";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DialogProps {
   open: boolean;
@@ -12,13 +12,13 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   React.useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onOpenChange(false);
+      if (e.key === 'Escape') onOpenChange(false);
     };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
+    document.addEventListener('keydown', onKeyDown);
+    document.body.style.overflow = 'hidden';
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = '';
     };
   }, [open, onOpenChange]);
 
@@ -48,7 +48,7 @@ export function DialogContent({
       role="dialog"
       aria-modal="true"
       className={cn(
-        "relative z-10 w-full max-w-lg rounded-[1.75rem] bg-white p-6 shadow-xl",
+        'relative z-10 w-full max-w-lg rounded-[1.75rem] bg-white p-6 shadow-xl',
         className,
       )}
     >
@@ -70,9 +70,7 @@ export function DialogDescription({ children }: { children: React.ReactNode }) {
 }
 
 export function DialogFooter({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-6 flex justify-end gap-3">{children}</div>
-  );
+  return <div className="mt-6 flex justify-end gap-3">{children}</div>;
 }
 
 export function DialogClose({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {

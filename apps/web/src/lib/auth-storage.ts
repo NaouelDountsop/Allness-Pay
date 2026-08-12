@@ -1,8 +1,8 @@
-import { setAccessTokenProvider } from "@/lib/api-client";
+import { setAccessTokenProvider } from '@/lib/api-client';
 
-const TOKEN_KEY = "afrilink_access_token";
-const REFRESH_TOKEN_KEY = "afrilink_refresh_token";
-const ROLE_KEY = "afrilink_role";
+const TOKEN_KEY = 'afrilink_access_token';
+const REFRESH_TOKEN_KEY = 'afrilink_refresh_token';
+const ROLE_KEY = 'afrilink_role';
 
 export const authStorage = {
   getToken: (): string | null => sessionStorage.getItem(TOKEN_KEY),

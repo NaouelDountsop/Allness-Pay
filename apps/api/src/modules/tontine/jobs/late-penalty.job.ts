@@ -30,9 +30,7 @@ export class LatePenaltyJob {
       relations: ['cycle'],
     });
 
-    this.logger.log(
-      `${overdueContributions.length} contributions en retard détectées`,
-    );
+    this.logger.log(`${overdueContributions.length} contributions en retard détectées`);
 
     for (const contribution of overdueContributions) {
       contribution.status = TontineContributionStatus.LATE;

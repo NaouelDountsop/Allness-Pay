@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { X, Fingerprint, Phone, MapPin, ShieldCheck } from "lucide-react";
-import { Avatar, Badge, Tabs } from "../../components/ui";
-import { Field, SectionCard } from "../../components/ui/section-card";
+import { useState } from 'react';
+import { X, Fingerprint, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import { Avatar, Badge, Tabs } from '../../components/ui';
+import { Field, SectionCard } from '../../components/ui/section-card';
 
 export function UserDetailPanel({ onClose }: { onClose: () => void }) {
-  const [tab, setTab] = useState("Informations Personnelles");
+  const [tab, setTab] = useState('Informations Personnelles');
 
   return (
     <div className="fixed inset-0 z-30 bg-black/40 flex items-center justify-center p-4">
@@ -24,13 +24,17 @@ export function UserDetailPanel({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
             </div>
-            <button onClick={onClose} className="text-gray-300 hover:text-gray-500" aria-label="Fermer">
+            <button
+              onClick={onClose}
+              className="text-gray-300 hover:text-gray-500"
+              aria-label="Fermer"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           <Tabs
-            tabs={["Informations Personnelles", "Portefeuilles", "Activité Récente"]}
+            tabs={['Informations Personnelles', 'Portefeuilles', 'Activité Récente']}
             active={tab}
             onChange={setTab}
           />

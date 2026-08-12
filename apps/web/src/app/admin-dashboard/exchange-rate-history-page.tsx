@@ -1,15 +1,55 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
-import { AdminLayout } from "../../components/admin-dashboard/admin-layout";
-import { Pagination } from "../../components/ui";
-import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Download, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
+import { Pagination } from '../../components/ui';
+import { useState } from 'react';
 
 const HISTORY = [
-  { date: "30/07/2026 10:45", old: "605.10", next: "607.25", change: "+0.35%", up: true, by: "Bloomberg", user: "Système" },
-  { date: "29/07/2026 09:30", old: "608.45", next: "605.10", change: "-0.55%", up: false, by: "Bloomberg", user: "Système" },
-  { date: "28/07/2026 10:45", old: "607.60", next: "608.45", change: "+0.14%", up: true, by: "Bloomberg", user: "Système" },
-  { date: "27/07/2026 10:45", old: "607.10", next: "607.60", change: "+0.08%", up: true, by: "Bloomberg", user: "Système" },
-  { date: "26/07/2026 10:45", old: "608.90", next: "607.10", change: "-0.30%", up: false, by: "Manuel", user: "M. Traoré" },
+  {
+    date: '30/07/2026 10:45',
+    old: '605.10',
+    next: '607.25',
+    change: '+0.35%',
+    up: true,
+    by: 'Bloomberg',
+    user: 'Système',
+  },
+  {
+    date: '29/07/2026 09:30',
+    old: '608.45',
+    next: '605.10',
+    change: '-0.55%',
+    up: false,
+    by: 'Bloomberg',
+    user: 'Système',
+  },
+  {
+    date: '28/07/2026 10:45',
+    old: '607.60',
+    next: '608.45',
+    change: '+0.14%',
+    up: true,
+    by: 'Bloomberg',
+    user: 'Système',
+  },
+  {
+    date: '27/07/2026 10:45',
+    old: '607.10',
+    next: '607.60',
+    change: '+0.08%',
+    up: true,
+    by: 'Bloomberg',
+    user: 'Système',
+  },
+  {
+    date: '26/07/2026 10:45',
+    old: '608.90',
+    next: '607.10',
+    change: '-0.30%',
+    up: false,
+    by: 'Manuel',
+    user: 'M. Traoré',
+  },
 ];
 
 export default function ExchangeRateHistoryPage() {
@@ -21,7 +61,7 @@ export default function ExchangeRateHistoryPage() {
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
           <button
-            onClick={() => navigate("/admin/taux-de-change")}
+            onClick={() => navigate('/admin/taux-de-change')}
             className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -67,10 +107,14 @@ export default function ExchangeRateHistoryPage() {
                 <td>
                   <span
                     className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
-                      h.up ? "text-green-600" : "text-red-500"
+                      h.up ? 'text-green-600' : 'text-red-500'
                     }`}
                   >
-                    {h.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    {h.up ? (
+                      <TrendingUp className="w-3 h-3" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3" />
+                    )}
                     {h.change}
                   </span>
                 </td>
