@@ -6,8 +6,8 @@ import { tontineService } from '@/lib/api/tontine.service';
 
 interface InvitationsListProps {
   invitations: TontineInvitation[];
-  onAccept?: (invitationId: number) => void;
-  onDecline?: (invitationId: number) => void;
+  onAccept?: (invitationId: string) => void;
+  onDecline?: (invitationId: string) => void;
 }
 
 function InvitationUser({ userId }: { userId?: number }) {
@@ -27,10 +27,10 @@ function InvitationUser({ userId }: { userId?: number }) {
   );
 }
 
-function InvitationTontine({ tontineId }: { tontineId: number }) {
+function InvitationTontine({ tontineId }: { tontineId: string }) {
   const { data: tontine } = useQuery({
     queryKey: ['tontine', tontineId],
-    queryFn: () => tontineService.getById(String(tontineId)),
+    queryFn: () => tontineService.getById(tontineId),
   });
 
   if (!tontine) return <span className="animate-pulse">Chargement...</span>;

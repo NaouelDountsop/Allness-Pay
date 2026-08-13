@@ -125,22 +125,10 @@ export class TontineController {
     return this.tontineService.leave(id, req.user.sub);
   }
 
-  @Post(':id/invitations')
-  @ApiOperation({ summary: 'Envoyer une invitation à rejoindre la tontine' })
-  @ApiParam({ name: 'id', type: String })
-  createInvitation(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: AuthenticatedRequest,
-    @Body() dto: CreateInvitationDto,
-  ) {
-    return this.invitationService.create(id, req.user.sub, dto);
-  }
-
-  @Get(':id/invitations')
-  @ApiOperation({ summary: "Lister les invitations d'une tontine" })
-  @ApiParam({ name: 'id', type: String })
-  listInvitations(@Param('id', ParseUUIDPipe) id: string) {
-    return this.invitationService.findByTontine(id);
+  @Get('invitations/pending')
+  @ApiOperation({ summary: "Lister les invitations en attente de l'utilisateur" })
+  listPendingInvitations(@Req() req: AuthenticatedRequest) {
+    return this.invitationService.findPendingByUserId(req.user.sub);
   }
 
   @Post('invitations/:invitationId/respond')
@@ -160,5 +148,23 @@ export class TontineController {
   @ApiOperation({ summary: 'Accepter une invitation par token (lien email)' })
   acceptByToken(@Req() req: AuthenticatedRequest, @Body('token') token: string) {
     return this.invitationService.acceptByToken(token, req.user.sub);
+  }
+
+  @Post(':id/invitations')
+  @ApiOperation({ summary: 'Envoyer une invitation à rejoindre la tontine' })
+  @ApiParam({ name: 'id', type: String })
+  createInvitation(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateInvitationDto,
+  ) {
+    return this.invitationService.create(id, req.user.sub, dto);
+  }
+
+  @Get(':id/invitations')
+  @ApiOperation({ summary: "Lister les invitations d'une tontine" })
+  @ApiParam({ name: 'id', type: String })
+  listInvitations(@Param('id', ParseUUIDPipe) id: string) {
+    return this.invitationService.findByTontine(id);
   }
 }

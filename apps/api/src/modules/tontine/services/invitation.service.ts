@@ -128,6 +128,10 @@ export class InvitationService {
       throw new ForbiddenException('Cette invitation ne vous est pas destinée');
     }
 
+    if (!invitation.inviteeUserId) {
+      invitation.inviteeUserId = userId;
+    }
+
     if (dto.response === InvitationResponse.DECLINE) {
       invitation.status = 'DECLINED';
       await this.invitationRepo.save(invitation);
@@ -175,9 +179,27 @@ export class InvitationService {
   }
 
   async findPendingByUserId(userId: number): Promise<TontineInvitation[]> {
-    return this.invitationRepo.find({
+    const user = await this.userRepo.findOne({ where: { idutilisateur: userId } });
+    const email = user?.email;
+
+    const byUserId = await this.invitationRepo.find({
       where: { inviteeUserId: userId, status: 'PENDING' },
       order: { createdAt: 'DESC' },
+    });
+
+    if (!email) return byUserId;
+
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email, status: 'PENDING' },
+      order: { createdAt: 'DESC' },
+    });
+
+    const all = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return all.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
     });
   }
 

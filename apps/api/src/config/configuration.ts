@@ -66,12 +66,21 @@ export const providersConfig = registerAs('providers', () => ({
     callbackUrl:
       process.env.GOOGLE_CALLBACK_URL ?? 'http://localhost:3000/api/v1/auth/google/callback',
   },
+  // tranzak: {
+  //   baseUrl: process.env.TRANZAK_BASE_URL ?? '',
+  //   appId: process.env.TRANZAK_APP_ID ?? '',
+  //   appKey: process.env.TRANZAK_APP_KEY ?? '',
+  //   callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+  // },
+
   tranzak: {
-    baseUrl: process.env.TRANZAK_BASE_URL ?? '',
-    appId: process.env.TRANZAK_APP_ID ?? '',
-    appKey: process.env.TRANZAK_APP_KEY ?? '',
-    callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
-  },
+  baseUrl: process.env.TRANZAK_BASE_URL ?? '',
+  appId: process.env.TRANZAK_APP_ID ?? '',
+  appKey: process.env.TRANZAK_APP_KEY ?? '',
+  callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+  returnUrl: process.env.TRANZAK_RETURN_URL ?? '',
+},
+
 }));
 
 export const mailConfig = registerAs('mail', () => ({

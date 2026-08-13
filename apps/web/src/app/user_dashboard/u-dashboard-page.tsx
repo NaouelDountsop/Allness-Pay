@@ -9,7 +9,7 @@ import { MonthlySummary } from '@/components/user_dashboard/spending-charts';
 import {
   mockMonthlyTrend,
   mockMonthlySummaryHeader,
-} from '@/components/user_dashboard//mock-monthly-trend';
+} from '@/components/user_dashboard/mock-monthly-trend';
 import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { mockContacts } from '@/lib/mock/dashboard-data';
 import { walletService } from '@/lib/api/wallet.service';
@@ -18,9 +18,14 @@ import { kycService } from '@/lib/api/kyc.service';
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
 export default function DashboardPage() {
-  const { data: wallet, isLoading: walletLoading } = useQuery({
+  const {
+    data: wallet,
+    isLoading: walletLoading,
+    isError: walletError,
+  } = useQuery({
     queryKey: ['wallet-primary'],
     queryFn: walletService.getPrimary,
+    retry: 1,
   });
 
   const { data: kyc } = useQuery({
@@ -34,6 +39,25 @@ export default function DashboardPage() {
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
           <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (walletError) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <p className="text-sm text-gray-500">
+            Impossible de charger votre portefeuille.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="h-10 px-6 rounded-lg bg-afrilink-orange text-white text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Réessayer
+          </button>
         </div>
       </DashboardLayout>
     );
