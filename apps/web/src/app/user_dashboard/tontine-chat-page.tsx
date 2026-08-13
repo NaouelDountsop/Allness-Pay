@@ -559,14 +559,10 @@ function TontineAboutPanel({
         </div>
         <div className="mt-1 divide-y divide-gray-50">
           {(members ?? MEMBERS).map((m) => {
-            const memberName = "user" in m && m.user
-              ? `${m.user?.prenom ?? ""} ${m.user?.nom ?? ""}`.trim() || `Membre ${m.id}`
-              : "name" in m
-                ? (m as Member).name
-                : `Membre ${m.id}`;
+            const hasUserProp = "user" in m && m.user;
             const mapped: Member = {
               id: String(m.id),
-              name: hasUser
+              name: hasUserProp
                 ? `${(m as TontineMember).user?.prenom ?? ''} ${(m as TontineMember).user?.nom ?? ''}`.trim() ||
                   `Membre ${m.id}`
                 : (('name' in m ? (m as Member).name : `Membre ${m.id}`) ?? `Membre ${m.id}`),

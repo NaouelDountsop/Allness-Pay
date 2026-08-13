@@ -36,6 +36,16 @@ export default function DashboardPage() {
     enabled: !!wallet?.id,
   });
 
+  const totalIncome = transactions.reduce((sum, t) => {
+    const credit = transactionService.isCredit(t.type);
+    return credit ? sum + Number(t.amount) : sum;
+  }, 0);
+
+  const totalExpense = transactions.reduce((sum, t) => {
+    const credit = transactionService.isCredit(t.type);
+    return credit ? sum : sum + Number(t.amount);
+  }, 0);
+
   if (walletLoading) {
     return (
       <DashboardLayout>
@@ -77,7 +87,7 @@ export default function DashboardPage() {
                       ENTRÉES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">+{formatNumber(0)}</span>{' '}
+                      <span className="text-white">+{formatNumber(totalIncome)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -89,7 +99,7 @@ export default function DashboardPage() {
                       SORTIES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">-{formatNumber(0)}</span>{' '}
+                      <span className="text-white">-{formatNumber(totalExpense)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -97,7 +107,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <TransactionsList transactions={[]} />
+            <TransactionsList transactions={transactions} isLoading={txLoading} />
           </div>
 
           <div className="space-y-6">

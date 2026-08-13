@@ -4,10 +4,8 @@ import {
   Wallet,
   ShieldCheck,
   CheckCircle,
-  ChevronDown,
   Download,
   Eye,
-  //AlertTriangle,
   Loader2,
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
@@ -31,10 +29,11 @@ export default function TransactionsPage() {
     enabled: !!wallet?.id,
   });
 
-  const totalVolume =
+ const totalVolume =
     transactions?.reduce((sum, t) => {
       const credit = transactionService.isCredit(t.type);
-      return credit ? sum + t.amount : sum - t.amount;
+      const amount = Number(t.amount);
+      return credit ? sum + amount : sum - amount;
     }, 0) ?? 0;
 
   const completedCount = transactions?.length ?? 0;
@@ -55,8 +54,21 @@ export default function TransactionsPage() {
       <DashboardHeader />
 
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-1">Transactions</h1>
-        <p className="text-sm text-gray-400 mb-6">Consultez l'historique de vos transactions.</p>
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Transactions</h1>
+            <p className="text-sm text-gray-400">Consultez l'historique de vos transactions.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="group relative h-9 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center justify-center sm:px-4 px-0 w-9 sm:w-auto hover:opacity-90 transition-opacity">
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline ml-2">Exporter</span>
+              <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                Exporter
+              </span>
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
           <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -95,33 +107,23 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 mb-5">
-          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-                Type
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-                Statut
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
-              <Download className="w-3.5 h-3.5" />
-              Exporter
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-afrilink-dark">Historique</h3>
+            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
+              Filtres
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full text-sm min-w-[480px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                  <th className="font-medium pb-3">Utilisateur / Référence</th>
-                  <th className="font-medium pb-3">Type</th>
+                  <th className="font-medium pb-3">Référence</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">Type</th>
                   <th className="font-medium pb-3">Montant</th>
-                  <th className="font-medium pb-3">Statut</th>
-                  <th className="font-medium pb-3">Date</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">Statut</th>
+                  <th className="font-medium pb-3 hidden lg:table-cell">Date</th>
                   <th className="font-medium pb-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -131,12 +133,9 @@ export default function TransactionsPage() {
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
-                        <p className="text-xs font-medium text-afrilink-dark">{t.reference}</p>
-                        <p className="text-[11px] text-gray-400 truncate max-w-[200px]">
-                          {t.description}
-                        </p>
+                        <p className="text-xs font-medium text-afrilink-dark truncate max-w-[140px]">{t.reference}</p>
                       </td>
-                      <td className="text-xs text-gray-600">
+                      <td className="text-xs text-gray-600 hidden sm:table-cell">
                         {transactionService.getTypeLabel(t.type)}
                       </td>
                       <td
@@ -144,7 +143,7 @@ export default function TransactionsPage() {
                       >
                         {credit ? '+' : '-'} {new Intl.NumberFormat('fr-FR').format(t.amount)} XAF
                       </td>
-                      <td>
+                      <td className="hidden md:table-cell">
                         <Badge
                           tone={
                             t.status === 'completed'
@@ -162,7 +161,7 @@ export default function TransactionsPage() {
                               : 'Échoué'}
                         </Badge>
                       </td>
-                      <td className="text-xs text-gray-500">
+                      <td className="text-xs text-gray-500 hidden lg:table-cell">
                         {new Date(t.createdAt).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'short',

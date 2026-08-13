@@ -32,6 +32,7 @@ export function WalletActions() {
             onClick={() => {
               if (key === 'deposit') navigate('/deposit');
               else if (key === 'transfer') setShowTransferMenu((v) => !v);
+              else if (key === 'pay') navigate('/dashboard/payments');
             }}
             className="flex flex-col items-center gap-1.5"
           >

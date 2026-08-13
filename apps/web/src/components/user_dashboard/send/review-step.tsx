@@ -1,6 +1,15 @@
-import { EXCHANGE_RATE_CAD_XAF, mockRecentTransfers } from '@/lib/mock/send-money-data';
+import { useQuery } from '@tanstack/react-query';
+import { getExchangeRate, CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
 import { getCountryByCode, getFlagUrl } from '@/data/countries';
-import { Info, ArrowLeft } from 'lucide-react';
+import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
+import { Info, ArrowLeft, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+
+const COUNTRY_TO_CURRENCY: Record<string, string> = {
+  CM: 'XAF', SN: 'XAF', CI: 'XOF', GA: 'XAF', CG: 'XAF', CD: 'CDF',
+  NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XAF', BJ: 'XOF', GN: 'GNF',
+  RW: 'RWF', KE: 'KES', GH: 'GHS', NG: 'NGN', ZA: 'ZAR',
+  FR: 'EUR', CA: 'CAD', US: 'USD', GB: 'GBP',
+};
 
 interface ReviewStepProps {
   beneficiaryContact: string;
@@ -10,6 +19,14 @@ interface ReviewStepProps {
   amount: number;
   onSend: () => void;
   onBack: () => void;
+  sender?: {
+    fullName: string;
+    city?: string;
+    country?: string;
+    currency?: string;
+    walletId?: string;
+  };
+  beneficiaryName?: string;
 }
 
 const RECEPTION_LABELS: Record<string, string> = {
@@ -19,15 +36,6 @@ const RECEPTION_LABELS: Record<string, string> = {
   bank: 'Compte bancaire',
 };
 
-interface ReviewStepProps {
-  beneficiaryContact: string;
-  senderCountryCode: string;
-  countryCode: string;
-  amount: number;
-  onSend: () => void;
-  onBack: () => void;
-}
-
 export function ReviewStep({
   beneficiaryContact,
   senderCountryCode,
@@ -36,28 +44,29 @@ export function ReviewStep({
   amount,
   onSend,
   onBack,
+  sender,
+  beneficiaryName,
 }: ReviewStepProps) {
-  const received = amount * EXCHANGE_RATE_CAD_XAF;
+  const senderCurrency = sender?.currency ?? 'CAD';
+  const receiverCurrency = COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF';
+  const exchangeRate = getExchangeRate(senderCurrency, receiverCurrency);
+  const fees = amount * 0.01;
+  const totalDebit = amount + fees;
+  const received = amount * exchangeRate;
+
   const senderCountry = getCountryByCode(senderCountryCode);
-  const senderCountryName = senderCountry?.name?.toUpperCase() ?? 'EXPÉDITEUR';
+  const senderCountryName = senderCountry?.name ?? 'Expéditeur';
   const country = getCountryByCode(countryCode);
-  const countryName = country?.name?.toUpperCase() ?? 'PAYS INCONNU';
-  const currency =
-    countryCode === 'CM' || countryCode === 'GA' || countryCode === 'CG' || countryCode === 'CD'
-      ? 'XAF'
-      : countryCode === 'SN' ||
-          countryCode === 'CI' ||
-          countryCode === 'NE' ||
-          countryCode === 'ML' ||
-          countryCode === 'BF' ||
-          countryCode === 'TG' ||
-          countryCode === 'BJ'
-        ? 'XOF'
-        : countryCode === 'FR'
-          ? 'EUR'
-          : countryCode === 'US' || countryCode === 'CA'
-            ? 'USD'
-            : 'XAF';
+  const countryName = country?.name ?? 'Pays inconnu';
+
+  const { data: recentTransactions = [] } = useQuery({
+    queryKey: ['transactions-review', sender?.walletId],
+    queryFn: () => transactionService.listByWallet(sender!.walletId!),
+    enabled: !!sender?.walletId,
+    retry: false,
+  });
+
+  const lastFive = recentTransactions.slice(0, 5);
 
   return (
     <div className="text-base">
@@ -87,18 +96,22 @@ export function ReviewStep({
               <img
                 src={getFlagUrl(senderCountry.code)}
                 alt={senderCountry.name}
-                className="w-8 h-auto rounded-sm object-cover"
+                className="w-8 h-6 rounded-sm object-cover"
               />
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
                 Expéditeur
               </p>
-              <p className="text-sm text-gray-500">{senderCountryName}</p>
+              <p className="text-sm font-medium text-gray-700">{senderCountryName}</p>
             </div>
           </div>
-          <p className="text-lg font-semibold text-gray-800">Jean Dupont</p>
-          <p className="text-sm text-gray-500">CAD · Toronto, ON</p>
+          <p className="text-lg font-semibold text-gray-800">
+            {sender?.fullName ?? 'Utilisateur'}
+          </p>
+          <p className="text-sm text-gray-500">
+            {senderCurrency} · {sender?.city ?? ''}
+          </p>
         </div>
 
         {/* Bénéficiaire */}
@@ -108,20 +121,23 @@ export function ReviewStep({
               <img
                 src={getFlagUrl(country.code)}
                 alt={country.name}
-                className="w-8 h-auto rounded-sm object-cover"
+                className="w-8 h-6 rounded-sm object-cover"
               />
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
                 Bénéficiaire
               </p>
-              <p className="text-sm text-gray-500">{countryName}</p>
+              <p className="text-sm font-medium text-gray-700">{countryName}</p>
             </div>
           </div>
           <p className="text-lg font-semibold text-gray-800">
-            {beneficiaryContact || 'Marie-Thérèse Ngono'}
+            {beneficiaryName || beneficiaryContact || 'Bénéficiaire'}
           </p>
-          <p className="text-sm text-gray-500">{currency}</p>
+          {beneficiaryName && beneficiaryContact && (
+            <p className="text-sm text-gray-500">{beneficiaryContact}</p>
+          )}
+          <p className="text-sm text-gray-500">{receiverCurrency}</p>
         </div>
       </div>
 
@@ -135,28 +151,45 @@ export function ReviewStep({
         </p>
       </div>
 
+      {/* Vous envoyez */}
       <div className="mb-4">
         <p className="text-sm text-gray-500 mb-1">Vous envoyez</p>
-        <p className="text-2xl md:text-3xl font-bold text-gray-800">{amount.toFixed(2)} CAD</p>
+        <p className="text-2xl md:text-3xl font-bold text-gray-800">
+          {new Intl.NumberFormat('fr-FR').format(amount)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+        </p>
       </div>
 
-      <div className="space-y-3 mb-6 text-base">
-        <div className="flex items-center justify-between text-gray-600">
+      {/* Taux + Frais + Total */}
+      <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 mb-4 space-y-3">
+        <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Taux de change</span>
-          <span>
-            1 CAD = {EXCHANGE_RATE_CAD_XAF.toFixed(2)} {currency}
+          <span className="text-afrilink-dark font-semibold">
+            1 {senderCurrency} = {exchangeRate.toFixed(4)} {receiverCurrency}
           </span>
         </div>
-        <div className="flex items-center justify-between text-gray-600">
-          <span className="font-medium">Frais de transfert (AfriLink Pay)</span>
-          <span className="text-afrilink-green font-semibold">Gratuit (Promo)</span>
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span className="font-medium">Frais de transfert (1%)</span>
+          <span className="text-afrilink-dark font-semibold">
+            {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+          </span>
+        </div>
+        <div className="border-t border-gray-200 pt-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-afrilink-dark">Total débité</span>
+            <span className="text-xl font-bold text-afrilink-dark">
+              {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl bg-afrilink-dark text-white px-5 py-4 mb-6">
-        <span className="text-base font-medium">Le bénéficiaire reçoit</span>
-        <span className="text-2xl font-bold">
-          {new Intl.NumberFormat('fr-FR').format(received)} {currency}
+      {/* Le bénéficiaire reçoit — design cohérent avec les autres pages */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-[#082B37] text-white px-5 py-4 mb-6">
+        <span className="text-sm sm:text-base font-medium text-white/80">
+          Le bénéficiaire reçoit
+        </span>
+        <span className="text-xl sm:text-2xl font-bold text-[#D28E2F]">
+          {new Intl.NumberFormat('fr-FR').format(received)} {receiverCurrency}
         </span>
       </div>
 
@@ -167,37 +200,46 @@ export function ReviewStep({
         Envoyer
       </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Transferts récents — données réelles */}
+      {lastFive.length > 0 && (
         <div className="rounded-xl border border-gray-100 p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-3">Transferts Récents</p>
+          <p className="text-sm font-semibold text-gray-800 mb-3">Transferts récents</p>
           <ul className="space-y-2">
-            {mockRecentTransfers.map((t) => (
-              <li key={t.id} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-medium text-gray-500">
-                    {t.name.charAt(0)}
-                  </span>
-                  <div>
-                    <p className="text-gray-700">{t.name}</p>
-                    <p className="text-gray-400">{t.location}</p>
+            {lastFive.map((t: WalletTransaction) => {
+              const credit = transactionService.isCredit(t.type);
+              return (
+                <li key={t.id} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      credit ? 'bg-green-50' : 'bg-red-50'
+                    }`}>
+                      {credit ? (
+                        <ArrowDownLeft className="w-3 h-3 text-afrilink-green" />
+                      ) : (
+                        <ArrowUpRight className="w-3 h-3 text-red-500" />
+                      )}
+                    </span>
+                    <div>
+                      <p className="text-gray-700 font-medium">
+                        {t.reference || transactionService.getTypeLabel(t.type)}
+                      </p>
+                      <p className="text-gray-400">
+                        {new Date(t.createdAt).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'short',
+                        })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <span className="text-gray-600 font-medium">
-                  {t.amount} {t.currency}
-                </span>
-              </li>
-            ))}
+                  <span className={`font-semibold ${credit ? 'text-afrilink-green' : 'text-red-500'}`}>
+                    {credit ? '+' : '-'}{new Intl.NumberFormat('fr-FR').format(t.amount)} {senderCurrency}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
-
-        <div className="rounded-xl bg-afrilink-dark text-white p-4">
-          <p className="text-xs text-white/60 mb-1">Taux en temps réel</p>
-          <p className="text-sm font-semibold mb-2">CAD/{currency} Boosté</p>
-          <span className="inline-block text-[11px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">
-            +0.4% au fixé
-          </span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

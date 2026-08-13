@@ -42,14 +42,14 @@ export default function TontinesSupervisionPage() {
 
   return (
     <AdminLayout active="tontines">
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-xl font-bold text-afrilink-dark mb-1">Supervision des Tontines</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Supervision des Tontines</h1>
           <p className="text-sm text-gray-400">
             Consultez l'activité, gérez les risques et intervenez si nécessaire.
           </p>
         </div>
-        <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
+        <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
           Exporter
         </button>
@@ -108,7 +108,8 @@ export default function TontinesSupervisionPage() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <Tabs tabs={['Toutes les Tontines', 'Alertes Actives']} active={tab} onChange={setTab} />
 
-        <table className="w-full text-sm mt-4">
+        <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 mt-4">
+        <table className="w-full text-sm min-w-[520px]">
           <thead>
             <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
               <th className="font-medium pb-3">Nom de la Tontine</th>
@@ -167,6 +168,7 @@ export default function TontinesSupervisionPage() {
             )}
           </tbody>
         </table>
+        </div>
 
         <div className="mt-5 rounded-xl bg-red-50 border border-red-100 p-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">

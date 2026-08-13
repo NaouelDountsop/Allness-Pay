@@ -96,7 +96,7 @@ export default function AdminTransactionsPage() {
 
   return (
     <AdminLayout active="Transactions">
-      <h1 className="text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
       <p className="text-sm text-gray-400 mb-6">
         Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
       </p>
@@ -148,12 +148,12 @@ export default function AdminTransactionsPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
                 <th className="font-medium pb-3">Utilisateur / Référence</th>
-                <th className="font-medium pb-3">Type</th>
+                <th className="font-medium pb-3 hidden sm:table-cell">Type</th>
                 <th className="font-medium pb-3">Montant</th>
                 <th className="font-medium pb-3">Statut</th>
                 <th className="font-medium pb-3 hidden lg:table-cell">Date</th>
@@ -164,10 +164,10 @@ export default function AdminTransactionsPage() {
               {TRANSACTIONS.map((t) => (
                 <tr key={t.reference} className="border-b border-gray-50 last:border-0">
                   <td className="py-3.5">
-                    <p className="text-xs font-medium text-afrilink-dark">{t.user}</p>
+                    <p className="text-xs font-medium text-afrilink-dark truncate">{t.user}</p>
                     <p className="text-[11px] text-gray-400">{t.reference}</p>
                   </td>
-                  <td className="text-xs text-gray-600">{t.type}</td>
+                  <td className="text-xs text-gray-600 hidden sm:table-cell">{t.type}</td>
                   <td
                     className={`text-xs font-medium ${
                       t.amount.startsWith('+') ? 'text-afrilink-green' : 'text-afrilink-dark'
@@ -180,8 +180,8 @@ export default function AdminTransactionsPage() {
                       {t.status}
                     </Badge>
                   </td>
-                  <td className="text-xs text-gray-500">{t.location}</td>
-                  <td className="text-xs text-gray-500">{t.date}</td>
+                  <td className="text-xs text-gray-500 hidden lg:table-cell">{t.location}</td>
+                  <td className="text-xs text-gray-500 hidden lg:table-cell">{t.date}</td>
                   <td className="text-right">
                     <button
                       onClick={() =>

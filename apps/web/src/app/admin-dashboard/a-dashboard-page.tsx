@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
   return (
     <AdminLayout active="dashboard">
-      <h1 className="text-xl font-bold text-afrilink-dark mb-1">Tableau de bord</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Tableau de bord</h1>
       <p className="text-sm text-gray-400 mb-6">
         Surveillez les comptes et gérez les limites financières.
       </p>

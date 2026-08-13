@@ -32,14 +32,14 @@ export default function UsersListPage() {
 
   return (
     <AdminLayout active="utilisateurs">
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-xl font-bold text-afrilink-dark mb-1">Gestion Utilisateurs</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion Utilisateurs</h1>
           <p className="text-sm text-gray-400">
             Surveillez les comptes, validez les KYC et gérez les limites financières.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
             <Download className="w-3.5 h-3.5" />
             Exporter
@@ -117,74 +117,76 @@ export default function UsersListPage() {
             <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                <th className="font-medium pb-3">Utilisateur</th>
-                <th className="font-medium pb-3">Statut KYC</th>
-                <th className="font-medium pb-3">Téléphone</th>
-                <th className="font-medium pb-3">Date d'inscription</th>
-                <th className="font-medium pb-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users?.map((u) => {
-                const initials =
-                  `${u.prenom?.charAt(0) ?? ''}${u.nom?.charAt(0) ?? ''}`.toUpperCase();
-                const statusTone = u.verificationotp ? ('green' as const) : ('orange' as const);
-                const statusLabel = u.verificationotp ? 'Actif' : 'En attente';
-                return (
-                  <tr key={u.idutilisateur} className="border-b border-gray-50 last:border-0">
-                    <td className="py-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center">
-                          {initials}
-                        </span>
-                        <div>
-                          <p className="text-xs font-medium text-afrilink-dark">
-                            {u.prenom} {u.nom}
-                          </p>
-                          <p className="text-[11px] text-gray-400">{u.email}</p>
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full text-sm min-w-[480px]">
+              <thead>
+                <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
+                  <th className="font-medium pb-3">Utilisateur</th>
+                  <th className="font-medium pb-3">Statut KYC</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">Téléphone</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">Date d'inscription</th>
+                  <th className="font-medium pb-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users?.map((u) => {
+                  const initials =
+                    `${u.prenom?.charAt(0) ?? ''}${u.nom?.charAt(0) ?? ''}`.toUpperCase();
+                  const statusTone = u.verificationotp ? ('green' as const) : ('orange' as const);
+                  const statusLabel = u.verificationotp ? 'Actif' : 'En attente';
+                  return (
+                    <tr key={u.idutilisateur} className="border-b border-gray-50 last:border-0">
+                      <td className="py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+                            {initials}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-afrilink-dark truncate">
+                              {u.prenom} {u.nom}
+                            </p>
+                            <p className="text-[11px] text-gray-400 truncate">{u.email}</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge tone={statusTone} dot>
-                        {statusLabel}
-                      </Badge>
-                    </td>
-                    <td className="text-xs text-gray-600">{u.telephone}</td>
-                    <td className="text-xs text-gray-500">
-                      {new Date(u.dateinscription).toLocaleDateString('fr-FR')}
-                    </td>
-                    <td>
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setSelectedUser(u.nom)}
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Voir"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Modifier"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500"
-                          aria-label="Bloquer"
-                        >
-                          <Ban className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td>
+                        <Badge tone={statusTone} dot>
+                          {statusLabel}
+                        </Badge>
+                      </td>
+                      <td className="text-xs text-gray-600 hidden sm:table-cell">{u.telephone}</td>
+                      <td className="text-xs text-gray-500 hidden md:table-cell">
+                        {new Date(u.dateinscription).toLocaleDateString('fr-FR')}
+                      </td>
+                      <td>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setSelectedUser(u.nom)}
+                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+                            aria-label="Voir"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+                            aria-label="Modifier"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500"
+                            aria-label="Bloquer"
+                          >
+                            <Ban className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
 
         <Pagination

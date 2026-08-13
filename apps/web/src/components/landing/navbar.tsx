@@ -3,7 +3,6 @@ import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: 'Accueil', href: '#accueil' },
-  { label: 'À propos', href: '#a-propos' },
   { label: 'Fonctionnalités', href: '#fonctionnalites' },
   { label: 'Tarifs', href: '#tontines' },
   { label: 'Contact', href: '#contact' },

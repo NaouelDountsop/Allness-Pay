@@ -102,41 +102,49 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
         </DialogHeader>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between my-4 px-2">
-          {[1, 2, 3].map((s, i) => (
-            <div key={s} className="flex items-center flex-1 last:flex-none">
-              <div className="flex flex-col items-center">
-                <div
-                  className={cn(
-                    'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold',
-                    step === s
-                      ? 'bg-afrilink-green text-white'
-                      : step > s
-                        ? 'bg-afrilink-green text-white'
-                        : 'border-2 border-gray-300 text-gray-400',
-                  )}
-                >
-                  {step > s ? <Check className="h-4 w-4" /> : s}
+        <div className="flex items-start my-4 px-2">
+          {[1, 2, 3].map((s, i) => {
+            const isDone = step > s;
+            const isActive = step === s;
+            const isLast = i === 2;
+
+            return (
+              <div key={s} className={`flex items-center ${isLast ? '' : 'flex-1'}`}>
+                <div className="flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[56px] sm:min-w-[84px]">
+                  <div
+                    className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 shrink-0"
+                    style={{
+                      backgroundColor: isDone || isActive ? '#D28E2F' : 'transparent',
+                      color: isDone || isActive ? '#082B37' : 'rgba(0,0,0,0.3)',
+                      border: isDone || isActive ? 'none' : '2px solid rgba(0,0,0,0.2)',
+                      boxShadow: isActive ? '0 0 0 4px rgba(210,142,47,0.2)' : 'none',
+                    }}
+                  >
+                    {isDone ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} /> : s}
+                  </div>
+                  <span
+                    className="text-[9px] sm:text-xs md:text-sm text-center leading-tight whitespace-nowrap transition-colors duration-300 px-0.5"
+                    style={{
+                      color: isActive ? '#082B37' : isDone ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)',
+                      fontWeight: isActive ? 700 : 500,
+                    }}
+                  >
+                    {STEP_LABELS[i]}
+                  </span>
                 </div>
-                <span
-                  className={cn(
-                    'text-[10px] mt-1 whitespace-nowrap',
-                    step === s ? 'text-afrilink-green font-medium' : 'text-gray-400',
-                  )}
-                >
-                  {STEP_LABELS[i]}
-                </span>
+
+                {!isLast && (
+                  <div
+                    className="flex-1 mx-1 sm:mx-1.5 -mt-5 sm:-mt-6"
+                    style={{
+                      borderTop: '2px dashed rgba(0,0,0,0.25)',
+                      minWidth: '20px',
+                    }}
+                  />
+                )}
               </div>
-              {i < 2 && (
-                <div
-                  className={cn(
-                    'flex-1 h-0.5 mx-2 mb-5',
-                    step > s ? 'bg-afrilink-green' : 'bg-gray-200',
-                  )}
-                />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Step 1: Currency */}

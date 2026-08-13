@@ -11,6 +11,7 @@ import {
 } from '@/components/user_dashboard/tontines/payment-methods-grid';
 import { TontineSummaryCard } from '@/components/user_dashboard/tontines/tontine-summary-card';
 import { tontineService } from '@/lib/api/tontine.service';
+import { walletService } from '@/lib/api/wallet.service';
 
 const contributionSchema = z.object({
   amount: z.string().refine((val) => {
@@ -40,10 +41,6 @@ export default function MakeContributionPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [amount, setAmount] = useState('500');
-  const [method, setMethod] = useState<PaymentMethod>('wallet');
-  const [currency, setCurrency] = useState<ContributionFormData['currency']>('XAF');
-
   const {
     data: tontine,
     isLoading,
@@ -54,8 +51,23 @@ export default function MakeContributionPage() {
     enabled: !!id,
   });
 
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet-primary'],
+    queryFn: walletService.getPrimary,
+  });
+
+  const suggestedAmount = tontine ? String(tontine.contributionAmount) : '500';
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState<PaymentMethod>('wallet');
+  const [currency, setCurrency] = useState<ContributionFormData['currency']>(
+    (tontine?.currency as ContributionFormData['currency']) ?? 'XAF',
+  );
+
+  // Set initial amount from tontine once loaded
+  const effectiveAmount = amount || suggestedAmount;
+
   const formValidation = contributionSchema.safeParse({
-    amount,
+    amount: effectiveAmount,
     method: PAYMENT_TO_METHOD[method],
     currency,
   });
@@ -66,7 +78,7 @@ export default function MakeContributionPage() {
     mutationFn: () => {
       return Promise.resolve({
         tontineId: id,
-        amount: Number(amount),
+        amount: Number(effectiveAmount),
         method: PAYMENT_TO_METHOD[method],
         currency,
       });
@@ -116,6 +128,8 @@ export default function MakeContributionPage() {
     : '—';
 
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;
+  const walletBalance = wallet ? Number(wallet.balance) : 0;
+  const walletCurrency = wallet?.currency ?? 'XAF';
 
   return (
     <DashboardLayout>
@@ -147,7 +161,7 @@ export default function MakeContributionPage() {
               <div className="flex gap-2 mt-1">
                 <input
                   type="number"
-                  value={amount}
+                  value={effectiveAmount}
                   onChange={(e) => setAmount(e.target.value)}
                   className={`flex-1 h-11 rounded-lg border px-3 text-sm bg-white text-gray-900 focus:outline-none focus:ring-1 ${
                     fieldErrors?.amount
@@ -171,7 +185,7 @@ export default function MakeContributionPage() {
                 <p className="text-[11px] text-red-500 mt-1">{fieldErrors.amount[0]}</p>
               )}
               <p className="text-[11px] text-gray-400 mt-1">
-                Solde suggéré basé sur votre engagement mensuel
+                Montant suggéré : {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))} {tontine.currency}
               </p>
             </div>
 
@@ -185,7 +199,10 @@ export default function MakeContributionPage() {
             <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
               <p>
-                Solde disponible Portefeuille: <span className="font-semibold">12 450,00 €</span>
+                Solde disponible Portefeuille :{' '}
+                <span className="font-semibold">
+                  {new Intl.NumberFormat('fr-FR').format(walletBalance)} {walletCurrency}
+                </span>
               </p>
             </div>
 

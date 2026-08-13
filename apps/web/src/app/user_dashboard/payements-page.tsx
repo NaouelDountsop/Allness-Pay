@@ -17,10 +17,10 @@ export default function PaymentsPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-20 md:pb-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-afrilink-dark">Paiements &amp; Services</h1>
+            <h1 className="text-2xl font-bold text-afrilink-dark mb-1">Paiements & Services</h1>
             <p className="text-sm text-gray-500 line-clamp-2">
               Réglez vos factures, achetez du crédit et accédez à une multitude de services en
               quelques clics, en toute sécurité.
