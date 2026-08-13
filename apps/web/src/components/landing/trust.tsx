@@ -1,4 +1,5 @@
 const FLAGS = [
+  {code: 'cm', name: 'Cameroun' },
   { code: 'ca', name: 'Canada' },
   { code: 'sn', name: 'Sénégal' },
   { code: 'gh', name: 'Ghana' },

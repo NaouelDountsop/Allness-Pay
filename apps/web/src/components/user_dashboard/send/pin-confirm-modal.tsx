@@ -30,7 +30,7 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
         <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
-            <img src="/afrilinkpay_logo2.svg" alt="" className="w-8 h-8 object-contain mb-1" />
+            <img src="/afrilinkpay_logo1.svg" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
               Afrilink<span className="text-afrilink-orange">Pay</span>
             </span>

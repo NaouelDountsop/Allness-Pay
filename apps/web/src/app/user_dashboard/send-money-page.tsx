@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
+import type { UserProfile } from '@afrilinkpay/shared';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { StepIndicator } from '@/components/user_dashboard/send/step-indicator';
@@ -7,6 +10,9 @@ import { ReviewStep } from '@/components/user_dashboard/send/review-step';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
 import { usePin } from '@/hooks/use-pin';
+import { userService } from '@/lib/api/user.service';
+import { walletService } from '@/lib/api/wallet.service';
+import { getCountryByCode } from '@/data/countries';
 
 const steps = [
   { label: 'Bénéficiaire' },
@@ -16,22 +22,94 @@ const steps = [
   { label: 'Envoi' },
 ];
 
+const NETWORK_TO_MODE: Record<string, string> = {
+  mtn_momo: 'mtn',
+  orange_money: 'orange',
+  wave: 'wallet',
+};
+
+const COUNTRY_TO_CURRENCY: Record<string, string> = {
+  CM: 'XAF', SN: 'XAF', CI: 'XOF', GA: 'XAF', CG: 'XAF', CD: 'CDF',
+  NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XAF', BJ: 'XOF', GN: 'GNF',
+  RW: 'RWF', KE: 'KES', GH: 'GHS', NG: 'NGN', ZA: 'ZAR',
+  FR: 'EUR', CA: 'CAD', US: 'USD', GB: 'GBP',
+};
+
 export default function SendMoneyPage() {
+  const [searchParams] = useSearchParams();
   const { hasPin, createPin, verifyPin } = usePin(null);
+
+  const { data: profile } = useQuery<UserProfile>({
+    queryKey: ['profile'],
+    queryFn: userService.getProfile,
+  });
+
+  const { data: wallets = [] } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: walletService.list,
+  });
+
+  const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
+  const availableCurrencies = [...new Set(wallets.map((w) => w.currency).filter(Boolean))];
+
+  const senderInfo = profile
+    ? {
+        fullName: `${profile.prenom} ${profile.nom}`,
+        city: profile.ville,
+        country: profile.pays,
+        currency: primaryWallet?.currency ?? COUNTRY_TO_CURRENCY[profile.pays] ?? 'XAF',
+        walletId: primaryWallet?.walletNumber,
+        availableCurrencies: availableCurrencies.length > 0 ? availableCurrencies : [primaryWallet?.currency ?? 'XAF'],
+      }
+    : undefined;
 
   const [form, setForm] = useState({
     beneficiaryContact: '',
-    senderCountry: 'CA',
+    senderCountry: '',
     country: 'CM',
     amount: '',
     receptionMode: 'wallet' as string,
   });
+
+  const destCountry = useMemo(() => getCountryByCode(form.country), [form.country]);
+  const destCountryName = destCountry?.name ?? 'l\'étranger';
 
   const [completedSteps, setCompletedSteps] = useState([false, false, false, false, false]);
   const [phase, setPhase] = useState<'form' | 'review' | 'success'>('form');
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [showPinConfirm, setShowPinConfirm] = useState(false);
   const [pendingAction, setPendingAction] = useState<'toReview' | 'toSend' | null>(null);
+  const [beneficiaryName, setBeneficiaryName] = useState('');
+
+  // Set sender country from profile
+  useEffect(() => {
+    if (profile?.pays && !form.senderCountry) {
+      setForm((prev) => ({ ...prev, senderCountry: profile.pays }));
+    }
+  }, [profile?.pays]);
+
+  // Pre-fill from URL params
+  useEffect(() => {
+    const name = searchParams.get('name') ?? '';
+    const phone = searchParams.get('phone') ?? '';
+    const country = searchParams.get('country') ?? 'CM';
+    const network = searchParams.get('network') ?? '';
+
+    if (name || phone) {
+      setBeneficiaryName(name);
+      setForm((prev) => ({
+        ...prev,
+        beneficiaryContact: phone,
+        country,
+        receptionMode: NETWORK_TO_MODE[network] ?? 'wallet',
+      }));
+      setCompletedSteps((s) => {
+        const updated = [...s];
+        updated[0] = !!phone;
+        return updated;
+      });
+    }
+  }, [searchParams]);
 
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((prev) => {
@@ -49,17 +127,15 @@ export default function SendMoneyPage() {
   };
 
   const handleFormSubmit = () => {
-    // Avancer vers l'étape "Révision" sans exiger le PIN.
     setCompletedSteps((prev) => {
       const updated = [...prev];
-      updated[2] = true; // confirmation
+      updated[2] = true;
       return updated;
     });
     setPhase('review');
   };
 
   const handleSendClick = () => {
-    // Lors de l'envoi, exiger le PIN (ou proposer de le créer si absent)
     setPendingAction('toSend');
     if (!hasPin) {
       setShowPinSetup(true);
@@ -96,7 +172,6 @@ export default function SendMoneyPage() {
   const handlePinSetupComplete = (pin: string) => {
     createPin(pin);
     setShowPinSetup(false);
-    // Une fois le PIN créé, on demande directement de confirmer la transaction avec
     setShowPinConfirm(true);
   };
 
@@ -109,13 +184,12 @@ export default function SendMoneyPage() {
 
       <div>
         <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
-          Transfert vers le Cameroun
+          Transfert vers {destCountryName}
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8">
           Vérifiez les détails de votre transaction avant de confirmer.
         </p>
 
-        {/* Bloc Step Indicator : fond marine plein */}
         <div
           className="rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-4 sm:mb-6"
           style={{
@@ -132,10 +206,8 @@ export default function SendMoneyPage() {
           </div>
         </div>
 
-        {/* Bloc formulaire : carte distincte */}
         <div className="relative rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm overflow-hidden bg-white">
           <div className="p-4 sm:p-6 md:p-8">
-            {/* Petit en-tête de section pour ancrer visuellement l'étape en cours */}
             <div className="flex items-center gap-2 mb-5 sm:mb-6">
               <span
                 className="inline-block h-2 w-2 rounded-full"
@@ -151,6 +223,7 @@ export default function SendMoneyPage() {
                 form={form}
                 onChange={handleChange}
                 onSubmit={handleFormSubmit}
+                sender={senderInfo}
               />
             )}
 
@@ -163,6 +236,8 @@ export default function SendMoneyPage() {
                 amount={parseFloat(form.amount) || 0}
                 onSend={handleSendClick}
                 onBack={() => setPhase('form')}
+                sender={senderInfo}
+                beneficiaryName={beneficiaryName}
               />
             )}
 

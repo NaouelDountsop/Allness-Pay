@@ -63,7 +63,7 @@ export default function Hero() {
                   <span className="text-[11px] text-foreground/50 font-medium">Solde</span>
                   <Wallet className="h-4 w-4 text-afrilink-green" />
                 </div>
-                <div className="font-heading font-extrabold text-2xl mt-1">42 850,00 €</div>
+                <div className="font-heading font-extrabold text-2xl mt-1">42 850,00 CFA</div>
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center gap-2 rounded-lg bg-muted px-2.5 py-2">
                     <Send className="h-4 w-4 text-afrilink-green" />

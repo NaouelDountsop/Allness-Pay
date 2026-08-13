@@ -71,7 +71,7 @@ export default function KycListPage() {
 
   return (
     <AdminLayout active="kyc">
-      <h1 className="text-xl font-bold text-afrilink-dark mb-1">Gestion KYC</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion KYC</h1>
       <p className="text-sm text-gray-400 mb-6">
         Validez les documents d'identité et suivez le niveau de conformité des utilisateurs.
       </p>
@@ -138,58 +138,60 @@ export default function KycListPage() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 text-sm text-gray-400">Aucun dossier KYC trouvé.</div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                <th className="font-medium pb-3">Utilisateur</th>
-                <th className="font-medium pb-3">Date</th>
-                <th className="font-medium pb-3">Document</th>
-                <th className="font-medium pb-3">Statut</th>
-                <th className="font-medium pb-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row) => {
-                const badge = STATUS_BADGE[row.status] ?? {
-                  tone: 'orange' as const,
-                  label: row.status,
-                };
-                const initials = `U${row.userId}`;
-                return (
-                  <tr key={row.id} className="border-b border-gray-50 last:border-0">
-                    <td className="py-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center">
-                          {initials}
-                        </span>
-                        <div>
-                          <p className="text-xs font-medium text-afrilink-dark">
-                            Utilisateur {row.userId}
-                          </p>
-                          <p className="text-[11px] text-gray-400">ID: {row.id}</p>
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full text-sm min-w-[420px]">
+              <thead>
+                <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
+                  <th className="font-medium pb-3">Utilisateur</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">Date</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">Document</th>
+                  <th className="font-medium pb-3">Statut</th>
+                  <th className="font-medium pb-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((row) => {
+                  const badge = STATUS_BADGE[row.status] ?? {
+                    tone: 'orange' as const,
+                    label: row.status,
+                  };
+                  const initials = `U${row.userId}`;
+                  return (
+                    <tr key={row.id} className="border-b border-gray-50 last:border-0">
+                      <td className="py-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+                            {initials}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-afrilink-dark truncate">
+                              Utilisateur {row.userId}
+                            </p>
+                            <p className="text-[11px] text-gray-400">ID: {row.id}</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="text-xs text-gray-500">{formatDate(row.createdAt)}</td>
-                    <td className="text-xs text-gray-500">
-                      {DOC_LABELS[row.IdentityDocumentType] || row.IdentityDocumentType}
-                    </td>
-                    <td>
-                      <Badge tone={badge.tone}>{badge.label}</Badge>
-                    </td>
-                    <td className="text-right">
-                      <button
-                        onClick={() => navigate(`/admin/kyc/${row.id}`)}
-                        className="h-8 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
-                      >
-                        Examiner
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="text-xs text-gray-500 hidden sm:table-cell">{formatDate(row.createdAt)}</td>
+                      <td className="text-xs text-gray-500 hidden md:table-cell">
+                        {DOC_LABELS[row.IdentityDocumentType] || row.IdentityDocumentType}
+                      </td>
+                      <td>
+                        <Badge tone={badge.tone}>{badge.label}</Badge>
+                      </td>
+                      <td className="text-right">
+                        <button
+                          onClick={() => navigate(`/admin/kyc/${row.id}`)}
+                          className="h-8 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
+                        >
+                          Examiner
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </AdminLayout>

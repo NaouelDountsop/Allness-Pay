@@ -16,11 +16,11 @@ import {
   FileText,
   Plus,
   Loader2,
-} from 'lucide-react';
-import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
-import { DashboardHeader } from '@/components/user_dashboard/header';
-import { Button } from '@/components/ui/button';
-import { tontineService, type Tontine, type TontineMember } from '@/lib/api/tontine.service';
+} from "lucide-react";
+import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
+import { DashboardHeader } from "@/components/user_dashboard/header";
+import { Button } from "@/components/ui/button";
+import { tontineService, type Tontine, type TontineMember } from "@/lib/api/tontine.service";
 
 interface Conversation {
   id: string;
@@ -559,10 +559,10 @@ function TontineAboutPanel({
         </div>
         <div className="mt-1 divide-y divide-gray-50">
           {(members ?? MEMBERS).map((m) => {
-            const hasUser = 'user' in m && m.user;
+            const hasUserProp = "user" in m && m.user;
             const mapped: Member = {
               id: String(m.id),
-              name: hasUser
+              name: hasUserProp
                 ? `${(m as TontineMember).user?.prenom ?? ''} ${(m as TontineMember).user?.nom ?? ''}`.trim() ||
                   `Membre ${m.id}`
                 : (('name' in m ? (m as Member).name : `Membre ${m.id}`) ?? `Membre ${m.id}`),

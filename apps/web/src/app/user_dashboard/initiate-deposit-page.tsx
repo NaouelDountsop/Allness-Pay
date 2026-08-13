@@ -4,7 +4,6 @@ import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2 } from 'lu
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import {
-  useDepositFlow,
   type DepositMethod,
   type Currency,
   CURRENCY_SYMBOLS,

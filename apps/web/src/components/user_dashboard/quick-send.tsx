@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Send, Plus, ChevronDown, Check } from 'lucide-react';
 import type { QuickContact } from '@/lib/mock/dashboard-data';
 
@@ -9,6 +10,7 @@ interface QuickSendProps {
 const CURRENCIES = ['USD', 'XAF', 'EUR'];
 
 export function QuickSend({ contacts }: QuickSendProps) {
+  const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [open, setOpen] = useState(false);
@@ -58,6 +60,7 @@ export function QuickSend({ contacts }: QuickSendProps) {
           <button
             type="button"
             aria-label="Ajouter un bénéficiaire"
+            onClick={() => navigate('/dashboard/beneficiaries')}
             className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
           >
             <Plus className="w-4 h-4" />

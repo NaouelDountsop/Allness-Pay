@@ -95,7 +95,19 @@ export default function TontinesPage() {
               }
             }}
           />
-        ) : (
+        )}
+
+        {invitations && invitations.length > 0 && (
+          <div className={!hasTontines ? "mt-6" : ""}>
+            <InvitationsList
+              invitations={invitations}
+              onAccept={(id) => respondMutation.mutate({ id, response: "ACCEPT" })}
+              onDecline={(id) => respondMutation.mutate({ id, response: "DECLINE" })}
+            />
+          </div>
+        )}
+
+        {hasTontines && (
           <>
             <div className="flex items-center justify-between mb-1">
               <div>

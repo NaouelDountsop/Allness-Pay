@@ -178,6 +178,13 @@ export function getCountryByCode(code: string): Country | undefined {
   return countries.find((c) => c.code === code);
 }
 
+export function getCountryCodeByName(name: string): string | undefined {
+  const country = countries.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase(),
+  );
+  return country?.code;
+}
+
 export function formatLocalPhone(phone: string, country: Country): string {
   const cleaned = phone.replace(/\D/g, '');
   const local = cleaned.startsWith(country.dialCode.replace('+', ''))

@@ -170,22 +170,17 @@ export class MailService {
                       color:#ffffff;
                     "
                   >
-                    <span
+                    <img
+                      src="https://res.cloudinary.com/dnlnzgqzu/image/upload/v1754929257/afrilinkpay-logo-white_l7gx3o.png"
+                      alt="AfriLinkPay"
+                      height="34"
                       style="
                         display:inline-block;
-                        background:#D28E2F;
-                        color:#082B37;
-                        width:34px;
                         height:34px;
-                        line-height:34px;
-                        text-align:center;
-                        border-radius:9px;
-                        font-weight:800;
                         margin-right:8px;
+                        vertical-align:middle;
                       "
-                    >
-                      A
-                    </span>
+                    />
 
                     AfriLink
                     <span style="color:#D28E2F;">
@@ -838,13 +833,13 @@ AfriLinkPay
     email: string,
     inviterName: string,
     tontineName: string,
-    token: string,
+    _token: string,
   ): Promise<void> {
     const safeInviterName = this.escapeHtml(inviterName);
 
     const safeTontineName = this.escapeHtml(tontineName);
 
-    const acceptUrl = `${this.frontendUrl}/invitations/accept?token=${encodeURIComponent(token)}`;
+    const appUrl = this.frontendUrl;
 
     const html = this.buildTemplate(
       `
@@ -938,14 +933,13 @@ AfriLinkPay
             margin-bottom:28px;
           "
         >
-          Rejoignez cette tontine pour participer à un système
-          d'épargne collaborative simple, transparent et sécurisé.
+          Connectez-vous ou inscrivez-vous sur AfriLinkPay pour voir et accepter cette invitation.
         </p>
 
         <div style="text-align:center; margin:30px 0;">
 
           <a
-            href="${acceptUrl}"
+            href="${appUrl}"
             class="button"
             style="
               display:inline-block;
@@ -958,7 +952,7 @@ AfriLinkPay
               font-size:14px;
             "
           >
-            Accepter l'invitation
+            Ouvrir AfriLinkPay
             <span style="color:#D28E2F;">
               →
             </span>
@@ -1012,10 +1006,10 @@ Vous êtes invité(e) à rejoindre une tontine !
 
 ${inviterName} vous invite à rejoindre la tontine "${tontineName}" sur AfriLinkPay.
 
-Rejoignez cette tontine pour participer à un système d'épargne collaborative simple, transparent et sécurisé.
+Connectez-vous ou inscrivez-vous sur AfriLinkPay pour voir et accepter cette invitation.
 
-Accepter l'invitation :
-${acceptUrl}
+Ouvrir AfriLinkPay :
+${appUrl}
 
 Cette invitation expire dans 7 jours.
 

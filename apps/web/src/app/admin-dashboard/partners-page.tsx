@@ -281,25 +281,25 @@ function PartnerRow({ partner, onSelect }: { partner: Partner; onSelect: () => v
       <td className="whitespace-nowrap px-3 py-2">
         <div className="flex items-center gap-2">
           <div
-            className={`flex h-6 w-6 items-center justify-center rounded-md text-[9px] font-bold ${partner.logoBg} ${partner.logoText}`}
+            className={`flex h-6 w-6 items-center justify-center rounded-md text-[9px] font-bold shrink-0 ${partner.logoBg} ${partner.logoText}`}
           >
             {partner.short}
           </div>
-          <span className="text-xs font-medium text-gray-900">{partner.name}</span>
+          <span className="text-xs font-medium text-gray-900 truncate">{partner.name}</span>
         </div>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
+      <td className="whitespace-nowrap px-3 py-2 hidden sm:table-cell">
         <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-600">
           {partner.type}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
+      <td className="whitespace-nowrap px-3 py-2 hidden md:table-cell">
         <span className="flex items-center gap-1 text-xs text-gray-700">
           {partner.flag ? partner.flag : <Globe className="h-3 w-3 text-gray-400" />}
           {partner.country}
         </span>
       </td>
-      <td className="px-3 py-2">
+      <td className="px-3 py-2 hidden lg:table-cell">
         <div className="flex flex-wrap gap-1">
           {partner.services.map((s) => (
             <ServiceTag key={s} label={s} />
@@ -313,10 +313,10 @@ function PartnerRow({ partner, onSelect }: { partner: Partner; onSelect: () => v
           {partner.status}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-gray-900">
+      <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-gray-900 hidden xl:table-cell">
         {partner.volume}
       </td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-700">{partner.transactions}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-700 hidden xl:table-cell">{partner.transactions}</td>
       <td className="whitespace-nowrap px-3 py-2">
         <div className="flex items-center gap-1">
           <button
@@ -492,16 +492,14 @@ export default function PartnersPage() {
     <AdminLayout>
       <main className="p-0">
         {/* En-tête de page */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Gestion des Partenaires</h2>
-              <p className="text-xs text-gray-500">
-                Ajoutez, configurez et suivez vos partenaires.
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Gestion des Partenaires</h2>
+            <p className="text-xs text-gray-500">
+              Ajoutez, configurez et suivez vos partenaires.
+            </p>
           </div>
-          <Button className="h-8 rounded-lg bg-afrilink-green px-3 text-xs text-white hover:bg-afrilink-green/90">
+          <Button className="h-8 rounded-lg bg-afrilink-green px-3 text-xs text-white hover:bg-afrilink-green/90 shrink-0">
             <Plus className="mr-1 h-3 w-3" />
             Ajouter un partenaire
           </Button>
@@ -550,12 +548,12 @@ export default function PartnersPage() {
                   <thead>
                     <tr className="border-b border-gray-100 text-left text-[10px] font-medium text-gray-400">
                       <th className="px-3 py-2">Partenaire</th>
-                      <th className="px-3 py-2">Type</th>
-                      <th className="px-3 py-2">Pays</th>
-                      <th className="px-3 py-2">Services</th>
+                      <th className="px-3 py-2 hidden sm:table-cell">Type</th>
+                      <th className="px-3 py-2 hidden md:table-cell">Pays</th>
+                      <th className="px-3 py-2 hidden lg:table-cell">Services</th>
                       <th className="px-3 py-2">Statut</th>
-                      <th className="px-3 py-2">Volume</th>
-                      <th className="px-3 py-2">Tx</th>
+                      <th className="px-3 py-2 hidden xl:table-cell">Volume</th>
+                      <th className="px-3 py-2 hidden xl:table-cell">Tx</th>
                       <th className="px-3 py-2">Actions</th>
                     </tr>
                   </thead>

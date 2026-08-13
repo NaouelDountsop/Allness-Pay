@@ -13,9 +13,8 @@ export function clearPendingInvitationToken(): void {
 }
 
 export default function AcceptInvitationPage() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get('token');
+  const token = useSearchParams()[0].get('token');
 
   useEffect(() => {
     if (!token) {

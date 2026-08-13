@@ -40,16 +40,16 @@ export default function MerchantsListPage() {
 
   return (
     <AdminLayout active="marchands">
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-xl font-bold text-afrilink-dark mb-1">Gestion des Marchands</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion des Marchands</h1>
           <p className="text-sm text-gray-400">
             Gérez votre réseau de commerçants et surveillez leurs transactions.
           </p>
         </div>
         <button
           onClick={() => navigate('/admin/marchands/nouveau')}
-          className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+          className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
           Nouveau Marchand
@@ -110,49 +110,51 @@ export default function MerchantsListPage() {
           </button>
         </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-              <th className="font-medium pb-3">Marchand</th>
-              <th className="font-medium pb-3">Contact</th>
-              <th className="font-medium pb-3">Catégorie</th>
-              <th className="font-medium pb-3">Statut</th>
-              <th className="font-medium pb-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {MERCHANTS.map((m) => (
-              <tr key={m.name} className="border-b border-gray-50 last:border-0">
-                <td className="py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center">
-                      {m.initials}
-                    </span>
-                    <p className="text-xs font-medium text-afrilink-dark">{m.name}</p>
-                  </div>
-                </td>
-                <td className="text-xs text-gray-600">{m.contact}</td>
-                <td>
-                  <Badge tone={m.categoryTone}>{m.category}</Badge>
-                </td>
-                <td>
-                  <Badge tone={m.statusTone} dot>
-                    {m.status}
-                  </Badge>
-                </td>
-                <td className="text-right">
-                  <button
-                    onClick={() => navigate('/admin/marchands/1')}
-                    className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
-                    aria-label="Voir"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+          <table className="w-full text-sm min-w-[420px]">
+            <thead>
+              <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
+                <th className="font-medium pb-3">Marchand</th>
+                <th className="font-medium pb-3 hidden sm:table-cell">Contact</th>
+                <th className="font-medium pb-3 hidden md:table-cell">Catégorie</th>
+                <th className="font-medium pb-3">Statut</th>
+                <th className="font-medium pb-3 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {MERCHANTS.map((m) => (
+                <tr key={m.name} className="border-b border-gray-50 last:border-0">
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+                        {m.initials}
+                      </span>
+                      <p className="text-xs font-medium text-afrilink-dark truncate">{m.name}</p>
+                    </div>
+                  </td>
+                  <td className="text-xs text-gray-600 hidden sm:table-cell">{m.contact}</td>
+                  <td className="hidden md:table-cell">
+                    <Badge tone={m.categoryTone}>{m.category}</Badge>
+                  </td>
+                  <td>
+                    <Badge tone={m.statusTone} dot>
+                      {m.status}
+                    </Badge>
+                  </td>
+                  <td className="text-right">
+                    <button
+                      onClick={() => navigate('/admin/marchands/1')}
+                      className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
+                      aria-label="Voir"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <Pagination page={page} totalPages={5} onChange={setPage} />
       </div>

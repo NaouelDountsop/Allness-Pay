@@ -80,7 +80,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
         </div>
 
         <p className="text-2xl font-bold relative z-10">
-          {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
+          {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * tontine.memberLimit)}{' '}
           <span className="text-sm font-medium text-afrilink-orange">
             {tontine.currency ?? 'CFA'}
           </span>

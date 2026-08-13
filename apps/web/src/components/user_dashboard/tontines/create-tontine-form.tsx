@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { tontineService } from '@/lib/api/tontine.service';
+import { CountrySelect } from '@/components/common/country-select';
+import type { Country } from '@/data/countries';
 
 type Tab = 'general' | 'finances' | 'regles' | 'membres';
 
@@ -16,13 +18,13 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 ];
 
 const COUNTRY_CURRENCY_MAP: Record<string, 'XAF' | 'USD' | 'EUR' | 'GBP' | 'CAD'> = {
-  Cameroun: 'XAF',
-  Sénégal: 'XAF',
-  "Côte d'Ivoire": 'XAF',
-  France: 'EUR',
-  'États-Unis': 'USD',
-  'Royaume-Uni': 'GBP',
-  Canada: 'CAD',
+  CM: 'XAF',
+  SN: 'XAF',
+  CI: 'XAF',
+  FR: 'EUR',
+  US: 'USD',
+  GB: 'GBP',
+  CA: 'CAD',
 };
 
 const generalSchema = z.object({
@@ -62,6 +64,7 @@ export function CreateTontineForm() {
   const [frequency, setFrequency] = useState('MONTHLY');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState('');
 
   const {
     register,
@@ -82,8 +85,9 @@ export function CreateTontineForm() {
   });
 
   const contribution = watch('contribution');
+  const memberLimit = watch('memberLimit');
   const currency = watch('currency');
-  const estimatedPot = (parseFloat(contribution) || 0) * 12;
+  const estimatedPot = (parseFloat(contribution) || 0) * (parseInt(memberLimit) || 0);
   const symbol = CURRENCY_SYMBOLS[currency] || '$';
 
   const handleInitialize = async () => {
@@ -114,8 +118,9 @@ export function CreateTontineForm() {
     setActiveTab('finances');
   };
 
-  const onCountryChange = (country: string) => {
-    const mapped = COUNTRY_CURRENCY_MAP[country];
+  const onCountryChange = (country: Country) => {
+    setSelectedCountry(country.code);
+    const mapped = COUNTRY_CURRENCY_MAP[country.code];
     if (mapped) {
       setValue('currency', mapped, { shouldValidate: true });
     }
@@ -161,20 +166,8 @@ export function CreateTontineForm() {
                 <p className="text-[11px] text-red-500 mt-1">{errors.name.message}</p>
               )}
             </div>
-            <div>
-              <label className="text-xs font-medium text-gray-500">Pays</label>
-              <select
-                onChange={(e) => onCountryChange(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
-              >
-                <option value="">Sélectionnez un pays</option>
-                {Object.keys(COUNTRY_CURRENCY_MAP).map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-                <option value="other">Autre</option>
-              </select>
+            <div className="mt-1">
+              <CountrySelect value={selectedCountry} onChange={onCountryChange} />
             </div>
           </div>
 
@@ -267,7 +260,9 @@ export function CreateTontineForm() {
           <div className="rounded-xl bg-afrilink-dark text-white p-4 flex items-center justify-between mb-6">
             <div>
               <p className="text-[11px] text-white/60">POT TOTAL ESTIMÉ</p>
-              <p className="text-[10px] text-white/40">Basé sur 12 cycles et 12 membres</p>
+              <p className="text-[10px] text-white/40">
+                Basé sur {parseInt(memberLimit) || 0} membre{(parseInt(memberLimit) || 0) > 1 ? 's' : ''}
+              </p>
             </div>
             <p className="text-2xl font-bold">
               {symbol}

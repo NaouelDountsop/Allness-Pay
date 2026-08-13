@@ -14,6 +14,7 @@ import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { mockContacts } from '@/lib/mock/dashboard-data';
 import { walletService } from '@/lib/api/wallet.service';
 import { kycService } from '@/lib/api/kyc.service';
+import { transactionService } from '@/lib/api/transaction.service';
 
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
@@ -33,6 +34,22 @@ export default function DashboardPage() {
     queryFn: () => kycService.getMine(),
     retry: false,
   });
+
+  const { data: transactions = [], isLoading: txLoading } = useQuery({
+    queryKey: ['transactions', wallet?.id],
+    queryFn: () => transactionService.listByWallet(wallet!.id),
+    enabled: !!wallet?.id,
+  });
+
+  const totalIncome = transactions.reduce((sum, t) => {
+    const credit = transactionService.isCredit(t.type);
+    return credit ? sum + Number(t.amount) : sum;
+  }, 0);
+
+  const totalExpense = transactions.reduce((sum, t) => {
+    const credit = transactionService.isCredit(t.type);
+    return credit ? sum : sum + Number(t.amount);
+  }, 0);
 
   if (walletLoading) {
     return (
@@ -94,7 +111,7 @@ export default function DashboardPage() {
                       ENTRÉES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">+{formatNumber(0)}</span>{' '}
+                      <span className="text-white">+{formatNumber(totalIncome)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -106,7 +123,7 @@ export default function DashboardPage() {
                       SORTIES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">-{formatNumber(0)}</span>{' '}
+                      <span className="text-white">-{formatNumber(totalExpense)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -114,7 +131,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <TransactionsList transactions={[]} />
+            <TransactionsList transactions={transactions} isLoading={txLoading} />
           </div>
 
           <div className="space-y-6">

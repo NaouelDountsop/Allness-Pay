@@ -1,4 +1,4 @@
-import type { Currency } from '@/context/deposit-flow-context';
+import type { Currency } from "@/context/deposit-flow.constants";
 
 export interface CountryCurrency {
   country: string;

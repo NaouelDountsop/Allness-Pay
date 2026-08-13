@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Plus,
   UserPlus,
@@ -12,6 +14,7 @@ import {
   MoreVertical,
   ShieldCheck as SecureIcon,
   Link2,
+  Loader2,
 } from 'lucide-react';
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
@@ -19,85 +22,44 @@ import { DashboardHeader } from '../../components/user_dashboard/header';
 import { Badge } from '../../components/ui/badge';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
+import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
+import { getFlagUrl } from '../../data/countries';
 
-interface Beneficiary {
-  initials: string;
-  avatarBg: string;
-  name: string;
-  favorite: boolean;
-  phone: string;
-  network: 'MTN Mobile Money' | 'Orange Money';
-  country: string;
-  nickname: string;
-  status: 'Vérifié' | 'En attente';
-  addedOn: string;
-}
+const COUNTRY_MAP: Record<string, string> = {
+  CM: 'Cameroun',
+  SN: 'Sénégal',
+  CI: "Côte d'Ivoire",
+  GA: 'Gabon',
+  CG: 'Congo',
+  CD: 'Rép. Dém. du Congo',
+  NE: 'Niger',
+  ML: 'Mali',
+  BF: 'Burkina Faso',
+  TG: 'Togo',
+  BJ: 'Bénin',
+  GN: 'Guinée',
+  RW: 'Rwanda',
+  KE: 'Kenya',
+  GH: 'Ghana',
+  NG: 'Nigeria',
+  ZA: 'Afrique du Sud',
+  FR: 'France',
+  CA: 'Canada',
+  US: 'États-Unis',
+};
 
-const BENEFICIARIES: Beneficiary[] = [
-  {
-    initials: 'AB',
-    avatarBg: 'bg-green-100 text-green-700',
-    name: 'Alain Belibi',
-    favorite: true,
-    phone: '+237 6 70 11 22 33',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Frère',
-    status: 'Vérifié',
-    addedOn: '12 mai 2024',
-  },
-  {
-    initials: 'FS',
-    avatarBg: 'bg-blue-100 text-blue-700',
-    name: 'Françoise Simo',
-    favorite: true,
-    phone: '+237 6 71 44 55 66',
-    network: 'Orange Money',
-    country: 'Cameroun',
-    nickname: 'Maman',
-    status: 'Vérifié',
-    addedOn: '08 mai 2024',
-  },
-  {
-    initials: 'JN',
-    avatarBg: 'bg-purple-100 text-purple-700',
-    name: 'Jean Nkodo',
-    favorite: false,
-    phone: '+237 6 72 77 88 99',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Collègue',
-    status: 'En attente',
-    addedOn: '05 mai 2024',
-  },
-  {
-    initials: 'CD',
-    avatarBg: 'bg-cyan-100 text-cyan-700',
-    name: 'Cédric Djoumessi',
-    favorite: false,
-    phone: '+237 6 73 10 20 30',
-    network: 'Orange Money',
-    country: 'Cameroun',
-    nickname: "Ami d'enfance",
-    status: 'Vérifié',
-    addedOn: '01 mai 2024',
-  },
-  {
-    initials: 'ML',
-    avatarBg: 'bg-pink-100 text-pink-700',
-    name: 'Marie Lontchi',
-    favorite: false,
-    phone: '+237 6 74 33 44 55',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Sœur',
-    status: 'Vérifié',
-    addedOn: '28 avr. 2024',
-  },
-];
+const NETWORK_LABELS: Record<string, string> = {
+  mtn_momo: 'MTN Mobile Money',
+  orange_money: 'Orange Money',
+  wave: 'Wave',
+  free_money: 'Free Money',
+  moov_money: 'Moov Money',
+  airtel_money: 'Airtel Money',
+};
 
-function NetworkBadge({ network }: { network: Beneficiary['network'] }) {
-  const isMtn = network === 'MTN Mobile Money';
+function NetworkBadge({ network }: { network: string }) {
+  const isMtn = network === 'mtn_momo';
+  const label = NETWORK_LABELS[network] ?? network;
   return (
     <div className="flex items-center gap-2">
       <span
@@ -107,40 +69,88 @@ function NetworkBadge({ network }: { network: Beneficiary['network'] }) {
       >
         {isMtn ? 'MTN' : 'OM'}
       </span>
-      <span className="text-xs text-gray-600">{network}</span>
+      <span className="text-xs text-gray-600">{label}</span>
     </div>
   );
 }
 
 export default function BeneficiariesPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const { data: beneficiaries = [], isLoading } = useQuery({
+    queryKey: ['beneficiaries'],
+    queryFn: beneficiaryService.list,
+  });
+
+  const filtered = beneficiaries.filter(
+    (b) =>
+      b.name.toLowerCase().includes(search.toLowerCase()) ||
+      b.phone.includes(search) ||
+      b.nickname?.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const handleSend = (b: Beneficiary) => {
+    const country = Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0] ?? 'CM';
+    const params = new URLSearchParams({
+      name: b.name,
+      phone: b.phone,
+      country,
+      network: b.network,
+    });
+    navigate(`/dashboard/send?${params.toString()}`);
+  };
+
+  const stats = {
+    total: beneficiaries.length,
+    verified: beneficiaries.filter((b) => b.status === 'verified').length,
+    favorites: beneficiaries.filter((b) => b.isFavorite).length,
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div>
-        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-afrilink-dark mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-1">
               Gestion des Bénéficiaires
             </h1>
             <p className="text-sm text-gray-400">
               Ajoutez, gérez et transférez de l'argent à vos bénéficiaires en toute simplicité.
             </p>
           </div>
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setAddModalOpen(true)}
-              className="h-10 px-4 rounded-lg bg-afrilink-green text-white text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+              className="group relative h-10 rounded-lg bg-afrilink-green text-white text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
-              Ajouter un bénéficiaire
+              <span className="hidden sm:inline ml-2">Ajouter un bénéficiaire</span>
+              <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                Ajouter
+              </span>
             </button>
-            <button className="h-9 px-4 rounded-lg border border-afrilink-green bg-white text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
-              <UserPlus className="w-3.5 h-3.5" />
-              Importer depuis les contacts
+            <button className="group relative h-10 rounded-lg border border-afrilink-green bg-white text-gray-600 text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:bg-gray-50 transition-colors">
+              <UserPlus className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">Importer depuis les contacts</span>
+              <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                Importer
+              </span>
             </button>
           </div>
         </div>
@@ -153,8 +163,7 @@ export default function BeneficiariesPage() {
               </span>
               <span className="text-sm text-gray-300">Total bénéficiaires</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">24</p>
-            <p className="text-xs text-green-400">↗ 12% ce mois</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.total}</p>
           </div>
 
           <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -164,8 +173,10 @@ export default function BeneficiariesPage() {
               </span>
               <span className="text-sm text-gray-300">Bénéficiaires vérifiés</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">20</p>
-            <p className="text-xs text-orange-400">83% du total</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.verified}</p>
+            <p className="text-xs text-orange-400">
+              {stats.total > 0 ? Math.round((stats.verified / stats.total) * 100) : 0}% du total
+            </p>
           </div>
 
           <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -175,8 +186,7 @@ export default function BeneficiariesPage() {
               </span>
               <span className="text-sm text-gray-300">Transferts ce mois</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">42</p>
-            <p className="text-xs text-gray-400">1 245 000 FCFA</p>
+            <p className="text-2xl font-bold text-white mb-2">—</p>
           </div>
 
           <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -186,8 +196,7 @@ export default function BeneficiariesPage() {
               </span>
               <span className="text-sm text-gray-300">Bénéficiaires favoris</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">8</p>
-            <p className="text-xs text-gray-400">Depuis la création</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.favorites}</p>
           </div>
         </div>
 
@@ -202,6 +211,8 @@ export default function BeneficiariesPage() {
                 <input
                   type="text"
                   placeholder="Nom, numéro..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
                 />
               </div>
@@ -239,77 +250,122 @@ export default function BeneficiariesPage() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full text-sm min-w-[580px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
                   <th className="font-medium pb-3">Bénéficiaire</th>
-                  <th className="font-medium pb-3">Numéro</th>
-                  <th className="font-medium pb-3">Réseau</th>
-                  <th className="font-medium pb-3">Pays</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">Numéro</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">Réseau</th>
+                  <th className="font-medium pb-3 hidden lg:table-cell">Pays</th>
                   <th className="font-medium pb-3">Statut</th>
-                  <th className="font-medium pb-3">Ajouté le</th>
+                  <th className="font-medium pb-3 hidden xl:table-cell">Ajouté le</th>
                   <th className="font-medium pb-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {BENEFICIARIES.map((b) => (
-                  <tr key={b.phone} className="border-b border-gray-50 last:border-0">
-                    <td>
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold ${b.avatarBg}`}
-                        >
-                          {b.initials}
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                          <p className="text-xs font-medium text-afrilink-dark">{b.name}</p>
-                          {b.favorite && (
-                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                          )}
+                {filtered.map((b) => {
+                  const countryKey = Object.entries(COUNTRY_MAP).find(
+                    ([, name]) => name === b.country,
+                  )?.[0];
+                  const initials = b.name
+                    .split(' ')
+                    .map((w) => w[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
+                  return (
+                    <tr key={b.id} className="border-b border-gray-50 last:border-0">
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-full bg-afrilink-orange/10 text-afrilink-orange flex items-center justify-center text-[11px] font-semibold shrink-0">
+                            {initials}
+                          </span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <p className="text-xs font-medium text-afrilink-dark truncate">{b.name}</p>
+                            {b.isFavorite && (
+                              <Star className="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="text-xs text-gray-600">{b.phone}</td>
-                    <td>
-                      <NetworkBadge network={b.network} />
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                        {b.country}
-                      </div>
-                    </td>
-                    <td>
-                      <Badge tone={b.status === 'Vérifié' ? 'green' : 'orange'} dot>
-                        {b.status}
-                      </Badge>
-                    </td>
-                    <td className="text-xs text-gray-500">{b.addedOn}</td>
-                    <td>
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Envoyer de l'argent"
+                      </td>
+                      <td className="text-xs text-gray-600 hidden sm:table-cell">{b.phone}</td>
+                      <td className="hidden md:table-cell">
+                        <NetworkBadge network={b.network} />
+                      </td>
+                      <td className="hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                          {countryKey && (
+                            <img
+                              src={getFlagUrl(countryKey)}
+                              alt={b.country}
+                              className="w-4 h-3 rounded-sm object-cover"
+                            />
+                          )}
+                          {b.country}
+                        </div>
+                      </td>
+                      <td>
+                        <Badge
+                          tone={
+                            b.status === 'verified'
+                              ? 'green'
+                              : b.status === 'pending'
+                                ? 'orange'
+                                : 'red'
+                          }
+                          dot
                         >
-                          <Send className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Plus d'options"
-                        >
-                          <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                          {b.status === 'verified'
+                            ? 'Vérifié'
+                            : b.status === 'pending'
+                              ? 'En attente'
+                              : 'Rejeté'}
+                        </Badge>
+                      </td>
+                      <td className="text-xs text-gray-500 hidden xl:table-cell">
+                        {new Date(b.createdAt).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleSend(b)}
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-afrilink-green hover:bg-afrilink-green/10 transition-colors"
+                            aria-label="Envoyer de l'argent"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+                            aria-label="Plus d'options"
+                          >
+                            <MoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                      Aucun bénéficiaire trouvé
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="flex items-center justify-between mt-5">
-            <p className="text-xs text-gray-400">Affichage de 1 à 5 sur 24 bénéficiaires</p>
-            <Pagination page={page} totalPages={5} onChange={setPage} />
+            <p className="text-xs text-gray-400">
+              Affichage de {filtered.length} bénéficiaire{filtered.length > 1 ? 's' : ''}
+            </p>
+            <Pagination page={page} totalPages={Math.max(1, Math.ceil(filtered.length / 5))} onChange={setPage} />
           </div>
         </div>
 

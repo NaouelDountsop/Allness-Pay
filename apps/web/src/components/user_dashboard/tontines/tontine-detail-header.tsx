@@ -71,7 +71,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
         <p className="text-xs text-white/60 mb-1 relative z-10">Cagnotte totale</p>
         <div className="flex items-center gap-2 sm:gap-3 relative z-10">
           <p className="text-3xl sm:text-4xl font-bold truncate">
-            {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
+            {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * tontine.memberLimit)}{' '}
             <span className="text-base sm:text-lg font-medium text-afrilink-orange">
               {tontine.currency ?? 'CFA'}
             </span>

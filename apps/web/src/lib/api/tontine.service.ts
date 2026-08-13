@@ -107,7 +107,7 @@ export const tontineService = {
   },
 
   listPendingInvitations: async (): Promise<TontineInvitation[]> => {
-    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations/pending`);
+    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations/pending/me`);
     return res.data;
   },
 
