@@ -3,12 +3,10 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { tontineService } from '@/lib/api/tontine.service';
 import { Loader2, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function AcceptInvitationPage() {
   const navigate = useNavigate();
-  const token = searchParams.get('token');
+  const token = useSearchParams()[0].get('token');
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');

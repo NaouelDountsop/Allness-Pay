@@ -4,7 +4,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   ChevronDown,
-  Download,
+  //Download,
   Eye,
   AlertTriangle,
 } from 'lucide-react';
@@ -146,10 +146,6 @@ export default function AdminTransactionsPage() {
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
           </div>
-          <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <Download className="w-3.5 h-3.5" />
-            Exporter
-          </button>
         </div>
 
         <div className="overflow-x-auto">

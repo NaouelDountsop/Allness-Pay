@@ -14,6 +14,7 @@ import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { mockContacts } from '@/lib/mock/dashboard-data';
 import { walletService } from '@/lib/api/wallet.service';
 import { kycService } from '@/lib/api/kyc.service';
+import { transactionService } from '@/lib/api/transaction.service';
 
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
@@ -27,6 +28,12 @@ export default function DashboardPage() {
     queryKey: ['kyc-me'],
     queryFn: () => kycService.getMine(),
     retry: false,
+  });
+
+  const { data: transactions = [], isLoading: txLoading } = useQuery({
+    queryKey: ['transactions', wallet?.id],
+    queryFn: () => transactionService.listByWallet(wallet!.id),
+    enabled: !!wallet?.id,
   });
 
   if (walletLoading) {
