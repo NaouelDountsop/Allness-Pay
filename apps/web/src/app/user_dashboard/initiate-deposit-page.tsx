@@ -1,15 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { useDepositFlow } from "../../context/deposit-flow-context";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2 } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
 import {
   type DepositMethod,
   type Currency,
   CURRENCY_SYMBOLS,
-} from "../../context/deposit-flow.constants";
-import { useUserProfile } from "../../hooks/use-user-profile";
-import { getCurrenciesForCountry } from "../../utils/country-currency";
+} from '../../context/deposit-flow-context';
+import { useUserProfile } from '../../hooks/use-user-profile';
+import { walletService } from '@/lib/api/wallet.service';
+import { getCurrenciesForCountry } from '../../utils/country-currency';
 
 const DEPOSIT_METHODS: { key: DepositMethod; label: string; icon: React.ReactNode }[] = [
   { key: 'mobile_money', label: 'Mobile Money', icon: <Phone className="w-5 h-5" /> },
@@ -56,8 +57,17 @@ export default function InitiateDepositPage() {
     setAmount,
     setCurrency,
     setDescription,
+    setWalletNumber,
     submitDepositRequest,
   } = useDepositFlow();
+
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    walletService.getPrimary().then((w) => {
+      if (w?.walletNumber) setWalletNumber(w.walletNumber);
+    });
+  }, [setWalletNumber]);
 
   const isMobileMoney = deposit.method === 'mobile_money';
   const phoneValid =
@@ -77,9 +87,11 @@ export default function InitiateDepositPage() {
   const currencies = getCurrenciesForCountry(countryCode);
   const currencySymbol = CURRENCY_SYMBOLS[deposit.currency];
 
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    submitDepositRequest();
+  const handleSubmit = async () => {
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    await submitDepositRequest();
+    setSubmitting(false);
     navigate('/deposit/request-sent');
   };
 
@@ -360,15 +372,30 @@ export default function InitiateDepositPage() {
                 </div>
               )}
 
+              {deposit.error && (
+                <div className="rounded-xl bg-red-50 border border-red-100 p-4 mb-2">
+                  <p className="text-xs text-red-600">{deposit.error}</p>
+                </div>
+              )}
+
               <button
                 onClick={handleSubmit}
-                disabled={!canSubmit}
+                disabled={!canSubmit || submitting}
                 className="w-full h-12 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-opacity
                   bg-afrilink-green text-white hover:opacity-90
                   disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-100"
               >
-                Recevoir une demande de confirmation
-                <ArrowRight className="w-4 h-4" />
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Traitement en cours...
+                  </>
+                ) : (
+                  <>
+                    Recevoir une demande de confirmation
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </div>
           </div>

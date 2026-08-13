@@ -1,37 +1,52 @@
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Loader2, MessageCircle } from "lucide-react";
-import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
-import { DashboardHeader } from "@/components/user_dashboard/header";
-import { TontinesEmptyState } from "@/components/user_dashboard/tontines/tontines-empty-state";
-import { TontinesStats } from "@/components/user_dashboard/tontines/tontines-stats";
-import { TontineCard } from "@/components/user_dashboard/tontines/tontine-card";
-import { NewInitiativeCard } from "@/components/user_dashboard/tontines/new-initiative-card";
-import { InvitationsList } from "@/components/user_dashboard/tontines/invitations-list";
-import { tontineService } from "@/lib/api/tontine.service";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Loader2, MessageCircle } from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { TontinesEmptyState } from '@/components/user_dashboard/tontines/tontines-empty-state';
+import { TontinesStats } from '@/components/user_dashboard/tontines/tontines-stats';
+import { TontineCard } from '@/components/user_dashboard/tontines/tontine-card';
+import { NewInitiativeCard } from '@/components/user_dashboard/tontines/new-initiative-card';
+import { InvitationsList } from '@/components/user_dashboard/tontines/invitations-list';
+import { KycGuardPopup } from '@/components/user_dashboard/tontines/kyc-guard-popup';
+import { InvitationJoinPopup } from '@/components/user_dashboard/tontines/invitation-join-popup';
+import { tontineService } from '@/lib/api/tontine.service';
+import { kycService } from '@/lib/api/kyc.service';
 
 export default function TontinesPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [showKycGuard, setShowKycGuard] = useState(false);
+  const [showInvitationPopup, setShowInvitationPopup] = useState(false);
 
-  const { data: tontines, isLoading } = useQuery({
+  const { data: tontines, isLoading: isLoadingTontines } = useQuery({
     queryKey: ['tontines'],
     queryFn: tontineService.list,
+  });
+
+  const { data: kyc, isLoading: isLoadingKyc } = useQuery({
+    queryKey: ['kyc-me'],
+    queryFn: () => kycService.getMine(),
+    retry: false,
   });
 
   const { data: invitations } = useQuery({
     queryKey: ['pending-invitations'],
     queryFn: tontineService.listPendingInvitations,
+    enabled: kyc?.status === 'APPROVED',
   });
 
   const respondMutation = useMutation({
-    mutationFn: ({ id, response }: { id: number; response: "ACCEPT" | "DECLINE" }) =>
+    mutationFn: ({ id, response }: { id: string; response: 'ACCEPT' | 'DECLINE' }) =>
       tontineService.respondInvitation(id, response),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pending-invitations"] });
-      queryClient.invalidateQueries({ queryKey: ["tontines"] });
+      queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
+      queryClient.invalidateQueries({ queryKey: ['tontines'] });
     },
   });
+
+  const isLoading = isLoadingTontines || isLoadingKyc;
 
   if (isLoading) {
     return (
@@ -44,6 +59,8 @@ export default function TontinesPage() {
     );
   }
 
+  const kycApproved = kyc?.status === 'APPROVED';
+  const pendingInvitations = invitations?.filter((inv) => inv.status === 'PENDING') ?? [];
   const hasTontines = tontines && tontines.length > 0;
 
   const totalContributed =
@@ -54,13 +71,32 @@ export default function TontinesPage() {
     <DashboardLayout>
       <DashboardHeader />
 
+      {showKycGuard && <KycGuardPopup onClose={() => setShowKycGuard(false)} />}
+
+      {showInvitationPopup && kycApproved && (
+        <InvitationJoinPopup
+          invitations={invitations ?? []}
+          onClose={() => setShowInvitationPopup(false)}
+        />
+      )}
+
       <div>
-        {!hasTontines && (
+        {!kycApproved && !showKycGuard ? (
+          <TontinesEmptyState
+            onCreate={() => setShowKycGuard(true)}
+            onJoin={() => setShowKycGuard(true)}
+          />
+        ) : !hasTontines ? (
           <TontinesEmptyState
             onCreate={() => navigate('/dashboard/tontines/create')}
-            onJoin={() => {}}
+            onJoin={() => {
+              if (pendingInvitations.length > 0) {
+                setShowInvitationPopup(true);
+              }
+            }}
           />
-        )}
+        ) : null
+        }
 
         {invitations && invitations.length > 0 && (
           <div className={!hasTontines ? "mt-6" : ""}>
@@ -73,7 +109,7 @@ export default function TontinesPage() {
         )}
 
         {hasTontines && (
-          <>
+          <div>
             <div className="flex items-center justify-between mb-1">
               <div>
                 <h1 className="text-2xl font-semibold text-afrilink-dark">Tontines</h1>
@@ -109,7 +145,7 @@ export default function TontinesPage() {
                     : '---'
                 }
                 nextGainLabel={nextGain?.name ?? '---'}
-                pendingRequestsCount={0}
+                pendingRequestsCount={pendingInvitations.length}
               />
             </div>
 
@@ -120,7 +156,13 @@ export default function TontinesPage() {
               ))}
               <NewInitiativeCard />
             </div>
-          </>
+
+            <InvitationsList
+              invitations={invitations ?? []}
+              onAccept={(id) => respondMutation.mutate({ id, response: 'ACCEPT' })}
+              onDecline={(id) => respondMutation.mutate({ id, response: 'DECLINE' })}
+            />
+          </div>
         )}
       </div>
     </DashboardLayout>

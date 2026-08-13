@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Wallet, ArrowLeft, Check, Loader2, WalletMinimal } from 'lucide-react';
-import { walletService } from '@/lib/api/wallet.service';
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Wallet, ArrowLeft, Check, Loader2, WalletMinimal } from "lucide-react";
+import { walletService } from "@/lib/api/wallet.service";
+import { StepIndicator } from "@/components/user_dashboard/send/step-indicator";
 import {
   Dialog,
   DialogContent,
@@ -10,10 +11,10 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface CreateWalletModalProps {
   open: boolean;
@@ -21,22 +22,22 @@ interface CreateWalletModalProps {
 }
 
 const CURRENCIES = [
-  { code: 'XAF', label: 'XAF - Franc CFA', symbol: 'FCFA' },
-  { code: 'EUR', label: 'EUR - Euro', symbol: '€' },
-  { code: 'USD', label: 'USD - Dollar américain', symbol: '$' },
-  { code: 'XOF', label: 'XOF - Franc CFA (UEMOA)', symbol: 'FCFA' },
-  { code: 'NGN', label: 'NGN - Naira', symbol: '₦' },
-  { code: 'GHS', label: 'GHS - Cedi', symbol: 'GH₱' },
-  { code: 'KES', label: 'KES - Shilling kényan', symbol: 'KSh' },
-  { code: 'ZAR', label: 'ZAR - Rand sud-africain', symbol: 'R' },
+  { code: "XAF", label: "XAF - Franc CFA", symbol: "FCFA" },
+  { code: "EUR", label: "EUR - Euro", symbol: "€" },
+  { code: "USD", label: "USD - Dollar américain", symbol: "$" },
+  { code: "XOF", label: "XOF - Franc CFA (UEMOA)", symbol: "FCFA" },
+  { code: "NGN", label: "NGN - Naira", symbol: "₦" },
+  { code: "GHS", label: "GHS - Cedi", symbol: "GH₵" },
+  { code: "KES", label: "KES - Shilling kényan", symbol: "KSh" },
+  { code: "ZAR", label: "ZAR - Rand sud-africain", symbol: "R" },
 ];
 
-const STEP_LABELS = ['Devise', 'Détails', 'Confirmation'] as const;
+const STEPS = [{ label: "Devise" }, { label: "Details" }, { label: "Confirmation" }];
 
 export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [currency, setCurrency] = useState('XAF');
-  const [label, setLabel] = useState('');
+  const [currency, setCurrency] = useState("XAF");
+  const [label, setLabel] = useState("");
 
   const queryClient = useQueryClient();
 
@@ -44,7 +45,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
     mutationFn: walletService.create,
     retry: false,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
       onOpenChange(false);
       resetForm();
     },
@@ -52,12 +53,12 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
 
   const resetForm = () => {
     setStep(1);
-    setCurrency('XAF');
-    setLabel('');
+    setCurrency("XAF");
+    setLabel("");
   };
 
   const selectedCurrency = CURRENCIES.find((c) => c.code === currency) ?? CURRENCIES[0];
-  const currencySymbol = selectedCurrency?.symbol ?? 'FCFA';
+  const currencySymbol = selectedCurrency?.symbol ?? "FCFA";
   const canProceed = step === 1 ? !!currency : step === 2 ? label.trim().length >= 2 : true;
 
   const handleConfirm = () => {
@@ -94,64 +95,27 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
           </DialogTitle>
           <DialogDescription>
             {step === 1
-              ? 'Choisissez la devise de votre nouveau portefeuille.'
+              ? "Choisissez la devise de votre nouveau portefeuille."
               : step === 2
-                ? 'Ajoutez un libellé pour identifier ce portefeuille.'
-                : 'Vérifiez les informations avant la création.'}
+                ? "Ajoutez un libellé pour identifier ce portefeuille."
+                : "Vérifiez les informations avant la création."}
           </DialogDescription>
         </DialogHeader>
 
         {/* Stepper */}
-        <div className="flex items-start my-4 px-2">
-          {[1, 2, 3].map((s, i) => {
-            const isDone = step > s;
-            const isActive = step === s;
-            const isLast = i === 2;
-
-            return (
-              <div key={s} className={`flex items-center ${isLast ? '' : 'flex-1'}`}>
-                <div className="flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[56px] sm:min-w-[84px]">
-                  <div
-                    className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 shrink-0"
-                    style={{
-                      backgroundColor: isDone || isActive ? '#D28E2F' : 'transparent',
-                      color: isDone || isActive ? '#082B37' : 'rgba(0,0,0,0.3)',
-                      border: isDone || isActive ? 'none' : '2px solid rgba(0,0,0,0.2)',
-                      boxShadow: isActive ? '0 0 0 4px rgba(210,142,47,0.2)' : 'none',
-                    }}
-                  >
-                    {isDone ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} /> : s}
-                  </div>
-                  <span
-                    className="text-[9px] sm:text-xs md:text-sm text-center leading-tight whitespace-nowrap transition-colors duration-300 px-0.5"
-                    style={{
-                      color: isActive ? '#082B37' : isDone ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)',
-                      fontWeight: isActive ? 700 : 500,
-                    }}
-                  >
-                    {STEP_LABELS[i]}
-                  </span>
-                </div>
-
-                {!isLast && (
-                  <div
-                    className="flex-1 mx-1 sm:mx-1.5 -mt-5 sm:-mt-6"
-                    style={{
-                      borderTop: '2px dashed rgba(0,0,0,0.25)',
-                      minWidth: '20px',
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
+        <div className="rounded-xl bg-afrilink-dark px-4 pt-5 pb-4 my-4">
+          <StepIndicator
+            steps={STEPS}
+            currentStep={step - 1}
+            completedSteps={[1, 2, 3].map((s) => step > s)}
+          />
         </div>
 
         {/* Step 1: Currency */}
         {step === 1 && (
           <div className="space-y-3">
             <p className="text-sm text-gray-600">
-              La devise détermine l’unité monétaire de vos transactions.
+              La devise détermine l'unité monétaire de vos transactions.
             </p>
             <div className="grid grid-cols-2 gap-3">
               {CURRENCIES.map((c) => (
@@ -159,10 +123,10 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
                   key={c.code}
                   onClick={() => setCurrency(c.code)}
                   className={cn(
-                    'relative p-4 rounded-xl border-2 text-left transition',
+                    "relative p-4 rounded-xl border-2 text-left transition",
                     currency === c.code
-                      ? 'border-afrilink-green bg-afrilink-green/5'
-                      : 'border-gray-200 hover:border-gray-300',
+                      ? "border-afrilink-green bg-afrilink-green/5"
+                      : "border-gray-200 hover:border-gray-300"
                   )}
                 >
                   {currency === c.code && (
@@ -200,8 +164,8 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
             <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-xl p-3">
               <Wallet className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
               <p className="text-[11px] text-blue-600 leading-relaxed">
-                Votre portefeuille sera créé en statut <strong>Inactif</strong>. Il sera
-                automatiquement activé après validation de votre KYC.
+                Votre portefeuille sera créé en statut <strong>Inactif</strong>. Il sera automatiquement
+                activé après validation de votre KYC.
               </p>
             </div>
           </div>
@@ -218,7 +182,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Libellé</span>
-              <span className="font-medium">{label || '—'}</span>
+              <span className="font-medium">{label || "—"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Statut initial</span>
@@ -239,7 +203,10 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
 
         <DialogFooter>
           {step > 1 && (
-            <Button variant="outline" onClick={() => setStep((s) => (s - 1) as 1 | 2)}>
+            <Button
+              variant="outline"
+              onClick={() => setStep((s) => (s - 1) as 1 | 2)}
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Button>
@@ -285,7 +252,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
                     Création...
                   </span>
                 ) : (
-                  'Créer le portefeuille'
+                  "Créer le portefeuille"
                 )}
               </Button>
             </>

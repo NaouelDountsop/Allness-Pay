@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
+import { tranzakService } from '@/lib/api/tranzak.service';
 
 export type MobileMoneyOperator = 'mtn' | 'orange';
 export type DepositMethod = 'mobile_money' | 'bank';
@@ -23,6 +24,8 @@ export const BANK_LABELS: Record<string, string> = {
   autres: 'Autres',
 };
 
+export type DepositStatus = 'idle' | 'submitting' | 'pending' | 'success' | 'failed';
+
 export interface DepositState {
   method: DepositMethod;
   operator: MobileMoneyOperator;
@@ -36,6 +39,9 @@ export interface DepositState {
   reference: string;
   transactionId: string;
   createdAt: Date | null;
+  walletNumber: string;
+  status: DepositStatus;
+  error: string | null;
 }
 
 interface DepositContextValue {
@@ -49,7 +55,8 @@ interface DepositContextValue {
   setAmount: (amount: string) => void;
   setCurrency: (currency: Currency) => void;
   setDescription: (description: string) => void;
-  submitDepositRequest: () => void;
+  setWalletNumber: (walletNumber: string) => void;
+  submitDepositRequest: () => Promise<void>;
   reset: () => void;
 }
 
@@ -66,6 +73,9 @@ const INITIAL_STATE: DepositState = {
   reference: '',
   transactionId: '',
   createdAt: null,
+  walletNumber: '',
+  status: 'idle',
+  error: null,
 };
 
 const DepositContext = createContext<DepositContextValue | null>(null);
@@ -109,14 +119,49 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
     setDeposit((d) => ({ ...d, description }));
   }, []);
 
-  const submitDepositRequest = useCallback(() => {
-    setDeposit((d) => ({
-      ...d,
-      reference: crypto.randomUUID(),
-      transactionId: crypto.randomUUID(),
-      createdAt: new Date(),
-    }));
+  const setWalletNumber = useCallback((walletNumber: string) => {
+    setDeposit((d) => ({ ...d, walletNumber }));
   }, []);
+
+  const submitDepositRequest = useCallback(async () => {
+    if (deposit.method === 'bank') {
+      setDeposit((d) => ({
+        ...d,
+        reference: crypto.randomUUID(),
+        status: 'pending',
+        createdAt: new Date(),
+      }));
+      return;
+    }
+
+    setDeposit((d) => ({ ...d, status: 'submitting', error: null }));
+
+    try {
+      const phone = deposit.phoneNumber.replace(/\s/g, '');
+      const phoneWithPrefix = phone.startsWith('237') ? phone : `237${phone}`;
+
+      const response = await tranzakService.initiatePayment({
+        walletNumber: deposit.walletNumber,
+        amount: deposit.amount,
+        phone_number: phoneWithPrefix,
+        description: deposit.description || 'Dépôt AfriLinkPay',
+      });
+
+      setDeposit((d) => ({
+        ...d,
+        transactionId: response.transactionId,
+        reference: response.transactionId,
+        status: 'pending',
+        createdAt: new Date(),
+      }));
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? (err as { message: string }).message
+          : 'Une erreur est survenue lors de la initiation du paiement.';
+      setDeposit((d) => ({ ...d, status: 'idle', error: message }));
+    }
+  }, [deposit.method, deposit.walletNumber, deposit.amount, deposit.phoneNumber, deposit.description]);
 
   const reset = useCallback(() => setDeposit(INITIAL_STATE), []);
 
@@ -133,6 +178,7 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
         setAmount,
         setCurrency,
         setDescription,
+        setWalletNumber,
         submitDepositRequest,
         reset,
       }}

@@ -53,7 +53,7 @@ export interface CreateTontinePayload {
 }
 
 export interface TontineInvitation {
-  id: number;
+  id: string;
   tontineId: string;
   inviterUserId: number;
   inviteeUserId?: number;
@@ -116,8 +116,14 @@ export const tontineService = {
     return res.data;
   },
 
-  respondInvitation: async (invitationId: number, response: "ACCEPT" | "DECLINE"): Promise<TontineInvitation> => {
-    const res = await apiClient.post<TontineInvitation>(`${basePath}/invitations/${invitationId}/respond`, { response });
+  respondInvitation: async (
+    invitationId: string,
+    response: 'ACCEPT' | 'DECLINE',
+  ): Promise<TontineMember | null> => {
+    const res = await apiClient.post<TontineMember | null>(
+      `${basePath}/invitations/${invitationId}/respond`,
+      { response },
+    );
     return res.data;
   },
 };

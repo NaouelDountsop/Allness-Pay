@@ -116,7 +116,7 @@ export default function RequestSentPage() {
             <div className="border-t border-gray-100 pt-4">
               <p className="text-[11px] text-gray-400 mb-1">Référence</p>
               <div className="flex items-center gap-2">
-                <p className="text-xs font-mono text-gray-600">{deposit.reference}</p>
+                <p className="text-xs font-mono text-gray-600">{deposit.transactionId || deposit.reference}</p>
                 <button className="text-gray-300 hover:text-afrilink-dark" aria-label="Copier">
                   <Copy className="w-3.5 h-3.5" />
                 </button>
@@ -150,7 +150,7 @@ export default function RequestSentPage() {
             <div className="border-t border-gray-100 pt-4">
               <p className="text-[11px] text-gray-400 mb-1">Référence</p>
               <div className="flex items-center gap-2">
-                <p className="text-xs font-mono text-gray-600">{deposit.reference}</p>
+                <p className="text-xs font-mono text-gray-600">{deposit.transactionId || deposit.reference}</p>
                 <button className="text-gray-300 hover:text-afrilink-dark" aria-label="Copier">
                   <Copy className="w-3.5 h-3.5" />
                 </button>

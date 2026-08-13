@@ -26,7 +26,7 @@ export default function DepositSuccessPage() {
 
   const handleBackToWallet = () => {
     reset();
-    navigate('wallet');
+    navigate('/dashboard/wallet');
   };
 
   return (
@@ -58,15 +58,13 @@ export default function DepositSuccessPage() {
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400">Montant crédité</span>
               <span className="text-lg font-bold text-afrilink-green">
-                +{deposit.amount || '5 000'} FCFA
+                +{new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-400">Référence</span>
               <span className="text-xs font-mono text-afrilink-dark">
-                {deposit.transactionId
-                  ? `TXN-${deposit.transactionId.slice(0, 12).toUpperCase()}`
-                  : 'TXN-20240527-BF7K2Z'}
+                {deposit.transactionId || '—'}
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
@@ -105,8 +103,10 @@ export default function DepositSuccessPage() {
 
           <div className="rounded-xl bg-green-50 border border-green-100 p-4 flex items-center justify-between mb-6">
             <div>
-              <p className="text-[11px] text-green-700 mb-1">Nouveau solde</p>
-              <p className="text-lg font-bold text-afrilink-dark">125 000 FCFA</p>
+              <p className="text-[11px] text-green-700 mb-1">Montant déposé</p>
+              <p className="text-lg font-bold text-afrilink-dark">
+                {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
+              </p>
             </div>
             <Eye className="w-4 h-4 text-green-600" />
           </div>
