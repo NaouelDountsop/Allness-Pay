@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { TransactionsService } from '../../modules/transactions/transactions.service';
@@ -14,6 +14,7 @@ import { WalletTransaction } from '../../modules/transactions/entities/wallet-tr
 
 @Injectable()
 export class TranzakService {
+  private readonly logger = new Logger(TranzakService.name);
   private readonly baseUrl: string;
   private readonly appId: string;
   private readonly appKey: string;
@@ -150,7 +151,7 @@ export class TranzakService {
     const operator = detectOperator(dto.phone_number);
     if (!operator) {
       throw new BadRequestException(
-        'Numéro de téléphone non reconnu. Seuls les préfixes MTN (650-659) et Orange (690-699) sont acceptés.',
+        'Numéro de téléphone non reconnu. Préfixes acceptés — MTN : 650-654, 670-679, 680-683 / Orange : 640, 655-659, 686-699.',
       );
     }
 
@@ -173,9 +174,6 @@ export class TranzakService {
       returnUrl: this.returnUrl,
       callbackUrl: this.callbackUrl || undefined,
     });
-
-    // Log temporaire pour diagnostiquer les réponses Tranzak inattendues
-    console.log('Réponse Tranzak brute:', JSON.stringify(tranzakResponse, null, 2));
 
     if (!tranzakResponse.success) {
       throw new InternalServerErrorException(
@@ -224,8 +222,10 @@ export class TranzakService {
   }
 
   async handleCallback(identifier: string, _status: string, isRequestId: boolean) {
+    this.logger.log(`Callback received: identifier=${identifier}, isRequestId=${isRequestId}`);
     // Vérifier directement auprès de Tranzak le statut réel du paiement
     const verifiedStatus = await this.verifyPaymentStatus(identifier);
+    this.logger.log(`Callback verified status for ${identifier}: ${verifiedStatus}`);
 
     const tranzakStatus =
       verifiedStatus === 'SUCCESSFUL'
@@ -297,16 +297,105 @@ export class TranzakService {
   }
 
   /**
+   * Vérification proactive : interroge Tranzak pour le statut réel,
+   * puis met à jour la DB si le statut a changé.
+   * Utilisée quand le callback n'arrive pas (fallback).
+   */
+  async verifyAndConfirmPayment(
+    transactionId: string,
+  ): Promise<{
+    status: WalletTransactionStatus;
+    amount: string;
+  }> {
+    const transaction = await this.walletTransactionRepo.findOne({
+      where: { id: transactionId },
+    });
+
+    if (!transaction) {
+      throw new BadRequestException(`Transaction ${transactionId} introuvable`);
+    }
+
+    // Retourner immédiatement le statut de la DB (rapide)
+    if (
+      transaction.status === WalletTransactionStatus.COMPLETED ||
+      transaction.status === WalletTransactionStatus.FAILED
+    ) {
+      return {
+        status: transaction.status,
+        amount: transaction.amount.toString(),
+      };
+    }
+
+    // Lancer la vérification Tranzak en arrière-plan (non bloquant)
+    const identifier = transaction.providerRequestId ?? transaction.providerTransactionId;
+    if (identifier) {
+      this.verifyInBackground(transaction, identifier).catch((err) => {
+        this.logger.error(`Background verify failed for ${identifier}: ${err.message}`);
+      });
+    }
+
+    // Retourner PENDING immédiatement
+    return {
+      status: transaction.status,
+      amount: transaction.amount.toString(),
+    };
+  }
+
+  /**
+   * Vérifie Tranzak en arrière-plan et met à jour la DB si le statut a changé.
+   * Le prochain poll du frontend verra le nouveau statut.
+   */
+  private async verifyInBackground(
+    transaction: WalletTransaction,
+    identifier: string,
+  ): Promise<void> {
+    try {
+      const verifiedStatus = await this.verifyPaymentStatus(identifier);
+      this.logger.log(`Background verify ${identifier}: Tranzak status = ${verifiedStatus}`);
+
+      const newStatus =
+        verifiedStatus === 'SUCCESSFUL'
+          ? WalletTransactionStatus.COMPLETED
+          : verifiedStatus === 'PENDING'
+            ? transaction.status
+            : WalletTransactionStatus.FAILED;
+
+      if (
+        newStatus !== transaction.status &&
+        (newStatus === WalletTransactionStatus.COMPLETED ||
+          newStatus === WalletTransactionStatus.FAILED)
+      ) {
+        this.logger.log(`Background verify ${identifier}: updating DB from ${transaction.status} to ${newStatus}`);
+        await this.transactionsService.confirmExternalPayment(
+          'TRANZAK',
+          identifier,
+          newStatus,
+          !!transaction.providerRequestId,
+        );
+      }
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      this.logger.error(`Background verify ${identifier} failed: ${err.message}`);
+    }
+  }
+
+  /**
    * Vérifie le statut réel d'un paiement auprès de Tranzak.
    * Le callback envoie providerTransactionId (TX...), mais l'API verify
    * utilise providerRequestId (REQ...). On cherche d'abord en DB.
    */
-  private async verifyPaymentStatus(providerTransactionId: string): Promise<string> {
-    const transaction = await this.walletTransactionRepo.findOne({
-      where: { provider: 'TRANZAK', providerTransactionId },
+  private async verifyPaymentStatus(identifier: string): Promise<string> {
+    // Chercher d'abord par providerRequestId (REQ...), sinon par providerTransactionId (TX...)
+    let transaction = await this.walletTransactionRepo.findOne({
+      where: { provider: 'TRANZAK', providerRequestId: identifier },
     });
+    if (!transaction) {
+      transaction = await this.walletTransactionRepo.findOne({
+        where: { provider: 'TRANZAK', providerTransactionId: identifier },
+      });
+    }
 
-    const requestIdToVerify = transaction?.providerRequestId ?? providerTransactionId;
+    const requestIdToVerify = transaction?.providerRequestId ?? identifier;
 
     try {
       const token = await this.getAccessToken();

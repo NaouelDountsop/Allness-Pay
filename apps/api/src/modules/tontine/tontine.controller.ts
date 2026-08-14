@@ -125,12 +125,6 @@ export class TontineController {
     return this.tontineService.leave(id, req.user.sub);
   }
 
-  @Get('invitations/pending/me')
-  @ApiOperation({ summary: 'Mes invitations en attente' })
-  findMyPendingInvitations(@Req() req: AuthenticatedRequest) {
-    return this.invitationService.findPendingForUser(req.user.sub, req.user.email);
-  }
-
   @Get('invitations/pending')
   @ApiOperation({ summary: "Lister les invitations en attente de l'utilisateur" })
   listPendingInvitations(@Req() req: AuthenticatedRequest) {

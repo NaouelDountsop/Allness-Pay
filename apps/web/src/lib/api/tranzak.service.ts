@@ -32,4 +32,13 @@ export const tranzakService = {
     );
     return res.data;
   },
+
+  verifyPayment: async (
+    transactionId: string,
+  ): Promise<TranzakPaymentStatusResponse> => {
+    const res = await apiClient.post<TranzakPaymentStatusResponse>(
+      `/payments/tranzak/verify/${transactionId}`,
+    );
+    return res.data;
+  },
 };

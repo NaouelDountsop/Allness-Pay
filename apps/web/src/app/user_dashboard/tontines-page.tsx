@@ -95,7 +95,8 @@ export default function TontinesPage() {
               }
             }}
           />
-        )}
+        ):null
+      }
 
         {invitations && invitations.length > 0 && (
           <div className={!hasTontines ? "mt-6" : ""}>

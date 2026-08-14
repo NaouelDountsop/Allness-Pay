@@ -19,7 +19,6 @@ import {
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
-import { Badge } from '../../components/ui/badge';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
@@ -49,25 +48,26 @@ const COUNTRY_MAP: Record<string, string> = {
 };
 
 const NETWORK_LABELS: Record<string, string> = {
-  mtn_momo: 'MTN Mobile Money',
-  orange_money: 'Orange Money',
-  wave: 'Wave',
-  free_money: 'Free Money',
-  moov_money: 'Moov Money',
-  airtel_money: 'Airtel Money',
+  MTN_MOMO: 'MTN Mobile Money',
+  ORANGE_MONEY: 'Orange Money',
+  WAVE: 'Wave',
+  MOOV_MONEY: 'Moov Money',
+  AFRILINKPAY: 'AfriLinkPay',
+  AUTRE: 'Autre',
 };
 
 function NetworkBadge({ network }: { network: string }) {
-  const isMtn = network === 'mtn_momo';
+  const isMtn = network === 'MTN_MOMO';
+  const isOrange = network === 'ORANGE_MONEY';
   const label = NETWORK_LABELS[network] ?? network;
   return (
     <div className="flex items-center gap-2">
       <span
         className={`w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold shrink-0 ${
-          isMtn ? 'bg-yellow-400 text-afrilink-dark' : 'bg-afrilink-orange text-white'
+          isMtn ? 'bg-yellow-400 text-afrilink-dark' : isOrange ? 'bg-orange-500 text-white' : 'bg-gray-400 text-white'
         }`}
       >
-        {isMtn ? 'MTN' : 'OM'}
+        {isMtn ? 'MTN' : isOrange ? 'OM' : label.slice(0, 2).toUpperCase()}
       </span>
       <span className="text-xs text-gray-600">{label}</span>
     </div>
@@ -80,16 +80,16 @@ export default function BeneficiariesPage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const { data: beneficiaries = [], isLoading } = useQuery({
+  const { data: response, isLoading } = useQuery({
     queryKey: ['beneficiaries'],
     queryFn: beneficiaryService.list,
   });
 
+  const beneficiaries = response?.data ?? [];
   const filtered = beneficiaries.filter(
     (b) =>
       b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.phone.includes(search) ||
-      b.nickname?.toLowerCase().includes(search.toLowerCase()),
+      b.phone.includes(search),
   );
 
   const handleSend = (b: Beneficiary) => {
@@ -258,7 +258,7 @@ export default function BeneficiariesPage() {
                   <th className="font-medium pb-3 hidden sm:table-cell">Numéro</th>
                   <th className="font-medium pb-3 hidden md:table-cell">Réseau</th>
                   <th className="font-medium pb-3 hidden lg:table-cell">Pays</th>
-                  <th className="font-medium pb-3">Statut</th>
+                  {/* <th className="font-medium pb-3">Statut</th> */}
                   <th className="font-medium pb-3 hidden xl:table-cell">Ajouté le</th>
                   <th className="font-medium pb-3 text-right">Actions</th>
                 </tr>
@@ -305,7 +305,7 @@ export default function BeneficiariesPage() {
                           {b.country}
                         </div>
                       </td>
-                      <td>
+                      {/* <td>
                         <Badge
                           tone={
                             b.status === 'verified'
@@ -322,7 +322,7 @@ export default function BeneficiariesPage() {
                               ? 'En attente'
                               : 'Rejeté'}
                         </Badge>
-                      </td>
+                      </td> */}
                       <td className="text-xs text-gray-500 hidden xl:table-cell">
                         {new Date(b.createdAt).toLocaleDateString('fr-FR', {
                           day: '2-digit',

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCcw, CheckCircle2, XCircle, Loader2, Info, ArrowLeft } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -10,93 +10,78 @@ const MOBILE_MONEY_STEPS = [
   'Requête envoyée à Tranzak',
   'Vérification Tranzak',
   'Confirmation opérateur',
-  'Crédit du portefeuille',
 ];
 
 const BANK_STEPS = [
   'Virement enregistré',
   'Vérification bancaire',
   'Confirmation réception',
-  'Crédit du portefeuille',
 ];
 
-const POLL_INTERVAL = 3000;
-const MAX_POLLS = 40;
+const VERIFY_INTERVAL = 3000;
+const MAX_ATTEMPTS = 20;
 
 export default function ProcessingPage() {
   const navigate = useNavigate();
-  const { deposit } = useDepositFlow();
+  const { deposit, reset } = useDepositFlow();
   const isBank = deposit.method === 'bank';
   const steps = isBank ? BANK_STEPS : MOBILE_MONEY_STEPS;
 
-  const [completedCount, setCompletedCount] = useState(0);
-  const [finalStatus, setFinalStatus] = useState<'success' | 'failed' | null>(null);
-  const pollCountRef = useRef(0);
+  const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
+  const [stepIndex, setStepIndex] = useState(0);
+  const attemptsRef = useRef(0);
 
-  const pollStatus = useCallback(async () => {
-    if (!deposit.transactionId || isBank) return;
+  useEffect(() => {
+    if (isBank || !deposit.transactionId) return;
 
-    try {
-      const res = await tranzakService.getPaymentStatus(deposit.transactionId);
-      if (res.status === 'COMPLETED') {
-        setCompletedCount(steps.length);
-        setFinalStatus('success');
-      } else if (res.status === 'FAILED') {
-        setFinalStatus('failed');
-      }
-    } catch {
-      // Silently ignore polling errors, will retry
-    }
+    const interval = setInterval(() => {
+      attemptsRef.current += 1;
+
+      tranzakService.verifyPayment(deposit.transactionId).then((res) => {
+        if (res.status === 'completed') {
+          clearInterval(interval);
+          setStatus('success');
+        } else if (res.status === 'failed') {
+          clearInterval(interval);
+          setStatus('failed');
+        } else {
+          setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+          if (attemptsRef.current >= MAX_ATTEMPTS) {
+            clearInterval(interval);
+            setStatus('failed');
+          }
+        }
+      }).catch(() => {
+        setStepIndex((i) => Math.min(i + 1, steps.length - 1));
+        if (attemptsRef.current >= MAX_ATTEMPTS) {
+          clearInterval(interval);
+          setStatus('failed');
+        }
+      });
+    }, VERIFY_INTERVAL);
+
+    return () => clearInterval(interval);
   }, [deposit.transactionId, isBank, steps.length]);
 
   useEffect(() => {
-    if (isBank) {
-      const timer = setTimeout(() => {
-        setCompletedCount(steps.length);
-        setFinalStatus('success');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-
-    if (!deposit.transactionId) return;
-
-    const interval = setInterval(() => {
-      pollCountRef.current += 1;
-      if (pollCountRef.current > MAX_POLLS) {
-        clearInterval(interval);
-        setFinalStatus('failed');
-        return;
-      }
-      pollStatus();
-    }, POLL_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [deposit.transactionId, isBank, pollStatus, steps.length]);
+    if (!isBank) return;
+    const timer = setTimeout(() => setStatus('success'), 5000);
+    return () => clearTimeout(timer);
+  }, [isBank]);
 
   useEffect(() => {
-    if (finalStatus === 'success') {
-      const timer = setTimeout(() => navigate('/dashboard/wallet'), 1000);
-      return () => clearTimeout(timer);
+    if (status === 'success') {
+      const t = setTimeout(() => { reset(); navigate('/dashboard/wallet'); }, 1500);
+      return () => clearTimeout(t);
     }
-    if (finalStatus === 'failed') {
-      const timer = setTimeout(() => navigate('/deposit'), 3000);
-      return () => clearTimeout(timer);
+    if (status === 'failed') {
+      const t = setTimeout(() => { reset(); navigate('/deposit'); }, 3000);
+      return () => clearTimeout(t);
     }
-  }, [finalStatus, navigate]);
+  }, [status, navigate, reset]);
 
-  useEffect(() => {
-    if (isBank || finalStatus) return;
-    const stepTimer = setInterval(() => {
-      setCompletedCount((c) => {
-        if (c >= steps.length - 1) {
-          clearInterval(stepTimer);
-          return c;
-        }
-        return c + 1;
-      });
-    }, 2000);
-    return () => clearInterval(stepTimer);
-  }, [isBank, finalStatus, steps.length]);
+  const isDone = (i: number) => status === 'success' || i < stepIndex;
+  const isCurrent = (i: number) => status === 'success' || status === 'failed' ? false : i === stepIndex;
 
   return (
     <DashboardLayout>
@@ -121,9 +106,9 @@ export default function ProcessingPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-10">
           <div className="flex justify-center mb-8">
             <span className="w-24 h-24 rounded-full bg-green-50 flex items-center justify-center">
-              {finalStatus === 'success' ? (
+              {status === 'success' ? (
                 <CheckCircle2 className="w-10 h-10 text-afrilink-green" />
-              ) : finalStatus === 'failed' ? (
+              ) : status === 'failed' ? (
                 <XCircle className="w-10 h-10 text-red-500" />
               ) : (
                 <RefreshCcw className="w-10 h-10 text-afrilink-green animate-spin [animation-duration:2.5s]" />
@@ -131,7 +116,15 @@ export default function ProcessingPage() {
             </span>
           </div>
 
-          {finalStatus === 'failed' && (
+          {status === 'success' && (
+            <div className="rounded-xl bg-green-50 border border-green-100 p-4 text-center mb-6">
+              <p className="text-sm font-medium text-green-600">
+                Paiement confirmé ! Votre wallet a été crédité.
+              </p>
+            </div>
+          )}
+
+          {status === 'failed' && (
             <div className="rounded-xl bg-red-50 border border-red-100 p-4 text-center mb-6">
               <p className="text-sm font-medium text-red-600">
                 Le paiement a échoué. Vous allez être redirigé.
@@ -144,28 +137,24 @@ export default function ProcessingPage() {
               Vérification de la transaction
             </p>
             <div className="flex flex-col gap-3">
-              {steps.map((label, i) => {
-                const isDone = finalStatus === 'success' || i < completedCount;
-                const isCurrent = !finalStatus && i === completedCount;
-                return (
-                  <div key={label} className="flex items-center justify-between">
-                    <span className="text-xs text-gray-600">{label}</span>
-                    {isDone ? (
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-green">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Complétée
-                      </span>
-                    ) : isCurrent ? (
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-orange">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        En cours...
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-gray-300">En attente</span>
-                    )}
-                  </div>
-                );
-              })}
+              {steps.map((label, i) => (
+                <div key={label} className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">{label}</span>
+                  {isDone(i) ? (
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-green">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Complétée
+                    </span>
+                  ) : isCurrent(i) ? (
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-orange">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      En cours...
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-gray-300">En attente</span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 

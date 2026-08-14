@@ -38,16 +38,17 @@ export class WalletsService {
         .where('wallet.userId = :userId', { userId })
         .getMany();
 
+      const kyc = await manager.findOne(Kyc, { where: { userId } });
+      const kycApproved = kyc?.status === KycStatus.APPROVED;
+
       const wallet = manager.create(Wallet, {
         userId,
         balance: 0n,
         currency: dto.currency ?? 'XAF',
-        status: WalletStatus.INACTIVE,
+        status: kycApproved ? WalletStatus.ACTIVE : WalletStatus.INACTIVE,
         failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
-
-        // Le premier wallet d'un utilisateur devient automatiquement son wallet principal.
         isPrimary: existingWallets.length === 0,
       });
 
