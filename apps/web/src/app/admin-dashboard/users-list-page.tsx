@@ -7,8 +7,7 @@ import {
   AlertTriangle,
   Download,
   UserPlus,
-  ChevronDown,
-  SlidersHorizontal,
+  RotateCcw,
   Eye,
   Pencil,
   Ban,
@@ -19,16 +18,54 @@ import { Pagination, Badge } from '../../components/ui';
 import { UserDetailPanel } from './user-detail-panel';
 import { adminService } from '../../lib/api/admin.service';
 
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function UsersListPage() {
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [exporting, setExporting] = useState(false);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: adminService.listUsers,
   });
 
+  const { data: stats } = useQuery({
+    queryKey: ['admin-dashboard-stats'],
+    queryFn: adminService.getDashboardStats,
+  });
+
+  const filtered = users?.filter((u) => {
+    const matchesCountry = countryFilter === 'all' || u.pays === countryFilter;
+    const matchesStatus =
+      statusFilter === 'all' ||
+      (statusFilter === 'active' && u.verificationotp) ||
+      (statusFilter === 'pending' && !u.verificationotp);
+    return matchesCountry && matchesStatus;
+  });
+
   const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const blob = await adminService.exportUsers();
+      downloadBlob(blob, `users_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    } catch {
+      // silent
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <AdminLayout active="utilisateurs">
@@ -40,8 +77,12 @@ export default function UsersListPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
-            <Download className="w-3.5 h-3.5" />
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
             Exporter
           </button>
           <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
@@ -59,7 +100,7 @@ export default function UsersListPage() {
             </span>
             <span className="text-sm text-gray-300">Utilisateurs Totaux</span>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(users?.length ?? 0)}</p>
+          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalUsers ?? users?.length ?? 0)}</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -69,7 +110,7 @@ export default function UsersListPage() {
             </span>
             <span className="text-sm text-gray-300">KYC Complétés</span>
           </div>
-          <p className="text-2xl font-bold text-white">94.2%</p>
+          <p className="text-2xl font-bold text-white">{stats?.kyc.approved ?? 0}</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -79,7 +120,9 @@ export default function UsersListPage() {
             </span>
             <span className="text-sm text-gray-300">Flux Mensuel</span>
           </div>
-          <p className="text-2xl font-bold text-white">0 XAF</p>
+          <p className="text-2xl font-bold text-white">
+            {formatNumber(stats?.monthlyVolume ?? 0)} XAF
+          </p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -94,22 +137,41 @@ export default function UsersListPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-              Tous les pays
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-            <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-              Niveau Utilisateur
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-            <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              Plus de filtres
-            </button>
-          </div>
-          <p className="text-xs text-gray-400">Affichage de {users?.length ?? 0} utilisateurs</p>
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <select
+            value={countryFilter}
+            onChange={(e) => setCountryFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Tous les pays</option>
+            <option value="CM">Cameroun</option>
+            <option value="SN">Sénégal</option>
+            <option value="CI">Côte d'Ivoire</option>
+            <option value="GA">Gabon</option>
+            <option value="CG">Congo</option>
+            <option value="NE">Niger</option>
+            <option value="ML">Mali</option>
+            <option value="BF">Burkina Faso</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="active">Actif</option>
+            <option value="pending">En attente</option>
+          </select>
+          <button
+            onClick={() => {
+              setCountryFilter('all');
+              setStatusFilter('all');
+            }}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Réinitialiser
+          </button>
         </div>
 
         {isLoading ? (
@@ -129,7 +191,7 @@ export default function UsersListPage() {
                 </tr>
               </thead>
               <tbody>
-                {users?.map((u) => {
+                {filtered?.map((u) => {
                   const initials =
                     `${u.prenom?.charAt(0) ?? ''}${u.nom?.charAt(0) ?? ''}`.toUpperCase();
                   const statusTone = u.verificationotp ? ('green' as const) : ('orange' as const);

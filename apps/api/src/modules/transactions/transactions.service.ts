@@ -258,6 +258,87 @@ export class TransactionsService {
       .getMany();
   }
 
+  async getMonthlySummary(walletId: string) {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const currentMonthResult = await this.dataSource
+      .getRepository(WalletTransaction)
+      .createQueryBuilder('tx')
+      .select(
+        `SUM(CASE WHEN tx.type IN ('deposit', 'transfer_in') THEN tx.amount ELSE 0 END)`,
+        'income',
+      )
+      .addSelect(
+        `SUM(CASE WHEN tx.type IN ('withdrawal', 'transfer_out') THEN tx.amount ELSE 0 END)`,
+        'expense',
+      )
+      .where('tx.walletId = :walletId', { walletId })
+      .andWhere('tx.status = :status', { status: WalletTransactionStatus.COMPLETED })
+      .andWhere('tx.createdAt >= :start', { start: startOfMonth.toISOString() })
+      .getRawOne();
+
+    const income = Number(currentMonthResult?.income ?? 0);
+    const expense = Number(currentMonthResult?.expense ?? 0);
+    const total = income + expense;
+    const incomePercent = total > 0 ? Math.round((income / total) * 100) : 0;
+    const expensePercent = total > 0 ? 100 - incomePercent : 0;
+
+    const months: Array<{ month: string; income: number; expense: number }> = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+      const label = d.toLocaleDateString('fr-FR', { month: 'short' });
+      const result = await this.dataSource
+        .getRepository(WalletTransaction)
+        .createQueryBuilder('tx')
+        .select(
+          `SUM(CASE WHEN tx.type IN ('deposit', 'transfer_in') THEN tx.amount ELSE 0 END)`,
+          'income',
+        )
+        .addSelect(
+          `SUM(CASE WHEN tx.type IN ('withdrawal', 'transfer_out') THEN tx.amount ELSE 0 END)`,
+          'expense',
+        )
+        .where('tx.walletId = :walletId', { walletId })
+        .andWhere('tx.status = :status', { status: WalletTransactionStatus.COMPLETED })
+        .andWhere('tx.createdAt >= :start AND tx.createdAt <= :end', {
+          start: d.toISOString(),
+          end: monthEnd.toISOString(),
+        })
+        .getRawOne();
+      months.push({
+        month: label,
+        income: Number(result?.income ?? 0),
+        expense: Number(result?.expense ?? 0),
+      });
+    }
+
+    return {
+      month: now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
+      income,
+      expense,
+      net: income - expense,
+      incomePercent,
+      expensePercent,
+      trend: months,
+    };
+  }
+
+  async exportCsv(walletId: string): Promise<string> {
+    const transactions = await this.listByWallet(walletId);
+    const headers = ['Date', 'Type', 'Montant', 'Statut', 'Description', 'Référence'];
+    const rows = transactions.map((tx) => [
+      tx.createdAt.toISOString(),
+      tx.type,
+      String(tx.amount),
+      tx.status,
+      tx.description ?? '',
+      tx.reference ?? '',
+    ]);
+    return [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
+  }
+
   private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
     const result = await manager
       .createQueryBuilder(WalletTransaction, 'wt')

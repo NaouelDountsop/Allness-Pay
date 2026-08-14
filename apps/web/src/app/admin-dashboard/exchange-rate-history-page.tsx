@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Download, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Pagination } from '../../components/ui';
 import { useState } from 'react';
@@ -55,6 +55,8 @@ const HISTORY = [
 export default function ExchangeRateHistoryPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [pairFilter, setPairFilter] = useState('all');
+  const [periodFilter, setPeriodFilter] = useState('all');
 
   return (
     <AdminLayout active="parametres">
@@ -76,14 +78,37 @@ export default function ExchangeRateHistoryPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center gap-3 mb-5">
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Paire de devise: USD/XAF
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Période: 7 derniers jours
-            <ChevronDown className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <select
+            value={pairFilter}
+            onChange={(e) => setPairFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Toutes les paires</option>
+            <option value="USD/XAF">USD/XAF</option>
+            <option value="EUR/XAF">EUR/XAF</option>
+            <option value="GBP/XAF">GBP/XAF</option>
+            <option value="EUR/USD">EUR/USD</option>
+          </select>
+          <select
+            value={periodFilter}
+            onChange={(e) => setPeriodFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Toutes les périodes</option>
+            <option value="7d">7 derniers jours</option>
+            <option value="30d">30 derniers jours</option>
+            <option value="90d">90 derniers jours</option>
+          </select>
+          <button
+            onClick={() => {
+              setPairFilter('all');
+              setPeriodFilter('all');
+            }}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Réinitialiser
           </button>
         </div>
 

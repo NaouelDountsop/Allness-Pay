@@ -5,10 +5,10 @@ import {
   Handshake,
   Search,
   ChevronDown,
+  RotateCcw,
   Plus,
   Eye,
   MoreVertical,
-  Filter,
   Download,
   X,
   ArrowRight,
@@ -258,15 +258,6 @@ function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
   );
 }
 
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] text-gray-600 hover:border-gray-300">
-      {label}
-      <ChevronDown className="h-3 w-3 text-gray-400" />
-    </button>
-  );
-}
-
 function ServiceTag({ label }: { label: string }) {
   return (
     <span className="rounded-full bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-600">
@@ -485,8 +476,22 @@ function DistributionCard() {
 export default function PartnersPage() {
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(PARTNERS[0]!);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
   const totalPartners = 28;
   const pageSize = 10;
+
+  const filtered = PARTNERS.filter((p) => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.short.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = typeFilter === 'all' || p.type === typeFilter;
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    const matchesCountry = countryFilter === 'all' || p.country === countryFilter;
+    return matchesSearch && matchesType && matchesStatus && matchesCountry;
+  });
 
   return (
     <AdminLayout>
@@ -522,17 +527,55 @@ export default function PartnersPage() {
                     <Search className="h-4 w-4 text-gray-400" />
                     <input
                       placeholder="Rechercher..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
                     />
                   </div>
                 </div>
-                <FilterSelect label="Type" />
-                <FilterSelect label="Statut" />
-                <FilterSelect label="Pays" />
-                <Button variant="outline" className="h-8 rounded-lg px-2 text-xs">
-                  <Filter className="mr-1 h-3 w-3" />
-                  Filtres
-                </Button>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                >
+                  <option value="all">Type</option>
+                  <option value="Opérateur Mobile">Opérateur Mobile</option>
+                  <option value="Banque">Banque</option>
+                  <option value="Fournisseur Service">Fournisseur Service</option>
+                  <option value="Marchand">Marchand</option>
+                </select>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                >
+                  <option value="all">Statut</option>
+                  <option value="Actif">Actif</option>
+                  <option value="En maintenance">En maintenance</option>
+                  <option value="Inactif">Inactif</option>
+                  <option value="Suspendu">Suspendu</option>
+                </select>
+                <select
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                >
+                  <option value="all">Pays</option>
+                  <option value="Cameroun">Cameroun</option>
+                  <option value="Sénégal">Sénégal</option>
+                </select>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setTypeFilter('all');
+                    setStatusFilter('all');
+                    setCountryFilter('all');
+                  }}
+                  className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] text-gray-600 hover:bg-gray-50"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Réinitialiser
+                </button>
                 <button
                   className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
                   aria-label="Exporter"
@@ -558,7 +601,7 @@ export default function PartnersPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {PARTNERS.map((partner) => (
+                    {filtered.map((partner) => (
                       <PartnerRow
                         key={partner.id}
                         partner={partner}

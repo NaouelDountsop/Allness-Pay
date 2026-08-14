@@ -6,15 +6,11 @@ import { WalletBalanceCard } from '@/components/user_dashboard/wallet/wallet-bal
 import { QuickSend } from '@/components/user_dashboard/quick-send';
 import { TransactionsList } from '@/components/user_dashboard/transactions-list';
 import { MonthlySummary } from '@/components/user_dashboard/spending-charts';
-import {
-  mockMonthlyTrend,
-  mockMonthlySummaryHeader,
-} from '@/components/user_dashboard/mock-monthly-trend';
 import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
-import { mockContacts } from '@/lib/mock/dashboard-data';
 import { walletService } from '@/lib/api/wallet.service';
 import { kycService } from '@/lib/api/kyc.service';
 import { transactionService } from '@/lib/api/transaction.service';
+import { beneficiaryService } from '@/lib/api/beneficiary.service';
 
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
@@ -40,6 +36,19 @@ export default function DashboardPage() {
     queryFn: () => transactionService.listByWallet(wallet!.id),
     enabled: !!wallet?.id,
   });
+
+  const { data: beneficiaries = [] } = useQuery({
+    queryKey: ['beneficiaries'],
+    queryFn: beneficiaryService.list,
+  });
+
+  const { data: monthlySummary, isLoading: summaryLoading } = useQuery({
+    queryKey: ['monthly-summary', wallet?.id],
+    queryFn: () => transactionService.getMonthlySummary(wallet!.id),
+    enabled: !!wallet?.id,
+  });
+
+  const lastFiveTransactions = transactions.slice(0, 5);
 
   const totalIncome = transactions.reduce((sum, t) => {
     const credit = transactionService.isCredit(t.type);
@@ -131,18 +140,33 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <TransactionsList transactions={transactions} isLoading={txLoading} />
+            <TransactionsList transactions={lastFiveTransactions} isLoading={txLoading} />
           </div>
 
           <div className="space-y-6">
-            <QuickSend contacts={mockContacts} />
-            <MonthlySummary
-              month={mockMonthlySummaryHeader.month}
-              incomePercent={mockMonthlySummaryHeader.incomePercent}
-              expensePercent={mockMonthlySummaryHeader.expensePercent}
-              netAmount={mockMonthlySummaryHeader.netAmount}
-              data={mockMonthlyTrend}
+            <QuickSend
+              contacts={beneficiaries.map((b) => ({
+                id: b.id,
+                name: b.name,
+                avatarUrl: null,
+              }))}
+              walletId={wallet?.id}
             />
+            {!summaryLoading && monthlySummary && (
+              <MonthlySummary
+                month={monthlySummary.month}
+                incomePercent={monthlySummary.incomePercent}
+                expensePercent={monthlySummary.expensePercent}
+                netAmount={monthlySummary.net}
+                data={monthlySummary.trend.map((t) => ({
+                  label: t.month,
+                  revenus: t.income,
+                  depenses: t.expense,
+                  epargne: 0,
+                  solde: t.income - t.expense,
+                }))}
+              />
+            )}
           </div>
         </div>
       </div>

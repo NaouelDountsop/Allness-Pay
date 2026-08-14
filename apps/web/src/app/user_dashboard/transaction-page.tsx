@@ -7,6 +7,8 @@ import {
   Download,
   Eye,
   Loader2,
+  Search,
+  RotateCcw,
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
@@ -17,6 +19,9 @@ import { walletService } from '../../lib/api/wallet.service';
 
 export default function TransactionsPage() {
   const [selected, setSelected] = useState<WalletTransaction | null>(null);
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const { data: wallet } = useQuery({
     queryKey: ['wallet-primary'],
@@ -27,6 +32,15 @@ export default function TransactionsPage() {
     queryKey: ['transactions', wallet?.id],
     queryFn: () => transactionService.listByWallet(wallet!.id),
     enabled: !!wallet?.id,
+  });
+
+  const filtered = transactions?.filter((t) => {
+    const matchesSearch =
+      (t.reference ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      transactionService.getTypeLabel(t.type).toLowerCase().includes(search.toLowerCase());
+    const matchesType = typeFilter === 'all' || t.type === typeFilter;
+    const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
+    return matchesSearch && matchesType && matchesStatus;
   });
 
  const totalVolume =
@@ -108,11 +122,60 @@ export default function TransactionsPage() {
         </div>
 
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-afrilink-dark">Historique</h3>
-            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
-              Filtres
-            </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 items-end">
+            <div>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Rechercher</label>
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Référence, type..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Type</label>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous les types</option>
+                <option value="deposit">Dépôt</option>
+                <option value="withdrawal">Retrait</option>
+                <option value="transfer">Transfert</option>
+                <option value="payment">Paiement</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Statut</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous les statuts</option>
+                <option value="completed">Complété</option>
+                <option value="pending">En attente</option>
+                <option value="failed">Échoué</option>
+              </select>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setTypeFilter('all');
+                  setStatusFilter('all');
+                }}
+                className="h-10 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Réinitialiser
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
@@ -128,7 +191,7 @@ export default function TransactionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {transactions?.map((t) => {
+                {filtered?.map((t) => {
                   const credit = transactionService.isCredit(t.type);
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">

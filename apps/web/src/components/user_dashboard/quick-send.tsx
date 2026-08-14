@@ -1,19 +1,26 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Plus, ChevronDown, Check } from 'lucide-react';
-import type { QuickContact } from '@/lib/mock/dashboard-data';
+
+interface QuickSendContact {
+  id: string | number;
+  name: string;
+  avatarUrl?: string | null;
+}
 
 interface QuickSendProps {
-  contacts: QuickContact[];
+  contacts: QuickSendContact[];
+  walletId?: string;
 }
 
 const CURRENCIES = ['USD', 'XAF', 'EUR'];
 
-export function QuickSend({ contacts }: QuickSendProps) {
+export function QuickSend({ contacts, walletId }: QuickSendProps) {
   const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [open, setOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<QuickSendContact | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,6 +32,16 @@ export function QuickSend({ contacts }: QuickSendProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleSend = () => {
+    if (!selectedContact || !amount || !walletId) return;
+    const params = new URLSearchParams({
+      name: selectedContact.name,
+      amount,
+      currency: currency ?? 'USD',
+    });
+    navigate(`/dashboard/send?${params.toString()}`);
+  };
 
   return (
     <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
@@ -44,9 +61,14 @@ export function QuickSend({ contacts }: QuickSendProps) {
           <button
             key={c.id}
             type="button"
-            className="flex flex-col items-center gap-1 group shrink-0 snap-start"
+            onClick={() => setSelectedContact(c)}
+            className={`flex flex-col items-center gap-1 group shrink-0 snap-start ${
+              selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+            }`}
           >
-            <div className="w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ring-transparent group-hover:ring-[#D28E2F]/50 transition-all">
+            <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
+              selectedContact?.id === c.id ? 'ring-[#D28E2F]' : 'ring-transparent group-hover:ring-[#D28E2F]/50'
+            } transition-all`}>
               {c.avatarUrl ? (
                 <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
               ) : (
@@ -121,7 +143,11 @@ export function QuickSend({ contacts }: QuickSendProps) {
         </div>
       </div>
 
-      <button className="w-full h-11 rounded-lg bg-[#082B37] hover:bg-[#082B37]/90 active:scale-[0.98] text-[#D28E2F] text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+      <button
+        onClick={handleSend}
+        disabled={!selectedContact || !amount}
+        className="w-full h-11 rounded-lg bg-[#082B37] hover:bg-[#082B37]/90 active:scale-[0.98] text-[#D28E2F] text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         <Send className="w-4 h-4" />
         Envoyer maintenant
       </button>

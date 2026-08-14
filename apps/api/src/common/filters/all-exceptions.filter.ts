@@ -61,12 +61,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: string;
         message: string;
         details?: Record<string, unknown>;
+        field?: string;
       };
       return {
         status: exception.getStatus(),
         code: body.code,
         message: body.message,
-        details: body.details,
+        details: body.field ? { field: body.field, ...body.details } : body.details,
       };
     }
 
@@ -78,11 +79,30 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (typeof body === 'object' && body !== null && 'message' in body) {
         const raw = (body as { message: string | string[] }).message;
         if (Array.isArray(raw)) {
+          // Parse "field.property" constraint messages to extract field names
+          const errors: Array<{ field: string; message: string }> = raw.map((msg) => {
+            // class-validator messages typically start with "field must..." or "field should..."
+            const match = msg.match(/^(\w+)\s+(must|should|is|has)/i);
+            return {
+              field: match?.[1] ?? 'unknown',
+              message: msg,
+            };
+          });
           return {
             status,
             code: 'VALIDATION_FAILED',
-            message: 'Les donnees fournies sont invalides.',
-            details: { errors: raw },
+            message: 'Les données fournies sont invalides.',
+            details: { errors },
+          };
+        }
+        // Single message from ConflictException with field info
+        const bodyObj = body as { message: string; field?: string; code?: string };
+        if (bodyObj.field) {
+          return {
+            status,
+            code: bodyObj.code ?? this.codeFromStatus(status),
+            message: bodyObj.message,
+            details: { field: bodyObj.field },
           };
         }
         return { status, code: this.codeFromStatus(status), message: raw };

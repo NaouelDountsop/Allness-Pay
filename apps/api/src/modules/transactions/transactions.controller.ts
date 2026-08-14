@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Param, Body, Req, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Req, UseGuards, ParseUUIDPipe, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { TransactionsService } from './transactions.service';
 import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,6 +20,24 @@ export class TransactionsController {
   @ApiOperation({ summary: "Lister les transactions d'un portefeuille" })
   listTransactions(@Param('id', ParseUUIDPipe) id: string) {
     return this.transactionsService.listByWallet(id);
+  }
+
+  @Get('transactions/monthly-summary')
+  @ApiOperation({ summary: 'Résumé mensuel des transactions' })
+  getMonthlySummary(@Param('id', ParseUUIDPipe) id: string) {
+    return this.transactionsService.getMonthlySummary(id);
+  }
+
+  @Get('transactions/export')
+  @ApiOperation({ summary: 'Exporter les transactions en CSV' })
+  async exportTransactions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: Response,
+  ) {
+    const csv = await this.transactionsService.exportCsv(id);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="transactions_${id}.csv"`);
+    res.send('\uFEFF' + csv);
   }
 
   @Post('deposit')

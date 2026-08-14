@@ -7,6 +7,7 @@ import {
   type DepositMethod,
   type Currency,
   CURRENCY_SYMBOLS,
+  useDepositFlow,
 } from '../../context/deposit-flow-context';
 import { useUserProfile } from '../../hooks/use-user-profile';
 import { walletService } from '@/lib/api/wallet.service';

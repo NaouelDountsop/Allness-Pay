@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Store, UserCheck, Clock, Coins, Plus, ChevronDown, Eye } from 'lucide-react';
+import { Store, UserCheck, Clock, Coins, Plus, RotateCcw, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge, Pagination } from '../../components/ui';
@@ -37,6 +37,14 @@ const MERCHANTS = [
 export default function MerchantsListPage() {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filtered = MERCHANTS.filter((m) => {
+    const matchesCategory = categoryFilter === 'all' || m.category === categoryFilter;
+    const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
+    return matchesCategory && matchesStatus;
+  });
 
   return (
     <AdminLayout active="marchands">
@@ -99,14 +107,38 @@ export default function MerchantsListPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center gap-3 mb-5">
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Toutes les catégories
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Tous les statuts
-            <ChevronDown className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Toutes les catégories</option>
+            <option value="Commerce en ligne">Commerce en ligne</option>
+            <option value="Alimentation">Alimentation</option>
+            <option value="Boissons">Boissons</option>
+            <option value="Électronique">Électronique</option>
+            <option value="Service">Service</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="Actif">Actif</option>
+            <option value="En attente">En attente</option>
+            <option value="Inactif">Inactif</option>
+          </select>
+          <button
+            onClick={() => {
+              setCategoryFilter('all');
+              setStatusFilter('all');
+            }}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Réinitialiser
           </button>
         </div>
 
@@ -122,7 +154,7 @@ export default function MerchantsListPage() {
               </tr>
             </thead>
             <tbody>
-              {MERCHANTS.map((m) => (
+              {filtered.map((m) => (
                 <tr key={m.name} className="border-b border-gray-50 last:border-0">
                   <td className="py-3.5">
                     <div className="flex items-center gap-2.5">

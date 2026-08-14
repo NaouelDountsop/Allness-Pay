@@ -11,14 +11,8 @@ import { SecurityCard } from '@/components/user_dashboard/wallet/security-card';
 import { AddLinkedAccountModal } from '@/components/user_dashboard/wallet/add-linked-account-modal';
 import { CreateWalletModal } from '@/components/user_dashboard/wallet/create-wallet-modal';
 import { walletService } from '@/lib/api/wallet.service';
-import { Plus} from 'lucide-react';
-
-const mockWalletMonthlyData = [
-  { label: 'Avr', revenus: 120000, depenses: 90000, epargne: 30000, solde: 60000 },
-  { label: 'Mai', revenus: 140000, depenses: 95000, epargne: 45000, solde: 85000 },
-  { label: 'Juin', revenus: 155000, depenses: 100000, epargne: 55000, solde: 100000 },
-  { label: 'Juil', revenus: 185000, depenses: 110000, epargne: 75000, solde: 150000 },
-];
+import { transactionService } from '@/lib/api/transaction.service';
+import { Plus } from 'lucide-react';
 
 export default function WalletPage() {
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -35,6 +29,12 @@ export default function WalletPage() {
     ? wallets.find((w) => w.id === selectedWalletId) ?? primaryWallet
     : primaryWallet;
   const totalBalance = wallets.reduce((sum, w) => sum + Number(w.balance), 0);
+
+  const { data: monthlySummary } = useQuery({
+    queryKey: ['monthly-summary', displayWallet?.id],
+    queryFn: () => transactionService.getMonthlySummary(displayWallet!.id),
+    enabled: !!displayWallet?.id,
+  });
 
   if (walletsLoading) {
     return (
@@ -103,13 +103,21 @@ export default function WalletPage() {
 
           <div className="space-y-6">
             <QuickActionsGrid />
-            <MonthlySummary
-              month="Juillet 2026"
-              incomePercent={62}
-              expensePercent={38}
-              netAmount={displayWallet ? Number(displayWallet.balance) : totalBalance}
-              data={mockWalletMonthlyData}
-            />
+            {monthlySummary && (
+              <MonthlySummary
+                month={monthlySummary.month}
+                incomePercent={monthlySummary.incomePercent}
+                expensePercent={monthlySummary.expensePercent}
+                netAmount={monthlySummary.net}
+                data={monthlySummary.trend.map((t) => ({
+                  label: t.month,
+                  revenus: t.income,
+                  depenses: t.expense,
+                  epargne: 0,
+                  solde: t.income - t.expense,
+                }))}
+              />
+            )}
             <SecurityCard />
           </div>
         </div>

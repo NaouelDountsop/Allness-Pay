@@ -1,28 +1,14 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { tranzakService } from '@/lib/api/tranzak.service';
+import {
+  type MobileMoneyOperator,
+  type DepositMethod,
+  type Currency,
+  CURRENCY_SYMBOLS,
+  BANK_LABELS,
+} from './deposit-flow.constants';
 
-export type MobileMoneyOperator = 'mtn' | 'orange';
-export type DepositMethod = 'mobile_money' | 'bank';
-export type Currency = 'XAF' | 'EUR' | 'USD';
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  XAF: 'FCFA',
-  EUR: '€',
-  USD: '$',
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const BANK_LABELS: Record<string, string> = {
-  sgbc: 'SGBC (Société Générale Cameroun)',
-  uba: 'UBA Cameroun',
-  afriland: 'Afriland First Bank',
-  beac: 'BEAC',
-  ecobank: 'Ecobank Cameroun',
-  bicec: 'BICEC',
-  btc: 'BTCI (Banque Camerounaise des Travailleurs)',
-  autres: 'Autres',
-};
+export { type MobileMoneyOperator, type DepositMethod, type Currency, CURRENCY_SYMBOLS, BANK_LABELS };
 
 export type DepositStatus = 'idle' | 'submitting' | 'pending' | 'success' | 'failed';
 

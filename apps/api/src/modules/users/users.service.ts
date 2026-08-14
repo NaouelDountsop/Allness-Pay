@@ -30,12 +30,33 @@ export class UsersService {
     const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } =
       createUserDto;
 
-    const existing = await this.usersRepository.findOne({
-      where: [{ email }, { telephone }, ...(googleId ? [{ googleId }] : [])],
-    });
+    const existingByEmail = await this.usersRepository.findOne({ where: { email } });
+    if (existingByEmail) {
+      throw new ConflictException({
+        code: 'DUPLICATE_EMAIL',
+        message: 'Cet email est déjà utilisé par un autre compte.',
+        field: 'email',
+      });
+    }
 
-    if (existing) {
-      throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
+    const existingByPhone = await this.usersRepository.findOne({ where: { telephone } });
+    if (existingByPhone) {
+      throw new ConflictException({
+        code: 'DUPLICATE_PHONE',
+        message: 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
+        field: 'telephone',
+      });
+    }
+
+    if (googleId) {
+      const existingByGoogle = await this.usersRepository.findOne({ where: { googleId } });
+      if (existingByGoogle) {
+        throw new ConflictException({
+          code: 'DUPLICATE_GOOGLE',
+          message: 'Ce compte Google est déjà associé à un compte AfriLinkPay.',
+          field: 'googleId',
+        });
+      }
     }
 
     const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());

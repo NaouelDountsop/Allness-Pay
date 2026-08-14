@@ -137,7 +137,8 @@ export default function TontinesPage() {
               <TontinesStats
                 totalContributed={totalContributed}
                 currency={tontines?.[0]?.currency ?? 'CFA'}
-                activeTontinesCount={tontines?.length ?? 0}
+                totalTontinesCount={tontines?.length ?? 0}
+                activeTontinesCount={tontines?.filter((t) => t.status === 'ACTIVE').length ?? 0}
                 nextGainAmount={Number(nextGain?.contributionAmount ?? 0)}
                 nextGainDate={
                   nextGain?.createdAt

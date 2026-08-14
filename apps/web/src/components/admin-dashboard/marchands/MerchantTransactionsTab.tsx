@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Coins, Repeat, Percent, Search, Download } from 'lucide-react';
 import { StatCard, Badge } from '../../../components/ui';
 
@@ -26,6 +27,14 @@ const TRANSACTIONS = [
 ];
 
 export function MerchantTransactionsTab() {
+  const [search, setSearch] = useState('');
+
+  const filtered = TRANSACTIONS.filter(
+    (t) =>
+      t.client.toLowerCase().includes(search.toLowerCase()) ||
+      t.amount.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div>
       <div className="flex flex-wrap gap-4 mb-5">
@@ -43,6 +52,8 @@ export function MerchantTransactionsTab() {
               <input
                 type="text"
                 placeholder="Rechercher"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="h-8 pl-8 pr-3 rounded-lg bg-gray-50 border border-gray-100 text-xs focus:outline-none"
               />
             </div>
@@ -63,7 +74,7 @@ export function MerchantTransactionsTab() {
             </tr>
           </thead>
           <tbody>
-            {TRANSACTIONS.map((t, i) => (
+            {filtered.map((t, i) => (
               <tr key={i} className="border-b border-gray-50 last:border-0">
                 <td className="py-3 text-xs text-gray-500">{t.date}</td>
                 <td className="text-xs text-gray-600">{t.client}</td>

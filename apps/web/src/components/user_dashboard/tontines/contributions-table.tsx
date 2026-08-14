@@ -1,4 +1,5 @@
-import { Search, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { Search, RotateCcw } from 'lucide-react';
 import type { Contribution } from '@/lib/mock/tontines-data';
 
 const statusStyles: Record<Contribution['status'], { label: string; className: string }> = {
@@ -12,6 +13,17 @@ interface ContributionsTableProps {
 }
 
 export function ContributionsTable({ contributions }: ContributionsTableProps) {
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
+
+  const filtered = contributions.filter((c) => {
+    const matchesSearch = c.memberName.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+    const matchesDate = !dateFilter || c.date === dateFilter;
+    return matchesSearch && matchesStatus && matchesDate;
+  });
+
   return (
     <div className="rounded-xl border border-gray-100 bg-white overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-3 p-4">
@@ -20,22 +32,38 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
           <input
             type="text"
             placeholder="Filtrer par nom de membre..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full h-10 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
           />
         </div>
-        <button className="h-10 px-3 rounded-lg border border-gray-200 text-gray-500 flex items-center gap-2 text-sm">
-          <Filter className="w-4 h-4" />
-        </button>
-        <select className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white">
-          <option>Tous les statuts</option>
-          <option>Validé</option>
-          <option>En attente</option>
-          <option>Échoué</option>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+        >
+          <option value="all">Tous les statuts</option>
+          <option value="valide">Validé</option>
+          <option value="en_attente">En attente</option>
+          <option value="echoue">Échoué</option>
         </select>
         <input
           type="date"
-          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
         />
+        <button
+          onClick={() => {
+            setSearch('');
+            setStatusFilter('all');
+            setDateFilter('');
+          }}
+          className="h-10 px-3 rounded-lg border border-gray-200 text-gray-500 flex items-center gap-2 text-sm hover:bg-gray-50 transition-colors"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Réinitialiser
+        </button>
       </div>
 
       <table className="w-full text-sm">
@@ -49,7 +77,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-50">
-          {contributions.map((c) => {
+          {filtered.map((c) => {
             const status = statusStyles[c.status];
             return (
               <tr key={c.id}>

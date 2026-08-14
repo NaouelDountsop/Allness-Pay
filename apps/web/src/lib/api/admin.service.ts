@@ -149,26 +149,19 @@ export const adminService = {
     return res.data;
   },
 
-  getTontineStats: async (): Promise<{
-    totalTontines: number;
-    activeTontines: number;
-    totalVolume: number;
-  }> => {
-    const res = await apiClient.get("/admin/tontines");
+  getTontineStats: async (): Promise<AdminTontine[]> => {
+    const res = await apiClient.get<AdminTontine[]>('/admin/tontines');
     return res.data;
   },
 
-  listTransactions: async (): Promise<AdminTransaction[]> => {
-    const res = await apiClient.get<AdminTransaction[]>('/admin/transactions');
-    return res.data;
-  },
-
-  getTransactionStats: async (): Promise<{
-    totalTransactions: number;
-    completedCount: number;
-    totalVolume: number;
-  }> => {
-    const res = await apiClient.get("/admin/transactions");
+  listTransactions: async (filters?: {
+    status?: string;
+    type?: string;
+    provider?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<{ data: AdminTransaction[]; totalItems: number; page: number; pageSize: number; pageCount: number }> => {
+    const res = await apiClient.get('/admin/transactions', { params: filters });
     return res.data;
   },
 
@@ -183,7 +176,22 @@ export const adminService = {
   },
 
   getChartWeekly: async (): Promise<AdminChartPoint[]> => {
-    const res = await apiClient.get<AdminChartPoint[]>("/admin");
+    const res = await apiClient.get<AdminChartPoint[]>("/admin/dashboard/chart");
+    return res.data;
+  },
+
+  exportTransactions: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/transactions/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  exportUsers: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/users/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  exportTontines: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/tontines/export', { responseType: 'blob' });
     return res.data;
   },
 };

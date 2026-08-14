@@ -13,22 +13,43 @@ import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Tabs, Badge } from '../../components/ui';
 import { adminService } from '../../lib/api/admin.service';
 
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function TontinesSupervisionPage() {
   const [tab, setTab] = useState('Toutes les Tontines');
+  const [exporting, setExporting] = useState(false);
 
   const { data: tontines, isLoading: loadingTontines } = useQuery({
     queryKey: ['admin-tontines'],
     queryFn: adminService.listTontines,
   });
 
-  const { data: tontineStats, isLoading: loadingStats } = useQuery({
-    queryKey: ['admin-tontine-stats'],
-    queryFn: adminService.getTontineStats,
-  });
-
   const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
-  const isLoading = loadingTontines || loadingStats;
+  const totalTontines = tontines?.length ?? 0;
+  const activeTontines = tontines?.filter((t) => t.status === 'active').length ?? 0;
+  const totalVolume = tontines?.reduce((sum, t) => sum + Number(t.contributionAmount) * t.currentCycle, 0) ?? 0;
+
+  const isLoading = loadingTontines;
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const blob = await adminService.exportTontines();
+      downloadBlob(blob, `tontines_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    } catch {
+      // silent
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -49,8 +70,12 @@ export default function TontinesSupervisionPage() {
             Consultez l'activité, gérez les risques et intervenez si nécessaire.
           </p>
         </div>
-        <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors shrink-0">
-          <Download className="w-3.5 h-3.5" />
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors shrink-0 disabled:opacity-50"
+        >
+          {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           Exporter
         </button>
       </div>
@@ -64,9 +89,7 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Tontines Totales</span>
           </div>
-          <p className="text-2xl font-bold text-white">
-            {formatNumber(tontineStats?.totalTontines ?? 0)}
-          </p>
+          <p className="text-2xl font-bold text-white">{formatNumber(totalTontines)}</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -76,9 +99,7 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Volume Total Cotisé</span>
           </div>
-          <p className="text-2xl font-bold text-white">
-            {formatNumber(tontineStats?.totalVolume ?? 0)} XAF
-          </p>
+          <p className="text-2xl font-bold text-white">{formatNumber(totalVolume)} XAF</p>
         </div>
 
         <div className="bg-afrilink-dark rounded-2xl p-5">
@@ -99,9 +120,7 @@ export default function TontinesSupervisionPage() {
             </span>
             <span className="text-sm text-gray-300">Tontines Actives</span>
           </div>
-          <p className="text-2xl font-bold text-white">
-            {formatNumber(tontineStats?.activeTontines ?? 0)}
-          </p>
+          <p className="text-2xl font-bold text-white">{formatNumber(activeTontines)}</p>
         </div>
       </div>
 

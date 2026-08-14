@@ -9,7 +9,6 @@ import {
   Send,
   Star,
   Search,
-  ChevronDown,
   RotateCcw,
   MoreVertical,
   ShieldCheck as SecureIcon,
@@ -79,18 +78,25 @@ export default function BeneficiariesPage() {
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [networkFilter, setNetworkFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
 
   const { data: beneficiaries = [], isLoading } = useQuery({
     queryKey: ['beneficiaries'],
     queryFn: beneficiaryService.list,
   });
 
-  const filtered = beneficiaries.filter(
-    (b) =>
+  const filtered = beneficiaries.filter((b) => {
+    const matchesSearch =
       b.name.toLowerCase().includes(search.toLowerCase()) ||
       b.phone.includes(search) ||
-      b.nickname?.toLowerCase().includes(search.toLowerCase()),
-  );
+      b.nickname?.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
+    const matchesNetwork = networkFilter === 'all' || b.network === networkFilter;
+    const matchesCountry = countryFilter === 'all' || b.country === countryFilter;
+    return matchesSearch && matchesStatus && matchesNetwork && matchesCountry;
+  });
 
   const handleSend = (b: Beneficiary) => {
     const country = Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0] ?? 'CM';
@@ -219,34 +225,62 @@ export default function BeneficiariesPage() {
             </div>
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Statut</label>
-              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
-                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
-              </button>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous</option>
+                <option value="verified">Vérifié</option>
+                <option value="pending">En attente</option>
+                <option value="rejected">Rejeté</option>
+              </select>
             </div>
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Réseau</label>
-              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
-                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
-              </button>
+              <select
+                value={networkFilter}
+                onChange={(e) => setNetworkFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous</option>
+                <option value="mtn_momo">MTN Mobile Money</option>
+                <option value="orange_money">Orange Money</option>
+                <option value="wave">Wave</option>
+                <option value="free_money">Free Money</option>
+                <option value="moov_money">Moov Money</option>
+                <option value="airtel_money">Airtel Money</option>
+              </select>
             </div>
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Pays</label>
-              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
-                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
-              </button>
+              <select
+                value={countryFilter}
+                onChange={(e) => setCountryFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous</option>
+                {Object.entries(COUNTRY_MAP).map(([code, name]) => (
+                  <option key={code} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-2 mb-5">
-            <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => {
+                setSearch('');
+                setStatusFilter('all');
+                setNetworkFilter('all');
+                setCountryFilter('all');
+              }}
+              className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+            >
               <RotateCcw className="w-3.5 h-3.5" />
               Réinitialiser
-            </button>
-            <button className="h-9 px-5 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
-              Filtrer
             </button>
           </div>
 

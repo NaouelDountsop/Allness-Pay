@@ -6,7 +6,7 @@ import {
   CircleCheck,
   Search,
   ChevronDown,
-  Filter,
+  RotateCcw,
   Upload,
   Plus,
   Settings,
@@ -220,8 +220,27 @@ export default function ExchangeRatesPage() {
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [selectedRate, setSelectedRate] = useState<Rate>(RATES[0]!);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [baseFilter, setBaseFilter] = useState('all');
+  const [targetFilter, setTargetFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const totalRates = 132;
   const pageSize = 10;
+
+  const filteredRates = RATES.filter((rate) => {
+    const matchesSearch =
+      rate.base.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rate.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rate.baseLabel.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rate.targetLabel.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBase = baseFilter === 'all' || rate.base === baseFilter;
+    const matchesTarget = targetFilter === 'all' || rate.target === targetFilter;
+    const matchesStatus =
+      statusFilter === 'all' ||
+      (statusFilter === 'Actif' && rate.status === 'Actif') ||
+      (statusFilter === 'Inactif' && rate.status === 'Inactif');
+    return matchesSearch && matchesBase && matchesTarget && matchesStatus;
+  });
 
   return (
     <AdminLayout>
@@ -305,17 +324,56 @@ export default function ExchangeRatesPage() {
                   <Search className="h-3.5 w-3.5 text-gray-400" />
                   <input
                     placeholder="Rechercher..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-transparent text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none"
                   />
                 </div>
               </div>
-              <FilterSelect label="Base" />
-              <FilterSelect label="Cible" />
-              <FilterSelect label="Statut" />
-              <Button variant="outline" size="sm" className="rounded-lg text-xs">
-                <Filter className="mr-1 h-3 w-3" />
-                Avanc\u00e9
-              </Button>
+              <select
+                value={baseFilter}
+                onChange={(e) => setBaseFilter(e.target.value)}
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Base</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+                <option value="XAF">XAF</option>
+              </select>
+              <select
+                value={targetFilter}
+                onChange={(e) => setTargetFilter(e.target.value)}
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Cible</option>
+                <option value="XAF">XAF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="NGN">NGN</option>
+                <option value="GHS">GHS</option>
+              </select>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Statut</option>
+                <option value="Actif">Actif</option>
+                <option value="Inactif">Inactif</option>
+              </select>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setBaseFilter('all');
+                  setTargetFilter('all');
+                  setStatusFilter('all');
+                }}
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 hover:bg-gray-50"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Réinitialiser
+              </button>
             </div>
           </div>
 
@@ -336,7 +394,7 @@ export default function ExchangeRatesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {RATES.map((rate) => (
+                  {filteredRates.map((rate) => (
                     <tr
                       key={rate.id}
                       className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 cursor-pointer"
@@ -561,14 +619,5 @@ export default function ExchangeRatesPage() {
         </div>
       </div>
     </AdminLayout>
-  );
-}
-
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 hover:border-gray-300">
-      {label}
-      <ChevronDown className="h-3 w-3 text-gray-400" />
-    </button>
   );
 }

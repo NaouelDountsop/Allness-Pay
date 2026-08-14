@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { User, Calendar, Mail, Lock, Eye, EyeOff, Briefcase, ArrowLeft } from 'lucide-react';
+import { User, Calendar, Mail, Lock, Eye, EyeOff, Briefcase, ArrowLeft, AlertCircle } from 'lucide-react';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { AppInput } from '@/components/common/input';
 import { AppButton } from '@/components/common/button';
@@ -42,6 +42,37 @@ const initialForm: SignupForm = {
   confirmPassword: '',
 };
 
+type FieldErrors = Partial<Record<keyof SignupForm, string>>;
+
+// Map backend field names to frontend form field names
+const FIELD_MAP: Record<string, keyof SignupForm> = {
+  nom: 'lastName',
+  prenom: 'firstName',
+  datenaissance: 'birthDate',
+  sexe: 'gender',
+  pays: 'country',
+  ville: 'city',
+  telephone: 'phone',
+  adresse: 'address',
+  email: 'email',
+  motdepasse: 'password',
+  profession: 'profession',
+};
+
+interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      code?: string;
+      message?: string;
+      details?: {
+        errors?: Array<{ field: string; message: string }>;
+        field?: string;
+      };
+    };
+  };
+}
+
 export default function SignupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -52,6 +83,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [phoneError, setPhoneError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -85,12 +117,22 @@ export default function SignupPage() {
       .finally(() => setPendingLoading(false));
   }, [searchParams]);
 
-  const update = (field: keyof SignupForm, value: string) =>
+  const update = (field: keyof SignupForm, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
+    // Clear field error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     if (!form.lastName || !form.firstName) {
       setError('Merci de renseigner votre nom et prénom');
       return;
@@ -108,9 +150,39 @@ export default function SignupPage() {
     );
   }
 
+  const parseApiError = (err: unknown): { banner: string; fields: FieldErrors } => {
+    const e = err as ApiError;
+    const data = e.response?.data;
+    const banner = data?.message || "Erreur lors de l'inscription";
+    const fields: FieldErrors = {};
+
+    // Handle validation errors (field-level)
+    if (data?.details?.errors && Array.isArray(data.details.errors)) {
+      for (const errItem of data.details.errors) {
+        const frontendField = FIELD_MAP[errItem.field] ?? errItem.field;
+        if (frontendField in initialForm) {
+          fields[frontendField as keyof SignupForm] = errItem.message;
+        }
+      }
+      return { banner: '', fields };
+    }
+
+    // Handle duplicate field errors (single field)
+    if (data?.details?.field) {
+      const frontendField = FIELD_MAP[data.details.field] ?? data.details.field;
+      if (frontendField in initialForm) {
+        fields[frontendField as keyof SignupForm] = data.message || 'Ce champ est déjà utilisé.';
+        return { banner: '', fields };
+      }
+    }
+
+    return { banner, fields };
+  };
+
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setPhoneError('');
     setLoading(true);
 
@@ -165,12 +237,9 @@ export default function SignupPage() {
         });
       }
     } catch (err: unknown) {
-      const e = err as {
-        response?: { data?: { message?: string | string[]; error?: string } };
-      };
-      const message =
-        e.response?.data?.message || e.response?.data?.error || "Erreur lors de l'inscription";
-      setError(Array.isArray(message) ? message.join('\n') : message);
+      const { banner, fields } = parseApiError(err);
+      if (banner) setError(banner);
+      if (Object.keys(fields).length > 0) setFieldErrors(fields);
     } finally {
       setLoading(false);
     }
@@ -229,30 +298,52 @@ export default function SignupPage() {
 
       {step === 1 && (
         <form onSubmit={handleStep1Submit} className="space-y-4">
-          <AppInput
-            label="Nom"
-            icon={User}
-            placeholder="Dupont"
-            value={form.lastName}
-            onChange={(e) => update('lastName', e.target.value)}
-            //disabled={isFromGoogle}
-          />
-          <AppInput
-            label="Prénom"
-            icon={User}
-            placeholder="Jean"
-            value={form.firstName}
-            onChange={(e) => update('firstName', e.target.value)}
-            //disabled={isFromGoogle}
-          />
-          <AppInput
-            label="Date de naissance"
-            icon={Calendar}
-            type="date"
-            placeholder=""
-            value={form.birthDate}
-            onChange={(e) => update('birthDate', e.target.value)}
-          />
+          <div>
+            <AppInput
+              label="Nom"
+              icon={User}
+              placeholder="Dupont"
+              value={form.lastName}
+              onChange={(e) => update('lastName', e.target.value)}
+            />
+            {fieldErrors.lastName && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.lastName}
+              </p>
+            )}
+          </div>
+          <div>
+            <AppInput
+              label="Prénom"
+              icon={User}
+              placeholder="Jean"
+              value={form.firstName}
+              onChange={(e) => update('firstName', e.target.value)}
+            />
+            {fieldErrors.firstName && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.firstName}
+              </p>
+            )}
+          </div>
+          <div>
+            <AppInput
+              label="Date de naissance"
+              icon={Calendar}
+              type="date"
+              placeholder=""
+              value={form.birthDate}
+              onChange={(e) => update('birthDate', e.target.value)}
+            />
+            {fieldErrors.birthDate && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.birthDate}
+              </p>
+            )}
+          </div>
 
           <div className="w-full space-y-1">
             <label className="text-sm font-medium text-gray-700">Sexe</label>
@@ -280,6 +371,12 @@ export default function SignupPage() {
                 />
               </svg>
             </div>
+            {fieldErrors.gender && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.gender}
+              </p>
+            )}
           </div>
 
           <CountrySelect
@@ -290,13 +387,26 @@ export default function SignupPage() {
             }}
           />
 
-          <CitySelect
-            countryCode={form.country}
-            value={form.city}
-            onChange={(c) => update('city', c)}
-          />
+          <div>
+            <CitySelect
+              countryCode={form.country}
+              value={form.city}
+              onChange={(c) => update('city', c)}
+            />
+            {fieldErrors.city && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.city}
+              </p>
+            )}
+          </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
 
           {!isFromGoogle && (
             <>
@@ -335,22 +445,32 @@ export default function SignupPage() {
 
       {step === 2 && (
         <form onSubmit={handleStep2Submit} className="space-y-4">
-          <AppInput
-            label="Profession"
-            icon={Briefcase}
-            placeholder="Ex: Enseignant, Commerçant, Ingénieur..."
-            value={form.profession}
-            onChange={(e) => update('profession', e.target.value)}
-          />
-          <PhoneInput
-            country={selectedCountry}
-            value={form.phone}
-            onChange={(v) => {
-              update('phone', v);
-              setPhoneError('');
-            }}
-            error={phoneError}
-          />
+          <div>
+            <AppInput
+              label="Profession"
+              icon={Briefcase}
+              placeholder="Ex: Enseignant, Commerçant, Ingénieur..."
+              value={form.profession}
+              onChange={(e) => update('profession', e.target.value)}
+            />
+            {fieldErrors.profession && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.profession}
+              </p>
+            )}
+          </div>
+          <div>
+            <PhoneInput
+              country={selectedCountry}
+              value={form.phone}
+              onChange={(v) => {
+                update('phone', v);
+                setPhoneError('');
+              }}
+              error={phoneError || fieldErrors.phone}
+            />
+          </div>
           <AddressInput
             countryCode={form.country}
             city={form.city}
@@ -359,15 +479,23 @@ export default function SignupPage() {
           />
 
           {/* Email pré-rempli et en lecture seule si vient de Google */}
-          <AppInput
-            label="Adresse email"
-            icon={Mail}
-            type="email"
-            placeholder="jean.dupont@entreprise.com"
-            value={form.email}
-            onChange={(e) => update('email', e.target.value)}
-            disabled={isFromGoogle}
-          />
+          <div>
+            <AppInput
+              label="Adresse email"
+              icon={Mail}
+              type="email"
+              placeholder="jean.dupont@entreprise.com"
+              value={form.email}
+              onChange={(e) => update('email', e.target.value)}
+              disabled={isFromGoogle}
+            />
+            {fieldErrors.email && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.email}
+              </p>
+            )}
+          </div>
 
           {
             //!isFromGoogle && (
@@ -378,7 +506,11 @@ export default function SignupPage() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    className={`w-full h-11 rounded-lg border pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 ${
+                      fieldErrors.password
+                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-200 focus:border-afrilink-orange focus:ring-afrilink-orange'
+                    }`}
                     value={form.password}
                     onChange={(e) => update('password', e.target.value)}
                   />
@@ -393,6 +525,12 @@ export default function SignupPage() {
                 <p className="text-xs text-gray-400">
                   Minimum 8 caractères, incluant un chiffre et un symbole.
                 </p>
+                {fieldErrors.password && (
+                  <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {fieldErrors.password}
+                  </p>
+                )}
               </div>
 
               <div className="w-full space-y-1">
@@ -419,7 +557,12 @@ export default function SignupPage() {
             </>
           }
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
 
           <AppButton type="submit" loading={loading}>
             Continuer →

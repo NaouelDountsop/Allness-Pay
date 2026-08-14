@@ -1,8 +1,9 @@
-import { Wallet, Users, TrendingUp, AlertCircle } from 'lucide-react';
+import { Wallet, Users, TrendingUp, AlertCircle, Layers } from 'lucide-react';
 
 interface TontinesStatsProps {
   totalContributed: number;
   currency: string;
+  totalTontinesCount: number;
   activeTontinesCount: number;
   nextGainAmount: number;
   nextGainDate: string;
@@ -13,6 +14,7 @@ interface TontinesStatsProps {
 export function TontinesStats({
   totalContributed,
   currency,
+  totalTontinesCount,
   activeTontinesCount,
   nextGainAmount,
   nextGainDate,
@@ -20,7 +22,18 @@ export function TontinesStats({
   pendingRequestsCount,
 }: TontinesStatsProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+      <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <Layers className="w-5 h-5 text-blue-400" />
+          </span>
+          <span className="text-sm text-gray-300">Total Tontines</span>
+        </div>
+        <p className="text-2xl font-bold text-white mb-2">{totalTontinesCount}</p>
+        <p className="text-xs text-gray-400">Toutes tontines</p>
+      </div>
+
       <div className="bg-afrilink-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -39,10 +52,10 @@ export function TontinesStats({
           <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Users className="w-5 h-5 text-blue-400" />
           </span>
-          <span className="text-sm text-gray-300">Mes Tontines</span>
+          <span className="text-sm text-gray-300">Actives</span>
         </div>
-        <p className="text-2xl font-bold text-white mb-2">{activeTontinesCount} Actives</p>
-        <p className="text-xs text-gray-400">Tontines en cours</p>
+        <p className="text-2xl font-bold text-white mb-2">{activeTontinesCount}</p>
+        <p className="text-xs text-gray-400">En cours</p>
       </div>
 
       <div className="bg-afrilink-dark rounded-2xl p-5">

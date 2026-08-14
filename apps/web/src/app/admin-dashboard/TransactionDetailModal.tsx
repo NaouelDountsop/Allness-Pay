@@ -10,7 +10,7 @@ export interface TransactionTimeline {
 export interface TransactionDetail {
   reference: string;
   date: string;
-  status: 'Complété' | 'En attente' | 'Bloqué';
+  status: string;
   amount: string;
   type: string;
   fees: string;

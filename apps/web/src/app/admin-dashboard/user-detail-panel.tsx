@@ -1,893 +1,305 @@
 import { useState } from "react";
 import {
-  X,
   UserRound,
   Phone,
+  Copy,
   MapPin,
+  Calendar,
   ShieldCheck,
-  WalletCards,
+  Wallet,
   Activity,
-  Ban,
-  RotateCcw,
-  CheckCircle2,
+  History,
+  FileText,
   CircleDollarSign,
+  Smartphone,
+  ExternalLink,
 } from "lucide-react";
 
-interface UserDetailPanelProps {
-  onClose: () => void;
-}
-
 const TABS = [
-  "Informations Personnelles",
-  "Portefeuilles",
-  "Activité Récente",
+  { key: "info", label: "Informations personnelles", icon: UserRound },
+  { key: "kyc", label: "Vérification KYC", icon: ShieldCheck },
+  { key: "wallets", label: "Comptes & Portefeuilles", icon: Wallet },
+  { key: "activity", label: "Activité récente", icon: Activity },
+  { key: "history", label: "Historique", icon: History },
+  { key: "notes", label: "Notes", icon: FileText },
 ];
 
-export function UserDetailPanel({
-  onClose,
-}: UserDetailPanelProps) {
-  const [tab, setTab] = useState("Informations Personnelles");
+export function UserDetailPanel() {
+  const [tab, setTab] = useState("info");
 
   return (
-    <div
-      className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-black/55
-        p-2
-        sm:p-4
-      "
-    >
-      {/* =====================================================
-          PANNEAU PRINCIPAL
-      ====================================================== */}
-
-      <div
-        className="
-          relative
-          flex
-          h-[calc(100vh-16px)]
-          max-h-[730px]
-          w-full
-          max-w-[390px]
-          flex-col
-          overflow-hidden
-          rounded-none
-          bg-white
-          shadow-[0_20px_60px_rgba(0,0,0,0.30)]
-          sm:h-auto
-          sm:max-h-[calc(100vh-32px)]
-          sm:rounded-sm
-        "
-      >
-
-        {/* ===================================================
-            HEADER
-        ==================================================== */}
-
-        <div className="shrink-0 bg-[#073846] px-4 pb-4 pt-4">
-
-          <div className="flex items-start justify-between">
-
-            {/* Avatar + identité */}
-            <div className="flex items-center gap-3">
-
-              {/* Avatar */}
-              <div
-                className="
-                  relative
-                  flex
-                  h-[52px]
-                  w-[52px]
-                  shrink-0
-                  items-center
-                  justify-center
-                  overflow-hidden
-                  rounded-full
-                  border-2
-                  border-white
-                  bg-[#dce7e9]
-                "
-              >
-                <div
-                  className="
-                    flex
-                    h-full
-                    w-full
-                    items-center
-                    justify-center
-                    bg-gradient-to-b
-                    from-[#526c78]
-                    to-[#173b47]
-                  "
-                >
-                  <UserRound className="h-8 w-8 text-white/90" />
-                </div>
-
-                {/* statut en ligne */}
-                <span
-                  className="
-                    absolute
-                    bottom-0
-                    right-0
-                    h-3
-                    w-3
-                    rounded-full
-                    border-2
-                    border-white
-                    bg-[#20b878]
-                  "
-                />
+    <div className="w-full bg-white">
+      {/* HEADER */}
+      <div className="px-6 py-5 border-b border-gray-100">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-white shadow">
+              <div className="w-full h-full bg-gradient-to-b from-gray-400 to-gray-600 flex items-center justify-center">
+                <UserRound className="w-9 h-9 text-white/90" />
               </div>
-
-              {/* Nom / badges */}
-              <div className="min-w-0">
-
-                <h2
-                  className="
-                    truncate
-                    font-heading
-                    text-[15px]
-                    font-bold
-                    leading-tight
-                    text-afrilink-orange
-                  "
-                >
-                  John Doe
-                </h2>
-
-                <p className="mt-1 text-[9px] text-white/60">
-                  ID: FG-9842551-JD
-                </p>
-
-                <div className="mt-1.5 flex items-center gap-1.5">
-
-                  {/* Compte actif */}
-                  <span
-                    className="
-                      inline-flex
-                      items-center
-                      gap-1
-                      rounded-full
-                      bg-[#d8f6e7]
-                      px-2
-                      py-[3px]
-                      text-[8px]
-                      font-semibold
-                      text-[#17965d]
-                    "
-                  >
-                    <span className="h-[5px] w-[5px] rounded-full bg-[#20b878]" />
-                    Compte Actif
-                  </span>
-
-                  {/* KYC */}
-                  <span
-                    className="
-                      inline-flex
-                      items-center
-                      gap-1
-                      rounded-full
-                      bg-[#e6e0ff]
-                      px-2
-                      py-[3px]
-                      text-[8px]
-                      font-semibold
-                      text-[#5c45b5]
-                    "
-                  >
-                    <span className="h-[5px] w-[5px] rounded-full bg-[#654bd0]" />
-                    KYC Niveau 2
-                  </span>
-
-                </div>
-              </div>
+              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-afrilink-green border-2 border-white" />
             </div>
 
-            {/* Fermer */}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Fermer"
-              className="
-                ml-3
-                mt-1
-                flex
-                h-6
-                w-6
-                shrink-0
-                items-center
-                justify-center
-                rounded-full
-                text-white/35
-                transition-colors
-                hover:bg-white/10
-                hover:text-white/80
-              "
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-lg font-bold text-afrilink-dark">John Doe</h2>
+                <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-afrilink-green">
+                  <span className="w-1.5 h-1.5 rounded-full bg-afrilink-green" />
+                  Compte Actif
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                  KYC Niveau 2
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                <span className="flex items-center gap-1">
+                  ID Utilisateur : USR-000245
+                  <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
+                </span>
+                <span className="flex items-center gap-1">
+                  <Phone className="w-3 h-3" /> +237 670 00 00 00
+                </span>
+                <span className="flex items-center gap-1">
+                  ✉️ j.doe@example.com
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" /> Membre depuis le 12 Janv. 2023 · 14:32
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Douala, Cameroun
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8 shrink-0">
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">Solde principal</p>
+              <p className="text-sm font-bold text-afrilink-dark">245 750 XAF</p>
+              <a href="#" className="text-[11px] text-afrilink-green font-medium flex items-center gap-1">
+                Voir le portefeuille <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">Dernière activité</p>
+              <p className="text-sm font-medium text-gray-700">Aujourd'hui à 09:42</p>
+              <p className="text-[11px] text-afrilink-green font-medium">En ligne</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">Statut</p>
+              <p className="text-sm font-medium text-afrilink-green">Actif</p>
+            </div>
           </div>
         </div>
-
-
-        {/* ===================================================
-            ONGLET
-        ==================================================== */}
-
-        <div
-          className="
-            flex
-            h-[28px]
-            shrink-0
-            border-b
-            border-gray-200
-            bg-white
-          "
-        >
-          {TABS.map((item) => {
-            const active = tab === item;
-
-            return (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setTab(item)}
-                className={`
-                  relative
-                  flex-1
-                  whitespace-nowrap
-                  px-1
-                  text-[7px]
-                  font-medium
-                  transition-colors
-                  ${
-                    active
-                      ? "text-afrilink-orange"
-                      : "text-gray-500 hover:text-afrilink-dark"
-                  }
-                `}
-              >
-                {item}
-
-                {active && (
-                  <span
-                    className="
-                      absolute
-                      bottom-0
-                      left-1/2
-                      h-[2px]
-                      w-[70%]
-                      -translate-x-1/2
-                      rounded-full
-                      bg-afrilink-orange
-                    "
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-
-        {/* ===================================================
-            CONTENU
-        ==================================================== */}
-
-        <div
-          className="
-            min-h-0
-            flex-1
-            overflow-y-auto
-            bg-white
-            px-3
-            py-3
-            scrollbar-thin
-          "
-        >
-
-          {/* =================================================
-              INFORMATIONS PERSONNELLES
-          ================================================== */}
-
-          {tab === "Informations Personnelles" && (
-            <div className="flex flex-col gap-3">
-
-              {/* IDENTITÉ */}
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-[#f0a44b]
-                  bg-white
-                  px-3
-                  py-3
-                "
-              >
-
-                <SectionTitle
-                  icon={<UserRound className="h-3 w-3" />}
-                  title="IDENTITÉ"
-                />
-
-                <div className="mt-3 grid grid-cols-3 gap-3">
-
-                  <InfoField
-                    label="Nom complet"
-                    value="John Doe"
-                  />
-
-                  <InfoField
-                    label="Date de naissance"
-                    value="12 Mai 1985"
-                  />
-
-                  <InfoField
-                    label="Sexe"
-                    value="Masculin"
-                  />
-
-                </div>
-              </div>
-
-
-              {/* COORDONNÉES */}
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-gray-200
-                  bg-white
-                  px-3
-                  py-3
-                "
-              >
-
-                <SectionTitle
-                  icon={<Phone className="h-3 w-3" />}
-                  title="COORDONNÉES"
-                />
-
-                <div className="mt-3 grid grid-cols-2 gap-3">
-
-                  <InfoField
-                    label="Numéro de téléphone"
-                    value="+237 670 00 00 00"
-                  />
-
-                  <InfoField
-                    label="Adresse email"
-                    value="j.doe@example.com"
-                  />
-
-                </div>
-              </div>
-
-
-              {/* LOCALISATION */}
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-gray-200
-                  bg-white
-                  px-3
-                  py-3
-                "
-              >
-
-                <SectionTitle
-                  icon={<MapPin className="h-3 w-3" />}
-                  title="LOCALISATION"
-                />
-
-                <div className="mt-3 grid grid-cols-2 gap-3">
-
-                  <InfoField
-                    label="Ville & Pays"
-                    value="Douala, Cameroun"
-                  />
-
-                  <InfoField
-                    label="Adresse"
-                    value="BP..."
-                  />
-
-                </div>
-              </div>
-
-
-              {/* =================================================
-                  RÉSUMÉ DE CONFORMITÉ
-              ================================================== */}
-
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-[#cbdede]
-                  bg-[#e4f0f0]
-                  px-3
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[8px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-afrilink-orange
-                  "
-                >
-                  RÉSUMÉ DE CONFORMITÉ
-                </p>
-
-                <div className="mt-3 flex flex-col gap-3">
-
-                  {/* Identité */}
-                  <div className="flex items-center justify-between">
-
-                    <div className="flex items-center gap-2">
-
-                      <span
-                        className="
-                          flex
-                          h-4
-                          w-4
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-[#d0f6df]
-                        "
-                      >
-                        <ShieldCheck className="h-2.5 w-2.5 text-[#18ad68]" />
-                      </span>
-
-                      <span className="text-[9px] text-gray-600">
-                        Vérification d'identité
-                      </span>
-
-                    </div>
-
-                    <span
-                      className="
-                        rounded-full
-                        bg-[#1bbd70]
-                        px-2
-                        py-1
-                        text-[6px]
-                        font-bold
-                        uppercase
-                        text-white
-                      "
-                    >
-                      APPROUVÉE
-                    </span>
-
-                  </div>
-
-
-                  {/* Adresse */}
-                  <div className="flex items-center justify-between">
-
-                    <div className="flex items-center gap-2">
-
-                      <span
-                        className="
-                          flex
-                          h-4
-                          w-4
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-[#d0f6df]
-                        "
-                      >
-                        <MapPin className="h-2.5 w-2.5 text-[#18ad68]" />
-                      </span>
-
-                      <span className="text-[9px] text-gray-600">
-                        Justificatif de domicile
-                      </span>
-
-                    </div>
-
-                    <div className="text-right">
-
-                      <p className="text-[8px] font-semibold text-gray-600">
-                        Validé
-                      </p>
-
-                      <p className="text-[6px] text-gray-400">
-                        15/03/23
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* Origine des fonds */}
-                  <div className="flex items-center justify-between">
-
-                    <div className="flex items-center gap-2">
-
-                      <span
-                        className="
-                          flex
-                          h-4
-                          w-4
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-gray-100
-                        "
-                      >
-                        <CircleDollarSign className="h-2.5 w-2.5 text-gray-500" />
-                      </span>
-
-                      <span className="text-[9px] text-gray-600">
-                        Origine des fonds
-                      </span>
-
-                    </div>
-
-                    <span
-                      className="
-                        rounded-full
-                        bg-[#e9efff]
-                        px-2
-                        py-1
-                        text-[6px]
-                        font-medium
-                        uppercase
-                        text-gray-500
-                      "
-                    >
-                      AUTO-DÉCLARÉ
-                    </span>
-
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-          )}
-
-
-          {/* =================================================
-              PORTEFEUILLES
-          ================================================== */}
-
-          {tab === "Portefeuilles" && (
-            <div className="flex flex-col gap-3">
-
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-gray-200
-                  bg-white
-                  p-4
-                "
-              >
-
-                <SectionTitle
-                  icon={<WalletCards className="h-3 w-3" />}
-                  title="PORTEFEUILLES"
-                />
-
-                <div className="mt-4 rounded-md bg-afrilink-dark p-4">
-
-                  <p className="text-[9px] text-white/60">
-                    Solde principal
-                  </p>
-
-                  <p className="mt-1 text-xl font-bold text-white">
-                    245 750 XAF
-                  </p>
-
-                  <p className="mt-1 text-[8px] text-white/50">
-                    Portefeuille principal
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-gray-200
-                  bg-white
-                  p-4
-                "
-              >
-
-                <p className="text-[8px] font-bold uppercase text-afrilink-orange">
-                  INFORMATIONS DU PORTEFEUILLE
-                </p>
-
-                <div className="mt-3 flex flex-col gap-3">
-
-                  <InfoField
-                    label="Devise"
-                    value="XAF"
-                  />
-
-                  <InfoField
-                    label="Statut"
-                    value="Actif"
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-          )}
-
-
-          {/* =================================================
-              ACTIVITÉ RÉCENTE
-          ================================================== */}
-
-          {tab === "Activité Récente" && (
-            <div className="flex flex-col gap-3">
-
-              <div
-                className="
-                  rounded-md
-                  border
-                  border-gray-200
-                  bg-white
-                  p-4
-                "
-              >
-
-                <SectionTitle
-                  icon={<Activity className="h-3 w-3" />}
-                  title="ACTIVITÉ RÉCENTE"
-                />
-
-                <div className="mt-4 flex flex-col gap-4">
-
-                  <ActivityRow
-                    title="Connexion au compte"
-                    date="Aujourd'hui à 09:42"
-                  />
-
-                  <ActivityRow
-                    title="Transfert effectué"
-                    date="Hier à 16:25"
-                  />
-
-                  <ActivityRow
-                    title="Paiement de service"
-                    date="12/05/2026 à 14:10"
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-          )}
-
-        </div>
-
-
-        {/* ===================================================
-            FOOTER
-        ==================================================== */}
-
-        <div
-          className="
-            shrink-0
-            border-t
-            border-gray-200
-            bg-[#f5f7ff]
-            px-3
-            py-3
-          "
-        >
-
-          <div className="grid grid-cols-3 gap-2">
-
-            {/* Suspendre */}
+      </div>
+
+      {/* TABS */}
+      <div className="flex items-center gap-1 px-6 border-b border-gray-100 overflow-x-auto">
+        {TABS.map(({ key, label, icon: Icon }) => {
+          const active = tab === key;
+          return (
             <button
-              type="button"
-              className="
-                flex
-                h-9
-                items-center
-                justify-center
-                gap-1
-                rounded-md
-                border
-                border-red-200
-                bg-[#fff0f0]
-                px-2
-                text-[8px]
-                font-medium
-                text-red-500
-                transition-colors
-                hover:bg-red-100
-              "
+              key={key}
+              onClick={() => setTab(key)}
+              className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${
+                active ? "text-afrilink-green" : "text-gray-500 hover:text-afrilink-dark"
+              }`}
             >
-              <Ban className="h-3 w-3" />
-              Suspendre le compte
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+              {active && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-afrilink-green rounded-full" />
+              )}
             </button>
+          );
+        })}
+      </div>
 
+      {/* CONTENT */}
+      {tab === "info" && (
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 space-y-5">
+            <Card icon={UserRound} title="Informations personnelles">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Field label="Nom complet" value="John Doe" />
+                <Field label="Date de naissance" value="12 Mai 1985" />
+                <Field label="Sexe" value="Masculin" />
+                <Field label="Pièce d'identité" value="Passeport" />
+                <Field label="Numéro de pièce" value="A123456789" />
+                <Field label="Nationalité" value="Camerounaise" />
+              </div>
+            </Card>
 
-            {/* PIN */}
-            <button
-              type="button"
-              className="
-                flex
-                h-9
-                items-center
-                justify-center
-                gap-1
-                rounded-md
-                border
-                border-gray-300
-                bg-white
-                px-2
-                text-[8px]
-                font-medium
-                text-gray-600
-                transition-colors
-                hover:bg-gray-50
-              "
-            >
-              <RotateCcw className="h-3 w-3" />
-              Réinitialiser le PIN
-            </button>
+            <Card icon={Phone} title="Coordonnées">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Numéro de téléphone" value="+237 670 00 00 00" badge="Vérifié" />
+                <Field label="Adresse email" value="j.doe@example.com" badge="Vérifié" />
+                <Field label="Adresse physique" value={"Douala, Bonapriso\nBP: 1234 Douala, Cameroun"} />
+                <Field label="Langue préférée" value="Français" />
+              </div>
+            </Card>
 
+            <Card icon={FileText} title="Informations complémentaires">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Profession" value="Entrepreneur" />
+                <Field label="Source de revenus" value="Commerce" />
+                <Field label="Revenu mensuel estimé" value="500 000 - 1 000 000 XAF" />
+                <Field label="Motif d'utilisation" value="Transfert, paiement et épargne" />
+                <Field label="Parrain (si applicable)" value="Aucun" />
+              </div>
+            </Card>
+          </div>
 
-            {/* Fermer */}
-            <button
-              type="button"
-              onClick={onClose}
-              className="
-                flex
-                h-9
-                items-center
-                justify-center
-                gap-1
-                rounded-md
-                bg-afrilink-green
-                px-2
-                text-[8px]
-                font-medium
-                text-white
-                shadow-sm
-                transition-all
-                hover:bg-afrilink-greenHover
-                hover:shadow-md
-              "
-            >
-              Fermer le profil
-            </button>
-
+          <div className="space-y-5">
+            <ComplianceCard />
+            <StatsCard />
+            <SecurityCard />
           </div>
         </div>
+      )}
+    </div>
+  );
+}
 
+/* ---------- Sous-composants ---------- */
+
+function Card({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof UserRound;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-gray-100 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Icon className="w-4 h-4 text-afrilink-green" />
+        <p className="text-sm font-semibold text-afrilink-dark">{title}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, value, badge }: { label: string; value: string; badge?: string }) {
+  return (
+    <div>
+      <p className="text-[11px] text-gray-400 mb-1">{label}</p>
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-afrilink-dark whitespace-pre-line">{value}</p>
+        {badge && (
+          <span className="text-[10px] font-medium text-afrilink-green bg-green-50 px-1.5 py-0.5 rounded">
+            {badge}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
+function ComplianceCard() {
+  const items = [
+    { icon: ShieldCheck, label: "Vérification d'identité", status: "Approuvée", style: "bg-afrilink-green text-white" },
+    { icon: MapPin, label: "Justificatif de domicile", status: "Validé", sub: "15/03/2023", style: "text-gray-600 font-semibold" },
+    { icon: CircleDollarSign, label: "Origine des fonds", status: "Auto-déclaré", style: "bg-blue-50 text-blue-600" },
+    { icon: ShieldCheck, label: "Vérification AML", status: "Aucun signal", style: "bg-green-50 text-afrilink-green" },
+    { icon: Activity, label: "Score de risque", status: "Faible", style: "bg-green-50 text-afrilink-green" },
+  ];
 
-/* ============================================================
-   SOUS-COMPOSANTS
-============================================================ */
-
-function SectionTitle({
-  icon,
-  title,
-}: {
-  icon: React.ReactNode;
-  title: string;
-}) {
   return (
-    <div className="flex items-center gap-1.5">
-      <span className="text-afrilink-orange">
-        {icon}
-      </span>
-
-      <span
-        className="
-          text-[8px]
-          font-bold
-          uppercase
-          tracking-wide
-          text-afrilink-orange
-        "
-      >
-        {title}
-      </span>
-    </div>
-  );
-}
-
-
-function InfoField({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="min-w-0">
-
-      <p className="text-[7px] leading-3 text-gray-500">
-        {label}
-      </p>
-
-      <p
-        className="
-          mt-0.5
-          truncate
-          text-[8px]
-          font-medium
-          leading-4
-          text-afrilink-dark
-        "
-      >
-        {value}
-      </p>
-
-    </div>
-  );
-}
-
-
-function ActivityRow({
-  title,
-  date,
-}: {
-  title: string;
-  date: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0">
-
-      <span
-        className="
-          flex
-          h-7
-          w-7
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-afrilink-green/10
-        "
-      >
-        <CheckCircle2 className="h-3.5 w-3.5 text-afrilink-green" />
-      </span>
-
-      <div>
-        <p className="text-[9px] font-semibold text-afrilink-dark">
-          {title}
-        </p>
-
-        <p className="mt-0.5 text-[7px] text-gray-400">
-          {date}
-        </p>
+    <div className="rounded-lg border border-gray-100 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <ShieldCheck className="w-4 h-4 text-afrilink-green" />
+        <p className="text-sm font-semibold text-afrilink-dark">Résumé de conformité</p>
       </div>
+      <div className="space-y-3">
+        {items.map((item) => (
+          <div key={item.label} className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+                <item.icon className="w-3.5 h-3.5 text-afrilink-green" />
+              </span>
+              <span className="text-xs text-gray-600">{item.label}</span>
+            </div>
+            {item.sub ? (
+              <div className="text-right">
+                <p className="text-xs font-medium text-gray-700">{item.status}</p>
+                <p className="text-[10px] text-gray-400">{item.sub}</p>
+              </div>
+            ) : (
+              <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${item.style}`}>
+                {item.status}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+function StatsCard() {
+  return (
+    <div className="rounded-lg border border-gray-100 p-4">
+      <p className="text-sm font-semibold text-afrilink-dark mb-4">Statistiques du compte</p>
+      <div className="grid grid-cols-2 gap-y-4 text-sm">
+        <div>
+          <p className="text-[11px] text-gray-400">Total des transactions</p>
+          <p className="font-semibold text-afrilink-dark">128</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-gray-400">Volume total</p>
+          <p className="font-semibold text-afrilink-dark">4 250 000 XAF</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-gray-400">Tontines créées</p>
+          <p className="font-semibold text-afrilink-dark">2</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-gray-400">Tontines rejointes</p>
+          <p className="font-semibold text-afrilink-dark">5</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-gray-400">3</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SecurityCard() {
+  return (
+    <div className="rounded-lg border border-gray-100 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Smartphone className="w-4 h-4 text-afrilink-green" />
+        <p className="text-sm font-semibold text-afrilink-dark">Appareils &amp; sécurité</p>
+      </div>
+      <div className="space-y-3 text-sm">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">Appareils enregistrés</span>
+          <span className="font-medium text-afrilink-dark">2</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">Dernière connexion</span>
+          <span className="font-medium text-afrilink-dark">Aujourd'hui à 09:42</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">Adresse IP</span>
+          <span className="font-medium text-afrilink-dark">197.210.14.23</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">Authentification 2FA</span>
+          <span className="text-[10px] font-semibold text-afrilink-green bg-green-50 px-2 py-1 rounded-full">
+            Activée
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
