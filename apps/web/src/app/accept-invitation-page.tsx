@@ -4,14 +4,6 @@ import { Loader2 } from 'lucide-react';
 
 const INVITATION_TOKEN_KEY = 'pending_invitation_token';
 
-export function getPendingInvitationToken(): string | null {
-  return localStorage.getItem(INVITATION_TOKEN_KEY);
-}
-
-export function clearPendingInvitationToken(): void {
-  localStorage.removeItem(INVITATION_TOKEN_KEY);
-}
-
 export default function AcceptInvitationPage() {
   const navigate = useNavigate();
   const token = useSearchParams()[0].get('token');

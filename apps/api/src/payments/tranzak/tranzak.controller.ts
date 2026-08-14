@@ -80,6 +80,12 @@ export class TranzakController {
     return this.tranzakService.getPaymentStatusByTransactionId(transactionId);
   }
 
+  @Post('verify/:transactionId')
+  @ApiOperation({ summary: 'Vérifier directement le statut auprès de Tranzak (pour fallback si callback absent)' })
+  async verifyPayment(@Param('transactionId') transactionId: string) {
+    return this.tranzakService.verifyAndConfirmPayment(transactionId);
+  }
+
   @Post('callback')
   @ApiOperation({ summary: 'Callback de confirmation Tranzak (pas de JWT)' })
   async handleCallback(@Body() body: TranzakCallbackBody) {

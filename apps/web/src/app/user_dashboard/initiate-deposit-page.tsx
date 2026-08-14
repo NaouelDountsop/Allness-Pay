@@ -29,18 +29,20 @@ function isValidPhoneForOperator(phone: string, operator: string): boolean {
   const digits = phone.replace(/\s/g, '');
   if (digits.length !== 9 || !/^\d{9}$/.test(digits)) return false;
 
+  const prefix = digits.substring(0, 3);
+
   if (operator === 'mtn') {
-    return /^6[5-9]\d{7}$/.test(digits);
+    return ['650', '651', '652', '653', '654', '670', '671', '672', '673', '674', '675', '676', '677', '678', '679', '680', '681', '682', '683'].includes(prefix);
   }
   if (operator === 'orange') {
-    return /^6[9]\d{7}$/.test(digits);
+    return ['640', '655', '656', '657', '658', '659', '686', '687', '688', '689', '690', '691', '692', '693', '694', '695', '696', '697', '698', '699'].includes(prefix);
   }
   return false;
 }
 
 function getPhoneHint(operator: string): string {
-  if (operator === 'mtn') return 'Commence par 67x, 65x, 68x';
-  if (operator === 'orange') return 'Commence par 69x';
+  if (operator === 'mtn') return 'Préfixes MTN : 650-654, 670-679, 680-683';
+  if (operator === 'orange') return 'Préfixes Orange : 640, 655-659, 686-699';
   return '9 chiffres après +237';
 }
 

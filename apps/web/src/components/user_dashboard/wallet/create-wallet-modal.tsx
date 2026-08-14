@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Wallet, ArrowLeft, Check, Loader2, WalletMinimal } from "lucide-react";
 import { walletService } from "@/lib/api/wallet.service";
-import { StepIndicator } from "@/components/user_dashboard/send/step-indicator";
+import { kycService } from "@/lib/api/kyc.service";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ const CURRENCIES = [
   { code: "ZAR", label: "ZAR - Rand sud-africain", symbol: "R" },
 ];
 
-const STEPS = [{ label: "Devise" }, { label: "Details" }, { label: "Confirmation" }];
+const STEP_LABELS = ["Devise", "Details", "Confirmation"];
 
 export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -40,6 +40,14 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
   const [label, setLabel] = useState("");
 
   const queryClient = useQueryClient();
+
+  const { data: kyc } = useQuery({
+    queryKey: ["kyc-me"],
+    queryFn: kycService.getMine,
+    retry: false,
+  });
+
+  const kycApproved = kyc?.status === "APPROVED";
 
   const createMutation = useMutation({
     mutationFn: walletService.create,
@@ -164,8 +172,9 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
             <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-xl p-3">
               <Wallet className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
               <p className="text-[11px] text-blue-600 leading-relaxed">
-                Votre portefeuille sera créé en statut <strong>Inactif</strong>. Il sera automatiquement
-                activé après validation de votre KYC.
+                {kycApproved
+                  ? "Votre KYC est déjà approuvé. Le portefeuille sera créé directement actif."
+                  : "Votre portefeuille sera créé en statut Inactif. Il sera automatiquement activé après validation de votre KYC."}
               </p>
             </div>
           </div>
@@ -186,10 +195,14 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Statut initial</span>
-              <span className="font-medium text-afrilink-orange">Inactif</span>
+              <span className={`font-medium ${kycApproved ? 'text-afrilink-green' : 'text-afrilink-orange'}`}>
+                {kycApproved ? 'Actif' : 'Inactif'}
+              </span>
             </div>
             <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-200">
-              Le portefeuille sera activé automatiquement une fois votre KYC approuvé.
+              {kycApproved
+                ? "Le portefeuille sera actif immédiatement."
+                : "Le portefeuille sera activé automatiquement une fois votre KYC approuvé."}
             </p>
           </div>
         )}

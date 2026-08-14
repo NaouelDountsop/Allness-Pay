@@ -34,7 +34,7 @@ export class TransactionsService {
 
       if (!operator) {
         throw new BadRequestException(
-          'Numéro de téléphone non reconnu. Seuls les préfixes MTN (650-659) et Orange (690-699) sont acceptés.',
+          'Numéro de téléphone non reconnu. Préfixes acceptés — MTN : 650-654, 670-679, 680-683 / Orange : 640, 655-659, 686-699.',
         );
       }
 

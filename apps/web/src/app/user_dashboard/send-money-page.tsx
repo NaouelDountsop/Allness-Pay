@@ -86,6 +86,7 @@ export default function SendMoneyPage() {
     if (profile?.pays && !form.senderCountry) {
       setForm((prev) => ({ ...prev, senderCountry: profile.pays }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.pays]);
 
   // Pre-fill from URL params

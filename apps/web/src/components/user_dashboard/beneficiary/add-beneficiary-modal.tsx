@@ -20,9 +20,9 @@ interface AddBeneficiaryModalProps {
 }
 
 const NETWORKS = [
-  { value: 'mtn_momo', label: 'MTN Mobile Money' },
-  { value: 'orange_money', label: 'Orange Money' },
-  { value: 'wave', label: 'Wave' },
+  { value: 'MTN_MOMO', label: 'MTN Mobile Money' },
+  { value: 'ORANGE_MONEY', label: 'Orange Money' },
+  { value: 'WAVE', label: 'Wave' },
 ];
 
 const COUNTRIES = [
@@ -37,7 +37,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [network, setNetwork] = useState('mtn_momo');
+  const [network, setNetwork] = useState('MTN_MOMO');
   const [country, setCountry] = useState('CM');
   const [nickname, setNickname] = useState('');
 
@@ -57,7 +57,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     setStep(1);
     setName('');
     setPhone('');
-    setNetwork('mtn_momo');
+    setNetwork('MTN_MOMO');
     setCountry('CM');
     setNickname('');
   };
@@ -67,11 +67,10 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
 
   const handleConfirm = () => {
     createMutation.mutate({
-      name,
-      phone: `${selectedCountry.dialCode} ${phone}`,
-      network,
-      country: selectedCountry.label,
-      nickname: nickname || undefined,
+      nom: name,
+      numero: `${selectedCountry.dialCode}${phone}`,
+      reseau: network,
+      pays: country,
     });
   };
 
