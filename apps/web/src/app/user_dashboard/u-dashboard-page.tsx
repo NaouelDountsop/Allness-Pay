@@ -40,6 +40,7 @@ export default function DashboardPage() {
   const { data: beneficiaries = [] } = useQuery({
     queryKey: ['beneficiaries'],
     queryFn: beneficiaryService.list,
+    select: (res) => res.data,
   });
 
   const { data: monthlySummary, isLoading: summaryLoading } = useQuery({
