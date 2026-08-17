@@ -1,4 +1,5 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BusinessException } from '@/common/exceptions/business.exception';
 import { Repository, DataSource } from 'typeorm';
 import { hash, verify } from 'argon2';
 import { randomUUID } from 'crypto';
@@ -30,12 +31,16 @@ export class UsersService {
     const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } =
       createUserDto;
 
-    const existing = await this.usersRepository.findOne({
+    // `find` et non `findOne` : l'adresse et le numero peuvent appartenir a
+    // deux comptes differents. Les remonter d'un coup evite a l'utilisateur de
+    // corriger un champ pour buter aussitot sur le suivant.
+    const conflits = await this.usersRepository.find({
       where: [{ email }, { telephone }, ...(googleId ? [{ googleId }] : [])],
+      select: ['idutilisateur', 'email', 'telephone', 'googleId'],
     });
 
-    if (existing) {
-      throw new ConflictException('Email, téléphone ou compte Google déjà utilisé.');
+    if (conflits.length > 0) {
+      this.assertNoConflict(conflits, { email, telephone, googleId });
     }
 
     const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());
@@ -68,6 +73,45 @@ export class UsersService {
     await this.mailService.sendOtp(email, otpCode);
 
     return savedUser;
+  }
+
+  /**
+   * Nomme precisement le ou les champs deja pris.
+   *
+   * Le message generique precedent (« Email, telephone ou compte Google deja
+   * utilise ») laissait l'utilisateur deviner quel champ corriger. `details.champs`
+   * permet en plus au formulaire de surligner directement les bons champs.
+   *
+   * Contrepartie assumee : un message precis confirme l'existence d'un compte
+   * pour une adresse donnee. C'est l'usage courant sur une inscription, ou
+   * l'alternative rend le formulaire impraticable.
+   */
+  private assertNoConflict(
+    conflits: User[],
+    saisie: { email: string; telephone: string; googleId?: string },
+  ): never | void {
+    const champs: string[] = [];
+    if (conflits.some((u) => u.email === saisie.email)) champs.push('email');
+    if (conflits.some((u) => u.telephone === saisie.telephone)) champs.push('telephone');
+    if (saisie.googleId && conflits.some((u) => u.googleId === saisie.googleId)) {
+      champs.push('googleId');
+    }
+
+    const libelles: Record<string, string> = {
+      email: 'Cette adresse e-mail est déjà associée à un compte.',
+      telephone: 'Ce numéro de téléphone est déjà associé à un compte.',
+      googleId: 'Ce compte Google est déjà lié à un utilisateur.',
+    };
+
+    const message =
+      champs.length === 0
+        ? // Cas theorique : une ligne remonte sans qu'aucun champ ne corresponde
+          // (comparaison sensible a la casse, par exemple). On reste explicite
+          // plutot que de laisser passer une creation qui violerait la contrainte.
+          'Ces informations sont déjà associées à un compte.'
+        : champs.map((champ) => libelles[champ]).join(' ');
+
+    throw new BusinessException('DUPLICATE_RESOURCE', message, HttpStatus.CONFLICT, { champs });
   }
 
   findAll(): Promise<User[]> {

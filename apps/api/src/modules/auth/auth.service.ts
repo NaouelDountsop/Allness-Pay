@@ -1,17 +1,19 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
-import { hash, verify } from 'argon2';
+import { verify } from 'argon2';
 import { UsersService } from '../users/users.service';
 import { RedisService } from '../otp/redis.service';
 import { Administrateur, AdministrateurStatut } from '../role/entities/administrateur.entity';
-import { User } from '../users/entities/user.entity';
+import { User, UserStatut } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -30,7 +32,27 @@ export class AuthService {
     if (!user.verificationotp) {
       throw new UnauthorizedException("Compte non vérifié. Veuillez valider l'OTP reçu par email.");
     }
+    this.assertUserActive(user);
     return user;
+  }
+
+  /**
+   * Refuse tout compte qui n'est pas ACTIF.
+   *
+   * Le mot de passe peut etre correct : un compte suspendu, bloque ou ferme ne
+   * doit pour autant jamais obtenir de jeton. Ce controle est applique a la
+   * connexion, au rafraichissement et a chaque requete authentifiee
+   * (`JwtStrategy`), afin qu'une suspension prenne effet immediatement et non
+   * a l'expiration du jeton courant.
+   */
+  private assertUserActive(user: Pick<User, 'statut'>): void {
+    if (user.statut === UserStatut.ACTIF) return;
+
+    throw new ForbiddenException(
+      user.statut === UserStatut.FERME
+        ? 'Ce compte a été fermé.'
+        : 'Votre compte est suspendu. Veuillez contacter le support.',
+    );
   }
 
   async login(user: { idutilisateur: number; email: string }) {
@@ -54,19 +76,18 @@ export class AuthService {
     try {
       valid = await verify(admin.motdepasse, motdepasse);
     } catch {
-      // Si le mot de passe stocké n'est pas un hash Argon2 valide,
-      // on compare en clair pour assurer la compatibilité.
-      valid = admin.motdepasse === motdepasse;
+      // L'empreinte stockée n'est pas un hash Argon2 exploitable (valeur en
+      // clair, tronquée ou corrompue). On refuse l'authentification : comparer
+      // en clair reviendrait à valider un mot de passe non haché en base.
+      // Le compte doit être réinitialisé par un administrateur.
+      this.logger.error(
+        `Empreinte de mot de passe illisible pour l'administrateur ${admin.id} — authentification refusée, réinitialisation requise.`,
+      );
+      valid = false;
     }
 
     if (!valid) {
       throw new UnauthorizedException('Email ou mot de passe invalide');
-    }
-
-    // Si le mot de passe était en clair, on le remplace par un hash sécurisé.
-    if (!admin.motdepasse.startsWith('$')) {
-      admin.motdepasse = await hash(motdepasse);
-      await this.adminRepo.save(admin);
     }
 
     return admin;
@@ -94,9 +115,22 @@ export class AuthService {
     );
 
     const ttlSeconds = this.parseTtlToSeconds(process.env.JWT_REFRESH_TTL ?? '30d');
-    await this.redisService.set(`refresh:admin:${admin.id}`, jti, ttlSeconds);
+    await this.redisService.set(this.refreshKey(admin.id, 'admin'), jti, ttlSeconds);
 
     return { access_token, refresh_token };
+  }
+
+  /**
+   * Clé de stockage du jeton de rafraîchissement.
+   *
+   * Administrateurs et clients vivent dans deux espaces de noms distincts :
+   * leurs identifiants sont deux séquences indépendantes, et l'admin n°7 n'est
+   * pas le client n°7. Centraliser le calcul ici évite que l'émission et la
+   * lecture divergent, ce qui rendait le rafraîchissement administrateur
+   * inopérant.
+   */
+  private refreshKey(id: number, role?: string): string {
+    return role === 'admin' ? `refresh:admin:${id}` : `refresh:${id}`;
   }
 
   private async issueTokens(user: { idutilisateur: number; email: string }) {
@@ -117,13 +151,13 @@ export class AuthService {
     );
 
     const ttlSeconds = this.parseTtlToSeconds(process.env.JWT_REFRESH_TTL ?? '30d');
-    await this.redisService.set(`refresh:${user.idutilisateur}`, jti, ttlSeconds);
+    await this.redisService.set(this.refreshKey(user.idutilisateur), jti, ttlSeconds);
 
     return { access_token, refresh_token };
   }
 
   async refresh(refreshToken: string) {
-    let decoded: { sub: number; jti: string };
+    let decoded: { sub: number; jti: string; role?: string };
     try {
       decoded = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
@@ -132,18 +166,37 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token invalide ou expiré.');
     }
 
-    const storedJti = await this.redisService.get(`refresh:${decoded.sub}`);
+    // La clé est calculée à partir du rôle porté par le jeton : un jeton
+    // administrateur est cherché dans l'espace de noms administrateur.
+    const storedJti = await this.redisService.get(this.refreshKey(decoded.sub, decoded.role));
     if (!storedJti || storedJti !== decoded.jti) {
       throw new UnauthorizedException('Refresh token invalide ou révoqué.');
     }
 
+    if (decoded.role === 'admin') {
+      const admin = await this.adminRepo.findOne({
+        where: { id: decoded.sub },
+        select: ['id', 'email', 'statut'],
+      });
+      if (!admin) {
+        throw new UnauthorizedException('Administrateur introuvable.');
+      }
+      if (admin.statut !== AdministrateurStatut.ACTIF) {
+        throw new ForbiddenException('Compte administrateur suspendu');
+      }
+      return this.issueAdminTokens({ id: admin.id, email: admin.email });
+    }
+
     const user = await this.usersService.findOne(decoded.sub);
+    // Un compte suspendu depuis l'émission du jeton ne doit pas pouvoir
+    // prolonger sa session.
+    this.assertUserActive(user);
 
     return this.issueTokens({ idutilisateur: user.idutilisateur, email: user.email });
   }
 
-  async logout(userId: number) {
-    await this.redisService.del(`refresh:${userId}`);
+  async logout(userId: number, role?: string) {
+    await this.redisService.del(this.refreshKey(userId, role));
     return { message: 'Déconnecté avec succès.' };
   }
 

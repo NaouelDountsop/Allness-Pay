@@ -13,7 +13,10 @@ describe('JwtStrategy', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JwtStrategy,
-        { provide: ConfigService, useValue: { getOrThrow: jest.fn().mockReturnValue('test-secret') } },
+        {
+          provide: ConfigService,
+          useValue: { getOrThrow: jest.fn().mockReturnValue('test-secret') },
+        },
         { provide: UsersService, useValue: {} },
         { provide: getRepositoryToken(Administrateur), useValue: {} },
       ],
