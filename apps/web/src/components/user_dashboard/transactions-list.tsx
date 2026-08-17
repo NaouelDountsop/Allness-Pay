@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ChevronRight, Loader2 } from 'lucide-react';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 
@@ -8,6 +9,7 @@ interface TransactionsListProps {
 }
 
 export function TransactionsList({ transactions, onSelect, isLoading }: TransactionsListProps) {
+  const navigate = useNavigate();
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
@@ -46,24 +48,34 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
             <li key={t.id}>
               <button
                 type="button"
-                onClick={() => onSelect?.(t)}
+                onClick={() => {
+                  if (onSelect) {
+                    onSelect(t);
+                  } else {
+                    navigate('/dashboard/transactions');
+                  }
+                }}
                 className="w-full flex items-center justify-between py-3 px-2 -mx-2 rounded-xl text-left transition-colors hover:bg-[#082B37]/[0.04] active:bg-[#082B37]/[0.07] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D28E2F]/50"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#082B37]/10">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                      credit ? 'bg-afrilink-green/10' : 'bg-red-50'
+                    }`}
+                  >
                     {credit ? (
-                      <ArrowDownLeft className="w-4 h-4 text-[#082B37]" />
+                      <ArrowDownLeft className="w-4 h-4 text-afrilink-green" />
                     ) : (
-                      <ArrowUpRight className="w-4 h-4 text-[#082B37]" />
+                      <ArrowUpRight className="w-4 h-4 text-red-500" />
                     )}
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm text-[#082B37] font-medium truncate">
-                      {t.reference || transactionService.getTypeLabel(t.type)}
+                      {transactionService.getTypeLabel(t.type)}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] font-medium bg-[#082B37]/10 text-[#082B37] px-1.5 py-0.5 rounded">
-                        {transactionService.getTypeLabel(t.type)}
+                        {t.reference || '—'}
                       </span>
                       <p className="text-xs text-[#D28E2F]">
                         {new Date(t.createdAt).toLocaleDateString('fr-FR', {

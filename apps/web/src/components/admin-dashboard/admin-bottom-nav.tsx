@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, ShieldCheck, PiggyBank, Store, LogOut } from 'lucide-react';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 const tabs = [
   { to: '/admin', label: 'Accueil', icon: LayoutDashboard, end: true },
@@ -13,6 +15,7 @@ const tabs = [
 
 export function AdminBottomNav() {
   const navigate = useNavigate();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -50,7 +53,7 @@ export function AdminBottomNav() {
             </NavLink>
           ))}
           <button
-            onClick={handleLogout}
+            onClick={() => setLogoutOpen(true)}
             className="flex flex-col items-center justify-center gap-1 text-[11px]"
           >
             <LogOut className="w-5 h-5 text-white/60" />
@@ -58,6 +61,17 @@ export function AdminBottomNav() {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment quitter l'interface administrateur ?"
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </nav>
   );
 }

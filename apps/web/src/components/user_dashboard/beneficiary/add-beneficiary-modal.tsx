@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { beneficiaryService, type CreateBeneficiaryPayload } from '@/lib/api/beneficiary.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { UserPlus, ArrowLeft, Check } from 'lucide-react';
+import { UserPlus, ArrowLeft, Check, AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,20 +26,25 @@ const NETWORKS = [
 ];
 
 const COUNTRIES = [
-  { value: 'CM', label: 'Cameroun', dialCode: '+237', placeholder: '6XX XXX XXX' },
-  { value: 'SN', label: 'Sénégal', dialCode: '+221', placeholder: '7X XXX XX XX' },
-  { value: 'CI', label: "Côte d'Ivoire", dialCode: '+225', placeholder: 'XX XX XX XX XX' },
-  { value: 'GA', label: 'Gabon', dialCode: '+241', placeholder: 'XX XX XX XX' },
-  { value: 'CG', label: 'Congo', dialCode: '+242', placeholder: 'XX XXX XXXX' },
+  { value: 'CM', label: 'Cameroun', dialCode: '+237', placeholder: '6XX XXX XXX', phoneDigits: 9 },
+  { value: 'SN', label: 'Sénégal', dialCode: '+221', placeholder: '7X XXX XX XX', phoneDigits: 9 },
+  { value: 'CI', label: "Côte d'Ivoire", dialCode: '+225', placeholder: 'XX XX XX XX XX', phoneDigits: 10 },
+  { value: 'GA', label: 'Gabon', dialCode: '+241', placeholder: 'XX XX XX XX', phoneDigits: 8 },
+  { value: 'CG', label: 'Congo', dialCode: '+242', placeholder: 'XX XXX XXXX', phoneDigits: 9 },
 ];
+
+const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
 
 export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [network, setNetwork] = useState('MTN_MOMO');
+  const [network, setNetwork] = useState('');
   const [country, setCountry] = useState('CM');
   const [nickname, setNickname] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [networkError, setNetworkError] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -57,18 +62,91 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     setStep(1);
     setName('');
     setPhone('');
-    setNetwork('MTN_MOMO');
+    setNetwork('');
     setCountry('CM');
     setNickname('');
+    setPhoneError('');
+    setNameError('');
+    setNetworkError('');
   };
 
   const selectedCountry = COUNTRIES.find((c) => c.value === country) ?? COUNTRIES[0]!;
-  const isStep1Valid = name.length > 0 && phone.length > 0;
+  const phoneDigits = phone.replace(/\D/g, '');
+  const isPhoneComplete = phoneDigits.length === selectedCountry.phoneDigits;
+
+  const validateName = (value: string): boolean => {
+    if (!value.trim()) {
+      setNameError('Le nom est obligatoire');
+      return false;
+    }
+    if (!nameRegex.test(value)) {
+      setNameError('Le nom ne doit contenir que des lettres, espaces, tirets ou apostrophes');
+      return false;
+    }
+    if (value.trim().length < 2) {
+      setNameError('Le nom doit contenir au moins 2 caractères');
+      return false;
+    }
+    setNameError('');
+    return true;
+  };
+
+  const validateNetwork = (value: string): boolean => {
+    if (!value) {
+      setNetworkError("L'opérateur est obligatoire");
+      return false;
+    }
+    setNetworkError('');
+    return true;
+  };
+
+  const validatePhone = (value: string): boolean => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length !== selectedCountry.phoneDigits) {
+      setPhoneError(`Le numéro doit contenir ${selectedCountry.phoneDigits} chiffres pour ${selectedCountry.label}`);
+      return false;
+    }
+    setPhoneError('');
+    return true;
+  };
+
+  const isStep1Valid = name.trim().length >= 2 && isPhoneComplete && network.length > 0;
+
+  const handlePhoneChange = (raw: string) => {
+    const digitsOnly = raw.replace(/\D/g, '');
+    if (digitsOnly.length > selectedCountry.phoneDigits) return;
+    setPhone(raw);
+    setPhoneError('');
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (nameError) {
+      validateName(value);
+    }
+  };
+
+  const handleNetworkChange = (value: string) => {
+    setNetwork(value);
+    if (networkError) {
+      validateNetwork(value);
+    }
+  };
+
+  const handleStep1Next = () => {
+    const isNameValid = validateName(name);
+    const isNetworkValid = validateNetwork(network);
+    const isPhoneValid = validatePhone(phone);
+
+    if (isNameValid && isNetworkValid && isPhoneValid) {
+      setStep(2);
+    }
+  };
 
   const handleConfirm = () => {
     createMutation.mutate({
-      nom: name,
-      numero: `${selectedCountry.dialCode}${phone}`,
+      nom: name.trim(),
+      numero: `${selectedCountry.dialCode}${phoneDigits}`,
       reseau: network,
       pays: country,
     });
@@ -164,26 +242,45 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
           </div>
         </div>
 
+        {/* API Error Display */}
+        {createMutation.isError && (
+          <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-700">
+              {(createMutation.error as Error)?.message || "Erreur lors de l'ajout du bénéficiaire"}
+            </p>
+          </div>
+        )}
+
         {step === 1 && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Nom complet</Label>
+              <Label>Nom complet *</Label>
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="Jean Dupont"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 ${
+                  nameError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-afrilink-orange'
+                }`}
               />
+              {nameError && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {nameError}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label>Pays</Label>
+              <Label>Pays *</Label>
               <select
                 value={country}
                 onChange={(e) => {
                   setCountry(e.target.value);
                   setPhone('');
+                  setPhoneError('');
                 }}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
               >
@@ -196,7 +293,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
 
             <div className="space-y-2">
-              <Label>Numéro de téléphone</Label>
+              <Label>Numéro de téléphone *</Label>
               <div className="flex">
                 <span className="flex items-center gap-1 px-3 border border-r-0 border-gray-200 rounded-l-xl bg-gray-50 text-sm text-gray-600">
                   {selectedCountry.dialCode}
@@ -204,26 +301,51 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
                   placeholder={selectedCountry.placeholder}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                  maxLength={selectedCountry.phoneDigits + 4}
+                  className={`flex-1 px-4 py-2.5 border rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 ${
+                    phoneError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-afrilink-orange'
+                  }`}
                 />
+              </div>
+              <div className="flex items-center justify-between">
+                {phoneError ? (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {phoneError}
+                  </p>
+                ) : (
+                  <span />
+                )}
+                <p className="text-[11px] text-gray-400">
+                  {phoneDigits.length}/{selectedCountry.phoneDigits} chiffres
+                </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Réseau</Label>
+              <Label>Réseau / Opérateur *</Label>
               <select
                 value={network}
-                onChange={(e) => setNetwork(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                onChange={(e) => handleNetworkChange(e.target.value)}
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white ${
+                  networkError ? 'border-red-300' : 'border-gray-200'
+                }`}
               >
+                <option value="">Sélectionnez un opérateur</option>
                 {NETWORKS.map((n) => (
                   <option key={n.value} value={n.value}>
                     {n.label}
                   </option>
                 ))}
               </select>
+              {networkError && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {networkError}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -254,7 +376,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             <div className="flex justify-between">
               <span className="text-gray-500">Réseau</span>
               <span className="font-medium">
-                {NETWORKS.find((n) => n.value === network)?.label}
+                {NETWORKS.find((n) => n.value === network)?.label || '—'}
               </span>
             </div>
             <div className="flex justify-between">
@@ -290,7 +412,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               </Button>
               <Button
                 disabled={!isStep1Valid}
-                onClick={() => setStep(2)}
+                onClick={handleStep1Next}
                 className="bg-afrilink-orange hover:bg-afrilink-orange/90"
               >
                 Suivant

@@ -87,11 +87,12 @@ export default function BeneficiariesPage() {
     queryFn: beneficiaryService.list,
   });
 
+  const beneficiaries = response?.data ?? [];
+
   const filtered = beneficiaries.filter((b) => {
     const matchesSearch =
       b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.phone.includes(search) ||
-      b.nickname?.toLowerCase().includes(search.toLowerCase());
+      b.phone.includes(search);
     const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
     const matchesNetwork = networkFilter === 'all' || b.network === networkFilter;
     const matchesCountry = countryFilter === 'all' || b.country === countryFilter;
@@ -244,12 +245,12 @@ export default function BeneficiariesPage() {
                 className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
               >
                 <option value="all">Tous</option>
-                <option value="mtn_momo">MTN Mobile Money</option>
-                <option value="orange_money">Orange Money</option>
-                <option value="wave">Wave</option>
-                <option value="free_money">Free Money</option>
-                <option value="moov_money">Moov Money</option>
-                <option value="airtel_money">Airtel Money</option>
+                <option value="MTN_MOMO">MTN Mobile Money</option>
+                <option value="ORANGE_MONEY">Orange Money</option>
+                <option value="WAVE">Wave</option>
+                <option value="FREE_MONEY">Free Money</option>
+                <option value="MOOV_MONEY">Moov Money</option>
+                <option value="AIRTEL_MONEY">Airtel Money</option>
               </select>
             </div>
             <div>

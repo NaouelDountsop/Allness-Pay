@@ -186,9 +186,9 @@ const EVOLUTION_DATA = [
 const STATS = [
   { label: 'Paires', value: '132', change: '+12 ce mois', icon: Grid2x2, color: 'text-green-400' },
   {
-    label: 'Mis \u00e0 jour',
+    label: 'Mis à jour',
     value: '08:45',
-    change: 'Derni\u00e8re mise \u00e0 jour',
+    change: 'Dernière mise à jour',
     icon: RefreshCw,
     color: 'text-blue-400',
   },
@@ -209,7 +209,7 @@ const STATS = [
   {
     label: 'Statut',
     value: 'Actif',
-    change: 'March\u00e9 ouvert',
+    change: 'Marché ouvert',
     icon: CircleCheck,
     color: 'text-green-400',
   },
@@ -249,7 +249,7 @@ export default function ExchangeRatesPage() {
         <div className="flex items-center gap-3">
           <div>
             <h1 className="text-lg font-bold text-afrilink-dark">Taux de change</h1>
-            <p className="text-xs text-gray-400">G\u00e9rez les taux de change de la plateforme.</p>
+            <p className="text-xs text-gray-400">Gérez les taux de change de la plateforme.</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -260,7 +260,7 @@ export default function ExchangeRatesPage() {
             onClick={() => navigate('/admin/taux-de-change/parametres')}
           >
             <Settings className="mr-1.5 h-3.5 w-3.5" />
-            Param\u00e8tres
+            Paramètres
           </Button>
           <Button variant="outline" size="sm" className="rounded-lg text-xs">
             <Upload className="mr-1.5 h-3.5 w-3.5" />
@@ -456,7 +456,7 @@ export default function ExchangeRatesPage() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 px-3 py-2">
               <p className="text-[11px] text-gray-400">
-                {(page - 1) * pageSize + 1}\u2013{Math.min(page * pageSize, totalRates)} /{' '}
+                {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalRates)} /{' '}
                 {totalRates}
               </p>
               <div className="flex items-center gap-1">
@@ -497,7 +497,7 @@ export default function ExchangeRatesPage() {
         <div className="space-y-3">
           {/* Details */}
           <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-            <p className="text-xs font-semibold text-gray-900 mb-3">D\u00e9tails</p>
+            <p className="text-xs font-semibold text-gray-900 mb-3">Détails</p>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-lg">{selectedRate.baseFlag}</span>
@@ -521,7 +521,7 @@ export default function ExchangeRatesPage() {
                 ['Variation', selectedRate.change],
                 ['Source', selectedRate.source],
                 ['Mode', selectedRate.mode],
-                ['Derni\u00e8re MAJ', `Aujourd'hui ${selectedRate.updatedAt}`],
+                ['Dernière MAJ', `Aujourd'hui ${selectedRate.updatedAt}`],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-center justify-between py-2">
                   <span className="text-gray-400">{label}</span>
@@ -538,7 +538,7 @@ export default function ExchangeRatesPage() {
               </Button>
               <Button variant="outline" className="w-full rounded-lg text-xs">
                 <Power className="mr-1.5 h-3.5 w-3.5" />
-                D\u00e9sactiver
+                Désactiver
               </Button>
             </div>
           </div>
@@ -547,7 +547,7 @@ export default function ExchangeRatesPage() {
           <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-semibold text-gray-900">
-                \u00c9volution ({selectedRate.base}/{selectedRate.target})
+                Évolution ({selectedRate.base}/{selectedRate.target})
               </p>
               <button className="flex items-center gap-1 rounded border border-gray-200 px-2 py-0.5 text-[10px] text-gray-600">
                 7J <ChevronDown className="h-3 w-3 text-gray-400" />

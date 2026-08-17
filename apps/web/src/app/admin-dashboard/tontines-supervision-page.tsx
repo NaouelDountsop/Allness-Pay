@@ -73,7 +73,7 @@ export default function TontinesSupervisionPage() {
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors shrink-0 disabled:opacity-50"
+          className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity shrink-0 disabled:opacity-50"
         >
           {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           Exporter

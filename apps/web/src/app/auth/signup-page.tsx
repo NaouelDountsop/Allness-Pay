@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { z } from 'zod';
 import { User, Calendar, Mail, Lock, Eye, EyeOff, Briefcase, ArrowLeft, AlertCircle } from 'lucide-react';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { AppInput } from '@/components/common/input';
@@ -44,6 +45,41 @@ const initialForm: SignupForm = {
 
 type FieldErrors = Partial<Record<keyof SignupForm, string>>;
 
+// Zod schemas for validation
+const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
+
+const step1Schema = z.object({
+  lastName: z
+    .string()
+    .min(1, 'Le nom est requis')
+    .regex(nameRegex, 'Le nom ne doit contenir que des lettres, espaces, tirets ou apostrophes'),
+  firstName: z
+    .string()
+    .min(1, 'Le prénom est requis')
+    .regex(nameRegex, 'Le prénom ne doit contenir que des lettres, espaces, tirets ou apostrophes'),
+  birthDate: z.string().min(1, 'La date de naissance est requise'),
+  gender: z.string().min(1, 'Le sexe est requis'),
+  country: z.string().min(1, 'Le pays est requis'),
+  city: z.string().min(1, 'La ville est requise'),
+});
+
+const step2Schema = z.object({
+  profession: z
+    .string()
+    .min(1, 'La profession est requise')
+    .regex(nameRegex, 'La profession ne doit contenir que des lettres, espaces, tirets ou apostrophes'),
+  phone: z.string().min(1, 'Le numéro de téléphone est requis'),
+  address: z.string().min(1, "L'adresse est requise"),
+  email: z.string().min(1, "L'email est requis").email('Adresse email invalide'),
+  password: z
+    .string()
+    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
+    .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
+    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
+  confirmPassword: z.string().min(1, 'La confirmation du mot de passe est requise'),
+});
+
 // Map backend field names to frontend form field names
 const FIELD_MAP: Record<string, keyof SignupForm> = {
   nom: 'lastName',
@@ -71,6 +107,7 @@ interface ApiError {
       };
     };
   };
+  message?: string;
 }
 
 export default function SignupPage() {
@@ -118,6 +155,11 @@ export default function SignupPage() {
   }, [searchParams]);
 
   const update = (field: keyof SignupForm, value: string) => {
+    // Block commas in name fields
+    const noCommaFields: (keyof SignupForm)[] = ['lastName', 'firstName', 'profession'];
+    if (noCommaFields.includes(field)) {
+      value = value.replace(/,/g, '');
+    }
     setForm((f) => ({ ...f, [field]: value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
@@ -133,8 +175,15 @@ export default function SignupPage() {
     e.preventDefault();
     setError('');
     setFieldErrors({});
-    if (!form.lastName || !form.firstName) {
-      setError('Merci de renseigner votre nom et prénom');
+
+    const result = step1Schema.safeParse(form);
+    if (!result.success) {
+      const errors: FieldErrors = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as keyof SignupForm;
+        if (field) errors[field] = issue.message;
+      }
+      setFieldErrors(errors);
       return;
     }
     setStep(2);
@@ -153,10 +202,9 @@ export default function SignupPage() {
   const parseApiError = (err: unknown): { banner: string; fields: FieldErrors } => {
     const e = err as ApiError;
     const data = e.response?.data;
-    const banner = data?.message || "Erreur lors de l'inscription";
     const fields: FieldErrors = {};
 
-    // Handle validation errors (field-level)
+    // Handle validation errors (field-level) from AllExceptionsFilter
     if (data?.details?.errors && Array.isArray(data.details.errors)) {
       for (const errItem of data.details.errors) {
         const frontendField = FIELD_MAP[errItem.field] ?? errItem.field;
@@ -167,7 +215,7 @@ export default function SignupPage() {
       return { banner: '', fields };
     }
 
-    // Handle duplicate field errors (single field)
+    // Handle duplicate field errors (single field) from users.service
     if (data?.details?.field) {
       const frontendField = FIELD_MAP[data.details.field] ?? data.details.field;
       if (frontendField in initialForm) {
@@ -175,6 +223,20 @@ export default function SignupPage() {
         return { banner: '', fields };
       }
     }
+
+    // Map backend error codes to specific messages
+    const codeMessages: Record<string, string> = {
+      DUPLICATE_EMAIL: 'Cette adresse email est déjà utilisée par un autre compte.',
+      DUPLICATE_PHONE: 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
+      DUPLICATE_GOOGLE: 'Ce compte Google est déjà associé à un compte AfriLinkPay.',
+      VALIDATION_FAILED: 'Les données fournies sont invalides. Veuillez vérifier vos informations.',
+    };
+
+    const code = data?.code;
+    const banner =
+      (code && codeMessages[code]) ||
+      data?.message ||
+      'Une erreur est survenue. Veuillez réessayer.';
 
     return { banner, fields };
   };
@@ -188,6 +250,24 @@ export default function SignupPage() {
 
     if (!accepted) {
       setError("Vous devez accepter les conditions d'utilisation");
+      setLoading(false);
+      return;
+    }
+
+    const result = step2Schema.safeParse(form);
+    if (!result.success) {
+      const errors: FieldErrors = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as keyof SignupForm;
+        if (field) errors[field] = issue.message;
+      }
+      setFieldErrors(errors);
+      setLoading(false);
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      setFieldErrors({ confirmPassword: 'Les mots de passe ne correspondent pas' });
       setLoading(false);
       return;
     }
@@ -408,38 +488,16 @@ export default function SignupPage() {
             </div>
           )}
 
-          {!isFromGoogle && (
-            <>
-              <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
-                />
-                <span>
-                  J'accepte les{' '}
-                  <a href="/cgu" className="text-afrilink-green font-medium">
-                    Conditions d'utilisation
-                  </a>{' '}
-                  et la{' '}
-                  <a href="/confidentialite" className="text-afrilink-green font-medium">
-                    Politique de confidentialité
-                  </a>{' '}
-                  de AfrilinkPay.
-                </span>
-              </label>
+          <AppButton type="submit">Continuer →</AppButton>
 
-              <AppButton type="submit">Continuer →</AppButton>
+          <p className="text-center text-sm text-gray-500 mt-4">
+            Déjà inscrit ?{' '}
+            <a href="/login" className="text-afrilink-green font-medium">
+              Se connecter
+            </a>
+          </p>
 
-              <p className="text-center text-sm text-gray-500 mt-4">
-                Déjà inscrit ?{' '}
-                <a href="/login" className="text-afrilink-green font-medium">
-                  Se connecter
-                </a>
-              </p>
-
-              <SocialButtons />
-            </>
-          )}
+          <SocialButtons />
         </form>
       )}
 
@@ -564,10 +622,6 @@ export default function SignupPage() {
             </div>
           )}
 
-          <AppButton type="submit" loading={loading}>
-            Continuer →
-          </AppButton>
-
           <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
             <input
               type="checkbox"
@@ -587,6 +641,10 @@ export default function SignupPage() {
               de AfrilinkPay.
             </span>
           </label>
+
+          <AppButton type="submit" loading={loading}>
+            Continuer →
+          </AppButton>
 
           {!isFromGoogle && (
             <>

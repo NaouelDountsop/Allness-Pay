@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
@@ -38,6 +40,7 @@ const superAdminItems: NavItem[] = [
 
 export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin' }) {
   const navigate = useNavigate();
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const items = [...navItems, ...(role === 'super-admin' ? superAdminItems : adminOnlyItems)];
 
   const handleLogout = async () => {
@@ -88,13 +91,24 @@ export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin
 
       <div className="p-3">
         <button
-          onClick={handleLogout}
+          onClick={() => setLogoutOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment vous déconnecter de l'interface administrateur ?"
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </aside>
   );
 }

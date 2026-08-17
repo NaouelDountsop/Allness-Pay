@@ -28,9 +28,7 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 ${
-                      w.isPrimary ? 'bg-afrilink-dark' : 'bg-afrilink-orange'
-                    }`}
+                    className="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 bg-afrilink-dark"
                   >
                     <Wallet className="w-4 h-4" />
                   </span>

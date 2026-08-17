@@ -12,14 +12,18 @@ import {
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge, Pagination } from '../../components/ui';
-import { TransactionDetailModal, type TransactionDetail } from './TransactionDetailModal';
-import { adminService } from '../../lib/api/admin.service';
+import { TransactionDetailModal } from './TransactionDetailModal';
+import { adminService, type AdminTransaction } from '../../lib/api/admin.service';
 
 const STATUS_BADGE: Record<string, { tone: 'green' | 'orange' | 'red' | 'blue' | 'amber'; label: string }> = {
   COMPLETED: { tone: 'green', label: 'Complété' },
+  completed: { tone: 'green', label: 'Complété' },
   PENDING: { tone: 'orange', label: 'En attente' },
+  pending: { tone: 'orange', label: 'En attente' },
   FAILED: { tone: 'red', label: 'Échoué' },
+  failed: { tone: 'red', label: 'Échoué' },
   BLOCKED: { tone: 'red', label: 'Bloqué' },
+  blocked: { tone: 'red', label: 'Bloqué' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -57,7 +61,7 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export default function AdminTransactionsPage() {
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<TransactionDetail | null>(null);
+  const [selected, setSelected] = useState<AdminTransaction | null>(null);
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [exporting, setExporting] = useState(false);
@@ -95,10 +99,22 @@ export default function AdminTransactionsPage() {
 
   return (
     <AdminLayout active="Transactions">
-      <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
-      <p className="text-sm text-gray-400 mb-6">
-        Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
-      </p>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
+          <p className="text-sm text-gray-400">
+            Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
+          </p>
+        </div>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+        >
+          {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+          Exporter CSV
+        </button>
+      </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
@@ -165,14 +181,6 @@ export default function AdminTransactionsPage() {
             <RotateCcw className="w-3.5 h-3.5" />
             Réinitialiser
           </button>
-          <button
-            onClick={handleExport}
-            disabled={exporting}
-            className="h-9 px-3 rounded-lg bg-afrilink-dark text-white text-xs font-medium flex items-center gap-1.5 hover:bg-afrilink-dark/90 transition-colors disabled:opacity-50"
-          >
-            {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-            Exporter CSV
-          </button>
         </div>
 
         {isLoading ? (
@@ -218,21 +226,7 @@ export default function AdminTransactionsPage() {
                       </td>
                       <td className="text-right">
                         <button
-                          onClick={() =>
-                            setSelected({
-                              reference: t.reference,
-                              date: formatDateTime(t.createdAt),
-                              status: STATUS_BADGE[t.status]?.label ?? t.status,
-                              amount: `${formatAmount(t.amount, t.type)} XAF`,
-                              type: TYPE_LABELS[t.type] ?? t.type,
-                              fees: '—',
-                              device: '—',
-                              location: '—',
-                              timeline: [
-                                { label: 'Transaction créée', meta: `${t.user} · ${formatDateTime(t.createdAt)}` },
-                              ],
-                            })
-                          }
+                          onClick={() => setSelected(t)}
                           className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
                           aria-label="Voir"
                         >

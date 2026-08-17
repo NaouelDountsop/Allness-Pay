@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Send, Settings, MessageCircle, Loader2 } from 'lucide-react';
@@ -6,11 +7,13 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { TontineDetailHeader } from '@/components/user_dashboard/tontines/tontine-detail-header';
 import { TontineDetailStats } from '@/components/user_dashboard/tontines/tontine-detail-stats';
 import { MembersTable } from '@/components/user_dashboard/tontines/members-table';
+import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-member-modal';
 import { tontineService } from '@/lib/api/tontine.service';
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const { data: tontine, isLoading } = useQuery({
     queryKey: ['tontine', id],
@@ -104,7 +107,16 @@ export default function TontineDetailPage() {
           tontineId={tontine.id}
           memberLimit={tontine.memberLimit}
           status={tontine.status}
+          onAddMember={() => setInviteOpen(true)}
         />
+
+        {inviteOpen && (
+          <InviteMemberModal
+            tontineId={tontine.id}
+            tontineName={tontine.name}
+            onClose={() => setInviteOpen(false)}
+          />
+        )}
 
         <button
           aria-label="Support"

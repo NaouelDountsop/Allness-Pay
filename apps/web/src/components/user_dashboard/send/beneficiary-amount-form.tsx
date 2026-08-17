@@ -189,6 +189,12 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
     }
   };
 
+  const isBeneficiaryValid = isPhoneMode
+    ? form.beneficiaryContact.length > 0 && isPhoneValid && isComplete
+    : form.beneficiaryContact.length > 0;
+
+  const canSubmit = form.beneficiaryContact && amountNumber > 0 && isBeneficiaryValid;
+
   return (
     <div className="text-base">
       {/* Mode de réception */}
@@ -256,7 +262,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
           </p>
 
           <div className="space-y-1.5">
-            <CountrySelect value={form.country} onChange={handleCountryChange} />
+            {isPhoneMode && <CountrySelect value={form.country} onChange={handleCountryChange} />}
 
             <div>
               <div
@@ -396,11 +402,11 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
       <button
         onClick={() => {
           setTouched(true);
-          if (form.beneficiaryContact && amountNumber > 0 && isPhoneValid) {
+          if (canSubmit) {
             onSubmit();
           }
         }}
-        disabled={!form.beneficiaryContact || amountNumber <= 0 || !isPhoneValid}
+        disabled={!canSubmit}
         className="w-full h-14 rounded-2xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
       >
         Confirmer
