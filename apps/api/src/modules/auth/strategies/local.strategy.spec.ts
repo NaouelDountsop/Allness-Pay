@@ -8,10 +8,7 @@ describe('LocalStrategy', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LocalStrategy,
-        { provide: AuthService, useValue: {} },
-      ],
+      providers: [LocalStrategy, { provide: AuthService, useValue: {} }],
     }).compile();
 
     provider = module.get<LocalStrategy>(LocalStrategy);
