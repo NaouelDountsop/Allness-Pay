@@ -74,5 +74,10 @@ export const envValidationSchema = Joi.object({
   TRANZAK_APP_KEY: Joi.string().required(),
   TRANZAK_CALLBACK_URL: Joi.string().uri().allow('').optional(),
 
+  PAYMENT_API_BASE_URL: Joi.string().uri().allow('').optional(),
+  PAYMENT_USERNAME: Joi.string().allow('').optional(),
+  PAYMENT_PASSWORD: Joi.string().allow('').optional(),
+  PAYMENT_WEBHOOK_SECRET: Joi.string().allow('').optional(),
+
   LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
 });

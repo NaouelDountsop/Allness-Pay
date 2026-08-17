@@ -1,17 +1,20 @@
 import { CalendarClock } from 'lucide-react';
+import { scheduledPaymentsBannerStyle } from '@/styles/banners';
 
 export function ScheduledPaymentsBanner() {
+  const s = scheduledPaymentsBannerStyle;
+
   return (
-    <div className="rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start sm:items-center gap-3 sm:gap-4">
-      <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-        <CalendarClock className="w-5 h-5 text-blue-600" />
+    <div className={s.wrapper}>
+      <span className={s.iconWrapper}>
+        <CalendarClock className={`w-5 h-5 ${s.iconColor}`} />
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-800 mb-0.5">Paiements programmés</p>
-        <p className="text-xs text-gray-500 line-clamp-3">
+        <p className={`text-sm font-medium ${s.titleColor} mb-0.5`}>Paiements programmés</p>
+        <p className={`text-xs ${s.descriptionColor} line-clamp-3`}>
           Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre
           wallet AfrilinkPay.{' '}
-          <a href="#" className="text-afrilink-green font-medium">
+          <a href="#" className={`${s.linkColor} font-medium`}>
             En savoir plus
           </a>
         </p>

@@ -19,7 +19,7 @@ import {
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
-import { Badge } from '../../components/ui/badge';
+//import { Badge } from '../../components/ui/badge';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
@@ -226,13 +226,13 @@ export default function BeneficiariesPage() {
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
             </div>
-            <div>
+            {/* <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Réseau</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
                 Tous
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
-            </div>
+            </div> */}
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Pays</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
@@ -260,7 +260,7 @@ export default function BeneficiariesPage() {
                   <th className="font-medium pb-3 hidden sm:table-cell">Numéro</th>
                   <th className="font-medium pb-3 hidden md:table-cell">Réseau</th>
                   <th className="font-medium pb-3 hidden lg:table-cell">Pays</th>
-                  <th className="font-medium pb-3">Statut</th>
+                  {/* <th className="font-medium pb-3">Statut</th> */}
                   <th className="font-medium pb-3 hidden xl:table-cell">Ajouté le</th>
                   <th className="font-medium pb-3 text-right">Actions</th>
                 </tr>
@@ -307,7 +307,7 @@ export default function BeneficiariesPage() {
                           {b.country}
                         </div>
                       </td>
-                      <td>
+                      {/* <td>
                         <Badge
                           tone={
                             b.status === 'verified'
@@ -324,7 +324,7 @@ export default function BeneficiariesPage() {
                               ? 'En attente'
                               : 'Rejeté'}
                         </Badge>
-                      </td>
+                      </td> */}
                       <td className="text-xs text-gray-500 hidden xl:table-cell">
                         {new Date(b.createdAt).toLocaleDateString('fr-FR', {
                           day: '2-digit',

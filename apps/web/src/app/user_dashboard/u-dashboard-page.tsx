@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { KycBanner } from '@/components/user_dashboard/kyc-banner';
+import { TontineInvitationBanner } from '@/components/user_dashboard/tontine-invitation-banner';
 import { WalletBalanceCard } from '@/components/user_dashboard/wallet/wallet-balance-card';
 import { QuickSend } from '@/components/user_dashboard/quick-send';
 import { TransactionsList } from '@/components/user_dashboard/transactions-list';
@@ -11,6 +12,7 @@ import { walletService } from '@/lib/api/wallet.service';
 import { kycService } from '@/lib/api/kyc.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { beneficiaryService } from '@/lib/api/beneficiary.service';
+import { tontineService } from '@/lib/api/tontine.service';
 
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
@@ -47,6 +49,12 @@ export default function DashboardPage() {
     queryKey: ['monthly-summary', wallet?.id],
     queryFn: () => transactionService.getMonthlySummary(wallet!.id),
     enabled: !!wallet?.id,
+  });
+
+  const { data: pendingInvitations } = useQuery({
+    queryKey: ['pending-invitations'],
+    queryFn: tontineService.listPendingInvitations,
+    enabled: kyc?.status === 'APPROVED',
   });
 
   const lastFiveTransactions = transactions.slice(0, 5);
@@ -102,6 +110,11 @@ export default function DashboardPage() {
 
       <div>
         <KycBanner status={kyc?.status ?? null} />
+        {kyc?.status === 'APPROVED' && (
+          <TontineInvitationBanner
+            count={pendingInvitations?.filter((inv) => inv.status === 'PENDING').length ?? 0}
+          />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-6">
