@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2 } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
+import { AlertBanner } from '@/components/common/alert-banner';
 import {
   type DepositMethod,
   type Currency,
@@ -13,9 +15,9 @@ import { useUserProfile } from '../../hooks/use-user-profile';
 import { walletService } from '@/lib/api/wallet.service';
 import { getCurrenciesForCountry } from '../../utils/country-currency';
 
-const DEPOSIT_METHODS: { key: DepositMethod; label: string; icon: React.ReactNode }[] = [
-  { key: 'mobile_money', label: 'Mobile Money', icon: <Phone className="w-5 h-5" /> },
-  { key: 'bank', label: 'Compte bancaire', icon: <Landmark className="w-5 h-5" /> },
+const DEPOSIT_METHODS: { key: DepositMethod; labelKey: string; icon: React.ReactNode }[] = [
+  { key: 'mobile_money', labelKey: 'deposit.mobileMoney', icon: <Phone className="w-5 h-5" /> },
+  { key: 'bank', labelKey: 'deposit.bankAccount', icon: <Landmark className="w-5 h-5" /> },
 ];
 
 const MOBILE_OPERATORS = [
@@ -40,14 +42,15 @@ function isValidPhoneForOperator(phone: string, operator: string): boolean {
   return false;
 }
 
-function getPhoneHint(operator: string): string {
-  if (operator === 'mtn') return 'Préfixes MTN : 650-654, 670-679, 680-683';
-  if (operator === 'orange') return 'Préfixes Orange : 640, 655-659, 686-699';
-  return '9 chiffres après +237';
+function getPhoneHint(operator: string, t: (key: string) => string): string {
+  if (operator === 'mtn') return t('deposit.phoneHint.mtn');
+  if (operator === 'orange') return t('deposit.phoneHint.orange');
+  return t('deposit.phoneHint.default');
 }
 
 export default function InitiateDepositPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { profile } = useUserProfile();
   const {
     deposit,
@@ -65,6 +68,7 @@ export default function InitiateDepositPage() {
   } = useDepositFlow();
 
   const [submitting, setSubmitting] = useState(false);
+  const [errorDismissed, setErrorDismissed] = useState(false);
 
   useEffect(() => {
     walletService.getPrimary().then((w) => {
@@ -93,9 +97,11 @@ export default function InitiateDepositPage() {
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
-    await submitDepositRequest();
+    const success = await submitDepositRequest();
     setSubmitting(false);
-    navigate('/deposit/request-sent');
+    if (success) {
+      navigate('/deposit/processing');
+    }
   };
 
   return (
@@ -111,12 +117,21 @@ export default function InitiateDepositPage() {
           >
             <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Initier le dépôt</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">{t('deposit.pageTitle')}</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
-          Saisissez les informations ci-dessous pour initier une demande de dépôt sur votre
-          portefeuille via Mobile Money ou virement bancaire.
+          {t('deposit.pageDescription')}
         </p>
+
+        {/* Banner d'erreur en haut */}
+        {deposit.error && !errorDismissed && (
+          <AlertBanner
+            variant="error"
+            title={t('deposit.errorTitle')}
+            message={deposit.error}
+            onDismiss={() => setErrorDismissed(true)}
+          />
+        )}
 
         {/* Encart sécurité */}
         <div className="flex items-start gap-3 rounded-xl bg-green-50 border border-green-100 p-4 mb-6">
@@ -124,8 +139,7 @@ export default function InitiateDepositPage() {
             <ShieldCheck className="w-4 h-4 text-afrilink-green" />
           </div>
           <p className="text-xs text-green-700 leading-relaxed">
-            Vous recevrez une notification sur votre téléphone pour confirmer ce paiement. Aucun
-            montant ne sera débité sans votre validation.
+            {t('deposit.securityNotice')}
           </p>
         </div>
 
@@ -133,7 +147,7 @@ export default function InitiateDepositPage() {
           {/* Sélecteur de méthode de dépôt */}
           <div className="mb-6">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              Méthode de dépôt
+              {t('deposit.method')}
             </label>
             <div className="grid grid-cols-2 gap-3">
               {DEPOSIT_METHODS.map((m) => (
@@ -155,7 +169,7 @@ export default function InitiateDepositPage() {
                   >
                     {m.icon}
                   </div>
-                  <span className="text-xs font-semibold text-afrilink-dark">{m.label}</span>
+                  <span className="text-xs font-semibold text-afrilink-dark">{t(m.labelKey)}</span>
                   {deposit.method === m.key && (
                     <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-afrilink-green" />
                   )}
@@ -172,7 +186,7 @@ export default function InitiateDepositPage() {
                   {/* Section Opérateur */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Opérateur
+                      {t('deposit.operator')}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {MOBILE_OPERATORS.map((op) => (
@@ -200,7 +214,7 @@ export default function InitiateDepositPage() {
                   {/* Numéro de téléphone */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Numéro de téléphone
+                      {t('deposit.phoneNumber')}
                     </label>
                     <div
                       className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
@@ -233,8 +247,8 @@ export default function InitiateDepositPage() {
                       }`}
                     >
                       {phoneTouched && !phoneValid
-                        ? getPhoneHint(deposit.operator)
-                        : getPhoneHint(deposit.operator)}
+                        ? t('deposit.phoneError')
+                        : getPhoneHint(deposit.operator, t)}
                     </p>
                   </div>
                 </>
@@ -243,14 +257,14 @@ export default function InitiateDepositPage() {
                   {/* Banque */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Banque
+                      {t('deposit.bank')}
                     </label>
                     <select
                       value={deposit.bankName}
                       onChange={(e) => setBankName(e.target.value)}
                       className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all bg-white"
                     >
-                      <option value="">Sélectionnez votre banque</option>
+                      <option value="">{t('deposit.selectBank')}</option>
                       <option value="sgbc">SGBC (Société Générale Cameroun)</option>
                       <option value="uba">UBA Cameroun</option>
                       <option value="afriland">Afriland First Bank</option>
@@ -265,13 +279,13 @@ export default function InitiateDepositPage() {
                   {/* IBAN / Numéro de compte */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Numéro de compte / IBAN
+                      {t('deposit.iban')}
                     </label>
                     <input
                       type="text"
                       value={deposit.iban}
                       onChange={(e) => setIban(e.target.value)}
-                      placeholder="CM12 3456 7890 1234 5678 9012 34"
+                      placeholder={t('deposit.ibanPlaceholder')}
                       className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all uppercase"
                     />
                   </div>
@@ -279,13 +293,13 @@ export default function InitiateDepositPage() {
                   {/* Titulaire du compte */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Titulaire du compte
+                      {t('deposit.accountHolder')}
                     </label>
                     <input
                       type="text"
                       value={deposit.accountHolder}
                       onChange={(e) => setAccountHolder(e.target.value)}
-                      placeholder="Nom complet du titulaire"
+                      placeholder={t('deposit.accountHolderPlaceholder')}
                       className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all"
                     />
                   </div>
@@ -295,13 +309,13 @@ export default function InitiateDepositPage() {
               {/* Description */}
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Description <span className="text-gray-400 font-normal">(optionnelle)</span>
+                  {t('deposit.description')} <span className="text-gray-400 font-normal">{t('deposit.descriptionOptional')}</span>
                 </label>
                 <input
                   type="text"
                   value={deposit.description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Dépôt AfriLinkPay"
+                  placeholder={t('deposit.descriptionPlaceholder')}
                   className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all"
                 />
               </div>
@@ -312,14 +326,14 @@ export default function InitiateDepositPage() {
               {/* Montant */}
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Montant à déposer
+                  {t('deposit.amountLabel')}
                 </label>
                 <div className="flex items-center h-12 rounded-lg border border-gray-200 overflow-hidden mb-3 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange transition-all">
                   <input
                     type="number"
                     value={deposit.amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="5 000"
+                    placeholder={t('deposit.amountPlaceholder')}
                     className="flex-1 h-full px-4 text-base font-semibold text-afrilink-dark focus:outline-none"
                   />
                   <select
@@ -357,33 +371,27 @@ export default function InitiateDepositPage() {
                 : deposit.bankName && Number(deposit.amount) > 0) && (
                 <div className="rounded-xl p-4" style={{ backgroundColor: '#082B37' }}>
                   <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wide mb-2">
-                    Récapitulatif
+                    {t('deposit.summary')}
                   </p>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/60">Montant</span>
+                    <span className="text-white/60">{t('deposit.summaryAmount')}</span>
                     <span className="font-bold text-white">
                       {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))}{' '}
                       {currencySymbol}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm mt-1.5">
-                    <span className="text-white/60">Devise</span>
+                    <span className="text-white/60">{t('deposit.summaryCurrency')}</span>
                     <span className="font-medium text-white">{deposit.currency}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm mt-1.5">
-                    <span className="text-white/60">Méthode</span>
+                    <span className="text-white/60">{t('deposit.summaryMethod')}</span>
                     <span className="font-medium text-white">
                       {isMobileMoney
                         ? MOBILE_OPERATORS.find((o) => o.key === deposit.operator)?.label
                         : deposit.bankName}
                     </span>
                   </div>
-                </div>
-              )}
-
-              {deposit.error && (
-                <div className="rounded-xl bg-red-50 border border-red-100 p-4 mb-2">
-                  <p className="text-xs text-red-600">{deposit.error}</p>
                 </div>
               )}
 
@@ -397,11 +405,11 @@ export default function InitiateDepositPage() {
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Traitement en cours...
+                    {t('deposit.submitting')}
                   </>
                 ) : (
                   <>
-                    Recevoir une demande de confirmation
+                    {t('deposit.submit')}
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

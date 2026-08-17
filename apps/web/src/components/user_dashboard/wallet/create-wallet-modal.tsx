@@ -113,11 +113,11 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
 
         {/* Stepper */}
         <div className="rounded-xl bg-afrilink-dark px-4 pt-5 pb-4 my-4">
-          <StepIndicator
+          {/* <StepIndicator
             steps={STEPS}
             currentStep={step - 1}
             completedSteps={[1, 2, 3].map((s) => step > s)}
-          />
+          /> */}
         </div>
 
         {/* Step 1: Currency */}

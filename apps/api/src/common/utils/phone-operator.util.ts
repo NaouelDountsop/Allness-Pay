@@ -63,3 +63,30 @@ export function detectOperator(phoneNumber: string): LinkedAccountOperator | nul
 
   return null;
 }
+
+/**
+ * Normalise un numéro camerounais au format Campay : `237XXXXXXXXX` (digits only).
+ *
+ * Gère les formats :
+ *  - 6XXYYYZZ       → 2376XXYYYZZ
+ *  - 2376XXYYYZZ    → 2376XXYYYZZ
+ *  - +2376XXYYYZZ   → 2376XXYYYZZ
+ *  - 237 6XXYYYZZ   → 2376XXYYYZZ
+ */
+export function normalizePhoneForCampay(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+
+  if (digits.length === 9) {
+    return `237${digits}`;
+  }
+
+  if (digits.length === 12 && digits.startsWith('237')) {
+    return digits;
+  }
+
+  if (digits.length === 12 && !digits.startsWith('237')) {
+    return `237${digits.substring(digits.length - 9)}`;
+  }
+
+  return `237${digits}`;
+}

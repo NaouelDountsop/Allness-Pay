@@ -9,6 +9,7 @@ import {
   Send,
   Star,
   Search,
+  ChevronDown,
   RotateCcw,
   MoreVertical,
   ShieldCheck as SecureIcon,
@@ -18,6 +19,7 @@ import {
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
+//import { Badge } from '../../components/ui/badge';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
@@ -78,9 +80,6 @@ export default function BeneficiariesPage() {
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [networkFilter, setNetworkFilter] = useState('all');
-  const [countryFilter, setCountryFilter] = useState('all');
 
   const { data: response, isLoading } = useQuery({
     queryKey: ['beneficiaries'],
@@ -88,16 +87,12 @@ export default function BeneficiariesPage() {
   });
 
   const beneficiaries = response?.data ?? [];
-
-  const filtered = beneficiaries.filter((b) => {
-    const matchesSearch =
+  const filtered = beneficiaries.filter(
+    (b) =>
       b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.phone.includes(search);
-    const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
-    const matchesNetwork = networkFilter === 'all' || b.network === networkFilter;
-    const matchesCountry = countryFilter === 'all' || b.country === countryFilter;
-    return matchesSearch && matchesStatus && matchesNetwork && matchesCountry;
-  });
+      b.phone.includes(search)
+      // b.nickname?.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const handleSend = (b: Beneficiary) => {
     const country = Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0] ?? 'CM';
@@ -226,18 +221,12 @@ export default function BeneficiariesPage() {
             </div>
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Statut</label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
-              >
-                <option value="all">Tous</option>
-                <option value="verified">Vérifié</option>
-                <option value="pending">En attente</option>
-                <option value="rejected">Rejeté</option>
-              </select>
+              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
+                Tous
+                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
+              </button>
             </div>
-            <div>
+            {/* <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Réseau</label>
               <select
                 value={networkFilter}
@@ -253,35 +242,27 @@ export default function BeneficiariesPage() {
                 <option value="AIRTEL_MONEY">Airtel Money</option>
               </select>
             </div>
+              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
+                Tous
+                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
+              </button>
+            </div> */}
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Pays</label>
-              <select
-                value={countryFilter}
-                onChange={(e) => setCountryFilter(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
-              >
-                <option value="all">Tous</option>
-                {Object.entries(COUNTRY_MAP).map(([code, name]) => (
-                  <option key={code} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
+                Tous
+                <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
+              </button>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-2 mb-5">
-            <button
-              onClick={() => {
-                setSearch('');
-                setStatusFilter('all');
-                setNetworkFilter('all');
-                setCountryFilter('all');
-              }}
-              className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
-            >
+            <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" />
               Réinitialiser
+            </button>
+            <button className="h-9 px-5 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
+              Filtrer
             </button>
           </div>
 

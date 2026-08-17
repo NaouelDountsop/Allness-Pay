@@ -20,8 +20,10 @@ import { TontineModule } from './modules/tontine/tontine.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BeneficiairesModule } from './modules/beneficiaire/beneficiaire.module';
 import { TranzakModule } from './payments/tranzak/tranzak.module';
+import { CampayModule } from './payments/campay/campay.module';
 
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
+import { CurrencyModule } from './modules/currency/currency.module';
 
 @Module({
   imports: [
@@ -54,8 +56,10 @@ import { LinkedAccountModule } from './modules/linked-account/linked-account.mod
     AdminModule,
     BeneficiairesModule,
     TranzakModule,
+    CampayModule,
 
     LinkedAccountModule,
+    CurrencyModule,
 
     // `src/modules/README.md`.
   ],

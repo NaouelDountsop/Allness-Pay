@@ -83,7 +83,7 @@ apiClient.interceptors.response.use(
           processQueue(refreshError);
           const { onRefreshError } = await import('@/lib/api/token-refresh');
           onRefreshError(() => {
-            window.location.href = '/auth/login';
+            window.location.href = '/login';
           });
           return Promise.reject(
             error.response?.data ?? {

@@ -1,28 +1,14 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-type KycStatus =
-  'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'REQUIRES_ADDITIONAL_INFO' | null;
+import {
+  type KycBannerStatus,
+  kycStatusStyles,
+  kycStatusLabels,
+} from '@/styles/banners';
 
 interface KycBannerProps {
-  status?: KycStatus;
+  status?: KycBannerStatus | null;
 }
-
-const statusLabel: Record<NonNullable<KycStatus>, string> = {
-  PENDING: 'Votre dossier KYC est en cours de traitement. Etape 1/3 — Documents soumis.',
-  UNDER_REVIEW: "Votre dossier KYC est en cours de vérification. Etape 2/3 — En cours d'examen.",
-  APPROVED: 'Votre KYC est validé. Etape 3/3 — Vous pouvez effectuer des transactions.',
-  REJECTED: 'Votre dossier KYC a été refusé. Vous pouvez soumettre un nouveau dossier.',
-  REQUIRES_ADDITIONAL_INFO: 'Votre dossier KYC nécessite des informations complémentaires.',
-};
-
-const statusStyles: Record<NonNullable<KycStatus>, string> = {
-  PENDING: 'bg-orange-50 border-orange-300 text-orange-900',
-  UNDER_REVIEW: 'bg-blue-50 border-blue-300 text-blue-900',
-  APPROVED: 'bg-green-50 border-green-300 text-green-900',
-  REJECTED: 'bg-red-50 border-red-300 text-red-900',
-  REQUIRES_ADDITIONAL_INFO: 'bg-orange-50 border-orange-300 text-orange-900',
-};
 
 export function KycBanner({ status }: KycBannerProps) {
   const navigate = useNavigate();
@@ -52,9 +38,9 @@ export function KycBanner({ status }: KycBannerProps) {
 
   return (
     <div
-      className={`mb-4 sm:mb-6 rounded-xl border px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${statusStyles[status]}`}
+      className={`mb-4 sm:mb-6 rounded-xl border px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${kycStatusStyles[status]}`}
     >
-      <p className="text-sm font-medium">{statusLabel[status]}</p>
+      <p className="text-sm font-medium">{kycStatusLabels[status]}</p>
     </div>
   );
 }

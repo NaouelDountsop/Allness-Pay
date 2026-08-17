@@ -74,13 +74,18 @@ export const providersConfig = registerAs('providers', () => ({
   // },
 
   tranzak: {
-  baseUrl: process.env.TRANZAK_BASE_URL ?? '',
-  appId: process.env.TRANZAK_APP_ID ?? '',
-  appKey: process.env.TRANZAK_APP_KEY ?? '',
-  callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
-  returnUrl: process.env.TRANZAK_RETURN_URL ?? '',
-},
-
+    baseUrl: process.env.TRANZAK_BASE_URL ?? '',
+    appId: process.env.TRANZAK_APP_ID ?? '',
+    appKey: process.env.TRANZAK_APP_KEY ?? '',
+    callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+    returnUrl: process.env.TRANZAK_RETURN_URL ?? '',
+  },
+  campay: {
+    baseUrl: process.env.PAYMENT_API_BASE_URL ?? '',
+    username: process.env.PAYMENT_USERNAME ?? '',
+    password: process.env.PAYMENT_PASSWORD ?? '',
+    webhookKey: process.env.PAYMENT_WEBHOOK_SECRET ?? '',
+  },
 }));
 
 export const mailConfig = registerAs('mail', () => ({

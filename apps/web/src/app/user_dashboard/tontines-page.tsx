@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Plus, Loader2, MessageCircle } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -16,9 +16,16 @@ import { kycService } from '@/lib/api/kyc.service';
 
 export default function TontinesPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const location = useLocation();
   const [showKycGuard, setShowKycGuard] = useState(false);
   const [showInvitationPopup, setShowInvitationPopup] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.fromBanner) {
+      setShowInvitationPopup(true);
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   const { data: tontines, isLoading: isLoadingTontines } = useQuery({
     queryKey: ['tontines'],
@@ -35,15 +42,6 @@ export default function TontinesPage() {
     queryKey: ['pending-invitations'],
     queryFn: tontineService.listPendingInvitations,
     enabled: kyc?.status === 'APPROVED',
-  });
-
-  const respondMutation = useMutation({
-    mutationFn: ({ id, response }: { id: string; response: 'ACCEPT' | 'DECLINE' }) =>
-      tontineService.respondInvitation(id, response),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
-      queryClient.invalidateQueries({ queryKey: ['tontines'] });
-    },
   });
 
   const isLoading = isLoadingTontines || isLoadingKyc;
@@ -101,9 +99,8 @@ export default function TontinesPage() {
         {invitations && invitations.length > 0 && (
           <div className={!hasTontines ? "mt-6" : ""}>
             <InvitationsList
-              invitations={invitations}
-              onAccept={(id) => respondMutation.mutate({ id, response: "ACCEPT" })}
-              onDecline={(id) => respondMutation.mutate({ id, response: "DECLINE" })}
+              invitations={invitations ?? []}
+              onInvitationClick={() => setShowInvitationPopup(true)}
             />
           </div>
         )}
@@ -160,8 +157,7 @@ export default function TontinesPage() {
 
             <InvitationsList
               invitations={invitations ?? []}
-              onAccept={(id) => respondMutation.mutate({ id, response: 'ACCEPT' })}
-              onDecline={(id) => respondMutation.mutate({ id, response: 'DECLINE' })}
+              onInvitationClick={() => setShowInvitationPopup(true)}
             />
           </div>
         )}

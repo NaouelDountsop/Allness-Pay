@@ -1,76 +1,19 @@
-import { Clock, Eye, CheckCircle, XCircle, AlertCircle, FileText, ShieldCheck } from 'lucide-react';
-
-type KycStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'REQUIRES_ADDITIONAL_INFO';
+import { FileText, ShieldCheck } from 'lucide-react';
+import {
+  type KycBannerStatus,
+  kycNotificationStyles,
+  kycNotificationTitles,
+  kycNotificationMessages,
+  kycNotificationBannerStyles,
+  kycNotificationBannerMessages,
+} from '@/styles/banners';
 
 interface KycStatusNotificationProps {
-  status: KycStatus;
+  status: KycBannerStatus;
   reviewComment?: string;
   createdAt?: string;
   verifiedAt?: string;
 }
-
-const statusConfig: Record<
-  KycStatus,
-  {
-    icon: typeof Clock;
-    title: string;
-    message: string;
-    color: string;
-    bgColor: string;
-    borderColor: string;
-    iconBg: string;
-  }
-> = {
-  PENDING: {
-    icon: Clock,
-    title: 'Dossier soumis',
-    message: 'Votre dossier a bien été reçu. Il sera examiné prochainement par nos équipes.',
-    color: 'text-blue-700',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    iconBg: 'bg-blue-100',
-  },
-  UNDER_REVIEW: {
-    icon: Eye,
-    title: 'En cours de vérification',
-    message:
-      'Nos équipes analysent actuellement vos documents. Vous recevrez une notification une fois la vérification terminée.',
-    color: 'text-amber-700',
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200',
-    iconBg: 'bg-amber-100',
-  },
-  APPROVED: {
-    icon: CheckCircle,
-    title: 'Dossier approuvé',
-    message:
-      'Félicitations ! Votre identité a été vérifiée. Vous avez maintenant accès à toutes les fonctionnalités.',
-    color: 'text-green-700',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
-    iconBg: 'bg-green-100',
-  },
-  REJECTED: {
-    icon: XCircle,
-    title: 'Dossier refusé',
-    message:
-      "Votre dossier n'a pas pu être validé. Vous pouvez soumettre un nouveau dossier en corrigeant les points mentionnés.",
-    color: 'text-red-700',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
-    iconBg: 'bg-red-100',
-  },
-  REQUIRES_ADDITIONAL_INFO: {
-    icon: AlertCircle,
-    title: 'Informations complémentaires requises',
-    message:
-      "Nous avons besoin d'informations supplémentaires pour traiter votre dossier. Veuillez le mettre à jour.",
-    color: 'text-orange-700',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
-    iconBg: 'bg-orange-100',
-  },
-};
 
 export function KycStatusNotification({
   status,
@@ -78,7 +21,7 @@ export function KycStatusNotification({
   createdAt,
   verifiedAt,
 }: KycStatusNotificationProps) {
-  const config = statusConfig[status];
+  const config = kycNotificationStyles[status];
   const Icon = config.icon;
 
   return (
@@ -90,8 +33,12 @@ export function KycStatusNotification({
           <Icon className={`w-5 h-5 ${config.color}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={`text-sm font-semibold ${config.color} mb-1`}>{config.title}</h3>
-          <p className="text-sm text-gray-600 leading-relaxed">{config.message}</p>
+          <h3 className={`text-sm font-semibold ${config.color} mb-1`}>
+            {kycNotificationTitles[status]}
+          </h3>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {kycNotificationMessages[status]}
+          </p>
 
           {reviewComment && (
             <div className="mt-3 p-3 rounded-lg bg-white/60 border border-gray-100">
@@ -131,80 +78,12 @@ export function KycStatusNotification({
 }
 
 interface KycNotificationBannerProps {
-  status: KycStatus;
+  status: KycBannerStatus;
   onAction?: () => void;
 }
 
 export function KycNotificationBanner({ status, onAction }: KycNotificationBannerProps) {
-  const bannerConfig: Record<
-    KycStatus,
-    {
-      icon: typeof Clock;
-      message: string;
-      actionLabel?: string;
-      bgColor: string;
-      borderColor: string;
-      textColor: string;
-      iconColor: string;
-      buttonBg: string;
-      buttonHover: string;
-    }
-  > = {
-    PENDING: {
-      icon: Clock,
-      message: 'Votre dossier KYC est en attente de vérification.',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
-      iconColor: 'text-blue-500',
-      buttonBg: 'bg-blue-500',
-      buttonHover: 'hover:bg-blue-600',
-    },
-    UNDER_REVIEW: {
-      icon: Eye,
-      message: "Votre dossier KYC est en cours d'examen par nos équipes.",
-      bgColor: 'bg-amber-50',
-      borderColor: 'border-amber-200',
-      textColor: 'text-amber-800',
-      iconColor: 'text-amber-500',
-      buttonBg: 'bg-amber-500',
-      buttonHover: 'hover:bg-amber-600',
-    },
-    APPROVED: {
-      icon: CheckCircle,
-      message: 'Votre KYC a été approuvé ! Vous avez accès à toutes les fonctionnalités.',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-800',
-      iconColor: 'text-green-500',
-      buttonBg: 'bg-green-500',
-      buttonHover: 'hover:bg-green-600',
-    },
-    REJECTED: {
-      icon: XCircle,
-      message: 'Votre dossier KYC a été refusé. Vous pouvez soumettre un nouveau dossier.',
-      actionLabel: 'Soumettre un nouveau dossier',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      textColor: 'text-red-800',
-      iconColor: 'text-red-500',
-      buttonBg: 'bg-red-500',
-      buttonHover: 'hover:bg-red-600',
-    },
-    REQUIRES_ADDITIONAL_INFO: {
-      icon: AlertCircle,
-      message: 'Des informations supplémentaires sont nécessaires pour votre dossier KYC.',
-      actionLabel: 'Mettre à jour le dossier',
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200',
-      textColor: 'text-orange-800',
-      iconColor: 'text-orange-500',
-      buttonBg: 'bg-orange-500',
-      buttonHover: 'hover:bg-orange-600',
-    },
-  };
-
-  const config = bannerConfig[status];
+  const config = kycNotificationBannerStyles[status];
   const Icon = config.icon;
 
   return (
@@ -212,13 +91,15 @@ export function KycNotificationBanner({ status, onAction }: KycNotificationBanne
       className={`flex items-center gap-3 rounded-xl border ${config.borderColor} ${config.bgColor} px-4 py-3`}
     >
       <Icon className={`w-5 h-5 ${config.iconColor} shrink-0`} />
-      <p className={`text-sm font-medium ${config.textColor} flex-1`}>{config.message}</p>
-      {config.actionLabel && onAction && (
+      <p className={`text-sm font-medium ${config.textColor} flex-1`}>
+        {kycNotificationBannerMessages[status]}
+      </p>
+      {config.buttonBg && onAction && (
         <button
           onClick={onAction}
           className={`shrink-0 px-4 py-2 rounded-lg text-white text-xs font-semibold ${config.buttonBg} ${config.buttonHover} transition-colors`}
         >
-          {config.actionLabel}
+          {status === 'REJECTED' ? 'Soumettre un nouveau dossier' : 'Mettre à jour le dossier'}
         </button>
       )}
     </div>

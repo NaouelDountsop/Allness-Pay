@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { WalletBalanceCard } from '@/components/user_dashboard/wallet/wallet-balance-card';
@@ -12,12 +13,61 @@ import { AddLinkedAccountModal } from '@/components/user_dashboard/wallet/add-li
 import { CreateWalletModal } from '@/components/user_dashboard/wallet/create-wallet-modal';
 import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
-import { Plus } from 'lucide-react';
+import { campayService } from '@/lib/api/campay.service';
+import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
+import { Plus, Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
 export default function WalletPage() {
+  const { t } = useTranslation();
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [createWalletOpen, setCreateWalletOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [depositStatus, setDepositStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+  const [pendingDeposit, setPendingDeposit] = useState<DepositState | null>(null);
+  const attemptsRef = useRef(0);
+
+  useEffect(() => {
+    if (!bannerDismissed) {
+      setPendingDeposit(getPendingDeposit());
+    }
+  }, [bannerDismissed]);
+
+  const isPendingDeposit = pendingDeposit?.status === 'pending' && pendingDeposit?.transactionId && !bannerDismissed;
+
+  useEffect(() => {
+    if (!isPendingDeposit || pendingDeposit?.method === 'bank') return;
+
+    const interval = setInterval(() => {
+      attemptsRef.current += 1;
+
+      campayService.verifyPayment(pendingDeposit!.transactionId).then((res) => {
+        if (res.status === 'completed') {
+          clearInterval(interval);
+          setDepositStatus('success');
+        } else if (res.status === 'failed') {
+          clearInterval(interval);
+          setDepositStatus('failed');
+        } else if (attemptsRef.current >= 20) {
+          clearInterval(interval);
+          setDepositStatus('failed');
+        }
+      }).catch(() => {
+        if (attemptsRef.current >= 20) {
+          clearInterval(interval);
+          setDepositStatus('failed');
+        }
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPendingDeposit, pendingDeposit?.transactionId, pendingDeposit?.method]);
+
+  const handleDismissBanner = () => {
+    setBannerDismissed(true);
+    clearPendingDeposit();
+    setPendingDeposit(null);
+  };
 
   const { data: wallets = [], isLoading: walletsLoading } = useQuery({
     queryKey: ['wallets'],
@@ -52,20 +102,73 @@ export default function WalletPage() {
       <DashboardHeader />
 
       <div>
+        {/* Banner dépôt en cours - style KYC banner */}
+        {isPendingDeposit && (
+          <div
+            className={`mb-4 sm:mb-6 rounded-xl border px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${
+              depositStatus === 'success'
+                ? 'bg-green-50 border-green-300 text-green-900'
+                : depositStatus === 'failed'
+                  ? 'bg-red-50 border-red-300 text-red-900'
+                  : 'bg-orange-50 border-orange-300 text-orange-900'
+            }`}
+          >
+            <div className="flex items-start sm:items-center gap-3 flex-1">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                  depositStatus === 'success'
+                    ? 'bg-green-100'
+                    : depositStatus === 'failed'
+                      ? 'bg-red-100'
+                      : 'bg-orange-100'
+                }`}
+              >
+                {depositStatus === 'success' ? (
+                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                ) : depositStatus === 'failed' ? (
+                  <XCircle className="w-5 h-5 text-red-600" />
+                ) : (
+                  <Loader2 className="w-5 h-5 text-orange-600 animate-spin" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold mb-0.5">
+                  {depositStatus === 'success'
+                    ? t('wallet.depositSuccessTitle')
+                    : depositStatus === 'failed'
+                      ? t('wallet.depositFailedTitle')
+                      : t('wallet.depositPendingTitle')}
+                </p>
+                <p className="text-xs leading-relaxed opacity-80">
+                  {depositStatus === 'success'
+                    ? t('wallet.depositSuccessDescription')
+                    : depositStatus === 'failed'
+                      ? t('wallet.depositFailedDescription')
+                      : t('wallet.depositPendingDescription', {
+                          amount: new Intl.NumberFormat('fr-FR').format(Number(pendingDeposit!.amount)),
+                        })}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleDismissBanner}
+              className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-black/5 transition-colors ${
+                depositStatus === 'success'
+                  ? 'text-green-600'
+                  : depositStatus === 'failed'
+                    ? 'text-red-600'
+                    : 'text-orange-600'
+              }`}
+              aria-label="Fermer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-afrilink-dark">Portefeuille</h1>
           <div className="flex items-center gap-3">
-            {/* {displayWallet && (
-              <Button
-                onClick={() => navigate('/dashboard/payments')}
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-              >
-                <CreditCard className="w-4 h-4 mr-2" />
-                Payer
-              </Button>
-            )} */}
             <button
               onClick={() => setCreateWalletOpen(true)}
               className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
