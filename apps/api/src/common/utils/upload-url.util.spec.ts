@@ -14,8 +14,8 @@ describe('buildPublicFileUrl', () => {
   });
 
   it('keeps an already absolute URL unchanged', () => {
-    expect(buildPublicFileUrl({} as unknown as Request, 'https://cdn.example.com/file.png', 'kyc')).toBe(
-      'https://cdn.example.com/file.png',
-    );
+    expect(
+      buildPublicFileUrl({} as unknown as Request, 'https://cdn.example.com/file.png', 'kyc'),
+    ).toBe('https://cdn.example.com/file.png');
   });
 });
