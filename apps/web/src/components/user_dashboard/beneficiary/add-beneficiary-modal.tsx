@@ -68,7 +68,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const handleConfirm = () => {
     createMutation.mutate({
       nom: name.trim(),
-      numero: `${selectedCountry.dialCode}${phoneDigits}`,
+      numero: `${selectedCountry.dialCode}${phone}`,
       reseau: network,
       pays: country,
     });
@@ -181,7 +181,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <input
                 type="text"
                 value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Jean Dupont"
                 className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 ${
                   nameError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-afrilink-orange'
@@ -229,7 +229,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   <span />
                 )}
                 <p className="text-[11px] text-gray-400">
-                  {phoneDigits.length}/{selectedCountry.phoneDigits} chiffres
+                  {phone.length}/{selectedCountry.phoneDigits} chiffres
                 </p>
               </div>
             </div>
@@ -238,7 +238,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <Label>Réseau / Opérateur *</Label>
               <select
                 value={network}
-                onChange={(e) => handleNetworkChange(e.target.value)}
+                onChange={(e) => setNetwork(e.target.value)}
                 className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white ${
                   networkError ? 'border-red-300' : 'border-gray-200'
                 }`}
@@ -322,7 +322,25 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               </Button>
               <Button
                 disabled={!isStep1Valid}
-                onClick={handleStep1Next}
+                onClick={() => {
+                  setNameError('');
+                  setPhoneError('');
+                  setNetworkError('');
+                  let valid = true;
+                  if (name.trim().length < 2) {
+                    setNameError('Le nom doit contenir au moins 2 caractères');
+                    valid = false;
+                  }
+                  if (phone.length !== selectedCountry.phoneDigits) {
+                    setPhoneError(`Le numéro doit contenir ${selectedCountry.phoneDigits} chiffres`);
+                    valid = false;
+                  }
+                  if (!network) {
+                    setNetworkError('Veuillez sélectionner un opérateur');
+                    valid = false;
+                  }
+                  if (valid) setStep(2);
+                }}
                 className="bg-afrilink-orange hover:bg-afrilink-orange/90"
               >
                 Suivant

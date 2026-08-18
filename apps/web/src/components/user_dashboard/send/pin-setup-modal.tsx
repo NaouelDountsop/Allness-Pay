@@ -58,7 +58,7 @@ export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
           <h3 className="text-base font-semibold text-afrilink-dark mb-1">
             {phase === 'create' ? 'Créer votre code PIN' : 'Confirmer votre code PIN'}
           </h3>
-          <p className="text-xs text-gray-500 mb-6">
+          <p className="text-xs text-red-500 mb-6">
             {phase === 'create'
               ? 'Ce code à 4 chiffres sécurisera toutes vos transactions.'
               : 'Veuillez ressaisir le même code pour confirmer.'}
