@@ -7,7 +7,6 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { ContributionStats } from '@/components/user_dashboard/tontines/contribution-stats';
 import { CycleSelector } from '@/components/user_dashboard/tontines/cycle-selector';
 import { ContributionsTable } from '@/components/user_dashboard/tontines/contributions-table';
-import { mockContributions, mockCycles } from '@/lib/mock/tontines-data';
 import { tontineService, type Tontine } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
 import {
@@ -18,10 +17,29 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
+function generateCyclesFromTontine(tontine: {
+  memberLimit: number;
+  currentCycle: number;
+}) {
+  const cycles = [];
+  const maxVisible = tontine.currentCycle > 0 ? tontine.currentCycle + 1 : 1;
+  for (let i = 1; i <= Math.min(maxVisible, tontine.memberLimit); i++) {
+    const isActive = i === tontine.currentCycle + 1;
+    const isPast = i <= tontine.currentCycle;
+    cycles.push({
+      id: `cy${i}`,
+      label: `Tour ${i}${isActive ? ' (en cours)' : isPast ? ' (terminé)' : ''}`,
+      range: isPast ? 'Terminé' : isActive ? 'En cours' : 'À venir',
+      active: isActive,
+    });
+  }
+  return cycles.reverse();
+}
+
 export default function ContributionHistoryPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [selectedCycle, setSelectedCycle] = useState(mockCycles[0]?.id ?? '');
+  const [selectedCycle, setSelectedCycle] = useState('');
   const [tontineModalOpen, setTontineModalOpen] = useState(false);
 
   const { data: tontine, isLoading: tontineLoading } = useQuery({
@@ -29,6 +47,53 @@ export default function ContributionHistoryPage() {
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
+
+  const { data: apiCycles, isLoading: cyclesLoading } = useQuery({
+    queryKey: ['tontine-cycles', id],
+    queryFn: () => tontineService.listCycles(id!),
+    enabled: !!id,
+  });
+
+  const { data: apiContributions } = useQuery({
+    queryKey: ['tontine-contributions', id, selectedCycle],
+    queryFn: () => tontineService.listContributions(id!, selectedCycle || undefined),
+    enabled: !!id,
+  });
+
+  const cycles = apiCycles
+    ? apiCycles.map((c) => ({
+        id: c.id,
+        label: `Tour ${c.cycleNumber}${c.status === 'ACTIVE' ? ' (en cours)' : c.status === 'COMPLETED' ? ' (terminé)' : ''}`,
+        range: c.status === 'COMPLETED'
+          ? 'Terminé'
+          : c.status === 'ACTIVE'
+            ? `Échéance: ${new Date(c.dueDate).toLocaleDateString('fr-FR')}`
+            : 'À venir',
+        active: c.status === 'ACTIVE',
+      }))
+    : tontine
+      ? generateCyclesFromTontine(tontine)
+      : [];
+
+  const currentCycleData = apiCycles?.find((c) => c.status === 'ACTIVE');
+
+  const contributions = apiContributions
+    ? apiContributions.map((c) => ({
+        id: c.id,
+        date: c.paidAt
+          ? new Date(c.paidAt).toLocaleDateString('fr-FR')
+          : new Date(c.dueDate).toLocaleDateString('fr-FR'),
+        time: c.paidAt
+          ? new Date(c.paidAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+          : undefined,
+        memberName: c.member?.user
+          ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim() || `Membre ${c.member.userId}`
+          : `Membre`,
+        amount: Number(c.amount),
+        status: c.status as 'PENDING' | 'PAID' | 'LATE' | 'FAILED',
+        currency: tontine?.currency ?? 'XAF',
+      }))
+    : [];
 
   if (tontineLoading) {
     return (
@@ -42,8 +107,25 @@ export default function ContributionHistoryPage() {
   }
 
   const totalContributed = tontine
-    ? Number(tontine.contributionAmount) * tontine.currentCycle
+    ? currentCycleData
+      ? Number(currentCycleData.collectedAmount)
+      : Number(tontine.contributionAmount) * tontine.currentCycle
     : 0;
+
+  const contributionsCount = contributions.length > 0
+    ? contributions.length
+    : tontine
+      ? tontine.currentCycle
+      : 0;
+
+  const currencyLabels: Record<string, string> = {
+    XAF: 'FCFA',
+    XOF: 'CFA',
+    CAD: 'CA$',
+    EUR: '€',
+    USD: '$',
+  };
+  const displayCurrency = currencyLabels[tontine?.currency ?? 'XAF'] ?? tontine?.currency ?? 'FCFA';
 
   return (
     <DashboardLayout>
@@ -81,19 +163,27 @@ export default function ContributionHistoryPage() {
         {tontine && (
           <ContributionStats
             totalContributed={totalContributed}
-            currency={tontine.currency ?? 'CFA'}
-            contributionsCount={mockContributions.length}
+            currency={displayCurrency}
+            contributionsCount={contributionsCount}
             currentTurn={tontine.currentCycle}
             totalTurns={tontine.memberLimit}
           />
         )}
 
-        <CycleSelector cycles={mockCycles} selected={selectedCycle} onSelect={setSelectedCycle} />
+        {!cyclesLoading && (
+          <CycleSelector
+            cycles={cycles.length > 0 ? cycles : [{ id: '', label: 'Aucun tour', range: '', active: false }]}
+            selected={selectedCycle || (cycles[0]?.id ?? '')}
+            onSelect={setSelectedCycle}
+          />
+        )}
 
-        <ContributionsTable contributions={mockContributions} />
+        <ContributionsTable
+          contributions={contributions}
+          currency={displayCurrency}
+        />
       </div>
 
-      {/* Popup sélection tontine */}
       <Dialog open={tontineModalOpen} onOpenChange={setTontineModalOpen}>
         <DialogContent>
           <DialogHeader>

@@ -45,7 +45,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-4">
       <button
         onClick={onClose}
         className="absolute top-5 right-5 text-white/80 hover:text-white"

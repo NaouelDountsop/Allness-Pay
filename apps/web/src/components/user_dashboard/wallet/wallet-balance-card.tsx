@@ -47,11 +47,11 @@ export function WalletBalanceCard({
         aria-hidden="true"
         className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
         style={{
-          WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+          WebkitMaskImage: 'url(/allnesspay_logo1.png)',
           WebkitMaskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
           WebkitMaskPosition: 'center',
-          maskImage: 'url(/afrilinkpay_logo1.svg)',
+          maskImage: 'url(/allnesspay_logo1.png)',
           maskSize: 'contain',
           maskRepeat: 'no-repeat',
           maskPosition: 'center',
@@ -60,7 +60,7 @@ export function WalletBalanceCard({
 
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-2">
-          <img src="/afrilinkpay_logo1.svg" alt="" className="w-9 h-9 object-contain" />
+          <img src="/allnesspay_logo1.png" alt="" className="w-9 h-9 object-contain" />
           <div>
             <p className="text-xs text-white/60 tracking-wide">AFRILINK WALLET</p>
             <p className="text-sm font-medium">{visible ? walletId : maskedWalletId}</p>

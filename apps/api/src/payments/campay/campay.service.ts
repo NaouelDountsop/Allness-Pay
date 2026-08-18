@@ -100,7 +100,7 @@ export class CampayService {
           amount: dto.amount,
           currency: 'XAF',
           from: phoneFormatted,
-          description: dto.description ?? 'Dépôt AfriLinkPay',
+          description: dto.description ?? 'Dépôt AllnessPay',
           external_reference: reference,
         },
         {

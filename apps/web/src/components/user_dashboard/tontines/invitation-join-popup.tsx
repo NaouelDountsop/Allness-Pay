@@ -115,13 +115,13 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
   if (pending.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
         <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
-            <img src="/afrilinkpay_logo1.svg" alt="" className="w-8 h-8 object-contain mb-1" />
+            <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-afrilink-orange">Pay</span>
             </span>
           </div>
           <button

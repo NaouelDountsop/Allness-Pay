@@ -383,7 +383,7 @@ export default function Tontines() {
             {/* Illustration */}
             <img
               src={PIGGY_IMG}
-              alt="Tirelire digitale AfriLinkPay"
+              alt="Tirelire digitale AllnessPay"
               className="
                 relative
                 z-10

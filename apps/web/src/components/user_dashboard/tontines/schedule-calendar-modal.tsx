@@ -94,7 +94,7 @@ export function ScheduleCalendarModal({
     .slice(0, 5);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-900">Calendrier des Échéances</h3>

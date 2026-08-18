@@ -48,7 +48,7 @@ export default function ProfilePage() {
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Afrilink'),
+    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Allness'),
     [profile],
   );
 
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                     {fullName}
                   </h1>
                   <p className="mt-2 text-sm text-gray-500">
-                    {profile?.profession ?? 'Client Afrilink'}
+                    {profile?.profession ?? 'Client Allness'}
                   </p>
                 </div>
               </div>

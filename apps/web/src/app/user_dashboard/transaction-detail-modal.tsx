@@ -23,7 +23,7 @@ export function TransactionDetailModal({
   const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="w-full max-w-sm rounded-2xl bg-white flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}

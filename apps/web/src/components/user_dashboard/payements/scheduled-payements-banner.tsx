@@ -13,7 +13,7 @@ export function ScheduledPaymentsBanner() {
         <p className={`text-sm font-medium ${s.titleColor} mb-0.5`}>Paiements programmés</p>
         <p className={`text-xs ${s.descriptionColor} line-clamp-3`}>
           Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre
-          wallet AfrilinkPay.{' '}
+          wallet AllnessPay.{' '}
           <a href="#" className={`${s.linkColor} font-medium`}>
             En savoir plus
           </a>

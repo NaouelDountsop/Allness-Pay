@@ -115,9 +115,9 @@ export default function VerifyEmailPage() {
         {/* Panneau gauche */}
         <div className="w-full md:w-[45%] bg-gradient-to-b from-afrilink-dark to-afrilink-darker text-white p-8 sm:p-10 flex flex-col">
           <div className="flex items-center gap-2 mb-10">
-            <img src="/afrilinkpay_logo1.svg" alt="" className="w-8 h-8 object-contain" />
+            <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain" />
             <span className="text-lg font-bold">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-afrilink-orange">Pay</span>
             </span>
           </div>
 

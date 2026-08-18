@@ -9,7 +9,7 @@ export function KycGuardPopup({ onClose }: KycGuardPopupProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-3">

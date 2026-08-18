@@ -99,7 +99,7 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
   return (
     <>
       {showCamera && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-6">
           <div className="w-full max-w-xl bg-black rounded-2xl overflow-hidden">
             <div className="relative aspect-[4/3] bg-black">
               <video

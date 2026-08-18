@@ -132,6 +132,12 @@ export class ContributionService {
     });
   }
 
+  async findActiveCycle(tontineId: string): Promise<TontineCycle | null> {
+    return this.dataSource.getRepository(TontineCycle).findOne({
+      where: { tontineId, status: TontineCycleStatus.ACTIVE },
+    });
+  }
+
   async markLate(contributionId: string): Promise<TontineContribution> {
     const contribution = await this.contributionRepo.findOne({
       where: { id: contributionId },

@@ -72,7 +72,7 @@ async function bootstrap(): Promise<void> {
     const document = SwaggerModule.createDocument(
       app,
       new DocumentBuilder()
-        .setTitle('AfriLinkPay API')
+        .setTitle('AllnessPay API')
         .setDescription(
           "API de la plateforme de transfert d'argent avec portefeuille electronique.",
         )

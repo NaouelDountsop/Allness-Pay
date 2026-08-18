@@ -58,11 +58,11 @@ export function TontineCard({ tontine }: TontineCardProps) {
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
           style={{
-            WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+            WebkitMaskImage: 'url(/allnesspay_logo1.png)',
             WebkitMaskSize: 'contain',
             WebkitMaskRepeat: 'no-repeat',
             WebkitMaskPosition: 'center',
-            maskImage: 'url(/afrilinkpay_logo1.svg)',
+            maskImage: 'url(/allnesspay_logo1.png)',
             maskSize: 'contain',
             maskRepeat: 'no-repeat',
             maskPosition: 'center',
@@ -71,7 +71,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
 
         <div className="flex items-center justify-between mb-3 relative z-10">
           <div className="flex items-center gap-2">
-            <img src="/afrilinkpay_logo1.svg" alt="" className="w-7 h-7 object-contain" />
+            <img src="/allnesspay_logo1.png" alt="" className="w-7 h-7 object-contain" />
             <p className="text-xs text-white/60 tracking-wide">CAGNOTTE</p>
           </div>
           <span className="text-[10px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">

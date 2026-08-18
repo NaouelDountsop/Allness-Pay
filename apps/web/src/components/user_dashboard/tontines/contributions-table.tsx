@@ -1,25 +1,40 @@
 import { useState } from 'react';
 import { Search, RotateCcw } from 'lucide-react';
-import type { Contribution } from '@/lib/mock/tontines-data';
 
-const statusStyles: Record<Contribution['status'], { label: string; className: string }> = {
+interface ContributionRow {
+  id: string;
+  date: string;
+  time?: string;
+  memberName: string;
+  amount: number;
+  status: string;
+  currency?: string;
+}
+
+const statusStyles: Record<string, { label: string; className: string }> = {
   valide: { label: 'Validé', className: 'bg-green-50 text-afrilink-green' },
+  paid: { label: 'Validé', className: 'bg-green-50 text-afrilink-green' },
   en_attente: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
+  PENDING: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
   echoue: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
+  FAILED: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
+  LATE: { label: 'En retard', className: 'bg-yellow-50 text-yellow-600' },
 };
 
 interface ContributionsTableProps {
-  contributions: Contribution[];
+  contributions: ContributionRow[];
+  currency?: string;
 }
 
-export function ContributionsTable({ contributions }: ContributionsTableProps) {
+export function ContributionsTable({ contributions, currency = 'CFA' }: ContributionsTableProps) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
 
   const filtered = contributions.filter((c) => {
     const matchesSearch = c.memberName.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+    const normalizedStatus = c.status === 'paid' ? 'valide' : c.status === 'PENDING' ? 'en_attente' : c.status === 'FAILED' ? 'echoue' : c.status;
+    const matchesStatus = statusFilter === 'all' || normalizedStatus === statusFilter;
     const matchesDate = !dateFilter || c.date === dateFilter;
     return matchesSearch && matchesStatus && matchesDate;
   });
@@ -78,12 +93,13 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         </thead>
         <tbody className="divide-y divide-gray-50">
           {filtered.map((c) => {
-            const status = statusStyles[c.status];
+            const normalizedStatus = c.status === 'paid' ? 'valide' : c.status === 'PENDING' ? 'en_attente' : c.status === 'FAILED' ? 'echoue' : c.status;
+            const status = statusStyles[normalizedStatus] ?? { label: normalizedStatus, className: 'bg-gray-50 text-gray-600' };
             return (
               <tr key={c.id}>
                 <td className="px-4 py-3 text-gray-500">
                   {c.date}
-                  <span className="block text-[11px] text-gray-400">{c.time}</span>
+                  {c.time && <span className="block text-[11px] text-gray-400">{c.time}</span>}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -96,7 +112,9 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
                     <span className="text-gray-800">{c.memberName}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-800">{c.amount.toFixed(2)} CFA</td>
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  {new Intl.NumberFormat('fr-FR').format(c.amount)} {c.currency ?? currency}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={`text-xs font-medium px-2 py-1 rounded-full ${status.className}`}
@@ -105,9 +123,9 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {c.status !== 'echoue' ? (
+                  {normalizedStatus !== 'echoue' ? (
                     <a href="#" className="text-xs text-afrilink-green font-medium">
-                      View Receipt →
+                      Voir Reçu
                     </a>
                   ) : (
                     <span className="text-xs text-gray-300">N/A</span>
@@ -119,20 +137,11 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         </tbody>
       </table>
 
-      <div className="flex items-center justify-center gap-2 p-4 text-xs text-gray-500">
-        {[1, 2, 3].map((n) => (
-          <button
-            key={n}
-            className={`w-7 h-7 rounded-lg ${
-              n === 1 ? 'bg-afrilink-orange text-white' : 'hover:bg-gray-50'
-            }`}
-          >
-            {n}
-          </button>
-        ))}
-        <span>...</span>
-        <button className="w-7 h-7 rounded-lg hover:bg-gray-50">25</button>
-      </div>
+      {filtered.length === 0 && (
+        <div className="text-center py-8 text-sm text-gray-400">
+          Aucun versement trouvé.
+        </div>
+      )}
     </div>
   );
 }

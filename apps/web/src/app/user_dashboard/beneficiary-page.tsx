@@ -25,7 +25,7 @@ import { DashboardHeader } from '../../components/user_dashboard/header';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
-import { getFlagUrl } from '../../data/countries';
+import { getFlagUrl, countries } from '../../data/countries';
 
 const COUNTRY_MAP: Record<string, string> = {
   CM: 'Cameroun',
@@ -97,7 +97,7 @@ function BeneficiaryActionsMenu({
       {open && (
         <div
           ref={menuRef}
-          className="fixed w-40 rounded-lg border border-gray-100 bg-white shadow-lg overflow-hidden z-50"
+          className="fixed w-40 rounded-lg border border-gray-100 bg-white shadow-lg overflow-hidden z-[9999]"
           style={{ top: position.top, left: position.left }}
         >
           <button
@@ -141,7 +141,7 @@ const NETWORK_LABELS: Record<string, string> = {
   ORANGE_MONEY: 'Orange Money',
   WAVE: 'Wave',
   MOOV_MONEY: 'Moov Money',
-  AFRILINKPAY: 'AfriLinkPay',
+  AFRILINKPAY: 'AllnessPay',
   AUTRE: 'Autre',
 };
 
@@ -183,11 +183,27 @@ export default function BeneficiariesPage() {
   );
 
   const handleSend = (b: Beneficiary) => {
-    const country = Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0] ?? 'CM';
+    const cleaned = b.phone.replace(/\D/g, '');
+
+    const matchedCountry = countries.find((c) => {
+      const dialDigits = c.dialCode.replace('+', '');
+      return cleaned.startsWith(dialDigits);
+    });
+
+    const countryKey = matchedCountry?.code
+      ?? Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0]
+      ?? 'CM';
+
+    let localPhone = cleaned;
+    if (matchedCountry) {
+      const dialDigits = matchedCountry.dialCode.replace('+', '');
+      localPhone = cleaned.slice(dialDigits.length);
+    }
+
     const params = new URLSearchParams({
       name: b.name,
-      phone: b.phone,
-      country,
+      phone: localPhone,
+      country: countryKey,
       network: b.network,
     });
     navigate(`/dashboard/send?${params.toString()}`);

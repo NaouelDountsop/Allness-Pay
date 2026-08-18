@@ -33,14 +33,14 @@ export default function Navbar() {
           <a href="#accueil" className="flex items-center gap-0 group shrink-0">
             {!scrolled ? (
               <img
-                src="/afrilinkpay_logo1.svg"
-                alt="AfriLink Pay"
+                src="/allnesspay_logo1.png"
+                alt="Allness Pay"
                 className="h-10 lg:h-12 w-auto transition-all duration-500"
               />
             ) : (
               <img
-                src="/afrilinkpay_logo2.svg"
-                alt="AfriLink Pay"
+                src="/allnesspay_logo2.png"
+                alt="Allness Pay"
                 className="h-10 lg:h-12 w-auto transition-all duration-500"
               />
             )}
@@ -51,7 +51,7 @@ export default function Navbar() {
                   : 'text-white/85 hover:text-afrilink-orange'
               }`}
             >
-              Afrilink <span className="text-afrilink-orange">Pay</span>{' '}
+              Allness <span className="text-afrilink-orange">Pay</span>{' '}
             </p>
           </a>
 
@@ -100,7 +100,7 @@ export default function Navbar() {
         <div className="fixed inset-0 z-[60] bg-afrilink-dark flex flex-col">
           <div className="h-16 px-5 flex items-center justify-between">
             <span className="font-heading font-extrabold text-lg text-white">
-              AfriLink<span className="text-afrilink-orange"> Pay</span>
+              Allness<span className="text-afrilink-orange"> Pay</span>
             </span>
             <button
               onClick={() => setMenuOpen(false)}
