@@ -75,10 +75,10 @@ const RECEPTION_OPTIONS: {
 ];
 
 const COUNTRY_TO_CURRENCY: Record<string, string> = {
-  CM: 'XAF', SN: 'XAF', CI: 'XOF', GA: 'XAF', CG: 'XAF', CD: 'CDF',
-  NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XAF', BJ: 'XOF', GN: 'GNF',
-  RW: 'RWF', KE: 'KES', GH: 'GHS', NG: 'NGN', ZA: 'ZAR',
-  FR: 'EUR', CA: 'CAD', US: 'USD', GB: 'GBP',
+  CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
+  SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
+  CA: 'CAD',
+  FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
 };
 
 const PHONE_MODES = ['mtn', 'orange', 'bank'];

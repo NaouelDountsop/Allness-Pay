@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { CountrySelect } from '@/components/common/country-select';
+import { getCountryByCode, type Country } from '@/data/countries';
 
 interface AddBeneficiaryModalProps {
   open: boolean;
@@ -24,16 +26,6 @@ const NETWORKS = [
   { value: 'ORANGE_MONEY', label: 'Orange Money' },
   { value: 'WAVE', label: 'Wave' },
 ];
-
-const COUNTRIES = [
-  { value: 'CM', label: 'Cameroun', dialCode: '+237', placeholder: '6XX XXX XXX', phoneDigits: 9 },
-  { value: 'SN', label: 'Sénégal', dialCode: '+221', placeholder: '7X XXX XX XX', phoneDigits: 9 },
-  { value: 'CI', label: "Côte d'Ivoire", dialCode: '+225', placeholder: 'XX XX XX XX XX', phoneDigits: 10 },
-  { value: 'GA', label: 'Gabon', dialCode: '+241', placeholder: 'XX XX XX XX', phoneDigits: 8 },
-  { value: 'CG', label: 'Congo', dialCode: '+242', placeholder: 'XX XXX XXXX', phoneDigits: 9 },
-];
-
-const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
 
 export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
@@ -70,78 +62,8 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     setNetworkError('');
   };
 
-  const selectedCountry = COUNTRIES.find((c) => c.value === country) ?? COUNTRIES[0]!;
-  const phoneDigits = phone.replace(/\D/g, '');
-  const isPhoneComplete = phoneDigits.length === selectedCountry.phoneDigits;
-
-  const validateName = (value: string): boolean => {
-    if (!value.trim()) {
-      setNameError('Le nom est obligatoire');
-      return false;
-    }
-    if (!nameRegex.test(value)) {
-      setNameError('Le nom ne doit contenir que des lettres, espaces, tirets ou apostrophes');
-      return false;
-    }
-    if (value.trim().length < 2) {
-      setNameError('Le nom doit contenir au moins 2 caractères');
-      return false;
-    }
-    setNameError('');
-    return true;
-  };
-
-  const validateNetwork = (value: string): boolean => {
-    if (!value) {
-      setNetworkError("L'opérateur est obligatoire");
-      return false;
-    }
-    setNetworkError('');
-    return true;
-  };
-
-  const validatePhone = (value: string): boolean => {
-    const digits = value.replace(/\D/g, '');
-    if (digits.length !== selectedCountry.phoneDigits) {
-      setPhoneError(`Le numéro doit contenir ${selectedCountry.phoneDigits} chiffres pour ${selectedCountry.label}`);
-      return false;
-    }
-    setPhoneError('');
-    return true;
-  };
-
-  const isStep1Valid = name.trim().length >= 2 && isPhoneComplete && network.length > 0;
-
-  const handlePhoneChange = (raw: string) => {
-    const digitsOnly = raw.replace(/\D/g, '');
-    if (digitsOnly.length > selectedCountry.phoneDigits) return;
-    setPhone(raw);
-    setPhoneError('');
-  };
-
-  const handleNameChange = (value: string) => {
-    setName(value);
-    if (nameError) {
-      validateName(value);
-    }
-  };
-
-  const handleNetworkChange = (value: string) => {
-    setNetwork(value);
-    if (networkError) {
-      validateNetwork(value);
-    }
-  };
-
-  const handleStep1Next = () => {
-    const isNameValid = validateName(name);
-    const isNetworkValid = validateNetwork(network);
-    const isPhoneValid = validatePhone(phone);
-
-    if (isNameValid && isNetworkValid && isPhoneValid) {
-      setStep(2);
-    }
-  };
+  const selectedCountry: Country = getCountryByCode(country) ?? getCountryByCode('CM')!;
+  const isStep1Valid = name.length > 0 && phone.length > 0;
 
   const handleConfirm = () => {
     createMutation.mutate({
@@ -274,22 +196,13 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
 
             <div className="space-y-2">
-              <Label>Pays *</Label>
-              <select
+              <CountrySelect
                 value={country}
-                onChange={(e) => {
-                  setCountry(e.target.value);
+                onChange={(c: Country) => {
+                  setCountry(c.code);
                   setPhone('');
-                  setPhoneError('');
                 }}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
-              >
-                {COUNTRIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="space-y-2">
@@ -301,12 +214,9 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  placeholder={selectedCountry.placeholder}
-                  maxLength={selectedCountry.phoneDigits + 4}
-                  className={`flex-1 px-4 py-2.5 border rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 ${
-                    phoneError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-afrilink-orange'
-                  }`}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={selectedCountry.phonePlaceholder}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -381,7 +291,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Pays</span>
-              <span className="font-medium">{selectedCountry.label}</span>
+              <span className="font-medium">{selectedCountry.name}</span>
             </div>
             {nickname && (
               <div className="flex justify-between">

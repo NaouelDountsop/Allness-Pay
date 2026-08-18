@@ -6,15 +6,21 @@ export class CurrencyService {
     CAMEROUN: 'XAF',
     GABON: 'XAF',
     CONGO: 'XAF',
-    CANADA: 'CAD',
-
-    'COTE DIVOIRE': 'XOF',
+    TCHAD: 'XAF',
+    'REPUBLIQUE CENTRAFRICAINE': 'XAF',
+    'GUINEE EQUATORIALE': 'XAF',
     SENEGAL: 'XOF',
+    'COTE DIVOIRE': 'XOF',
+    NIGER: 'XOF',
     MALI: 'XOF',
-
-    NIGERIA: 'NGN',
-    GHANA: 'GHS',
-    KENYA: 'KES',
+    'BURKINA FASO': 'XOF',
+    TOGO: 'XOF',
+    BENIN: 'XOF',
+    CANADA: 'CAD',
+    FRANCE: 'EUR',
+    BELGIQUE: 'EUR',
+    SUISSE: 'EUR',
+    ALLEMAGNE: 'EUR',
   };
 
   getCurrencyByCountry(country: string): string {

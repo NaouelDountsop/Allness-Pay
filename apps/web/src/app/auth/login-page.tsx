@@ -69,7 +69,7 @@ export default function LoginPage() {
             label="Adresse email"
             icon={Mail}
             type="email"
-            placeholder="jean.dupont@entreprise.com"
+            placeholder="naouel@entreprise.com"
             {...register('email')}
           />
           {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}

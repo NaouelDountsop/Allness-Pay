@@ -22,14 +22,10 @@ interface CreateWalletModalProps {
 }
 
 const CURRENCIES = [
-  { code: "XAF", label: "XAF - Franc CFA", symbol: "FCFA" },
+  { code: "XAF", label: "XAF - Franc CFA (CEMAC)", symbol: "FCFA" },
+  { code: "XOF", label: "XOF - Franc CFA (UEMOA)", symbol: "CFA" },
+  { code: "CAD", label: "CAD - Dollar canadien", symbol: "CA$" },
   { code: "EUR", label: "EUR - Euro", symbol: "€" },
-  { code: "USD", label: "USD - Dollar américain", symbol: "$" },
-  { code: "XOF", label: "XOF - Franc CFA (UEMOA)", symbol: "FCFA" },
-  { code: "NGN", label: "NGN - Naira", symbol: "₦" },
-  { code: "GHS", label: "GHS - Cedi", symbol: "GH₵" },
-  { code: "KES", label: "KES - Shilling kényan", symbol: "KSh" },
-  { code: "ZAR", label: "ZAR - Rand sud-africain", symbol: "R" },
 ];
 
 export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps) {

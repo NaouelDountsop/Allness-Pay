@@ -54,7 +54,7 @@ export const envValidationSchema = Joi.object({
   THROTTLE_TTL: Joi.number().default(60),
   THROTTLE_LIMIT: Joi.number().default(100),
 
-  DEFAULT_CURRENCY: Joi.string().valid('XAF', 'XOF', 'EUR', 'USD').default('XAF'),
+  DEFAULT_CURRENCY: Joi.string().valid('XAF', 'XOF', 'CAD', 'EUR').default('XAF'),
   IDEMPOTENCY_TTL: Joi.number().default(86400),
 
   MTN_MOMO_BASE_URL: Joi.string().allow('').optional(),

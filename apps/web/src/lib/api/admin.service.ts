@@ -115,6 +115,31 @@ export interface AdminChartPoint {
   value: number;
 }
 
+export interface AdminCurrency {
+  id: string;
+  code: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  country: string | null;
+  flag: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminExchangeRate {
+  id: string;
+  fromCurrencyCode: string;
+  toCurrencyCode: string;
+  rate: number;
+  isActive: boolean;
+  fromCurrency?: AdminCurrency;
+  toCurrency?: AdminCurrency;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const adminService = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
     const res = await apiClient.get<AdminDashboardStats>('/admin/dashboard/stats');
@@ -199,5 +224,43 @@ export const adminService = {
   exportTontines: async (): Promise<Blob> => {
     const res = await apiClient.get('/admin/tontines/export', { responseType: 'blob' });
     return res.data;
+  },
+
+  listCurrencies: async (): Promise<AdminCurrency[]> => {
+    const res = await apiClient.get<AdminCurrency[]>('/currencies');
+    return res.data;
+  },
+
+  listExchangeRates: async (): Promise<AdminExchangeRate[]> => {
+    const res = await apiClient.get<AdminExchangeRate[]>('/currencies/exchange-rates/all');
+    return res.data;
+  },
+
+  getExchangeRate: async (from: string, to: string): Promise<AdminExchangeRate> => {
+    const res = await apiClient.get<AdminExchangeRate>(`/currencies/exchange-rate/${from}/${to}`);
+    return res.data;
+  },
+
+  createExchangeRate: async (data: {
+    fromCurrencyCode: string;
+    toCurrencyCode: string;
+    rate: number;
+    isActive?: boolean;
+  }): Promise<AdminExchangeRate> => {
+    const res = await apiClient.post<AdminExchangeRate>('/currencies/exchange-rate', data);
+    return res.data;
+  },
+
+  updateExchangeRate: async (
+    from: string,
+    to: string,
+    data: { rate?: number; isActive?: boolean },
+  ): Promise<AdminExchangeRate> => {
+    const res = await apiClient.patch<AdminExchangeRate>(`/currencies/exchange-rate/${from}/${to}`, data);
+    return res.data;
+  },
+
+  deleteExchangeRate: async (from: string, to: string): Promise<void> => {
+    await apiClient.delete(`/currencies/exchange-rate/${from}/${to}`);
   },
 };

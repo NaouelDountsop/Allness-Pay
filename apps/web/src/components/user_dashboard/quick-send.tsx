@@ -14,7 +14,7 @@ interface QuickSendProps {
   isLoading?: boolean;
 }
 
-const CURRENCIES = ['USD', 'XAF', 'EUR'];
+const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
 
 export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
   const navigate = useNavigate();

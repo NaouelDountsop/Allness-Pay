@@ -21,6 +21,7 @@ import type { DatabaseConfig } from '@/config/configuration';
           ssl: db.ssl ? { rejectUnauthorized: false } : false,
           synchronize: false,
           logging: db.logging,
+          autoLoadEntities: true,
           entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
           migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
           migrationsTableName: 'typeorm_migrations',
