@@ -1,4 +1,4 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
   type KycBannerStatus,
@@ -34,6 +34,21 @@ export function KycBanner({ status }: KycBannerProps) {
 
   if (status === 'APPROVED') {
     return null;
+  }
+
+  if (status === 'REJECTED') {
+    return (
+      <div className={`mb-4 sm:mb-6 rounded-xl border px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${kycStatusStyles[status]}`}>
+        <p className="text-sm font-medium">{kycStatusLabels[status]}</p>
+        <button
+          onClick={() => navigate('/dashboard/kyc')}
+          className="group w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-red-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-red-700 active:scale-[0.98] transition-all"
+        >
+          <RotateCcw className="w-4 h-4 transition-transform group-hover:-rotate-45" />
+          Compléter mon KYC
+        </button>
+      </div>
+    );
   }
 
   return (

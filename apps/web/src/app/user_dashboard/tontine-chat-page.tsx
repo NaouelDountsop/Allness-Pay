@@ -16,6 +16,7 @@ import {
   FileText,
   Plus,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
@@ -347,9 +348,11 @@ function MemberRow({ member }: { member: Member }) {
 function ChatArea({
   conversation,
   tontine,
+  onBack,
 }: {
   conversation: Conversation;
   tontine?: Tontine | null;
+  onBack?: () => void;
 }) {
   const [pinnedVisible, setPinnedVisible] = useState(true);
   const [draft, setDraft] = useState('');
@@ -370,6 +373,15 @@ function ChatArea({
     <section className="flex min-w-0 flex-1 flex-col rounded-[2rem] border border-gray-100 bg-white shadow-sm">
       <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
         <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              aria-label="Retour"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
           <img
             src="https://i.pravatar.cc/150?img=11"
             alt="Tontine Famille Unie"
@@ -660,7 +672,11 @@ export default function TontineChatPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex h-[calc(100vh-140px)] min-h-0 min-w-0 gap-4 overflow-hidden">
-          <ChatArea conversation={activeConversation} tontine={tontine} />
+          <ChatArea
+            conversation={activeConversation}
+            tontine={tontine}
+            onBack={() => navigate('/dashboard/tontines')}
+          />
           <TontineAboutPanel tontine={tontine} members={tontine?.members} />
         </div>
       </DashboardLayout>
@@ -673,8 +689,15 @@ export default function TontineChatPage() {
 
       <div className="flex h-[calc(100vh-140px)] min-h-0 min-w-0 gap-4 overflow-hidden">
         <aside className="flex min-h-0 min-w-0 w-full max-w-[300px] flex-col rounded-2xl border border-gray-100 bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-5 py-4">
-            <h2 className="text-sm font-semibold text-gray-900">Messagerie</h2>
+          <div className="flex items-center gap-2 border-b border-gray-100 px-5 py-4">
+            <button
+              onClick={() => navigate('/dashboard/tontines')}
+              className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              aria-label="Retour aux tontines"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <h2 className="text-sm font-semibold text-gray-900 flex-1">Messagerie</h2>
             <div className="flex items-center gap-1">
               <button
                 className="rounded-full p-1.5 text-gray-400 hover:bg-gray-50"

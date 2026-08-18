@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { StepIndicator } from "@/components/user_dashboard/send/step-indicator";
 
 interface CreateWalletModalProps {
   open: boolean;
@@ -32,8 +31,6 @@ const CURRENCIES = [
   { code: "KES", label: "KES - Shilling kényan", symbol: "KSh" },
   { code: "ZAR", label: "ZAR - Rand sud-africain", symbol: "R" },
 ];
-
-const STEPS = [{ label: "Devise" }, { label: "Details" }, { label: "Confirmation" }];
 
 export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);

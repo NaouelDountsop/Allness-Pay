@@ -14,7 +14,7 @@ export function WalletBalanceCard({
   currency,
   status = 'Actif',
 }: WalletBalanceCardProps) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const formatted = new Intl.NumberFormat('fr-FR').format(balance);
 
   const maskedWalletId = walletId.length > 3 ? walletId.slice(0, 3) + ' ••••••••' : '••••••••';
@@ -83,9 +83,9 @@ export function WalletBalanceCard({
           className="shrink-0"
         >
           {visible ? (
-            <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
-          ) : (
             <EyeOff className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
+          ) : (
+            <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
           )}
         </button>
       </div>

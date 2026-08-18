@@ -1,4 +1,4 @@
-import { ArrowUpRight, UserPlus } from 'lucide-react';
+import { ArrowUpRight, UserPlus, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { tontineBannerStyle } from '@/styles/banners';
 
@@ -14,6 +14,13 @@ export function TontineInvitationBanner({ count }: TontineInvitationBannerProps)
   return (
     <div className={tontineBannerStyle.wrapper}>
       <div className="flex items-start sm:items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-8 h-8 rounded-lg bg-afrilink-orange/20 flex items-center justify-center shrink-0 hover:bg-afrilink-orange/30 transition-colors"
+          aria-label="Retour"
+        >
+          <ArrowLeft className="w-4 h-4 text-afrilink-orange" />
+        </button>
         <span className={tontineBannerStyle.iconWrapper}>
           <UserPlus className={`w-4 h-4 ${tontineBannerStyle.iconColor}`} />
         </span>

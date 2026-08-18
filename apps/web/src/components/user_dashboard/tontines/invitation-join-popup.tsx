@@ -46,6 +46,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
   const isAccepted = invitation.status === 'ACCEPTED';
   const isDeclined = invitation.status === 'DECLINED';
   const isPending = invitation.status === 'PENDING';
+  const isMutating = respondMutation.isPending;
 
   return (
     <div className="rounded-xl bg-gray-50 p-4 transition-all">
@@ -70,18 +71,18 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
             <div className="flex items-center gap-1.5">
               <button
                 aria-label="Refuser"
-                disabled={respondMutation.isPending}
+                disabled={isMutating}
                 onClick={() => respondMutation.mutate('DECLINE')}
                 className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors disabled:opacity-50"
               >
                 <XIcon className="w-3.5 h-3.5" />
               </button>
               <button
-                disabled={respondMutation.isPending}
+                disabled={isMutating}
                 onClick={() => respondMutation.mutate('ACCEPT')}
-                className="h-8 px-3 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-1 hover:bg-afrilink-greenHover transition-colors disabled:opacity-50"
+                className="h-8 px-3 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-1 hover:bg-afrilink-greenHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {respondMutation.isPending ? (
+                {isMutating ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
                   <Check className="w-3 h-3" />
