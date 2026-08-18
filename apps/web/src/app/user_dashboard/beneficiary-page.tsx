@@ -12,7 +12,6 @@ import {
   ChevronDown,
   RotateCcw,
   MoreVertical,
-  ShieldCheck as SecureIcon,
   Link2,
   Loader2,
   Pencil,
@@ -168,6 +167,7 @@ export default function BeneficiariesPage() {
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const PAGE_SIZE = 5;
 
   const { data: response, isLoading } = useQuery({
     queryKey: ['beneficiaries'],
@@ -179,8 +179,9 @@ export default function BeneficiariesPage() {
     (b) =>
       b.name.toLowerCase().includes(search.toLowerCase()) ||
       b.phone.includes(search)
-      // b.nickname?.toLowerCase().includes(search.toLowerCase()),
   );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSend = (b: Beneficiary) => {
     const cleaned = b.phone.replace(/\D/g, '');
@@ -384,12 +385,13 @@ export default function BeneficiariesPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((b) => {
+                {paginated.map((b) => {
                   const countryKey = Object.entries(COUNTRY_MAP).find(
                     ([, name]) => name === b.country,
                   )?.[0];
                   const initials = b.name
                     .split(' ')
+                    .filter((w) => w.length > 0)
                     .map((w) => w[0])
                     .join('')
                     .toUpperCase()
@@ -485,14 +487,14 @@ export default function BeneficiariesPage() {
             <p className="text-xs text-gray-400">
               Affichage de {filtered.length} bénéficiaire{filtered.length > 1 ? 's' : ''}
             </p>
-            <Pagination page={page} totalPages={Math.max(1, Math.ceil(filtered.length / 5))} onChange={setPage} />
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-5 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <SecureIcon className="w-4.5 h-4.5 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-afrilink-green" />
             </span>
             <div>
               <p className="text-xs font-semibold text-afrilink-dark mb-1">Transferts sécurisés</p>
@@ -503,7 +505,7 @@ export default function BeneficiariesPage() {
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4.5 h-4.5 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-afrilink-green" />
             </span>
             <div>
               <p className="text-xs font-semibold text-afrilink-dark mb-1">
@@ -516,7 +518,7 @@ export default function BeneficiariesPage() {
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <Link2 className="w-4.5 h-4.5 text-afrilink-green" />
+              <Link2 className="w-4 h-4 text-afrilink-green" />
             </span>
             <div>
               <p className="text-xs font-semibold text-afrilink-dark mb-1">Gestion simplifiée</p>

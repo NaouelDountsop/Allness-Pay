@@ -12,7 +12,7 @@ export const pinService = {
   },
 
   create: async (walletId: string, pin: string): Promise<void> => {
-    await apiClient.post(`/wallets/${walletId}/pin`, { pin });
+    await apiClient.post(`/wallets/${walletId}/pin`, { pin, pinConfirmation: pin });
   },
 
   verify: async (walletId: string, pin: string): Promise<boolean> => {
@@ -30,7 +30,11 @@ export const pinService = {
     await apiClient.post(`/wallets/${walletId}/pin/forgot`);
   },
 
-  reset: async (walletId: string, resetToken: string, newPin: string): Promise<void> => {
-    await apiClient.post(`/wallets/${walletId}/pin/reset`, { resetToken, newPin });
+  reset: async (walletId: string, otp: string, newPin: string): Promise<void> => {
+    await apiClient.post(`/wallets/${walletId}/pin/reset`, {
+      otp,
+      newPin,
+      newPinConfirmation: newPin,
+    });
   },
 };

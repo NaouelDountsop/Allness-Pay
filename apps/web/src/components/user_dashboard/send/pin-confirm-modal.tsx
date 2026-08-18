@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { PinPad } from './pin-pad';
+import { ForgotPinModal } from './forgot-pin-modal';
 
 interface PinConfirmModalProps {
+  walletId: string;
   onConfirm: (pin: string) => boolean | Promise<boolean>;
   onClose: () => void;
 }
 
-export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
+export function PinConfirmModal({ walletId, onConfirm, onClose }: PinConfirmModalProps) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showForgotPin, setShowForgotPin] = useState(false);
 
   const handleChange = (value: string) => {
     setPin(value);
@@ -30,6 +33,16 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
       setLoading(false);
     }
   };
+
+  if (showForgotPin) {
+    return (
+      <ForgotPinModal
+        walletId={walletId}
+        onClose={() => setShowForgotPin(false)}
+        onSuccess={onClose}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
@@ -52,10 +65,10 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
 
         <div className="p-6 text-center">
           <h3 className="text-base font-semibold text-afrilink-dark mb-1">
-            Confirmer la transaction
+            Confirmer L'operation
           </h3>
-          <p className="text-xs text-gray-500 mb-6">
-            Veuillez saisir votre code PIN à 4 chiffres pour valider le transfert.
+          <p className="text-xs text-orange-500 mb-6">
+            Veuillez saisir votre code PIN à 4 chiffres.
           </p>
 
           <PinPad value={pin} onChange={handleChange} error={error} />
@@ -69,6 +82,13 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {loading ? 'Vérification...' : 'Confirmer'}
+          </button>
+
+          <button
+            onClick={() => setShowForgotPin(true)}
+            className="mt-3 text-xs text-afrilink-orange hover:underline"
+          >
+            PIN oublié ?
           </button>
         </div>
       </div>

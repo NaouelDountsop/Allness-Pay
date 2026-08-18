@@ -14,6 +14,7 @@ import { CreateWalletModal } from '@/components/user_dashboard/wallet/create-wal
 import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { campayService } from '@/lib/api/campay.service';
+import { kycService } from '@/lib/api/kyc.service';
 import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
 import { Plus, Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
@@ -84,6 +85,12 @@ export default function WalletPage() {
     queryKey: ['monthly-summary', displayWallet?.id],
     queryFn: () => transactionService.getMonthlySummary(displayWallet!.id),
     enabled: !!displayWallet?.id,
+  });
+
+  const { data: kyc } = useQuery({
+    queryKey: ['kyc-me'],
+    queryFn: () => kycService.getMine(),
+    retry: false,
   });
 
   if (walletsLoading) {
@@ -183,10 +190,12 @@ export default function WalletPage() {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <WalletBalanceCard
-                walletId={displayWallet?.walletNumber ?? '—'}
+                walletNumber={displayWallet?.walletNumber ?? '—'}
+                walletInternalId={displayWallet?.id ?? ''}
                 balance={selectedWalletId ? Number(displayWallet?.balance ?? 0) : totalBalance}
                 currency={displayWallet?.currency ?? 'FCFA'}
                 status={displayWallet?.status === 'active' ? 'Actif' : 'En attente'}
+                kycApproved={kyc?.status === 'APPROVED'}
               />
               <WalletActions />
             </div>

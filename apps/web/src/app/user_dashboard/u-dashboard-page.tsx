@@ -122,10 +122,12 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="space-y-3">
               <WalletBalanceCard
-                walletId={walletNumber}
+                walletNumber={walletNumber}
+                walletInternalId={wallet?.id ?? ''}
                 balance={balance}
                 currency={currency}
                 status={walletStatus}
+                kycApproved={kyc?.status === 'APPROVED'}
               />
 
               <div className="flex gap-3">

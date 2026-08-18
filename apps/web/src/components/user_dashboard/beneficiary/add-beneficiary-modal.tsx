@@ -69,6 +69,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     createMutation.mutate({
       nom: name.trim(),
       numero: `${selectedCountry.dialCode}${phone}`,
+      numero: `${selectedCountry.dialCode}${phone}`,
       reseau: network,
       pays: country,
     });

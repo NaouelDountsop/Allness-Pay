@@ -40,12 +40,6 @@ const COUNTRY_TO_CURRENCY: Record<string, string> = {
 
 export default function SendMoneyPage() {
   const [searchParams] = useSearchParams();
-  const { hasPin, createPin, verifyPin } = usePin(null);
-
-  const { data: profile } = useQuery<UserProfile>({
-    queryKey: ['profile'],
-    queryFn: userService.getProfile,
-  });
 
   const { data: wallets = [] } = useQuery({
     queryKey: ['wallets'],
@@ -53,6 +47,12 @@ export default function SendMoneyPage() {
   });
 
   const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
+  const { hasPin, createPin, verifyPin } = usePin(primaryWallet?.id ?? null);
+
+  const { data: profile } = useQuery<UserProfile>({
+    queryKey: ['profile'],
+    queryFn: userService.getProfile,
+  });
   const availableCurrencies = [...new Set(wallets.map((w) => w.currency).filter(Boolean))];
 
   const senderInfo = profile
@@ -272,7 +272,11 @@ export default function SendMoneyPage() {
       )}
 
       {showPinConfirm && (
-        <PinConfirmModal onConfirm={handlePinConfirm} onClose={() => setShowPinConfirm(false)} />
+        <PinConfirmModal
+          walletId={primaryWallet?.id ?? ''}
+          onConfirm={handlePinConfirm}
+          onClose={() => setShowPinConfirm(false)}
+        />
       )}
     </DashboardLayout>
   );
