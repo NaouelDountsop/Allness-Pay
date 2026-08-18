@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { CountrySelect } from '@/components/common/country-select';
+import { getCountryByCode, type Country } from '@/data/countries';
 
 interface AddBeneficiaryModalProps {
   open: boolean;
@@ -23,14 +25,6 @@ const NETWORKS = [
   { value: 'MTN_MOMO', label: 'MTN Mobile Money' },
   { value: 'ORANGE_MONEY', label: 'Orange Money' },
   { value: 'WAVE', label: 'Wave' },
-];
-
-const COUNTRIES = [
-  { value: 'CM', label: 'Cameroun', dialCode: '+237', placeholder: '6XX XXX XXX' },
-  { value: 'SN', label: 'Sénégal', dialCode: '+221', placeholder: '7X XXX XX XX' },
-  { value: 'CI', label: "Côte d'Ivoire", dialCode: '+225', placeholder: 'XX XX XX XX XX' },
-  { value: 'GA', label: 'Gabon', dialCode: '+241', placeholder: 'XX XX XX XX' },
-  { value: 'CG', label: 'Congo', dialCode: '+242', placeholder: 'XX XXX XXXX' },
 ];
 
 export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalProps) {
@@ -62,7 +56,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     setNickname('');
   };
 
-  const selectedCountry = COUNTRIES.find((c) => c.value === country) ?? COUNTRIES[0]!;
+  const selectedCountry: Country = getCountryByCode(country) ?? getCountryByCode('CM')!;
   const isStep1Valid = name.length > 0 && phone.length > 0;
 
   const handleConfirm = () => {
@@ -178,21 +172,13 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
 
             <div className="space-y-2">
-              <Label>Pays</Label>
-              <select
+              <CountrySelect
                 value={country}
-                onChange={(e) => {
-                  setCountry(e.target.value);
+                onChange={(c: Country) => {
+                  setCountry(c.code);
                   setPhone('');
                 }}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
-              >
-                {COUNTRIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="space-y-2">
@@ -205,7 +191,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder={selectedCountry.placeholder}
+                  placeholder={selectedCountry.phonePlaceholder}
                   className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                 />
               </div>
@@ -259,7 +245,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Pays</span>
-              <span className="font-medium">{selectedCountry.label}</span>
+              <span className="font-medium">{selectedCountry.name}</span>
             </div>
             {nickname && (
               <div className="flex justify-between">

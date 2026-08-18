@@ -19,7 +19,7 @@ const contributionSchema = z.object({
     return !isNaN(num) && num >= 100 && Number.isInteger(num);
   }, "Le montant doit être un nombre entier d'au moins 100"),
   method: z.enum(['wallet', 'mtn_momo', 'orange_money', 'bank_transfer']),
-  currency: z.enum(['XAF', 'USD', 'EUR']),
+  currency: z.enum(['XAF', 'XOF', 'CAD', 'EUR']),
 });
 
 type ContributionFormData = z.infer<typeof contributionSchema>;
@@ -32,9 +32,10 @@ const PAYMENT_TO_METHOD: Record<PaymentMethod, ContributionFormData['method']> =
 };
 
 const CURRENCY_OPTIONS = [
-  { value: 'XAF' as const, label: 'CFA' },
+  { value: 'XAF' as const, label: 'FCFA' },
+  { value: 'XOF' as const, label: 'CFA' },
+  { value: 'CAD' as const, label: 'CA$' },
   { value: 'EUR' as const, label: '€ EUR' },
-  { value: 'USD' as const, label: 'USD' },
 ];
 
 export default function MakeContributionPage() {

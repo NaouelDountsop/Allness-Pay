@@ -13,7 +13,7 @@ interface QuickSendProps {
   walletId?: string;
 }
 
-const CURRENCIES = ['USD', 'XAF', 'EUR'];
+const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
 
 export function QuickSend({ contacts, walletId }: QuickSendProps) {
   const navigate = useNavigate();
