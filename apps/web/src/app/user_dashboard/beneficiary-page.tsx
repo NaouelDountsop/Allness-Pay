@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -14,6 +14,8 @@ import {
   MoreVertical,
   Link2,
   Loader2,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
@@ -22,7 +24,7 @@ import { DashboardHeader } from '../../components/user_dashboard/header';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
-import { getFlagUrl } from '../../data/countries';
+import { getFlagUrl, countries } from '../../data/countries';
 
 const COUNTRY_MAP: Record<string, string> = {
   CM: 'Cameroun',
@@ -47,12 +49,98 @@ const COUNTRY_MAP: Record<string, string> = {
   US: 'États-Unis',
 };
 
+function BeneficiaryActionsMenu({
+  beneficiary,
+  onEdit,
+  onDelete,
+  onToggleFavorite,
+}: {
+  beneficiary: Beneficiary;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggleFavorite: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node) && buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleToggle = () => {
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({ top: rect.bottom + 4, left: rect.right - 160 });
+    }
+    setOpen(!open);
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        onClick={handleToggle}
+        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+        aria-label="Plus d'options"
+      >
+        <MoreVertical className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <div
+          ref={menuRef}
+          className="fixed w-40 rounded-lg border border-gray-100 bg-white shadow-lg overflow-hidden z-[9999]"
+          style={{ top: position.top, left: position.left }}
+        >
+          <button
+            onClick={() => {
+              onEdit();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            Modifier
+          </button>
+          <button
+            onClick={() => {
+              onDelete();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Supprimer
+          </button>
+          <button
+            onClick={() => {
+              onToggleFavorite();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Star className={`w-3.5 h-3.5 ${beneficiary.isFavorite ? 'text-yellow-400 fill-yellow-400' : ''}`} />
+            {beneficiary.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
 const NETWORK_LABELS: Record<string, string> = {
   MTN_MOMO: 'MTN Mobile Money',
   ORANGE_MONEY: 'Orange Money',
   WAVE: 'Wave',
   MOOV_MONEY: 'Moov Money',
-  AFRILINKPAY: 'AfriLinkPay',
+  AFRILINKPAY: 'AllnessPay',
   AUTRE: 'Autre',
 };
 
@@ -96,11 +184,27 @@ export default function BeneficiariesPage() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSend = (b: Beneficiary) => {
-    const country = Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0] ?? 'CM';
+    const cleaned = b.phone.replace(/\D/g, '');
+
+    const matchedCountry = countries.find((c) => {
+      const dialDigits = c.dialCode.replace('+', '');
+      return cleaned.startsWith(dialDigits);
+    });
+
+    const countryKey = matchedCountry?.code
+      ?? Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0]
+      ?? 'CM';
+
+    let localPhone = cleaned;
+    if (matchedCountry) {
+      const dialDigits = matchedCountry.dialCode.replace('+', '');
+      localPhone = cleaned.slice(dialDigits.length);
+    }
+
     const params = new URLSearchParams({
       name: b.name,
-      phone: b.phone,
-      country,
+      phone: localPhone,
+      country: countryKey,
       network: b.network,
     });
     navigate(`/dashboard/send?${params.toString()}`);
@@ -357,12 +461,12 @@ export default function BeneficiariesPage() {
                           >
                             <Send className="w-3.5 h-3.5" />
                           </button>
-                          <button
-                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                            aria-label="Plus d'options"
-                          >
-                            <MoreVertical className="w-3.5 h-3.5" />
-                          </button>
+                          <BeneficiaryActionsMenu
+                            beneficiary={b}
+                            onEdit={() => { /* TODO: open edit modal */ }}
+                            onDelete={() => { /* TODO: open delete confirm */ }}
+                            onToggleFavorite={() => { /* TODO: toggle favorite */ }}
+                          />
                         </div>
                       </td>
                     </tr>

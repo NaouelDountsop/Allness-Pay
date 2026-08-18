@@ -65,6 +65,34 @@ export interface TontineInvitation {
   updatedAt: string;
 }
 
+export interface TontineCycle {
+  id: string;
+  tontineId: string;
+  cycleNumber: number;
+  beneficiaryId: string;
+  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'FAILED';
+  totalPot: string;
+  collectedAmount: string;
+  dueDate: string;
+  completedAt?: string;
+}
+
+export interface TontineContribution {
+  id: string;
+  cycleId: string;
+  memberId: string;
+  amount: string;
+  status: 'PENDING' | 'PAID' | 'LATE' | 'FAILED' | 'REFUNDED';
+  paidAt?: string;
+  dueDate: string;
+  penaltyCount: number;
+  member?: {
+    id: string;
+    userId: number;
+    user?: { id?: number; nom?: string; prenom?: string };
+  };
+}
+
 const basePath = '/tontines';
 
 export const tontineService = {
@@ -123,6 +151,39 @@ export const tontineService = {
     const res = await apiClient.post<TontineMember | null>(
       `${basePath}/invitations/${invitationId}/respond`,
       { response },
+    );
+    return res.data;
+  },
+
+  contribute: async (
+    tontineId: string,
+    payload: { amount: string; walletId: string; pin: string },
+  ): Promise<{ id: string; status: string }> => {
+    const res = await apiClient.post<{ id: string; status: string }>(
+      `${basePath}/${tontineId}/contribute`,
+      payload,
+    );
+    return res.data;
+  },
+
+  updateStatus: async (id: string, status: string): Promise<Tontine> => {
+    const res = await apiClient.patch<Tontine>(`${basePath}/${id}/status`, { status });
+    return res.data;
+  },
+
+  listCycles: async (tontineId: string): Promise<TontineCycle[]> => {
+    const res = await apiClient.get<TontineCycle[]>(`${basePath}/${tontineId}/cycles`);
+    return res.data;
+  },
+
+  listContributions: async (
+    tontineId: string,
+    cycleId?: string,
+  ): Promise<TontineContribution[]> => {
+    const params = cycleId ? { cycleId } : undefined;
+    const res = await apiClient.get<TontineContribution[]>(
+      `${basePath}/${tontineId}/contributions`,
+      { params },
     );
     return res.data;
   },

@@ -5,6 +5,7 @@ interface TontineSummaryCardProps {
   nextDueDate: string;
   turnOrder: string;
   totalPaid: number;
+  currency: string;
   progressPercent: number;
   membersCount: number;
 }
@@ -14,9 +15,19 @@ export function TontineSummaryCard({
   nextDueDate,
   turnOrder,
   totalPaid,
+  currency,
   progressPercent,
   membersCount,
 }: TontineSummaryCardProps) {
+  const currencyLabels: Record<string, string> = {
+    XAF: 'FCFA',
+    XOF: 'CFA',
+    CAD: 'CA$',
+    EUR: '€',
+    USD: '$',
+  };
+  const displayCurrency = currencyLabels[currency] ?? currency;
+
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-gray-100 bg-white p-5">
@@ -37,7 +48,7 @@ export function TontineSummaryCard({
           <div className="flex items-center justify-between">
             <dt className="text-gray-400">Total versé</dt>
             <dd className="font-medium text-gray-800">
-              {new Intl.NumberFormat('fr-FR').format(totalPaid)} €
+              {new Intl.NumberFormat('fr-FR').format(totalPaid)} {displayCurrency}
             </dd>
           </div>
         </dl>

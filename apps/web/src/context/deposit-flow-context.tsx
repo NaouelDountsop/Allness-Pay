@@ -147,7 +147,7 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
         walletNumber: deposit.walletNumber,
         amount: deposit.amount,
         phone_number: phoneWithPrefix,
-        description: deposit.description || 'Dépôt AfriLinkPay',
+        description: deposit.description || 'Dépôt AllnessPay',
       });
 
       const pending = {

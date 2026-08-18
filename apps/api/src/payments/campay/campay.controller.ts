@@ -43,7 +43,7 @@ export class CampayController {
         walletNumber: 'WLT0000000000',
         amount: '1000',
         phone_number: '237680657567',
-        description: 'Test dépôt AfriLinkPay',
+        description: 'Test dépôt AllnessPay',
       },
       0,
     );

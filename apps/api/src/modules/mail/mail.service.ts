@@ -47,7 +47,7 @@ export class MailService {
   }
 
   /**
-   * Template principal des emails AfriLinkPay.
+   * Template principal des emails AllnessPay.
    */
   private buildTemplate(
     content: string,
@@ -68,7 +68,7 @@ export class MailService {
   />
   <meta name="x-apple-disable-message-reformatting" />
 
-  <title>AfriLinkPay</title>
+  <title>AllnessPay</title>
 
   <style>
     body {
@@ -172,7 +172,7 @@ export class MailService {
                   >
                     <img
                       src="https://res.cloudinary.com/dnlnzgqzu/image/upload/v1754929257/afrilinkpay-logo-white_l7gx3o.png"
-                      alt="AfriLinkPay"
+                      alt="AllnessPay"
                       height="34"
                       style="
                         display:inline-block;
@@ -182,7 +182,7 @@ export class MailService {
                       "
                     />
 
-                    AfriLink
+                    Allness
                     <span style="color:#D28E2F;">
                       Pay
                     </span>
@@ -223,7 +223,7 @@ export class MailService {
                   text-align:center;
                 "
               >
-                Cet email a été envoyé automatiquement par AfriLinkPay.
+                Cet email a été envoyé automatiquement par AllnessPay.
               </p>
 
               <p
@@ -234,7 +234,7 @@ export class MailService {
                   text-align:center;
                 "
               >
-                © ${new Date().getFullYear()} AfriLinkPay.
+                © ${new Date().getFullYear()} AllnessPay.
                 Tous droits réservés.
               </p>
 
@@ -264,7 +264,7 @@ export class MailService {
     try {
       await this.transporter.sendMail({
         from: {
-          name: 'AfriLinkPay',
+          name: 'AllnessPay',
           address: this.from,
         },
 
@@ -321,7 +321,7 @@ export class MailService {
           "
         >
           Utilisez le code ci-dessous pour confirmer votre adresse
-          email sur AfriLinkPay.
+          email sur AllnessPay.
         </p>
 
         <div
@@ -367,12 +367,12 @@ export class MailService {
         </p>
       `,
       {
-        preheader: 'Votre code de vérification AfriLinkPay',
+        preheader: 'Votre code de vérification AllnessPay',
       },
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Vérification de votre adresse email
 
@@ -384,12 +384,12 @@ Ce code expire dans 5 minutes.
 
 Ne partagez jamais ce code avec quelqu'un d'autre.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre code de vérification AfriLinkPay',
+      subject: 'Votre code de vérification AllnessPay',
       html,
       text,
     });
@@ -478,7 +478,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -490,12 +490,12 @@ Votre dossier est maintenant en attente de vérification par nos équipes.
 
 Vous recevrez une notification lorsque votre dossier aura été examiné.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre dossier KYC a été reçu — AfriLinkPay',
+      subject: 'Votre dossier KYC a été reçu — AllnessPay',
       html,
       text,
     });
@@ -581,7 +581,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -593,12 +593,12 @@ Nos équipes analysent actuellement vos documents.
 
 Vous recevrez une nouvelle notification lorsque la vérification sera terminée.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre vérification KYC est en cours — AfriLinkPay',
+      subject: 'Votre vérification KYC est en cours — AllnessPay',
       html,
       text,
     });
@@ -676,7 +676,7 @@ AfriLinkPay
           "
         >
           Vous pouvez maintenant accéder aux fonctionnalités
-          disponibles sur AfriLinkPay.
+          disponibles sur AllnessPay.
         </p>
       `,
       {
@@ -685,7 +685,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -695,14 +695,14 @@ Statut : Compte vérifié.
 
 Votre compte est maintenant entièrement vérifié.
 
-Vous pouvez maintenant accéder aux fonctionnalités disponibles sur AfriLinkPay.
+Vous pouvez maintenant accéder aux fonctionnalités disponibles sur AllnessPay.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre compte est vérifié — AfriLinkPay',
+      subject: 'Votre compte est vérifié — AllnessPay',
       html,
       text,
     });
@@ -798,7 +798,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -814,12 +814,12 @@ ${reason}
 }
 Vous pouvez soumettre un nouveau dossier en corrigeant les éléments demandés.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Action requise concernant votre KYC — AfriLinkPay',
+      subject: 'Action requise concernant votre KYC — AllnessPay',
       html,
       text,
     });
@@ -887,7 +887,7 @@ AfriLinkPay
         >
           <strong>${safeInviterName}</strong>
           vous invite à rejoindre une tontine sur
-          <strong>AfriLinkPay</strong>.
+          <strong>AllnessPay</strong>.
         </p>
 
         <div
@@ -933,7 +933,7 @@ AfriLinkPay
             margin-bottom:28px;
           "
         >
-          Connectez-vous ou inscrivez-vous sur AfriLinkPay pour voir et accepter cette invitation.
+          Connectez-vous ou inscrivez-vous sur AllnessPay pour voir et accepter cette invitation.
         </p>
 
         <div style="text-align:center; margin:30px 0;">
@@ -952,7 +952,7 @@ AfriLinkPay
               font-size:14px;
             "
           >
-            Ouvrir AfriLinkPay
+            Ouvrir AllnessPay
             <span style="color:#D28E2F;">
               →
             </span>
@@ -1000,27 +1000,27 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Vous êtes invité(e) à rejoindre une tontine !
 
-${inviterName} vous invite à rejoindre la tontine "${tontineName}" sur AfriLinkPay.
+${inviterName} vous invite à rejoindre la tontine "${tontineName}" sur AllnessPay.
 
-Connectez-vous ou inscrivez-vous sur AfriLinkPay pour voir et accepter cette invitation.
+Connectez-vous ou inscrivez-vous sur AllnessPay pour voir et accepter cette invitation.
 
-Ouvrir AfriLinkPay :
+Ouvrir AllnessPay :
 ${appUrl}
 
 Cette invitation expire dans 7 jours.
 
 Si vous n'êtes pas à l'origine de cette invitation, vous pouvez simplement ignorer cet email.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: `${inviterName} vous invite à rejoindre une tontine — AfriLinkPay`,
+      subject: `${inviterName} vous invite à rejoindre une tontine — AllnessPay`,
       html,
       text,
     });
@@ -1119,7 +1119,7 @@ AfriLinkPay
               color:#52666c;
             "
           >
-            Connectez-vous à votre compte AfriLinkPay afin de
+            Connectez-vous à votre compte AllnessPay afin de
             compléter les informations demandées.
           </p>
         </div>
@@ -1130,7 +1130,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -1144,14 +1144,14 @@ ${requestDetails}
 `
     : ''
 }
-Connectez-vous à votre compte AfriLinkPay afin de compléter les informations demandées.
+Connectez-vous à votre compte AllnessPay afin de compléter les informations demandées.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Informations complémentaires requises — AfriLinkPay',
+      subject: 'Informations complémentaires requises — AllnessPay',
       html,
       text,
     });

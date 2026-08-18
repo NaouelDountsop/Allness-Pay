@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
                 label="Adresse email"
                 icon={Mail}
                 type="email"
-                placeholder="admin@afrilinkpay.com"
+                placeholder="admin@allnesspay.com"
                 {...register('email')}
               />
               {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}

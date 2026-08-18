@@ -22,7 +22,7 @@ export default function Hero() {
             </h1>
             <p className="mt-6 text-base lg:text-lg text-white/75 max-w-xl leading-relaxed">
               Envoyez de l'argent, payez vos services et gérez vos tontines en toute sécurité,
-              partout dans le monde avec AfriLink Pay.
+              partout dans le monde avec Allness Pay.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">

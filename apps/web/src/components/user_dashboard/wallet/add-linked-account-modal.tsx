@@ -165,7 +165,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
           </DialogTitle>
           <DialogDescription>
             {step === 1
-              ? 'Rattachez un compte externe à votre portefeuille AfriLink Pay.'
+              ? 'Rattachez un compte externe à votre portefeuille Allness Pay.'
               : getStepSubtitle()}
           </DialogDescription>
         </DialogHeader>

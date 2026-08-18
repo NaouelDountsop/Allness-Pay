@@ -52,9 +52,9 @@ export function Sidebar() {
     // presque toujours le cas pour un layout sidebar+contenu classique.
     <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
       <div className="flex items-center gap-3 px-6 py-4">
-        <img src="/afrilinkpay_logo1.svg" alt="AfrilinkPay" className="w-14 h-20 object-contain" />
+        <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
         <span className="font-bold text-lg">
-          Afrilink<span className="text-afrilink-orange">Pay</span>
+          Allness<span className="text-afrilink-orange">Pay</span>
         </span>
       </div>
 

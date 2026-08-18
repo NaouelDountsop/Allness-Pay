@@ -228,7 +228,7 @@ export default function SignupPage() {
     const codeMessages: Record<string, string> = {
       DUPLICATE_EMAIL: 'Cette adresse email est déjà utilisée par un autre compte.',
       DUPLICATE_PHONE: 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
-      DUPLICATE_GOOGLE: 'Ce compte Google est déjà associé à un compte AfriLinkPay.',
+      DUPLICATE_GOOGLE: 'Ce compte Google est déjà associé à un compte AllnessPay.',
       VALIDATION_FAILED: 'Les données fournies sont invalides. Veuillez vérifier vos informations.',
     };
 
@@ -638,7 +638,7 @@ export default function SignupPage() {
               <a href="/confidentialite" className="text-afrilink-green font-medium">
                 Politique de confidentialité
               </a>{' '}
-              de AfrilinkPay.
+              de AllnessPay.
             </span>
           </label>
 

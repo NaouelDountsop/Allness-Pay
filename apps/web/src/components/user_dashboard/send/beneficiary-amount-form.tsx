@@ -52,8 +52,8 @@ const RECEPTION_OPTIONS: {
 }[] = [
   {
     id: 'wallet',
-    label: 'Wallet AfriLinkPay',
-    image: '/afrilinkpay_logo2.svg',
+    label: 'Wallet AllnessPay',
+    image: '/allnesspay_logo2.png',
     icon: Wallet,
     color: 'text-afrilink-green',
   },

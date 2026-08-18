@@ -53,7 +53,7 @@ export class UsersService {
       if (existingByGoogle) {
         throw new ConflictException({
           code: 'DUPLICATE_GOOGLE',
-          message: 'Ce compte Google est déjà associé à un compte AfriLinkPay.',
+          message: 'Ce compte Google est déjà associé à un compte AllnessPay.',
           field: 'googleId',
         });
       }

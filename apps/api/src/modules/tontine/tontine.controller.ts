@@ -11,16 +11,19 @@ import {
   Post,
   UseGuards,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
+import { ContributionService } from './services/contribution.service';
 import { InvitationService } from './services/invitation.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { AddMemberDto } from './dto/add-member.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { RespondInvitationDto } from './dto/respond-invitation.dto';
+import { ContributeFromWalletDto } from './dto/contribute-from-wallet.dto';
 import { TontineStatus } from './entities/tontine.entity';
 
 interface AuthenticatedRequest extends Request {
@@ -34,6 +37,7 @@ interface AuthenticatedRequest extends Request {
 export class TontineController {
   constructor(
     private readonly tontineService: TontineService,
+    private readonly contributionService: ContributionService,
     private readonly invitationService: InvitationService,
   ) {}
 
@@ -123,6 +127,34 @@ export class TontineController {
   @ApiParam({ name: 'id', type: String })
   leave(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.tontineService.leave(id, req.user.sub);
+  }
+
+  @Post(':id/contribute')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Contribuer à la tontine depuis son portefeuille' })
+  @ApiParam({ name: 'id', type: String })
+  async contribute(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: ContributeFromWalletDto,
+  ) {
+    const member = await this.tontineService.findMember(id, req.user.sub);
+
+    const tontine = await this.tontineService.findOne(id, req.user.sub);
+    const activeCycle = tontine.members
+      ? await this.contributionService.findActiveCycle(id)
+      : null;
+
+    if (!activeCycle) {
+      throw new BadRequestException('Aucun cycle actif pour cette tontine');
+    }
+
+    return this.contributionService.contribute(member.id, {
+      cycleId: activeCycle.id,
+      amount: dto.amount,
+      walletId: dto.walletId,
+      pin: dto.pin,
+    });
   }
 
   @Get('invitations/pending')

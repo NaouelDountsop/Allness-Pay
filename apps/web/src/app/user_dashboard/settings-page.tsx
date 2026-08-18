@@ -86,7 +86,7 @@ export default function SettingsPage() {
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Afrilink'),
+    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Allness'),
     [profile],
   );
 
@@ -168,7 +168,7 @@ export default function SettingsPage() {
                     Paramètres
                   </p>
                   <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark">
-                    Compte Afrilink
+                    Compte Allness
                   </h1>
                 </div>
               </div>

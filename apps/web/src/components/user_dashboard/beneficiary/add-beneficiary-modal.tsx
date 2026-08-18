@@ -328,15 +328,15 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   setNetworkError('');
                   let valid = true;
                   if (name.trim().length < 2) {
-                    setNameError('Le nom doit contenir au moins 2 caractères');
+                    setNameError('Le nom doit contenir au moins deux caracteres.');
                     valid = false;
                   }
-                  if (phone.length !== selectedCountry.phoneDigits) {
-                    setPhoneError(`Le numéro doit contenir ${selectedCountry.phoneDigits} chiffres`);
+                  if (phone.length < selectedCountry.phoneDigits) {
+                    setPhoneError('Le numéro doit contenir ${selectedCountry.phoneDigits} chiffres.');
                     valid = false;
                   }
-                  if (!network) {
-                    setNetworkError('Veuillez sélectionner un opérateur');
+                  if (network === '') {
+                    setNetworkError('Veuillez selectionner un operateur');
                     valid = false;
                   }
                   if (valid) setStep(2);

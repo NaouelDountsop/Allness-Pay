@@ -168,7 +168,7 @@ export class TranzakService {
     const tranzakResponse = await this.createDirectMobileWalletCharge({
       amount,
       currencyCode: 'XAF',
-      description: dto.description ?? 'Dépôt AfriLinkPay',
+      description: dto.description ?? 'Dépôt AllnessPay',
       mchTransactionRef,
       mobileWalletNumber,
       returnUrl: this.returnUrl,
@@ -528,7 +528,7 @@ export class TranzakService {
 //     const tranzakResponse = await this.createPayment({
 //       amount,
 //       currencyCode: 'XAF',
-//       description: dto.description ?? 'Dépôt AfriLinkPay',
+//       description: dto.description ?? 'Dépôt AllnessPay',
 //       mchTransactionRef,
 //       returnUrl: 'http://localhost:5173/payment/return',
 //       callbackUrl: this.callbackUrl || undefined,

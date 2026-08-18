@@ -39,12 +39,11 @@ export default function DashboardPage() {
     enabled: !!wallet?.id,
   });
 
-  const { data: beneficiaryResponse } = useQuery({
+  const { data: beneficiaries = [], isLoading: beneficiariesLoading } = useQuery({
     queryKey: ['beneficiaries'],
     queryFn: beneficiaryService.list,
     select: (res) => res.data,
   });
-  const beneficiaries = beneficiaryResponse ?? [];
 
   const { data: monthlySummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['monthly-summary', wallet?.id],
@@ -61,11 +60,13 @@ export default function DashboardPage() {
   const lastFiveTransactions = transactions.slice(0, 5);
 
   const totalIncome = transactions.reduce((sum, t) => {
+    if (t.status !== 'completed') return sum;
     const credit = transactionService.isCredit(t.type);
     return credit ? sum + Number(t.amount) : sum;
   }, 0);
 
   const totalExpense = transactions.reduce((sum, t) => {
+    if (t.status !== 'completed') return sum;
     const credit = transactionService.isCredit(t.type);
     return credit ? sum : sum + Number(t.amount);
   }, 0);
@@ -168,6 +169,7 @@ export default function DashboardPage() {
                 avatarUrl: null,
               }))}
               walletId={wallet?.id}
+              isLoading={beneficiariesLoading}
             />
             {!summaryLoading && monthlySummary && (
               <MonthlySummary

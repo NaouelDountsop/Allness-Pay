@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Lock, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, Lock, Info, Loader2, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -10,6 +10,9 @@ import {
   type PaymentMethod,
 } from '@/components/user_dashboard/tontines/payment-methods-grid';
 import { TontineSummaryCard } from '@/components/user_dashboard/tontines/tontine-summary-card';
+import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
+import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
+import { usePin } from '@/hooks/use-pin';
 import { tontineService } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
 
@@ -18,25 +21,17 @@ const contributionSchema = z.object({
     const num = Number(val);
     return !isNaN(num) && num >= 100 && Number.isInteger(num);
   }, "Le montant doit être un nombre entier d'au moins 100"),
-  method: z.enum(['wallet', 'mtn_momo', 'orange_money', 'bank_transfer']),
-  currency: z.enum(['XAF', 'XOF', 'CAD', 'EUR']),
+  method: z.enum(['wallet', 'mtn_momo', 'orange_money', 'card']),
 });
 
 type ContributionFormData = z.infer<typeof contributionSchema>;
 
 const PAYMENT_TO_METHOD: Record<PaymentMethod, ContributionFormData['method']> = {
   wallet: 'wallet',
-  card: 'wallet',
+  card: 'card',
   mobile_money: 'mtn_momo',
-  bank_transfer: 'bank_transfer',
+  orange_money: 'orange_money',
 };
-
-const CURRENCY_OPTIONS = [
-  { value: 'XAF' as const, label: 'FCFA' },
-  { value: 'XOF' as const, label: 'CFA' },
-  { value: 'CAD' as const, label: 'CA$' },
-  { value: 'EUR' as const, label: '€ EUR' },
-];
 
 export default function MakeContributionPage() {
   const { id } = useParams<{ id: string }>();
@@ -57,38 +52,80 @@ export default function MakeContributionPage() {
     queryFn: walletService.getPrimary,
   });
 
+  const { hasPin, createPin } = usePin(wallet?.id ?? null);
+
   const suggestedAmount = tontine ? String(tontine.contributionAmount) : '500';
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<PaymentMethod>('wallet');
-  const [currency, setCurrency] = useState<ContributionFormData['currency']>(
-    (tontine?.currency as ContributionFormData['currency']) ?? 'XAF',
-  );
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
 
-  // Set initial amount from tontine once loaded
+  const [showPinSetup, setShowPinSetup] = useState(false);
+  const [showPinConfirm, setShowPinConfirm] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (tontine) {
+      setAmount(String(tontine.contributionAmount));
+    }
+  }, [tontine]);
+
   const effectiveAmount = amount || suggestedAmount;
+  const tontineCurrency = tontine?.currency ?? 'XAF';
+
+  const currencyLabels: Record<string, string> = {
+    XAF: 'FCFA',
+    XOF: 'CFA',
+    CAD: 'CA$',
+    EUR: '€',
+    USD: '$',
+  };
+  const displayCurrency = currencyLabels[tontineCurrency] ?? tontineCurrency;
 
   const formValidation = contributionSchema.safeParse({
     amount: effectiveAmount,
     method: PAYMENT_TO_METHOD[method],
-    currency,
   });
   const isFormValid = formValidation.success;
-  const fieldErrors = !isFormValid ? formValidation.error.flatten().fieldErrors : null;
 
   const contributionMutation = useMutation({
-    mutationFn: () => {
-      return Promise.resolve({
-        tontineId: id,
-        amount: Number(effectiveAmount),
-        method: PAYMENT_TO_METHOD[method],
-        currency,
-      });
+    mutationFn: (pin: string) =>
+      tontineService.contribute(id!, {
+        amount: effectiveAmount,
+        walletId: wallet!.id,
+        pin,
+      }),
+    onSuccess: () => {
+      setSuccess(true);
     },
   });
 
+  const needsExternalInfo = method !== 'wallet';
+  const hasExternalInfo = !needsExternalInfo || phoneNumber.trim().length > 0 || cardNumber.trim().length > 0;
+
   const handleConfirm = () => {
-    if (!isFormValid) return;
-    contributionMutation.mutate();
+    if (!isFormValid || !wallet) return;
+    if (needsExternalInfo && !hasExternalInfo) return;
+    if (hasPin) {
+      setShowPinConfirm(true);
+    } else {
+      setShowPinSetup(true);
+    }
+  };
+
+  const handlePinSetupComplete = async (pin: string) => {
+    await createPin(pin);
+    setShowPinSetup(false);
+    setShowPinConfirm(true);
+  };
+
+  const handlePinConfirm = async (pin: string): Promise<boolean> => {
+    try {
+      await contributionMutation.mutateAsync(pin);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   if (isLoading) {
@@ -120,6 +157,35 @@ export default function MakeContributionPage() {
     );
   }
 
+  if (success) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="px-4 sm:px-8 pb-10">
+          <div className="max-w-md mx-auto text-center py-16">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+              <CheckCircle className="w-10 h-10 text-afrilink-green" />
+            </div>
+            <h2 className="text-xl font-bold text-afrilink-dark mb-2">Versement effectué !</h2>
+            <p className="text-sm text-gray-500 mb-8">
+              Votre contribution de{' '}
+              <span className="font-semibold text-afrilink-dark">
+                {new Intl.NumberFormat('fr-FR').format(Number(effectiveAmount))} {displayCurrency}
+              </span>{' '}
+              a été débitée de votre portefeuille.
+            </p>
+            <button
+              onClick={() => navigate(`/dashboard/tontines/${id}`)}
+              className="h-11 px-6 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Retour à la tontine
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   const nextDueDate = tontine.nextContributionAt
     ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
         day: '2-digit',
@@ -131,6 +197,9 @@ export default function MakeContributionPage() {
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;
   const walletBalance = wallet ? Number(wallet.balance) : 0;
   const walletCurrency = wallet?.currency ?? 'XAF';
+  const walletDisplayCurrency = currencyLabels[walletCurrency] ?? walletCurrency;
+  const insufficientBalance = method === 'wallet' && Number(effectiveAmount) > walletBalance;
+  const totalPaid = Number(tontine.contributionAmount) * tontine.currentCycle;
 
   return (
     <DashboardLayout>
@@ -152,41 +221,20 @@ export default function MakeContributionPage() {
           <div className="lg:col-span-2 rounded-xl border border-gray-100 bg-white p-5 h-fit space-y-5">
             <div>
               <label className="text-xs font-medium text-gray-500">Nom de la tontine</label>
-              <div className="h-11 rounded-lg border border-gray-200 px-3 mt-1 flex items-center text-sm text-gray-800 bg-gray-50">
+              <div className="h-11 rounded-lg border border-gray-100 px-3 mt-1 flex items-center text-sm text-gray-700 bg-gray-50">
                 {tontine.name}
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-medium text-gray-500">Montant du versement</label>
-              <div className="flex gap-2 mt-1">
-                <input
-                  type="number"
-                  value={effectiveAmount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className={`flex-1 h-11 rounded-lg border px-3 text-sm bg-white text-gray-900 focus:outline-none focus:ring-1 ${
-                    fieldErrors?.amount
-                      ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
-                      : 'border-gray-200 focus:border-afrilink-orange focus:ring-afrilink-orange'
-                  }`}
-                />
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value as ContributionFormData['currency'])}
-                  className="h-11 rounded-lg border border-gray-200 px-2 text-sm bg-white text-gray-900"
-                >
-                  {CURRENCY_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+              <label className="text-xs font-medium text-gray-500">
+                Montant de cotisation ({displayCurrency})
+              </label>
+              <div className="h-11 rounded-lg border border-gray-100 px-3 mt-1 flex items-center text-sm text-gray-700 bg-gray-50">
+                {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))} {displayCurrency}
               </div>
-              {fieldErrors?.amount && (
-                <p className="text-[11px] text-red-500 mt-1">{fieldErrors.amount[0]}</p>
-              )}
               <p className="text-[11px] text-gray-400 mt-1">
-                Montant suggéré : {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))} {tontine.currency}
+                Montant fixé par la tontine
               </p>
             </div>
 
@@ -197,19 +245,88 @@ export default function MakeContributionPage() {
               <PaymentMethodsGrid selected={method} onSelect={setMethod} />
             </div>
 
+            {method === 'mobile_money' && (
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Numéro de téléphone Mobile Money
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="Ex: +237 6XX XXX XXX"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Numéro associé à votre compte Mobile Money
+                </p>
+              </div>
+            )}
+
+            {method === 'orange_money' && (
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Numéro de téléphone Orange Money
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="Ex: +237 6XX XXX XXX"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Numéro associé à votre compte Orange Money
+                </p>
+              </div>
+            )}
+
+            {method === 'card' && (
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Numéro de carte bancaire
+                </label>
+                <input
+                  type="text"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  placeholder="XXXX XXXX XXXX XXXX"
+                  maxLength={19}
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Entrez le numéro de votre carte bancaire
+                </p>
+              </div>
+            )}
+
             <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
-              <p>
-                Solde disponible Portefeuille :{' '}
-                <span className="font-semibold">
-                  {new Intl.NumberFormat('fr-FR').format(walletBalance)} {walletCurrency}
-                </span>
-              </p>
+              <div>
+                <p>
+                  Solde disponible Portefeuille :{' '}
+                  <span className="font-semibold">
+                    {new Intl.NumberFormat('fr-FR').format(walletBalance)} {walletDisplayCurrency}
+                  </span>
+                </p>
+                {walletCurrency !== tontineCurrency && (
+                  <p className="mt-1 text-[11px] text-blue-500">
+                    La cotisation sera prélevée en {displayCurrency} depuis votre portefeuille {walletDisplayCurrency}.
+                  </p>
+                )}
+              </div>
             </div>
+
+            {insufficientBalance && (
+              <p className="text-xs text-red-500">
+                Solde insuffisant. Veuillez recharger votre portefeuille ou choisir un autre mode de
+                paiement.
+              </p>
+            )}
 
             <button
               onClick={handleConfirm}
-              disabled={!isFormValid || contributionMutation.isPending}
+              disabled={!isFormValid || contributionMutation.isPending || insufficientBalance || !wallet || (needsExternalInfo && !hasExternalInfo)}
               className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed disabled:bg-green-200"
             >
               {contributionMutation.isPending ? (
@@ -225,12 +342,29 @@ export default function MakeContributionPage() {
             frequency={tontine.frequency}
             nextDueDate={nextDueDate}
             turnOrder={`${tontine.currentCycle} / ${tontine.memberLimit}`}
-            totalPaid={Number(tontine.contributionAmount) * tontine.currentCycle}
+            totalPaid={totalPaid}
+            currency={tontineCurrency}
             progressPercent={Math.round((tontine.currentCycle / tontine.memberLimit) * 100)}
             membersCount={activeMembers}
           />
         </div>
       </div>
+
+      {showPinSetup && (
+        <PinSetupModal onComplete={handlePinSetupComplete} onClose={() => setShowPinSetup(false)} />
+      )}
+
+      {showPinConfirm && (
+        <PinConfirmModal
+          onConfirm={handlePinConfirm}
+          onClose={() => {
+            setShowPinConfirm(false);
+            if (contributionMutation.isError) {
+              contributionMutation.reset();
+            }
+          }}
+        />
+      )}
     </DashboardLayout>
   );
 }

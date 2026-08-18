@@ -60,7 +60,7 @@ export class TranzakController {
     return this.tranzakService.createPayment({
       amount: 1000,
       currencyCode: 'XAF',
-      description: 'Test dépôt AfriLinkPay',
+      description: 'Test dépôt AllnessPay',
       mchTransactionRef: `TEST-${Date.now()}`,
       returnUrl: 'http://localhost:5173/payment/return',
     });
@@ -172,7 +172,7 @@ export class TranzakController {
 //     return this.tranzakService.createPayment({
 //       amount: 1000,
 //       currencyCode: 'XAF',
-//       description: 'Test dépôt AfriLinkPay',
+//       description: 'Test dépôt AllnessPay',
 //       mchTransactionRef: `TEST-${Date.now()}`,
 //       returnUrl: 'http://localhost:5173/payment/return',
 //     });

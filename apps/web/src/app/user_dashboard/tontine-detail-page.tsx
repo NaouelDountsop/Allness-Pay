@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Send, Settings, MessageCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Settings, MessageCircle, Loader2, Clock } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { TontineDetailHeader } from '@/components/user_dashboard/tontines/tontine-detail-header';
@@ -9,17 +9,21 @@ import { TontineDetailStats } from '@/components/user_dashboard/tontines/tontine
 import { MembersTable } from '@/components/user_dashboard/tontines/members-table';
 import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-member-modal';
 import { tontineService } from '@/lib/api/tontine.service';
+import { useUserProfile } from '@/hooks/use-user-profile';
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [inviteOpen, setInviteOpen] = useState(false);
+  const { profile } = useUserProfile();
 
   const { data: tontine, isLoading } = useQuery({
     queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
+
+  const isCreator = profile && tontine && profile.idutilisateur === tontine.creatorId;
 
   if (isLoading) {
     return (
@@ -79,17 +83,21 @@ export default function TontineDetailPage() {
           <div className="flex flex-wrap gap-3 items-center">
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}/history`)}
-              className="h-10 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-sm font-medium hover:bg-afrilink-green/10 transition"
+              className="h-10 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-sm font-medium hover:bg-afrilink-green/10 transition flex items-center gap-2"
             >
-              Historique des versements
+              <Clock className="w-4 h-4" />
+              <span className="hidden sm:inline">Historique des versements</span>
+              <span className="sm:hidden">Historique</span>
             </button>
-            <button
-              onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
-              aria-label="Paramètres"
-              className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
+            {isCreator && (
+              <button
+                onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
+                aria-label="Paramètres"
+                className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}/contribute`)}
               className="h-10 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"

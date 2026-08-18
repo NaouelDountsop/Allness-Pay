@@ -12,7 +12,7 @@ export const mockWalletAccounts: WalletAccount[] = [
     id: '1',
     label: 'Wallet Principal',
     type: 'wallet',
-    logoUrl: '/afrilinkpay_logo2.svg',
+    logoUrl: '/allnesspay_logo2.png',
     balance: 1350000,
   },
   {

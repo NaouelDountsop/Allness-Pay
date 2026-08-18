@@ -3,7 +3,7 @@ import { Zap, ShieldCheck } from 'lucide-react';
 export function WhyChooseCard() {
   return (
     <div className="rounded-2xl bg-afrilink-dark text-white p-5">
-      <h3 className="text-sm font-semibold mb-4">Pourquoi choisir AfrilinkPay ?</h3>
+      <h3 className="text-sm font-semibold mb-4">Pourquoi choisir AllnessPay ?</h3>
       <div className="space-y-4">
         <div className="flex items-start gap-3">
           <Zap className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />

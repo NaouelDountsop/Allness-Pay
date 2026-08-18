@@ -78,7 +78,7 @@ export function KycAddressStep({
       </button>
 
       <p className="text-center text-xs text-gray-400 mt-4">
-        En continuant, vous acceptez que Afrilink pay traite vos données personnelles conformément à
+        En continuant, vous acceptez que Allness pay traite vos données personnelles conformément à
         notre{' '}
         <a href="/confidentialite" className="text-afrilink-green font-medium">
           Politique de Confidentialité

@@ -59,12 +59,12 @@ export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin
       <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
         <div className="flex items-center gap-2">
           <img
-            src="/afrilinkpay_logo1.svg"
-            alt="AfrilinkPay"
+            src="/allnesspay_logo1.png"
+            alt="AllnessPay"
             className="w-12 h-17 object-contain"
           />
           <span className="font-bold text-md">
-            Afrilink<span className="text-afrilink-orange">Pay</span>
+            Allness<span className="text-afrilink-orange">Pay</span>
           </span>
         </div>
       </div>

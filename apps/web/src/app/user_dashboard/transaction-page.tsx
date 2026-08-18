@@ -9,6 +9,7 @@ import {
   Loader2,
   Search,
   RotateCcw,
+  XCircle,
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
@@ -43,14 +44,16 @@ export default function TransactionsPage() {
     return matchesSearch && matchesType && matchesStatus;
   });
 
- const totalVolume =
+  const totalVolume =
     transactions?.reduce((sum, t) => {
+      if (t.status !== 'completed') return sum;
       const credit = transactionService.isCredit(t.type);
       const amount = Number(t.amount);
       return credit ? sum + amount : sum - amount;
     }, 0) ?? 0;
 
-  const completedCount = transactions?.length ?? 0;
+  const completedCount = transactions?.filter((t) => t.status === 'completed').length ?? 0;
+  const failedCount = transactions?.filter((t) => t.status === 'failed').length ?? 0;
 
   if (isLoading) {
     return (
@@ -84,7 +87,7 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-afrilink-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -118,6 +121,17 @@ export default function TransactionsPage() {
             </div>
             <p className="text-2xl font-bold text-white mb-2">{completedCount}</p>
             <p className="text-xs text-green-400">↗ Réussites</p>
+          </div>
+
+          <div className="bg-afrilink-dark rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                <XCircle className="w-5 h-5 text-red-400" />
+              </span>
+              <span className="text-sm text-gray-300">Échouées</span>
+            </div>
+            <p className="text-2xl font-bold text-white mb-2">{failedCount}</p>
+            <p className="text-xs text-red-400">✕ À traiter</p>
           </div>
         </div>
 
@@ -193,6 +207,7 @@ export default function TransactionsPage() {
               <tbody>
                 {filtered?.map((t) => {
                   const credit = transactionService.isCredit(t.type);
+                  const isCompleted = t.status === 'completed';
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
@@ -202,9 +217,11 @@ export default function TransactionsPage() {
                         {transactionService.getTypeLabel(t.type)}
                       </td>
                       <td
-                        className={`text-xs font-medium ${credit ? 'text-afrilink-green' : 'text-red-500'}`}
+                        className={`text-xs font-medium ${
+                          t.status === 'failed' ? 'text-red-500' : credit ? 'text-afrilink-green' : 'text-red-500'
+                        }`}
                       >
-                        {credit ? '+' : '-'} {new Intl.NumberFormat('fr-FR').format(t.amount)} XAF
+                        {isCompleted ? (credit ? '+' : '-') : ''} {new Intl.NumberFormat('fr-FR').format(t.amount)} XAF
                       </td>
                       <td className="hidden md:table-cell">
                         <Badge

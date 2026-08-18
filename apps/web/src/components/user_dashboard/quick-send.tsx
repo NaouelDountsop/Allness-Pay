@@ -11,11 +11,12 @@ interface QuickSendContact {
 interface QuickSendProps {
   contacts: QuickSendContact[];
   walletId?: string;
+  isLoading?: boolean;
 }
 
 const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
 
-export function QuickSend({ contacts, walletId }: QuickSendProps) {
+export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
   const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
@@ -57,38 +58,51 @@ export function QuickSend({ contacts, walletId }: QuickSendProps) {
 
       {/* Contacts: scroll horizontal sur petits écrans au lieu de déborder ou de s'écraser */}
       <div className="flex gap-3 mb-5 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
-        {contacts.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => setSelectedContact(c)}
-            className={`flex flex-col items-center gap-1 group shrink-0 snap-start ${
-              selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
-            }`}
-          >
-            <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
-              selectedContact?.id === c.id ? 'ring-[#D28E2F]' : 'ring-transparent group-hover:ring-[#D28E2F]/50'
-            } transition-all`}>
-              {c.avatarUrl ? (
-                <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
-              ) : (
-                c.name.charAt(0)
-              )}
+        {isLoading ? (
+          <div className="flex gap-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+                <div className="w-11 h-11 rounded-full bg-gray-100 animate-pulse" />
+                <div className="w-8 h-2 bg-gray-100 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {contacts.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setSelectedContact(c)}
+                className={`flex flex-col items-center gap-1 group shrink-0 snap-start ${
+                  selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
+                  selectedContact?.id === c.id ? 'ring-[#D28E2F]' : 'ring-transparent group-hover:ring-[#D28E2F]/50'
+                } transition-all`}>
+                  {c.avatarUrl ? (
+                    <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
+                  ) : (
+                    c.name.charAt(0)
+                  )}
+                </div>
+                <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">{c.name}</span>
+              </button>
+            ))}
+            <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
+              <button
+                type="button"
+                aria-label="Ajouter un bénéficiaire"
+                onClick={() => navigate('/dashboard/beneficiaries')}
+                className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              <span className="text-[11px] text-[#082B37]/40">New</span>
             </div>
-            <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">{c.name}</span>
-          </button>
-        ))}
-        <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
-          <button
-            type="button"
-            aria-label="Ajouter un bénéficiaire"
-            onClick={() => navigate('/dashboard/beneficiaries')}
-            className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-          <span className="text-[11px] text-[#082B37]/40">New</span>
-        </div>
+          </>
+        )}
       </div>
 
       {/* Montant + devise: min-w-0 empêche l'input de forcer un débordement horizontal,

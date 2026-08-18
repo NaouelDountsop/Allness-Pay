@@ -56,7 +56,7 @@ export default function PhoneConfirmationPage() {
             <p className="text-2xl font-bold text-afrilink-dark mb-1">
               {deposit.amount || '5 000'} FCFA
             </p>
-            <p className="text-xs text-gray-400">vers AfriLink Pay</p>
+            <p className="text-xs text-gray-400">vers Allness Pay</p>
           </div>
 
           <div className="rounded-xl bg-orange-50 border border-orange-100 p-4 text-center mb-4">
@@ -69,7 +69,7 @@ export default function PhoneConfirmationPage() {
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <p className="text-[11px] text-blue-600 leading-relaxed">
               Cette opération est sécurisée par votre opérateur Mobile Money. Aucune information
-              confidentielle n'est partagée avec AfriLink Pay.
+              confidentielle n'est partagée avec Allness Pay.
             </p>
           </div>
 

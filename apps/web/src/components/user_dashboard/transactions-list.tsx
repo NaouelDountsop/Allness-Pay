@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, Loader2 } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, Loader2, XCircle } from 'lucide-react';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 
 interface TransactionsListProps {
@@ -44,6 +44,8 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
       <ul className="space-y-1">
         {transactions.map((t) => {
           const credit = transactionService.isCredit(t.type);
+          const isFailed = t.status === 'failed';
+          const isCompleted = t.status === 'completed';
           return (
             <li key={t.id}>
               <button
@@ -60,10 +62,12 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      credit ? 'bg-afrilink-green/10' : 'bg-red-50'
+                      isFailed ? 'bg-red-50' : credit ? 'bg-afrilink-green/10' : 'bg-red-50'
                     }`}
                   >
-                    {credit ? (
+                    {isFailed ? (
+                      <XCircle className="w-4 h-4 text-red-500" />
+                    ) : credit ? (
                       <ArrowDownLeft className="w-4 h-4 text-afrilink-green" />
                     ) : (
                       <ArrowUpRight className="w-4 h-4 text-red-500" />
@@ -91,14 +95,22 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-2 shrink-0 pl-2">
                   <span
                     className={`text-xs sm:text-sm font-semibold text-right whitespace-nowrap ${
-                      credit ? 'text-afrilink-green' : 'text-red-500'
+                      isFailed ? 'text-red-500' : credit ? 'text-afrilink-green' : 'text-red-500'
                     }`}
                   >
-                    {credit ? '+' : '-'}
+                    {isCompleted ? (credit ? '+' : '-') : ''}
                     {new Intl.NumberFormat('fr-FR').format(t.amount)}{' '}
                     <span className="hidden sm:inline">XAF</span>
                   </span>
-                  <ChevronRight className="w-4 h-4 text-[#082B37]/25 hidden sm:block" />
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      isFailed ? 'bg-red-50' : 'bg-afrilink-green/10'
+                    }`}
+                  >
+                    <ChevronRight
+                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : 'text-afrilink-green'}`}
+                    />
+                  </div>
                 </div>
               </button>
             </li>

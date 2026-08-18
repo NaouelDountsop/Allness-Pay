@@ -296,7 +296,7 @@ export default function Features() {
                     hover:bg-afrilink-green/[0.03]
                   "
                 >
-                  Découvrir AfriLink Pay
+                  Découvrir Allness Pay
 
                   <span
                     className="
@@ -454,7 +454,7 @@ export default function Features() {
                     </span>
 
                     <span className="text-sm font-bold text-white">
-                      AfriLink
+                      Allness
                       <span className="text-afrilink-orange">
                         Pay
                       </span>
@@ -592,7 +592,7 @@ export default function Features() {
                           </p>
 
                           <p className="mt-1 text-[9px] font-medium text-white">
-                            Bienvenue sur AfriLink Pay
+                            Bienvenue sur Allness Pay
                           </p>
                         </div>
 

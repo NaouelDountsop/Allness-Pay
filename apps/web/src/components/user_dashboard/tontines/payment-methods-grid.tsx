@@ -1,23 +1,21 @@
-import { Wallet, CreditCard, Smartphone, Landmark } from 'lucide-react';
-
-export type PaymentMethod = 'wallet' | 'card' | 'mobile_money' | 'bank_transfer';
+export type PaymentMethod = 'wallet' | 'card' | 'mobile_money' | 'orange_money';
 
 interface PaymentMethodsGridProps {
   selected: PaymentMethod;
   onSelect: (method: PaymentMethod) => void;
 }
 
-const methods: { key: PaymentMethod; label: string; icon: typeof Wallet }[] = [
-  { key: 'wallet', label: 'Portefeuille Afrilink Pay', icon: Wallet },
-  { key: 'card', label: 'Carte Bancaire', icon: CreditCard },
-  { key: 'mobile_money', label: 'Mobile Money', icon: Smartphone },
-  { key: 'bank_transfer', label: 'Virement Bancaire', icon: Landmark },
+const methods: { key: PaymentMethod; label: string; image: string }[] = [
+  { key: 'wallet', label: 'Portefeuille Allness', image: '/allnesspay_logo2.png' },
+  { key: 'mobile_money', label: 'MTN Mobile Money', image: '/mtn-momo.png' },
+  { key: 'orange_money', label: 'Orange Money', image: '/orange-money.png' },
+  { key: 'card', label: 'Carte Bancaire', image: '/bank.png' },
 ];
 
 export function PaymentMethodsGrid({ selected, onSelect }: PaymentMethodsGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      {methods.map(({ key, label, icon: Icon }) => {
+      {methods.map(({ key, label, image }) => {
         const isSelected = selected === key;
         return (
           <button
@@ -29,7 +27,7 @@ export function PaymentMethodsGrid({ selected, onSelect }: PaymentMethodsGridPro
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
-            <Icon className={`w-5 h-5 ${isSelected ? 'text-afrilink-green' : 'text-gray-500'}`} />
+            <img src={image} alt={label} className="w-8 h-8 object-contain" />
             <span
               className={`text-xs leading-tight ${
                 isSelected ? 'text-afrilink-green font-medium' : 'text-gray-700'

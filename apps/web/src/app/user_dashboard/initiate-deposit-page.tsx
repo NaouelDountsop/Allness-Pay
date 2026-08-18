@@ -77,8 +77,9 @@ export default function InitiateDepositPage() {
   }, [setWalletNumber]);
 
   const isMobileMoney = deposit.method === 'mobile_money';
+  const phoneDigits = deposit.phoneNumber.replace(/\s/g, '');
   const phoneValid =
-    deposit.phoneNumber.trim().length >= 9
+    phoneDigits.length === 9 && /^\d{9}$/.test(phoneDigits)
       ? isValidPhoneForOperator(deposit.phoneNumber, deposit.operator)
       : false;
   const phoneTouched = deposit.phoneNumber.trim().length > 0;
@@ -220,7 +221,9 @@ export default function InitiateDepositPage() {
                       className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
                         phoneTouched && !phoneValid
                           ? 'border-red-400 focus-within:ring-2 focus-within:ring-red-200'
-                          : 'border-gray-200 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange'
+                          : phoneTouched && phoneValid
+                            ? 'border-afrilink-green focus-within:ring-2 focus-within:ring-green-200'
+                            : 'border-gray-200 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange'
                       }`}
                     >
                       <span className="flex items-center gap-1.5 px-3.5 h-full bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-600 shrink-0">
@@ -229,17 +232,27 @@ export default function InitiateDepositPage() {
                       <Phone className="w-4 h-4 text-gray-300 ml-3 shrink-0" />
                       <input
                         type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={deposit.phoneNumber}
                         onChange={(e) => {
-                          const raw = e.target.value;
-                          const digitsOnly = raw.replace(/\D/g, '');
+                          const digitsOnly = e.target.value.replace(/\D/g, '');
                           if (digitsOnly.length > 9) return;
-                          setPhoneNumber(raw);
+                          setPhoneNumber(digitsOnly);
                         }}
-                        placeholder={deposit.operator === 'mtn' ? '670 00 00 00' : '690 00 00 00'}
-                        maxLength={13}
-                        className="flex-1 h-full px-2.5 text-sm text-afrilink-dark focus:outline-none"
+                        placeholder={deposit.operator === 'mtn' ? '670000000' : '690000000'}
+                        maxLength={9}
+                        className="flex-1 h-full px-2.5 text-sm text-afrilink-dark focus:outline-none tracking-widest"
                       />
+                      {phoneTouched && (
+                        <div className="pr-3 shrink-0">
+                          {phoneValid ? (
+                            <span className="text-afrilink-green text-xs font-medium">✓ Valide</span>
+                          ) : phoneDigits.length === 9 ? (
+                            <span className="text-red-500 text-xs font-medium">✗ Invalide</span>
+                          ) : null}
+                        </div>
+                      )}
                     </div>
                     <p
                       className={`text-[11px] mt-1.5 ml-1 ${
@@ -247,7 +260,9 @@ export default function InitiateDepositPage() {
                       }`}
                     >
                       {phoneTouched && !phoneValid
-                        ? t('deposit.phoneError')
+                        ? phoneDigits.length < 9
+                          ? `Entrez 9 chiffres (${phoneDigits.length}/9)`
+                          : t('deposit.phoneError')
                         : getPhoneHint(deposit.operator, t)}
                     </p>
                   </div>

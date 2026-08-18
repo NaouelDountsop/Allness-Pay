@@ -66,7 +66,7 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
             <Sparkles className="w-4 h-4 text-white" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-white">Ajoutez un compte Afrilink</p>
+            <p className="text-sm font-semibold text-white">Ajoutez un compte Allness</p>
             <p className="text-xs text-white/70 mt-0.5">
               Centralisez vos transferts et payez sans frais cachés
             </p>

@@ -219,6 +219,16 @@ export class TontineService {
     await this.memberRepo.save(member);
   }
 
+  async findMember(tontineId: string, userId: number): Promise<TontineMember> {
+    const member = await this.memberRepo.findOne({
+      where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+    });
+    if (!member) {
+      throw new NotFoundException("Vous n'êtes pas membre actif de cette tontine");
+    }
+    return member;
+  }
+
   private assertMembership(tontine: Tontine, userId: number): void {
     const isMember = tontine.members?.some((m) => m.userId === userId);
     if (!isMember) {

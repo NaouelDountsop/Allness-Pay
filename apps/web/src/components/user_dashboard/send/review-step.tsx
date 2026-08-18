@@ -30,7 +30,7 @@ interface ReviewStepProps {
 }
 
 const RECEPTION_LABELS: Record<string, string> = {
-  wallet: 'Wallet AfriLinkPay',
+  wallet: 'Wallet AllnessPay',
   mtn: 'MTN Mobile Money',
   orange: 'Orange Money',
   bank: 'Compte bancaire',
@@ -147,7 +147,7 @@ export function ReviewStep({
           Mode de réception
         </p>
         <p className="text-base font-semibold text-afrilink-dark">
-          {RECEPTION_LABELS[receptionMode] ?? 'Wallet AfriLinkPay'}
+          {RECEPTION_LABELS[receptionMode] ?? 'Wallet AllnessPay'}
         </p>
       </div>
 

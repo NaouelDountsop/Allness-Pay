@@ -11,7 +11,7 @@ export default function CTA() {
           Prêt à transformer votre avenir financier ?
         </h2>
         <p className="mt-5 text-white/75 text-base lg:text-lg max-w-2xl mx-auto">
-          Rejoignez AfriLink Pay aujourd'hui et commencez à gérer votre argent avec plus de liberté
+          Rejoignez Allness Pay aujourd'hui et commencez à gérer votre argent avec plus de liberté
           et d'efficacité.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">

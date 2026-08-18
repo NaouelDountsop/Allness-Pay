@@ -39,7 +39,7 @@ export class TranzakPaymentDto {
   phone_number: string;
 
   @ApiPropertyOptional({
-    example: 'Dépôt AfriLinkPay',
+    example: 'Dépôt AllnessPay',
     description: 'Description libre affichée sur la transaction',
   })
   @IsOptional()
