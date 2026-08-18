@@ -146,8 +146,8 @@ export default function TransactionsPage() {
                 <option value="all">Tous les types</option>
                 <option value="deposit">Dépôt</option>
                 <option value="withdrawal">Retrait</option>
-                <option value="transfer">Transfert</option>
-                <option value="payment">Paiement</option>
+                <option value="transfer_in">Transfert reçu</option>
+                <option value="transfer_out">Transfert envoyé</option>
               </select>
             </div>
             <div>
@@ -212,7 +212,7 @@ export default function TransactionsPage() {
                             t.status === 'completed'
                               ? 'green'
                               : t.status === 'pending'
-                                ? 'amber'
+                                ? 'orange'
                                 : 'red'
                           }
                           dot
@@ -252,7 +252,6 @@ export default function TransactionsPage() {
       {selected && (
         <TransactionDetailModal
           transaction={selected}
-          currency="XAF"
           onClose={() => setSelected(null)}
         />
       )}

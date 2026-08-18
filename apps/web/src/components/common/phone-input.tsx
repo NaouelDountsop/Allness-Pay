@@ -31,8 +31,11 @@ export function PhoneInput({ country, value, onChange, error }: PhoneInputProps)
           }`}
           placeholder={country?.phonePlaceholder || 'Numéro de téléphone'}
           value={value}
+          maxLength={country ? country.phoneDigits + 4 : undefined}
           onChange={(e) => {
             const raw = e.target.value.replace(/[^\d+\s-]/g, '');
+            const digitsOnly = raw.replace(/\D/g, '');
+            if (country && digitsOnly.length > country.phoneDigits) return;
             onChange(raw);
           }}
         />

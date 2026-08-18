@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   UserRound,
   Phone,
+  Mail,
   Copy,
   MapPin,
   Calendar,
@@ -12,8 +14,11 @@ import {
   FileText,
   CircleDollarSign,
   Smartphone,
-  ExternalLink,
+  X,
+  Loader2,
 } from "lucide-react";
+import { Dialog, DialogContent } from "../../components/ui/dialog";
+import { adminService } from "../../lib/api/admin.service";
 
 const TABS = [
   { key: "info", label: "Informations personnelles", icon: UserRound },
@@ -24,144 +29,162 @@ const TABS = [
   { key: "notes", label: "Notes", icon: FileText },
 ];
 
-export function UserDetailPanel() {
+export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?: () => void }) {
   const [tab, setTab] = useState("info");
+  const open = !!userId;
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["admin-user", userId],
+    queryFn: () => adminService.getUserById(userId!),
+    enabled: !!userId,
+  });
+
+  const fullName = user ? `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() : 'Utilisateur';
+  const initials = user
+    ? `${user.prenom?.charAt(0) ?? ''}${user.nom?.charAt(0) ?? ''}`.toUpperCase()
+    : 'U';
 
   return (
-    <div className="w-full bg-white">
-      {/* HEADER */}
-      <div className="px-6 py-5 border-b border-gray-100">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-white shadow">
-              <div className="w-full h-full bg-gradient-to-b from-gray-400 to-gray-600 flex items-center justify-center">
-                <UserRound className="w-9 h-9 text-white/90" />
-              </div>
-              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-afrilink-green border-2 border-white" />
-            </div>
+    <Dialog open={open} onOpenChange={() => onClose?.()}>
+      <DialogContent className="sm:max-w-5xl w-full max-h-[95vh] p-0 overflow-hidden">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-lg font-bold text-afrilink-dark">John Doe</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-afrilink-green">
-                  <span className="w-1.5 h-1.5 rounded-full bg-afrilink-green" />
-                  Compte Actif
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-600">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                  KYC Niveau 2
-                </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  ID Utilisateur : USR-000245
-                  <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
-                </span>
-                <span className="flex items-center gap-1">
-                  <Phone className="w-3 h-3" /> +237 670 00 00 00
-                </span>
-                <span className="flex items-center gap-1">
-                  ✉️ j.doe@example.com
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> Membre depuis le 12 Janv. 2023 · 14:32
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Douala, Cameroun
-                </span>
-              </div>
-            </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
           </div>
-
-          <div className="flex items-center gap-8 shrink-0">
-            <div>
-              <p className="text-xs text-gray-400 mb-0.5">Solde principal</p>
-              <p className="text-sm font-bold text-afrilink-dark">245 750 XAF</p>
-              <a href="#" className="text-[11px] text-afrilink-green font-medium flex items-center gap-1">
-                Voir le portefeuille <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 mb-0.5">Dernière activité</p>
-              <p className="text-sm font-medium text-gray-700">Aujourd'hui à 09:42</p>
-              <p className="text-[11px] text-afrilink-green font-medium">En ligne</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 mb-0.5">Statut</p>
-              <p className="text-sm font-medium text-afrilink-green">Actif</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TABS */}
-      <div className="flex items-center gap-1 px-6 border-b border-gray-100 overflow-x-auto">
-        {TABS.map(({ key, label, icon: Icon }) => {
-          const active = tab === key;
-          return (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${
-                active ? "text-afrilink-green" : "text-gray-500 hover:text-afrilink-dark"
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-              {active && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-afrilink-green rounded-full" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* CONTENT */}
-      {tab === "info" && (
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2 space-y-5">
-            <Card icon={UserRound} title="Informations personnelles">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Field label="Nom complet" value="John Doe" />
-                <Field label="Date de naissance" value="12 Mai 1985" />
-                <Field label="Sexe" value="Masculin" />
-                <Field label="Pièce d'identité" value="Passeport" />
-                <Field label="Numéro de pièce" value="A123456789" />
-                <Field label="Nationalité" value="Camerounaise" />
+        ) : (
+          <div className="w-full bg-white">
+            {/* HEADER */}
+            <div className="flex items-start gap-5 px-6 py-5 border-b border-gray-100">
+              <div className="relative w-20 h-20 shrink-0 rounded-full overflow-hidden border-2 border-white shadow">
+                <div className="w-full h-full bg-gradient-to-b from-gray-400 to-gray-600 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{initials}</span>
+                </div>
+                <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${user?.verificationotp ? 'bg-afrilink-green' : 'bg-afrilink-orange'}`} />
               </div>
-            </Card>
 
-            <Card icon={Phone} title="Coordonnées">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Numéro de téléphone" value="+237 670 00 00 00" badge="Vérifié" />
-                <Field label="Adresse email" value="j.doe@example.com" badge="Vérifié" />
-                <Field label="Adresse physique" value={"Douala, Bonapriso\nBP: 1234 Douala, Cameroun"} />
-                <Field label="Langue préférée" value="Français" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-lg font-bold text-afrilink-dark">{fullName}</h2>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${user?.verificationotp ? 'bg-green-50 text-afrilink-green' : 'bg-orange-50 text-afrilink-orange'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${user?.verificationotp ? 'bg-afrilink-green' : 'bg-afrilink-orange'}`} />
+                    {user?.verificationotp ? 'Compte Actif' : 'En attente'}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    ID Utilisateur : {user?.idutilisateur ?? '—'}
+                    <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> {user?.telephone ?? '—'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> {user?.email ?? '—'}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> Membre depuis le {user?.dateinscription ? new Date(user.dateinscription).toLocaleDateString('fr-FR') : '—'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {user?.ville ?? '—'}, {user?.pays ?? ''}
+                  </span>
+                </div>
               </div>
-            </Card>
 
-            <Card icon={FileText} title="Informations complémentaires">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Profession" value="Entrepreneur" />
-                <Field label="Source de revenus" value="Commerce" />
-                <Field label="Revenu mensuel estimé" value="500 000 - 1 000 000 XAF" />
-                <Field label="Motif d'utilisation" value="Transfert, paiement et épargne" />
-                <Field label="Parrain (si applicable)" value="Aucun" />
+              <div className="flex items-center gap-8 shrink-0">
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Solde principal</p>
+                  <p className="text-sm font-bold text-afrilink-dark">245 750 XAF</p>
+                  <a href="#" className="text-[11px] text-afrilink-green font-medium flex items-center gap-1 justify-center">
+                    Voir le portefeuille
+                  </a>
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Dernière activité</p>
+                  <p className="text-sm font-medium text-gray-700">Aujourd'hui à 09:42</p>
+                  <p className="text-[11px] text-afrilink-green font-medium">En ligne</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Statut</p>
+                  <p className="text-sm font-medium text-afrilink-green">Actif</p>
+                </div>
               </div>
-            </Card>
-          </div>
+            </div>
 
-          <div className="space-y-5">
-            <ComplianceCard />
-            <StatsCard />
-            <SecurityCard />
+            {/* TABS */}
+            <div className="flex items-center gap-1 px-6 border-b border-gray-100">
+              {TABS.map(({ key, label, icon: Icon }) => {
+                const active = tab === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setTab(key)}
+                    className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${
+                      active ? "text-afrilink-green" : "text-gray-500 hover:text-afrilink-dark"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {label}
+                    {active && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-afrilink-green rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CONTENT */}
+            {tab === "info" && (
+              <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="lg:col-span-2 space-y-5">
+                  <Card icon={UserRound} title="Informations personnelles">
+                    <div className="grid grid-cols-3 gap-4">
+                      <Field label="Nom complet" value={fullName} />
+                      <Field label="Date de naissance" value={user?.datenaissance ? new Date(user.datenaissance).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'} />
+                      <Field label="Sexe" value={user?.sexe ?? '—'} />
+                      <Field label="Nationalité" value={user?.pays ?? '—'} />
+                      <Field label="Profession" value={user?.profession ?? '—'} />
+                      <Field label="Statut" value={user?.statut ?? '—'} />
+                    </div>
+                  </Card>
+
+                  <Card icon={Phone} title="Coordonnées">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Numéro de téléphone" value={user?.telephone ?? '—'} badge="Vérifié" />
+                      <Field label="Adresse email" value={user?.email ?? '—'} badge="Vérifié" />
+                      <Field label="Adresse physique" value={user?.adresse ?? '—'} />
+                      <Field label="Ville" value={`${user?.ville ?? '—'}, ${user?.pays ?? ''}`} />
+                    </div>
+                  </Card>
+
+                  <Card icon={FileText} title="Informations complémentaires">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Profession" value={user?.profession ?? '—'} />
+                      <Field label="Dernière modification" value={user?.datemodification ? new Date(user.datemodification).toLocaleDateString('fr-FR') : '—'} />
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-5">
+                  <ComplianceCard />
+                  <StatsCard />
+                  <SecurityCard />
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -264,9 +287,6 @@ function StatsCard() {
         <div>
           <p className="text-[11px] text-gray-400">Tontines rejointes</p>
           <p className="font-semibold text-afrilink-dark">5</p>
-        </div>
-        <div>
-          <p className="text-[11px] text-gray-400">3</p>
         </div>
       </div>
     </div>

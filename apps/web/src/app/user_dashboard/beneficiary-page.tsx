@@ -90,7 +90,7 @@ export default function BeneficiariesPage() {
   const filtered = beneficiaries.filter(
     (b) =>
       b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.phone.includes(search) 
+      b.phone.includes(search)
       // b.nickname?.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -228,6 +228,20 @@ export default function BeneficiariesPage() {
             </div>
             {/* <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Réseau</label>
+              <select
+                value={networkFilter}
+                onChange={(e) => setNetworkFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+              >
+                <option value="all">Tous</option>
+                <option value="MTN_MOMO">MTN Mobile Money</option>
+                <option value="ORANGE_MONEY">Orange Money</option>
+                <option value="WAVE">Wave</option>
+                <option value="FREE_MONEY">Free Money</option>
+                <option value="MOOV_MONEY">Moov Money</option>
+                <option value="AIRTEL_MONEY">Airtel Money</option>
+              </select>
+            </div>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
                 Tous
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />

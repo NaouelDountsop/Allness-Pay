@@ -29,7 +29,7 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export default function UsersListPage() {
   const [page, setPage] = useState(1);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [countryFilter, setCountryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [exporting, setExporting] = useState(false);
@@ -80,7 +80,7 @@ export default function UsersListPage() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="h-9 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-xs font-medium flex items-center gap-2 hover:bg-afrilink-green/5 transition-colors disabled:opacity-50"
           >
             {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
             Exporter
@@ -223,7 +223,7 @@ export default function UsersListPage() {
                       <td>
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => setSelectedUser(u.nom)}
+                            onClick={() => setSelectedUserId(u.idutilisateur)}
                             className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
                             aria-label="Voir"
                           >
@@ -258,7 +258,7 @@ export default function UsersListPage() {
         />
       </div>
 
-      {selectedUser && <UserDetailPanel onClose={() => setSelectedUser(null)} />}
+      {selectedUserId && <UserDetailPanel userId={selectedUserId} onClose={() => setSelectedUserId(null)} />}
     </AdminLayout>
   );
 }

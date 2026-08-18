@@ -24,8 +24,11 @@ const steps = [
 
 const NETWORK_TO_MODE: Record<string, string> = {
   mtn_momo: 'mtn',
+  MTN_MOMO: 'mtn',
   orange_money: 'orange',
+  ORANGE_MONEY: 'orange',
   wave: 'wallet',
+  WAVE: 'wallet',
 };
 
 const COUNTRY_TO_CURRENCY: Record<string, string> = {
@@ -145,8 +148,8 @@ export default function SendMoneyPage() {
     }
   };
 
-  const handlePinConfirm = (pin: string): boolean => {
-    const ok = verifyPin(pin);
+  const handlePinConfirm = async (pin: string): Promise<boolean> => {
+    const ok = await verifyPin(pin);
     if (!ok) return false;
 
     setShowPinConfirm(false);
@@ -170,8 +173,8 @@ export default function SendMoneyPage() {
     return true;
   };
 
-  const handlePinSetupComplete = (pin: string) => {
-    createPin(pin);
+  const handlePinSetupComplete = async (pin: string) => {
+    await createPin(pin);
     setShowPinSetup(false);
     setShowPinConfirm(true);
   };

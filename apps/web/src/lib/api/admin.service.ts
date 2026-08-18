@@ -22,8 +22,11 @@ export interface AdminUser {
   telephone: string;
   pays: string;
   ville: string;
+  adresse: string;
   profession: string;
   statut: string;
+  sexe: string;
+  datenaissance: string;
   verificationotp: boolean;
   dateinscription: string;
   datemodification: string;
@@ -85,6 +88,9 @@ export interface AdminTransaction {
   amount: number;
   status: string;
   description: string | null;
+  provider: string | null;
+  phoneNumber: string | null;
+  relatedWalletId: string | null;
   createdAt: string;
 }
 

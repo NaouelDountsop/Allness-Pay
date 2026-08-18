@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 const navItems = [
   { to: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
@@ -28,6 +30,7 @@ const navItems = [
 
 export function Sidebar() {
   const navigate = useNavigate();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -77,13 +80,24 @@ export function Sidebar() {
 
       <div className="p-3">
         <button
-          onClick={handleLogout}
+          onClick={() => setLogoutOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
+        confirmLabel="Se déconnecter"
+        cancelLabel="Annuler"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </aside>
   );
 }

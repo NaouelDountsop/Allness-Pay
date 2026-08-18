@@ -6,11 +6,13 @@ import { userService } from '@/lib/api/user.service';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { getFlagUrl, getCountryCodeByName } from '@/data/countries';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 export function DashboardHeader() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -202,7 +204,7 @@ export function DashboardHeader() {
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
-                    handleLogout();
+                    setLogoutOpen(true);
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                 >
@@ -214,6 +216,17 @@ export function DashboardHeader() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </header>
   );
 }

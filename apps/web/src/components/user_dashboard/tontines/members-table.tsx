@@ -13,19 +13,15 @@ interface MembersTableProps {
   tontineId?: string;
   memberLimit?: number;
   status?: string;
+  onAddMember?: () => void;
 }
 
-export function MembersTable({ members, tontineId, memberLimit, status }: MembersTableProps) {
+export function MembersTable({ members, tontineId, memberLimit, status, onAddMember }: MembersTableProps) {
   const navigate = useNavigate();
 
   const handleViewAll = () => {
     if (!tontineId) return;
     navigate(`/dashboard/tontines/${tontineId}/members`);
-  };
-
-  const handleAddMember = () => {
-    if (!tontineId) return;
-    navigate(`/dashboard/tontines/${tontineId}/invite`);
   };
 
   const canAddMember =
@@ -102,7 +98,7 @@ export function MembersTable({ members, tontineId, memberLimit, status }: Member
               <tr className="border-t border-dashed border-gray-200 bg-gray-50/50">
                 <td colSpan={5} className="px-4 py-3">
                   <button
-                    onClick={handleAddMember}
+                    onClick={onAddMember}
                     className="flex items-center gap-2 text-sm text-afrilink-green font-medium hover:text-afrilink-green/80 transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />

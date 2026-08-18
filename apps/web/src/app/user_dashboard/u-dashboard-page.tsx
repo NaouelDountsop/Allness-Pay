@@ -39,11 +39,12 @@ export default function DashboardPage() {
     enabled: !!wallet?.id,
   });
 
-  const { data: beneficiaries = [] } = useQuery({
+  const { data: beneficiaryResponse } = useQuery({
     queryKey: ['beneficiaries'],
     queryFn: beneficiaryService.list,
     select: (res) => res.data,
   });
+  const beneficiaries = beneficiaryResponse?.data ?? [];
 
   const { data: monthlySummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['monthly-summary', wallet?.id],

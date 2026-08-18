@@ -356,8 +356,14 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     <input
                       type="tel"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const digitsOnly = raw.replace(/\D/g, '');
+                        if (digitsOnly.length > 9) return;
+                        setPhoneNumber(raw);
+                      }}
                       placeholder="6 12 34 56 78"
+                      maxLength={13}
                       className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
                     />
                   </div>

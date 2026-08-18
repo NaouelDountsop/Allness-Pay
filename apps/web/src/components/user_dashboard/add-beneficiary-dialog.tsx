@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { User, ChevronDown, ArrowLeft, Check } from 'lucide-react';
+import { User, ChevronDown, ArrowLeft, Check, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,14 +12,33 @@ interface Country {
   code: string;
   dialCode: string;
   flag: string;
+  phoneDigits: number;
 }
 
 const COUNTRIES: Country[] = [
-  { code: 'CM', dialCode: '+237', flag: '🇨🇲' },
-  { code: 'SN', dialCode: '+221', flag: '🇸🇳' },
-  { code: 'CI', dialCode: '+225', flag: '🇨🇮' },
-  { code: 'FR', dialCode: '+33', flag: '🇫🇷' },
+  { code: 'CM', dialCode: '+237', flag: '🇨🇲', phoneDigits: 9 },
+  { code: 'SN', dialCode: '+221', flag: '🇸🇳', phoneDigits: 9 },
+  { code: 'CI', dialCode: '+225', flag: '🇨🇮', phoneDigits: 10 },
+  { code: 'GA', dialCode: '+241', flag: '🇬🇦', phoneDigits: 8 },
+  { code: 'CG', dialCode: '+242', flag: '🇨🇬', phoneDigits: 9 },
+  { code: 'FR', dialCode: '+33', flag: '🇫🇷', phoneDigits: 9 },
 ];
+
+const nameSchema = z
+  .string()
+  .min(1, 'Le nom est requis')
+  .regex(
+    /^[a-zA-ZÀ-ÿ\s'-]+$/,
+    'Seules les lettres, espaces, tirets et apostrophes sont autorisés',
+  );
+
+function createPhoneSchema(phoneDigits: number) {
+  return z
+    .string()
+    .min(1, 'Le numéro de téléphone est requis')
+    .regex(/^\d+$/, 'Seuls les chiffres sont autorisés')
+    .length(phoneDigits, `Le numéro doit contenir exactement ${phoneDigits} chiffres`);
+}
 
 export interface BeneficiaryFormValues {
   type: BeneficiaryType;
@@ -53,6 +73,9 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
   const [email, setEmail] = useState('');
   const [notes, setNotes] = useState('');
 
+  const [nameError, setNameError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+
   const typeMenuRef = useRef<HTMLDivElement>(null);
   const countryMenuRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +87,8 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
     setPhoneNumber('');
     setEmail('');
     setNotes('');
+    setNameError('');
+    setPhoneError('');
   };
 
   const handleCancel = () => {
@@ -71,7 +96,8 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
     onOpenChange(false);
   };
 
-  const isStep1Valid = fullName.length > 0 && phoneNumber.length > 0;
+  const isStep1Valid = nameSchema.safeParse(fullName).success &&
+    createPhoneSchema(country.phoneDigits).safeParse(phoneNumber.replace(/\D/g, '')).success;
 
   const handleSubmit = () => {
     onSubmit?.({
@@ -217,8 +243,22 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                   id="beneficiary-name"
                   placeholder="Ex: Jean Dupont"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (nameError) setNameError('');
+                  }}
+                  onBlur={() => {
+                    const result = nameSchema.safeParse(fullName);
+                    if (!result.success) setNameError(result.error.errors[0]?.message ?? 'Nom invalide');
+                    else setNameError('');
+                  }}
                 />
+                {nameError && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {nameError}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="beneficiary-nickname">Surnom (facultatif)</Label>
@@ -253,8 +293,8 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
 
         {step === 2 && (
           <div className="space-y-5">
-            <div ref={countryMenuRef} className="relative space-y-2">
-              <Label htmlFor="beneficiary-phone">Numéro de téléphone</Label>
+            <div ref={countryMenuRef} className="space-y-2">
+              <Label htmlFor="beneficiary-phone">Numéro de téléphone *</Label>
               <div className="flex items-stretch overflow-visible rounded-xl border border-gray-200 focus-within:border-gray-300">
                 <button
                   type="button"
@@ -270,9 +310,34 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                   type="tel"
                   placeholder="6 12 34 56 78"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const digitsOnly = raw.replace(/\D/g, '');
+                    if (digitsOnly.length > country.phoneDigits) return;
+                    setPhoneNumber(digitsOnly);
+                    if (phoneError) setPhoneError('');
+                  }}
+                  onBlur={() => {
+                    const result = createPhoneSchema(country.phoneDigits).safeParse(phoneNumber);
+                    if (!result.success) setPhoneError(result.error.errors[0]?.message ?? 'Numéro invalide');
+                    else setPhoneError('');
+                  }}
+                  maxLength={country.phoneDigits}
                   className="w-full rounded-r-xl border-0 bg-transparent px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
                 />
+              </div>
+              <div className="flex items-center justify-between">
+                {phoneError ? (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {phoneError}
+                  </p>
+                ) : (
+                  <span />
+                )}
+                <p className="text-[11px] text-gray-400">
+                  {phoneNumber.length}/{country.phoneDigits} chiffres
+                </p>
               </div>
               {countryMenuOpen ? (
                 <div className="absolute z-10 mt-1 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
@@ -282,6 +347,7 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                       type="button"
                       onClick={() => {
                         setCountry(c);
+                        setPhoneNumber('');
                         setCountryMenuOpen(false);
                       }}
                       className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50"

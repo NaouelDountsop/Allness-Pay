@@ -230,8 +230,14 @@ export default function InitiateDepositPage() {
                       <input
                         type="tel"
                         value={deposit.phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          const digitsOnly = raw.replace(/\D/g, '');
+                          if (digitsOnly.length > 9) return;
+                          setPhoneNumber(raw);
+                        }}
                         placeholder={deposit.operator === 'mtn' ? '670 00 00 00' : '690 00 00 00'}
+                        maxLength={13}
                         className="flex-1 h-full px-2.5 text-sm text-afrilink-dark focus:outline-none"
                       />
                     </div>

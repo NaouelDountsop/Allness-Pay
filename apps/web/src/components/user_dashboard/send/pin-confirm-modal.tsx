@@ -1,27 +1,33 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { PinPad } from './pin-pad';
 
 interface PinConfirmModalProps {
-  onConfirm: (pin: string) => boolean; // retourne true si le PIN est correct
+  onConfirm: (pin: string) => boolean | Promise<boolean>;
   onClose: () => void;
 }
 
 export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (value: string) => {
     setPin(value);
     setError(false);
   };
 
-  const handleConfirm = () => {
-    if (pin.length < 4) return;
-    const ok = onConfirm(pin);
-    if (!ok) {
-      setError(true);
-      setPin('');
+  const handleConfirm = async () => {
+    if (pin.length < 4 || loading) return;
+    setLoading(true);
+    try {
+      const ok = await onConfirm(pin);
+      if (!ok) {
+        setError(true);
+        setPin('');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,10 +64,11 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
 
           <button
             onClick={handleConfirm}
-            disabled={pin.length < 4}
-            className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium mt-6 transition-colors disabled:opacity-50"
+            disabled={pin.length < 4 || loading}
+            className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium mt-6 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            Confirmer
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {loading ? 'Vérification...' : 'Confirmer'}
           </button>
         </div>
       </div>

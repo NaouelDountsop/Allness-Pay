@@ -12,8 +12,14 @@ import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 
 const schema = z.object({
-  email: z.string().min(1, 'Ce champ est requis'),
-  password: z.string().min(1, 'Mot de passe requis'),
+  email: z
+    .string()
+    .min(1, "L'adresse email est requise")
+    .email('Adresse email invalide'),
+  password: z
+    .string()
+    .min(1, 'Le mot de passe est requis')
+    .min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
 });
 
 type FormData = z.infer<typeof schema>;
