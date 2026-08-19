@@ -52,7 +52,7 @@ export function WalletBalanceCard({
         <div className="flex items-center gap-2">
           <img src="/allnesspay_logo1.png" alt="" className="w-9 h-9 object-contain" />
           <div>
-            <p className="text-xs text-white/60 tracking-wide">AFRILINK WALLET</p>
+            <p className="text-xs text-white/60 tracking-wide">ALLNESS WALLET</p>
             <p className="text-sm font-medium">{walletId}</p>
           </div>
         </div>

@@ -356,6 +356,7 @@ export default function MakeContributionPage() {
 
       {showPinConfirm && (
         <PinConfirmModal
+          walletId={wallet?.id ?? ''}
           onConfirm={handlePinConfirm}
           onClose={() => {
             setShowPinConfirm(false);
