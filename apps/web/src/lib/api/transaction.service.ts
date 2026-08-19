@@ -31,6 +31,11 @@ const TYPE_LABELS: Record<string, string> = {
   transfer_out: 'Transfert envoyé',
 };
 
+export interface TransferResult {
+  from: { id: string; balance: number };
+  to: { id: string; balance: number };
+}
+
 export const transactionService = {
   listByWallet: async (walletId: string): Promise<WalletTransaction[]> => {
     const res = await apiClient.get<WalletTransaction[]>(`/wallets/${walletId}/transactions`);
@@ -39,6 +44,14 @@ export const transactionService = {
 
   getMonthlySummary: async (walletId: string): Promise<MonthlySummary> => {
     const res = await apiClient.get<MonthlySummary>(`/wallets/${walletId}/transactions/monthly-summary`);
+    return res.data;
+  },
+
+  createTransfer: async (
+    walletId: string,
+    data: { toWalletId: string; amount: string; description?: string; pin: string },
+  ): Promise<TransferResult> => {
+    const res = await apiClient.post<TransferResult>(`/wallets/${walletId}/transfer`, data);
     return res.data;
   },
 

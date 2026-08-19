@@ -9,9 +9,11 @@ import { BeneficiaryAmountForm } from '@/components/user_dashboard/send/benefici
 import { ReviewStep } from '@/components/user_dashboard/send/review-step';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
+import { WalletSelector } from '@/components/user_dashboard/send/wallet-selector';
 import { usePin } from '@/hooks/use-pin';
 import { userService } from '@/lib/api/user.service';
 import { walletService } from '@/lib/api/wallet.service';
+import { transactionService } from '@/lib/api/transaction.service';
 import { getCountryByCode } from '@/data/countries';
 
 const steps = [
@@ -46,8 +48,20 @@ export default function SendMoneyPage() {
     queryFn: walletService.list,
   });
 
+  const sendableWallets = wallets.filter(
+    (w) => w.status === 'active' && !w.label?.toLowerCase().includes('tontine'),
+  );
   const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
-  const { hasPin, createPin, verifyPin } = usePin(primaryWallet?.id ?? null);
+  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(
+    primaryWallet?.id ?? null,
+  );
+  const selectedWallet = sendableWallets.find((w) => w.id === selectedWalletId) ?? primaryWallet;
+
+  const { hasPin, createPin, checkPinStatus } = usePin(selectedWallet?.id ?? null);
+
+  useEffect(() => {
+    checkPinStatus();
+  }, [checkPinStatus]);
 
   const { data: profile } = useQuery<UserProfile>({
     queryKey: ['profile'],
@@ -60,9 +74,9 @@ export default function SendMoneyPage() {
         fullName: `${profile.prenom} ${profile.nom}`,
         city: profile.ville,
         country: profile.pays,
-        currency: primaryWallet?.currency ?? COUNTRY_TO_CURRENCY[profile.pays] ?? 'XAF',
-        walletId: primaryWallet?.walletNumber,
-        availableCurrencies: availableCurrencies.length > 0 ? availableCurrencies : [primaryWallet?.currency ?? 'XAF'],
+        currency: selectedWallet?.currency ?? COUNTRY_TO_CURRENCY[profile.pays] ?? 'XAF',
+        walletId: selectedWallet?.walletNumber,
+        availableCurrencies: availableCurrencies.length > 0 ? availableCurrencies : [selectedWallet?.currency ?? 'XAF'],
       }
     : undefined;
 
@@ -149,28 +163,29 @@ export default function SendMoneyPage() {
   };
 
   const handlePinConfirm = async (pin: string): Promise<boolean> => {
-    const ok = await verifyPin(pin);
-    if (!ok) return false;
+    if (!selectedWallet?.id || !form.beneficiaryContact || !form.amount) return false;
 
-    setShowPinConfirm(false);
-    setCompletedSteps((prev) => {
-      const updated = [...prev];
-      updated[2] = true;
-      if (pendingAction === 'toSend') updated[3] = true;
-      return updated;
-    });
+    try {
+      await transactionService.createTransfer(selectedWallet.id, {
+        toWalletId: form.beneficiaryContact,
+        amount: form.amount,
+        description: form.receptionMode === 'wallet' ? 'Transfert' : undefined,
+        pin,
+      });
 
-    if (pendingAction === 'toReview') {
-      setPhase('review');
-    } else if (pendingAction === 'toSend') {
+      setShowPinConfirm(false);
       setCompletedSteps((prev) => {
         const updated = [...prev];
-        updated[4] = true;
+        updated[2] = true;
+        if (pendingAction === 'toSend') updated[3] = true;
+        if (pendingAction === 'toSend') updated[4] = true;
         return updated;
       });
       setPhase('success');
+      return true;
+    } catch {
+      return false;
     }
-    return true;
   };
 
   const handlePinSetupComplete = async (pin: string) => {
@@ -223,12 +238,22 @@ export default function SendMoneyPage() {
             </div>
 
             {phase === 'form' && (
-              <BeneficiaryAmountForm
-                form={form}
-                onChange={handleChange}
-                onSubmit={handleFormSubmit}
-                sender={senderInfo}
-              />
+              <>
+                <WalletSelector
+                  wallets={sendableWallets}
+                  selectedWalletId={selectedWalletId}
+                  onSelect={(w) => {
+                    setSelectedWalletId(w.id);
+                    checkPinStatus();
+                  }}
+                />
+                <BeneficiaryAmountForm
+                  form={form}
+                  onChange={handleChange}
+                  onSubmit={handleFormSubmit}
+                  sender={senderInfo}
+                />
+              </>
             )}
 
             {phase === 'review' && (
@@ -247,20 +272,32 @@ export default function SendMoneyPage() {
 
             {phase === 'success' && (
               <div className="text-center py-8 sm:py-10 px-2">
-                <div
-                  className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
-                  style={{ backgroundColor: 'rgba(210,142,47,0.12)' }}
-                >
-                  <span className="text-2xl" style={{ color: '#D28E2F' }}>
-                    ✓
-                  </span>
-                </div>
+                <img
+                  src="/thank you.svg"
+                  alt="Merci"
+                  className="mx-auto mb-4 h-56 w-auto"
+                />
                 <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
                   Transfert envoyé avec succès !
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 mb-6">
                   Le bénéficiaire recevra les fonds sous quelques minutes.
                 </p>
+                <button
+                  onClick={() => {
+                    setPhase('form');
+                    setForm({ beneficiaryContact: '', senderCountry: form.senderCountry, country: 'CM', amount: '', receptionMode: 'wallet' });
+                    setCompletedSteps([false, false, false, false, false]);
+                    setBeneficiaryName('');
+                    setShowPinSetup(false);
+                    setShowPinConfirm(false);
+                    setPendingAction(null);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors"
+                  style={{ backgroundColor: '#082B37' }}
+                >
+                  Nouveau transfert
+                </button>
               </div>
             )}
           </div>
@@ -273,7 +310,7 @@ export default function SendMoneyPage() {
 
       {showPinConfirm && (
         <PinConfirmModal
-          walletId={primaryWallet?.id ?? ''}
+          walletId={selectedWallet?.id ?? ''}
           onConfirm={handlePinConfirm}
           onClose={() => setShowPinConfirm(false)}
         />

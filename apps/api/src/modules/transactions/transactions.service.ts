@@ -9,9 +9,8 @@ import {
 } from './entities/wallet-transaction.entity';
 import { WalletsService } from '../wallet/wallet.service';
 import { PinService } from '../pin/pin.service';
-import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
-import { detectOperator } from '../../common/utils/phone-operator.util';
 import { LinkedAccountOperator } from '../linked-account/enums/linked-account-operator.enum';
+import { TransferDto } from './dto/transfer.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -22,144 +21,8 @@ export class TransactionsService {
     private readonly pinService: PinService,
   ) {}
 
-  async deposit(id: string, userId: number, dto: DepositDto): Promise<Wallet> {
-    return this.dataSource.transaction(async (manager) => {
-      const wallet = await this.walletsService.lockWalletForUpdate(manager, id);
-      this.walletsService.assertOwnership(wallet, userId);
-      this.walletsService.assertActive(wallet);
-      this.assertNotTontine(wallet);
-
-      const amount = BigInt(dto.amount);
-      const operator = detectOperator(dto.phone_number);
-
-      if (!operator) {
-        throw new BadRequestException(
-          'Numéro de téléphone non reconnu. Préfixes acceptés — MTN : 650-654, 670-679, 680-683 / Orange : 640, 655-659, 686-699.',
-        );
-      }
-
-      // Écriture comptable immutable
-      const entry = manager.create(WalletTransaction, {
-        walletId: id,
-        type: WalletTransactionType.DEPOSIT,
-        amount,
-        description: dto.description ?? 'Dépôt',
-        operator,
-        phoneNumber: dto.phone_number,
-      });
-      await manager.save(entry);
-
-      // Recalcul du solde (projection du ledger)
-      const newBalance = await this.recalculateBalance(manager, id);
-      await manager.update(Wallet, { id }, { balance: newBalance });
-
-      return manager.findOneOrFail(Wallet, { where: { id } });
-    });
-  }
-
-  async withdraw(id: string, userId: number, dto: WithdrawDto): Promise<Wallet> {
-    return this.dataSource.transaction(async (manager) => {
-      const wallet = await this.pinService.verifyPinWithManager(manager, id, userId, dto.pin);
-      this.walletsService.assertActive(wallet);
-      this.assertNotTontine(wallet);
-
-      const amount = BigInt(dto.amount);
-      if (wallet.balance < amount) {
-        throw new BadRequestException('Solde insuffisant');
-      }
-
-      // Écriture comptable immutable
-      const entry = manager.create(WalletTransaction, {
-        walletId: id,
-        type: WalletTransactionType.WITHDRAWAL,
-        amount,
-        description: dto.description ?? 'Retrait',
-      });
-      await manager.save(entry);
-
-      // Recalcul du solde (projection du ledger)
-      const newBalance = await this.recalculateBalance(manager, id);
-      await manager.update(Wallet, { id }, { balance: newBalance });
-
-      return manager.findOneOrFail(Wallet, { where: { id } });
-    });
-  }
-
-  async transfer(
-    fromId: string,
-    userId: number,
-    dto: TransferDto,
-  ): Promise<{ from: Wallet; to: Wallet }> {
-    if (fromId === dto.toWalletId) {
-      throw new BadRequestException('Impossible de transférer vers le même wallet');
-    }
-
-    return this.dataSource.transaction(async (manager) => {
-      // Verrouillage dans l'ordre des IDs pour éviter les deadlocks
-      const [firstId, secondId] = [fromId, dto.toWalletId].sort();
-      await this.walletsService.lockWalletForUpdate(manager, firstId);
-      await this.walletsService.lockWalletForUpdate(manager, secondId);
-
-      const fromWallet = await this.pinService.verifyPinWithManager(
-        manager,
-        fromId,
-        userId,
-        dto.pin,
-      );
-      this.walletsService.assertActive(fromWallet);
-      this.assertNotTontine(fromWallet);
-
-      const toWallet = await this.walletsService.lockWalletForUpdate(manager, dto.toWalletId);
-      this.walletsService.assertActive(toWallet);
-      this.assertNotTontine(toWallet);
-
-      if (fromWallet.currency !== toWallet.currency) {
-        throw new BadRequestException(
-          'Transfert entre devises différentes non supporté pour le moment',
-        );
-      }
-
-      const amount = BigInt(dto.amount);
-      if (fromWallet.balance < amount) {
-        throw new BadRequestException('Solde insuffisant');
-      }
-
-      // Écritures comptables immuables (paire débit/crédit)
-      const outEntry = manager.create(WalletTransaction, {
-        walletId: fromId,
-        type: WalletTransactionType.TRANSFER_OUT,
-        amount,
-        relatedWalletId: dto.toWalletId,
-        description: dto.description ?? `Transfert vers ${dto.toWalletId}`,
-      });
-      const inEntry = manager.create(WalletTransaction, {
-        walletId: dto.toWalletId,
-        type: WalletTransactionType.TRANSFER_IN,
-        amount,
-        relatedWalletId: fromId,
-        description: dto.description ?? `Transfert depuis ${fromId}`,
-      });
-      await manager.save([outEntry, inEntry]);
-
-      // Recalcul des soldes (projections du ledger)
-      const [newFromBalance, newToBalance] = await Promise.all([
-        this.recalculateBalance(manager, fromId),
-        this.recalculateBalance(manager, dto.toWalletId),
-      ]);
-      await manager.update(Wallet, { id: fromId }, { balance: newFromBalance });
-      await manager.update(Wallet, { id: dto.toWalletId }, { balance: newToBalance });
-
-      const [updatedFrom, updatedTo] = await Promise.all([
-        manager.findOneOrFail(Wallet, { where: { id: fromWallet.id } }),
-        manager.findOneOrFail(Wallet, { where: { id: toWallet.id } }),
-      ]);
-
-      return { from: updatedFrom, to: updatedTo };
-    });
-  }
-
   /**
-   * Enregistre un paiement externe (Tranzak) dans le ledger.
+   * Enregistre un paiement externe (Tranzak, Campay) dans le ledger.
    * Crée une écriture comptable avec statut PENDING.
    */
   async recordExternalPayment(
@@ -224,20 +87,13 @@ export class TransactionsService {
         throw new BadRequestException(`Transaction ${provider}:${identifier} introuvable`);
       }
 
-      // Idempotence : si déjà COMPLETED, on ne fait rien
       if (transaction.status === WalletTransactionStatus.COMPLETED) {
         return transaction;
-      }
-
-      // Mettre à jour le providerTransactionId si on a reçu le callback avec le requestId
-      if (isRequestId && !transaction.providerTransactionId) {
-        // On ne peut pas updater ici sans le transactionId, mais on le fera via le callback
       }
 
       transaction.status = newStatus;
       await manager.save(transaction);
 
-      // Recalcul du solde du wallet
       const newBalance = await this.recalculateBalance(manager, transaction.walletId);
       await manager.update(Wallet, { id: transaction.walletId }, { balance: newBalance });
 
@@ -245,10 +101,82 @@ export class TransactionsService {
     });
   }
 
-  /**
-   * Recalcule le solde d'un wallet en sommant les écritures du ledger.
-   * deposits + transfer_in - withdrawals - transfer_out
-   */
+  async transfer(
+    fromId: string,
+    userId: number,
+    dto: TransferDto,
+  ): Promise<{ from: Wallet; to: Wallet }> {
+    // Résoudre le wallet bénéficiaire (UUID ou walletNumber)
+    const toWalletEntity = await this.walletsService.findByWalletNumber(dto.toWalletId);
+    const toId = toWalletEntity.id;
+
+    if (fromId === toId) {
+      throw new BadRequestException('Impossible de transférer vers le même wallet');
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const [firstId, secondId] = [fromId, toId].sort();
+      await this.walletsService.lockWalletForUpdate(manager, firstId);
+      await this.walletsService.lockWalletForUpdate(manager, secondId);
+
+      const fromWallet = await this.pinService.verifyPinWithManager(
+        manager,
+        fromId,
+        userId,
+        dto.pin,
+      );
+      this.walletsService.assertActive(fromWallet);
+      this.assertNotTontine(fromWallet);
+
+      const toWallet = await this.walletsService.lockWalletForUpdate(manager, toId);
+      this.walletsService.assertActive(toWallet);
+      this.assertNotTontine(toWallet);
+
+      if (fromWallet.currency !== toWallet.currency) {
+        throw new BadRequestException(
+          'Transfert entre devises différentes non supporté pour le moment',
+        );
+      }
+
+      const amount = BigInt(dto.amount);
+      if (fromWallet.balance < amount) {
+        throw new BadRequestException('Solde insuffisant');
+      }
+
+      const outEntry = manager.create(WalletTransaction, {
+        walletId: fromId,
+        type: WalletTransactionType.TRANSFER_OUT,
+        amount,
+        relatedWalletId: toId,
+        description: dto.description ?? `Transfert vers ${toId}`,
+        reference: 'allnesspay',
+      });
+      const inEntry = manager.create(WalletTransaction, {
+        walletId: toId,
+        type: WalletTransactionType.TRANSFER_IN,
+        amount,
+        relatedWalletId: fromId,
+        description: dto.description ?? `Transfert depuis ${fromId}`,
+        reference: 'allnesspay',
+      });
+      await manager.save([outEntry, inEntry]);
+
+      const [newFromBalance, newToBalance] = await Promise.all([
+        this.recalculateBalance(manager, fromId),
+        this.recalculateBalance(manager, toId),
+      ]);
+      await manager.update(Wallet, { id: fromId }, { balance: newFromBalance });
+      await manager.update(Wallet, { id: toId }, { balance: newToBalance });
+
+      const [updatedFrom, updatedTo] = await Promise.all([
+        manager.findOneOrFail(Wallet, { where: { id: fromWallet.id } }),
+        manager.findOneOrFail(Wallet, { where: { id: toWallet.id } }),
+      ]);
+
+      return { from: updatedFrom, to: updatedTo };
+    });
+  }
+
   async listByWallet(walletId: string): Promise<WalletTransaction[]> {
     return this.dataSource
       .getRepository(WalletTransaction)
@@ -323,20 +251,6 @@ export class TransactionsService {
       expensePercent,
       trend: months,
     };
-  }
-
-  async exportCsv(walletId: string): Promise<string> {
-    const transactions = await this.listByWallet(walletId);
-    const headers = ['Date', 'Type', 'Montant', 'Statut', 'Description', 'Référence'];
-    const rows = transactions.map((tx) => [
-      tx.createdAt.toISOString(),
-      tx.type,
-      String(tx.amount),
-      tx.status,
-      tx.description ?? '',
-      tx.reference ?? '',
-    ]);
-    return [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
   }
 
   private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
