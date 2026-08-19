@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Play } from 'lucide-react';
+import { ArrowLeft, Loader2, Play, Clock, CalendarDays } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -52,6 +52,12 @@ export default function TontineSettingsPage() {
   const isDraft = tontine?.status === 'DRAFT';
   const activeMembers = tontine?.members?.filter((m) => m.status === 'ACTIVE') ?? [];
 
+  const { data: pendingInvitations = [] } = useQuery({
+    queryKey: ['tontine-invitations', tontineId],
+    queryFn: () => tontineService.listInvitations(tontineId!),
+    enabled: !!tontineId && isAdmin,
+  });
+
   const startMutation = useMutation({
     mutationFn: () => tontineService.updateStatus(tontineId!, 'ACTIVE'),
     onSuccess: () => {
@@ -68,7 +74,7 @@ export default function TontineSettingsPage() {
     },
   });
 
-  const rotationMembers = activeMembers
+  const activeRotationMembers = activeMembers
     .sort((a, b) => (a.beneficiaryOrder ?? 0) - (b.beneficiaryOrder ?? 0))
     .map((m, i) => ({
       id: String(m.id),
@@ -76,7 +82,19 @@ export default function TontineSettingsPage() {
         ? `${m.user.prenom ?? ''} ${m.user.nom ?? ''}`.trim()
         : `Membre ${m.userId}`,
       month: new Date(2026, i, 1).toLocaleDateString('fr-FR', { month: 'long' }),
+      isPending: false,
     }));
+
+  const pendingRotationMembers = pendingInvitations
+    .filter((inv) => inv.status === 'PENDING')
+    .map((inv, i) => ({
+      id: `inv-${inv.id}`,
+      name: inv.inviteeEmail ?? `Invité ${i + 1}`,
+      month: '—',
+      isPending: true,
+    }));
+
+  const rotationMembers = [...activeRotationMembers, ...pendingRotationMembers];
 
   const frequency = tontine?.frequency ?? 'MONTHLY';
   const memberCount = activeMembers.length || (tontine?.memberLimit ?? 0);
@@ -250,7 +268,73 @@ export default function TontineSettingsPage() {
               : '—'}
             currency={tontine.currency ?? 'XAF'}
             onShowCalendar={() => setShowCalendar(true)}
-          />
+          >
+            {/* Rotation Order Summary */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-3">
+                <CalendarDays className="w-4 h-4 text-afrilink-green" />
+                <h3 className="text-sm font-semibold text-gray-900">Ordre de Passage</h3>
+              </div>
+
+              {isDraft && (
+                <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-blue-50 border border-blue-100">
+                  <Clock className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  <p className="text-[11px] text-blue-700">
+                    La tontine démarrera une fois au moins <span className="font-semibold">2 membres actifs</span> inscrits.
+                    {activeMembers.length >= 2 && (
+                      <span className="text-afrilink-green font-semibold"> Prêt !</span>
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {!isDraft && tontine.nextContributionAt && (
+                <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-green-50 border border-green-100">
+                  <CalendarDays className="w-3.5 h-3.5 text-afrilink-green shrink-0" />
+                  <p className="text-[11px] text-green-700">
+                    Prochaine cotisation le{' '}
+                    <span className="font-semibold">
+                      {new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                {activeRotationMembers.map((m, i) => (
+                  <div
+                    key={m.id}
+                    className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-gray-50"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-afrilink-green text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{m.name}</p>
+                      <p className="text-[10px] text-gray-400">{m.month}</p>
+                    </div>
+                    {tontine.status === 'ACTIVE' && i === 0 && (
+                      <span className="text-[9px] font-semibold text-afrilink-green bg-green-50 px-1.5 py-0.5 rounded-full">
+                        Actuel
+                      </span>
+                    )}
+                  </div>
+                ))}
+
+                
+
+                {activeRotationMembers.length === 0 && pendingRotationMembers.length === 0 && (
+                  <p className="text-[11px] text-gray-400 text-center py-2">
+                    Aucun membre dans l'ordre de passage.
+                  </p>
+                )}
+              </div>
+            </div>
+          </CycleSummaryPanel>
         </div>
       </div>
 

@@ -1,7 +1,12 @@
-import { Search, Bell, HelpCircle } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, HelpCircle, ChevronDown, LogOut, Menu, Sun, Moon, Globe } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { Avatar } from '../ui/avatar';
 import { apiClient } from '@/lib/api-client';
+import { authService } from '@/lib/api/auth.service';
+import { authStorage } from '@/lib/auth-storage';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { usePreferences } from '@/hooks/use-preferences';
 
 interface AdminProfile {
   idutilisateur: number;
@@ -18,7 +23,13 @@ async function fetchAdminProfile(): Promise<AdminProfile> {
   return res.data;
 }
 
-export function AdminTopbar() {
+export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
+
   const { data: admin } = useQuery({
     queryKey: ['admin-profile'],
     queryFn: fetchAdminProfile,
@@ -28,6 +39,7 @@ export function AdminTopbar() {
   const displayName = admin
     ? `${admin.prenom || ''} ${admin.nom || ''}`.trim() || 'Admin'
     : 'Admin';
+  const firstName = admin?.prenom ?? 'Admin';
   const initials = displayName
     .split(' ')
     .map((n) => n[0])
@@ -35,40 +47,140 @@ export function AdminTopbar() {
     .slice(0, 2)
     .toUpperCase();
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Déconnecte quand même côté client
+    } finally {
+      authStorage.clearAll();
+      navigate('/admin/login', { replace: true });
+    }
+  };
+
   return (
-    <header className="h-14 md:h-16 shrink-0 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-6 gap-4 md:gap-6">
-      <div className="flex-1 max-w-md hidden sm:block">
+    <header
+      className="sticky top-0 left-0 md:left-72 right-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
+      bg-white border-b border-gray-100 shadow-sm shrink-0"
+    >
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden text-afrilink-dark hover:text-afrilink-orange flex items-center justify-center w-8 h-8"
+          aria-label="Menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-2 truncate">
+          Bonjour, {firstName}
+        </h1>
+        {admin?.role && (
+          <span className="hidden sm:inline-flex items-center rounded-full bg-afrilink-dark/10 px-2 py-0.5 text-[10px] font-semibold text-afrilink-dark">
+            {admin.role === 'super-admin' ? 'Super Admin' : 'Admin'}
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+        {/* Notification bell */}
         <div className="relative">
-          <Search className="w-4 h-4 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Rechercher un utilisateur, ID, email..."
-            className="w-full h-9 pl-9 pr-3 rounded-lg bg-gray-50 border border-gray-100 text-sm text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
-          />
+          <button
+            className="relative text-afrilink-orange hover:text-afrilink-orange/80 flex items-center justify-center w-8 h-8"
+            aria-label="Notifications"
+          >
+            <Bell className="w-5 h-5" />
+          </button>
+        </div>
+
+        <button className="text-afrilink-orange hover:text-afrilink-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
+          <HelpCircle className="w-5 h-5" />
+        </button>
+
+        {/* Desktop: profil statique */}
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+            title={langLabel === 'FR' ? 'English' : 'Français'}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            {langLabel}
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
+          >
+            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+            {initials}
+          </div>
+          <div className="text-right">
+            <div className="flex items-center gap-1.5 justify-end">
+              <p className="text-sm font-medium text-afrilink-dark leading-tight">{displayName}</p>
+            </div>
+            <p className="text-xs text-gray-500 leading-tight">{admin?.profession || 'Administrateur'}</p>
+          </div>
+        </div>
+
+        {/* Mobile: profil avec dropdown */}
+        <div className="relative md:hidden" ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 hover:bg-gray-50 rounded-xl p-1 transition-colors"
+          >
+            <div className="w-7 h-7 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+              {initials}
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 py-2 z-50">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-semibold text-afrilink-dark">{displayName}</p>
+                <p className="text-xs text-gray-500">{admin?.email}</p>
+              </div>
+              <div className="border-t border-gray-100 mt-1 pt-1">
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    setLogoutOpen(true);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Se déconnecter
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center gap-3 md:gap-4 shrink-0">
-        <button
-          className="sm:hidden text-gray-400 hover:text-afrilink-dark"
-          aria-label="Rechercher"
-        >
-          <Search className="w-5 h-5" />
-        </button>
-        <button className="text-gray-400 hover:text-afrilink-dark" aria-label="Notifications">
-          <Bell className="w-5 h-5" />
-        </button>
-        <button className="text-gray-400 hover:text-afrilink-dark" aria-label="Aide">
-          <HelpCircle className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-2 pl-3 md:pl-4 border-l border-gray-100">
-          <Avatar initials={initials} />
-          <div className="leading-tight hidden sm:block">
-            <p className="text-xs font-semibold text-afrilink-dark">{displayName}</p>
-            <p className="text-[11px] text-gray-400">{admin?.profession || 'Administrateur'}</p>
-          </div>
-        </div>
-      </div>
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </header>
   );
 }

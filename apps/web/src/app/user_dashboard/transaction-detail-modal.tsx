@@ -55,12 +55,14 @@ export function TransactionDetailModal({
 
         {/* Contenu compact */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-          {/* Destinataire */}
+          {/* Destinataire / Expéditeur */}
           <div className="flex items-center justify-between py-2 border-b border-gray-100">
             <div>
               <p className="text-[10px] text-gray-400 uppercase">{credit ? 'Expéditeur' : 'Destinataire'}</p>
-              <p className="text-sm font-medium text-afrilink-dark">John Doe</p>
-              <p className="text-[11px] text-gray-400">{transaction.phoneNumber ?? '+237 6XX XXX XXX'}</p>
+              <p className="text-sm font-medium text-afrilink-dark">
+                {transaction.description ?? (credit ? 'Expéditeur inconnu' : 'Bénéficiaire')}
+              </p>
+              <p className="text-[11px] text-gray-400">{transaction.phoneNumber ?? '—'}</p>
             </div>
           </div>
 
@@ -91,8 +93,14 @@ export function TransactionDetailModal({
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Motif</span>
-              <span className="font-medium text-afrilink-dark">{transaction.description ?? "Envoi d'argent"}</span>
+              <span className="font-medium text-afrilink-dark">{transaction.description ?? '—'}</span>
             </div>
+            {transaction.provider && (
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Fournisseur</span>
+                <span className="font-medium text-afrilink-dark">{transaction.provider}</span>
+              </div>
+            )}
           </div>
         </div>
 

@@ -24,7 +24,7 @@ interface AddBeneficiaryModalProps {
 const NETWORKS = [
   { value: 'MTN_MOMO', label: 'MTN Mobile Money' },
   { value: 'ORANGE_MONEY', label: 'Orange Money' },
-  { value: 'WAVE', label: 'Wave' },
+  { value: 'ALLNESS WALLET', label: 'Allness Wallet' },
 ];
 
 export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalProps) {
@@ -68,7 +68,6 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const handleConfirm = () => {
     createMutation.mutate({
       nom: name.trim(),
-      numero: `${selectedCountry.dialCode}${phone}`,
       numero: `${selectedCountry.dialCode}${phone}`,
       reseau: network,
       pays: country,

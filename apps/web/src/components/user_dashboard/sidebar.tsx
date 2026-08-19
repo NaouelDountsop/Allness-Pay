@@ -28,7 +28,7 @@ const navItems = [
   { to: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () => void }) {
   const navigate = useNavigate();
   const [logoutOpen, setLogoutOpen] = useState(false);
 
@@ -50,12 +50,21 @@ export function Sidebar() {
     // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
     // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
     // presque toujours le cas pour un layout sidebar+contenu classique.
-    <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
-      <div className="flex items-center gap-3 px-6 py-4">
-        <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
-        <span className="font-bold text-lg">
-          Allness<span className="text-afrilink-orange">Pay</span>
-        </span>
+    <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col`}>
+      <div className="flex items-center justify-between gap-2 px-6 py-4">
+        <div className="flex items-center gap-3">
+          <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
+          <span className="font-bold text-lg">
+            Allness<span className="text-afrilink-orange">Pay</span>
+          </span>
+        </div>
+        {mobile && onClose && (
+          <button onClick={onClose} className="text-white/70 hover:text-white md:hidden">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 px-3 space-y-3 overflow-y-auto pb-6">

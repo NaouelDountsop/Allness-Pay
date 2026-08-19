@@ -20,6 +20,7 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
       tontineService.invite(tontineId, { inviteeEmail: email.trim().toLowerCase() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tontine', tontineId] });
+      queryClient.invalidateQueries({ queryKey: ['tontine-invitations', tontineId] });
       setSuccess(true);
       setErrMsg('');
     },

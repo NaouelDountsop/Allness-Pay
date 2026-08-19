@@ -8,14 +8,12 @@ import {
   Wallet,
   Building2,
   Smartphone,
-  ChevronDown,
 } from 'lucide-react';
 import { CountrySelect } from '@/components/common/country-select';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 import {
   getExchangeRate,
   CURRENCY_SYMBOLS,
-  CURRENCY_LABELS,
 } from '@/lib/mock/send-money-data';
 
 export type ReceptionMode = 'wallet' | 'mtn' | 'orange' | 'bank';
@@ -125,9 +123,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'CAD';
 
-  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
   const [senderCurrencyState, setSenderCurrencyState] = useState(senderCurrency);
-  const currencyRef = useRef<HTMLDivElement>(null);
 
   const availableCurrencies = sender?.availableCurrencies ?? [senderCurrency];
   const receiverCurrency = COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
@@ -318,6 +314,27 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
       {/* Montant - Vous envoyez */}
       <div className="mb-4">
         <label className="text-sm font-medium text-gray-700 mb-2 block">Vous envoyez</label>
+
+        {/* Sélecteur de devise visible */}
+        {availableCurrencies.length > 1 && (
+          <div className="flex items-center gap-2 mb-3">
+            {availableCurrencies.map((cur) => (
+              <button
+                key={cur}
+                type="button"
+                onClick={() => setSenderCurrencyState(cur)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  cur === senderCurrencyState
+                    ? 'bg-afrilink-green text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {CURRENCY_SYMBOLS[cur] ?? cur} {cur}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center rounded-2xl border-2 border-gray-200 bg-white overflow-hidden focus-within:border-afrilink-green transition-colors">
           <Banknote className="w-5 h-5 text-afrilink-orange ml-4 shrink-0" />
           <input
@@ -327,41 +344,9 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
             onChange={(e) => onChange('amount', e.target.value)}
             className="flex-1 h-16 min-w-0 px-3 text-xl sm:text-2xl font-semibold text-afrilink-dark bg-white focus:outline-none"
           />
-          {/* Sélecteur de devise cliquable */}
-          <div className="relative" ref={currencyRef}>
-            <button
-              type="button"
-              onClick={() => availableCurrencies.length > 1 && setShowCurrencyPicker(!showCurrencyPicker)}
-              className={`px-4 sm:px-5 h-full flex items-center gap-1.5 text-sm sm:text-base font-semibold text-gray-600 border-l border-gray-100 bg-gray-50 shrink-0 transition-colors ${
-                availableCurrencies.length > 1 ? 'hover:bg-gray-100 cursor-pointer' : 'cursor-default'
-              }`}
-            >
-              {CURRENCY_SYMBOLS[senderCurrencyState] ?? senderCurrencyState}
-              {availableCurrencies.length > 1 && (
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showCurrencyPicker ? 'rotate-180' : ''}`} />
-              )}
-            </button>
-            {showCurrencyPicker && availableCurrencies.length > 1 && (
-              <div className="absolute right-0 top-full mt-1 w-56 rounded-lg border border-gray-200 bg-white shadow-lg z-20 overflow-hidden">
-                {availableCurrencies.map((cur) => (
-                  <button
-                    key={cur}
-                    type="button"
-                    onClick={() => {
-                      setSenderCurrencyState(cur);
-                      setShowCurrencyPicker(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
-                      cur === senderCurrencyState ? 'bg-afrilink-green/5 text-afrilink-green' : 'text-gray-700'
-                    }`}
-                  >
-                    <span className="font-medium">{CURRENCY_SYMBOLS[cur] ?? cur} {cur}</span>
-                    <span className="text-xs text-gray-400">{CURRENCY_LABELS[cur]}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <span className="px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold text-gray-500 border-l border-gray-100 bg-gray-50 shrink-0">
+            {CURRENCY_SYMBOLS[senderCurrencyState] ?? senderCurrencyState}
+          </span>
         </div>
       </div>
 

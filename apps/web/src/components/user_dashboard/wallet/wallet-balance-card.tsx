@@ -122,7 +122,7 @@ export function WalletBalanceCard({
           <img src="/allnesspay_logo1.png" alt="" className="w-9 h-9 object-contain" />
           <div>
             <p className="text-xs text-white/60 tracking-wide">ALLNESS WALLET</p>
-            <p className="text-sm font-medium">{visible ? walletId : maskedWalletId}</p>
+            <p className="text-sm font-medium">{visible ? walletNumber : maskedWalletId}</p>
           </div>
         </div>
         <span className="text-[11px] font-medium bg-white/10 text-green-300 px-2.5 py-1 rounded-full">
@@ -130,24 +130,42 @@ export function WalletBalanceCard({
         </span>
       </div>
 
-      <p className="text-xs text-white/60 mb-1 relative z-10">Solde Total</p>
-      <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-        <p className="text-3xl sm:text-4xl font-bold truncate">
-          {visible ? formatted : '•••••••'}{' '}
-          <span className="text-base sm:text-lg font-medium text-afrilink-orange">{currency}</span>
-        </p>
-        <button
-          onClick={() => setVisible((v) => !v)}
-          aria-label="Afficher/masquer le solde"
-          className="shrink-0"
-        >
-          {visible ? (
-            <EyeOff className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
-          ) : (
-            <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
-          )}
-        </button>
+     <p className="text-xs text-white/60 mb-1 relative z-10">Solde Total</p>
+        <div className="flex items-center gap-2 sm:gap-3 relative z-10">
+          <p className="text-3xl sm:text-4xl font-bold truncate">
+            {visible ? formatted : '•••••••'}{' '}
+            <span className="text-base sm:text-lg font-medium text-afrilink-orange">{currency}</span>
+          </p>
+          <button
+            onClick={handleEyeClick}
+            disabled={checkingPin}
+            aria-label="Afficher/masquer le solde"
+            className="shrink-0 disabled:opacity-50"
+          >
+            {checkingPin ? (
+              <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white/60 animate-spin" />
+            ) : visible ? (
+              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
+            ) : (
+              <EyeOff className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+
+      {pinModal === 'setup' && (
+        <PinSetupModal
+          onComplete={handlePinSetupComplete}
+          onClose={() => setPinModal(null)}
+        />
+      )}
+      {pinModal === 'verify' && (
+        <PinConfirmModal
+          walletId={walletInternalId}
+          onConfirm={handlePinVerify}
+          onClose={() => setPinModal(null)}
+        />
+      )}
+    </>
   );
 }

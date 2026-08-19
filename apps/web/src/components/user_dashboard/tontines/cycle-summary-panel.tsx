@@ -5,6 +5,7 @@ interface CycleSummaryPanelProps {
   nextDrawDate: string;
   currency: string;
   onShowCalendar: () => void;
+  children?: React.ReactNode;
 }
 
 function getDurationLabel(frequency: string, memberCount: number): string {
@@ -32,6 +33,7 @@ export function CycleSummaryPanel({
   nextDrawDate,
   currency,
   onShowCalendar,
+  children,
 }: CycleSummaryPanelProps) {
   const currencyLabels: Record<string, string> = {
     XAF: 'FCFA',
@@ -80,6 +82,8 @@ export function CycleSummaryPanel({
       >
         Aperçu du Calendrier Public
       </button>
+
+      {children}
     </div>
   );
 }

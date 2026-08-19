@@ -78,15 +78,31 @@ export class AdminService {
     return this.usersRepository.findOne({ where: { idutilisateur: id } });
   }
 
-  findAllKyc(status?: string) {
-    if (status) {
-      return this.kycRepository.find({
-        where: { status: status as KycStatus },
-        order: { createdAt: 'DESC' },
-      });
-    }
-    return this.kycRepository.find({
+  async findAllKyc(status?: string) {
+    const where = status ? { status: status as KycStatus } : {};
+    const kycs = await this.kycRepository.find({
+      where,
       order: { createdAt: 'DESC' },
+    });
+
+    if (kycs.length === 0) return [];
+
+    const userIds = [...new Set(kycs.map((k) => k.userId))];
+    const users = await this.usersRepository
+      .createQueryBuilder('u')
+      .select(['u.idutilisateur', 'u.nom', 'u.prenom', 'u.email'])
+      .where('u.idutilisateur IN (:...ids)', { ids: userIds })
+      .getMany();
+    const userMap = new Map(users.map((u) => [u.idutilisateur, u]));
+
+    return kycs.map((kyc) => {
+      const user = userMap.get(kyc.userId);
+      return {
+        ...kyc,
+        userName: user?.prenom ?? null,
+        userNom: user?.nom ?? null,
+        userEmail: user?.email ?? null,
+      };
     });
   }
 

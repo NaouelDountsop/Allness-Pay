@@ -71,8 +71,9 @@ export default function KycListPage() {
 
   const searched = filtered.filter(
     (r) =>
-      String(r.id).toLowerCase().includes(search.toLowerCase()) ||
-      String(r.userId).includes(search),
+      (r.userName ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (r.userNom ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (r.userEmail ?? '').toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -132,7 +133,7 @@ export default function KycListPage() {
               <Search className="w-3.5 h-3.5 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Rechercher par ID..."
+                placeholder="Rechercher par nom ou ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="h-9 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
@@ -166,7 +167,7 @@ export default function KycListPage() {
             <table className="w-full text-sm min-w-[420px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                  <th className="font-medium pb-3">Utilisateur</th>
+                  <th className="font-medium pb-3">Nom</th>
                   <th className="font-medium pb-3 hidden sm:table-cell">Date</th>
                   <th className="font-medium pb-3 hidden md:table-cell">Document</th>
                   <th className="font-medium pb-3">Statut</th>
@@ -179,7 +180,15 @@ export default function KycListPage() {
                     tone: 'orange' as const,
                     label: row.status,
                   };
-                  const initials = `U${row.userId}`;
+                  const displayName = [row.userName, row.userNom].filter(Boolean).join(' ');
+                  const initials = displayName
+                    ? displayName
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()
+                    : '??';
                   return (
                     <tr key={row.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3">
@@ -189,9 +198,11 @@ export default function KycListPage() {
                           </span>
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-afrilink-dark truncate">
-                              Utilisateur {row.userId}
+                              {displayName}
                             </p>
-                            <p className="text-[11px] text-gray-400">ID: {row.id}</p>
+                            <p className="text-[11px] text-gray-400">
+                              {row.userEmail ?? `ID: ${row.userId}`}
+                            </p>
                           </div>
                         </div>
                       </td>

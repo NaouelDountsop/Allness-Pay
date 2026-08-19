@@ -18,6 +18,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { userService } from '@/lib/api/user.service';
+import { usePreferences } from '@/hooks/use-preferences';
 
 function SettingCard({
   title,
@@ -114,8 +115,7 @@ export default function SettingsPage() {
 
   // --- Préférences de compte ---
   const [currency, setCurrency] = useState('CFA');
-  const [theme, setTheme] = useState('Clair');
-  const [language, setLanguage] = useState('Français');
+  const { language, theme, setLanguage, setTheme } = usePreferences();
   const [timezone, setTimezone] = useState('Afrique/Douala (GMT+1)');
 
   // --- Moyens de paiement ---
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? 'Français' : 'English'}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Devise</p>
@@ -297,11 +297,11 @@ export default function SettingsPage() {
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? 'Français' : 'English'}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Thème</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{theme}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{theme === 'light' ? 'Clair' : 'Sombre'}</p>
                   </div>
                   <Button
                     variant="outline"
@@ -589,11 +589,11 @@ export default function SettingsPage() {
               <select
                 id="language"
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                onChange={(e) => setLanguage(e.target.value as 'fr' | 'en')}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
               >
-                <option value="Français">Français</option>
-                <option value="English">English</option>
+                <option value="fr">Français</option>
+                <option value="en">English</option>
               </select>
             </div>
             <div className="space-y-2">
@@ -601,11 +601,11 @@ export default function SettingsPage() {
               <select
                 id="theme"
                 value={theme}
-                onChange={(e) => setTheme(e.target.value)}
+                onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
               >
-                <option value="Clair">Clair</option>
-                <option value="Sombre">Sombre</option>
+                <option value="light">Clair</option>
+                <option value="dark">Sombre</option>
               </select>
             </div>
             <div className="space-y-2">
