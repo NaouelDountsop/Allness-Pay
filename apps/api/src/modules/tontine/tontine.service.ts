@@ -30,10 +30,12 @@ export class TontineService {
 
   async create(dto: CreateTontineDto, creatorId: number): Promise<Tontine> {
     return this.dataSource.transaction(async (manager) => {
+      const targetAmount = BigInt(dto.contributionAmount) * BigInt(dto.memberLimit);
+
       const tontine = manager.create(Tontine, {
         name: dto.name,
         description: dto.description,
-        targetAmount: dto.targetAmount.toString(),
+        targetAmount: targetAmount.toString(),
         contributionAmount: dto.contributionAmount.toString(),
         frequency: dto.frequency,
         memberLimit: dto.memberLimit,
@@ -106,6 +108,13 @@ export class TontineService {
     }
 
     Object.assign(tontine, dto);
+
+    if (dto.contributionAmount !== undefined || dto.memberLimit !== undefined) {
+      const contribution = dto.contributionAmount ?? Number(tontine.contributionAmount);
+      const members = dto.memberLimit ?? tontine.memberLimit;
+      tontine.targetAmount = (BigInt(contribution) * BigInt(members)).toString();
+    }
+
     return this.tontineRepo.save(tontine);
   }
 

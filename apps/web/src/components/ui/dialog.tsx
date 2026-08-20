@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -8,31 +9,59 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
-export function Dialog({ open, onOpenChange, children }: DialogProps) {
+export function Dialog({
+  open,
+  onOpenChange,
+  children,
+}: DialogProps) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   React.useEffect(() => {
     if (!open) return;
+
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onOpenChange(false);
+      if (e.key === 'Escape') {
+        onOpenChange(false);
+      }
     };
+
     document.addEventListener('keydown', onKeyDown);
+
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
     };
   }, [open, onOpenChange]);
 
-  if (!open) return null;
+  if (!mounted || !open) {
+    return null;
+  }
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+      role="presentation"
+    >
+      {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 z-0 bg-black/40 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
         aria-hidden="true"
       />
-      {children}
-    </div>
+
+      {/* Contenu */}
+      <div className="relative z-10 flex w-full justify-center">
+        {children}
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -77,15 +106,35 @@ export function DialogTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="text-lg font-semibold text-allness-dark">{children}</h2>;
 }
 
-export function DialogDescription({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-gray-500">{children}</p>;
+export function DialogDescription({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <p className="text-sm text-gray-500">
+      {children}
+    </p>
+  );
 }
 
-export function DialogFooter({ children }: { children: React.ReactNode }) {
-  return <div className="mt-6 flex justify-end gap-3">{children}</div>;
+export function DialogFooter({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-6 flex justify-end gap-3">
+      {children}
+    </div>
+  );
 }
 
-export function DialogClose({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
+export function DialogClose({
+  onOpenChange,
+}: {
+  onOpenChange: (open: boolean) => void;
+}) {
   return (
     <button
       type="button"

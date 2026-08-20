@@ -40,7 +40,7 @@ export function ConfirmDialog({
           <p className="text-sm text-gray-500">{description}</p>
         </div>
         <DialogFooter>
-          <Button  
+          <Button
             onClick={() => onOpenChange(false)}
             className="bg-gray-100 text-gray-500 hover:bg-gray-200" >
             {cancelLabel}

@@ -99,7 +99,6 @@ export function CreateTontineForm() {
       await tontineService.create({
         name: data.name,
         description: data.description,
-        targetAmount: Number(data.contribution),
         contributionAmount: Number(data.contribution),
         frequency,
         memberLimit: Number(data.memberLimit),

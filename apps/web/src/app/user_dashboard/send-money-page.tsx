@@ -176,12 +176,26 @@ export default function SendMoneyPage() {
     if (!selectedWallet?.id || !form.beneficiaryContact || !form.amount) return false;
 
     try {
-      await transactionService.createTransfer(selectedWallet.id, {
-        toWalletId: form.beneficiaryContact,
-        amount: form.amount,
-        description: form.receptionMode === 'wallet' ? 'Transfert' : undefined,
-        pin,
-      });
+      const isMobileMoney = form.receptionMode === 'mtn' || form.receptionMode === 'orange';
+
+      if (isMobileMoney) {
+        const phoneDigits = form.beneficiaryContact.replace(/\D/g, '');
+        const phoneWithPrefix = phoneDigits.length === 9 ? `237${phoneDigits}` : phoneDigits;
+
+        await transactionService.campayWithdraw({
+          walletNumber: selectedWallet.walletNumber,
+          amount: form.amount,
+          phone_number: phoneWithPrefix,
+          description: `Retrait via ${form.receptionMode === 'mtn' ? 'MTN Mobile Money' : 'Orange Money'}`,
+        });
+      } else {
+        await transactionService.createTransfer(selectedWallet.id, {
+          toWalletId: form.beneficiaryContact,
+          amount: form.amount,
+          description: form.receptionMode === 'wallet' ? 'Transfert' : undefined,
+          pin,
+        });
+      }
 
       setShowPinConfirm(false);
       setCompletedSteps((prev) => {

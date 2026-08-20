@@ -36,6 +36,12 @@ export interface TransferResult {
   to: { id: string; balance: number };
 }
 
+export interface CampayWithdrawResult {
+  transactionId: string;
+  status: string;
+  reference: string;
+}
+
 export const transactionService = {
   listByWallet: async (walletId: string): Promise<WalletTransaction[]> => {
     const res = await apiClient.get<WalletTransaction[]>(`/wallets/${walletId}/transactions`);
@@ -52,6 +58,16 @@ export const transactionService = {
     data: { toWalletId: string; amount: string; description?: string; pin: string },
   ): Promise<TransferResult> => {
     const res = await apiClient.post<TransferResult>(`/wallets/${walletId}/transfer`, data);
+    return res.data;
+  },
+
+  campayWithdraw: async (data: {
+    walletNumber: string;
+    amount: string;
+    phone_number: string;
+    description?: string;
+  }): Promise<CampayWithdrawResult> => {
+    const res = await apiClient.post<CampayWithdrawResult>('/payments/campay/withdraw', data);
     return res.data;
   },
 
