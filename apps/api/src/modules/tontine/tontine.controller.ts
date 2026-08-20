@@ -64,12 +64,13 @@ export class TontineController {
     return this.invitationService.findPendingByUserId(req.user.sub);
   }
 
+ 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtenir une tontine par ID' })
-  @ApiParam({ name: 'id', type: String })
-  findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
-    return this.tontineService.findOne(id, req.user.sub);
-  }
+@ApiOperation({ summary: 'Obtenir une tontine par ID' })
+@ApiParam({ name: 'id', type: String })
+findOne(@Param('id', ParseUUIDPipe) id: string) {
+  return this.tontineService.findOne(id);
+}
 
   @Patch(':id')
   @ApiOperation({ summary: 'Modifier une tontine (DRAFT uniquement)' })

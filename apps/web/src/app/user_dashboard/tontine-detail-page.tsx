@@ -65,7 +65,7 @@ export default function TontineDetailPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="px-4 sm:px-8 pb-10">
+      <div className=" pb-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <button
