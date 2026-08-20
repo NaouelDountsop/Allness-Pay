@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString, Length, Min, Max } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Length, Min } from 'class-validator';
 import { TontineFrequency } from '../entities/tontine.entity';
 
 export class CreateTontineDto {
@@ -13,10 +13,6 @@ export class CreateTontineDto {
 
   @IsInt()
   @Min(500)
-  targetAmount: number;
-
-  @IsInt()
-  @Min(500)
   contributionAmount: number;
 
   @IsEnum(TontineFrequency)
@@ -24,7 +20,7 @@ export class CreateTontineDto {
 
   @IsInt()
   @Min(2)
-  @Max(50)
+  // @Max(50)
   memberLimit: number;
 
   @IsOptional()

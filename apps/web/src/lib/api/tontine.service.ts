@@ -44,7 +44,6 @@ export interface Tontine {
 export interface CreateTontinePayload {
   name: string;
   description: string;
-  targetAmount: number;
   contributionAmount: number;
   frequency: string;
   memberLimit: number;

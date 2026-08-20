@@ -258,14 +258,27 @@ export class TransactionsService {
       .createQueryBuilder(WalletTransaction, 'wt')
       .select(
         `COALESCE(
-          SUM(CASE WHEN wt.type IN ('deposit', 'transfer_in') THEN wt.amount ELSE 0 END)
-          - SUM(CASE WHEN wt.type IN ('withdrawal', 'transfer_out') THEN wt.amount ELSE 0 END),
+          SUM(
+            CASE
+              WHEN wt.type IN ('deposit', 'transfer_in')
+                AND wt.status = '${WalletTransactionStatus.COMPLETED}'
+              THEN wt.amount
+              ELSE 0
+            END
+          )
+          - SUM(
+            CASE
+              WHEN wt.type IN ('withdrawal', 'transfer_out')
+                AND wt.status IN ('${WalletTransactionStatus.COMPLETED}', '${WalletTransactionStatus.PENDING}')
+              THEN wt.amount
+              ELSE 0
+            END
+          ),
           0
         )`,
         'balance',
       )
       .where('wt.walletId = :walletId', { walletId })
-      .andWhere('wt.status = :status', { status: WalletTransactionStatus.COMPLETED })
       .getRawOne<{ balance: string }>();
 
     return BigInt(result?.balance ?? '0');
@@ -274,7 +287,7 @@ export class TransactionsService {
   private assertNotTontine(wallet: Wallet): void {
     if (wallet.type === WalletType.TONTINE) {
       throw new BadRequestException(
-        'Les opérations sur un portefeuille tontine passent par le module tontine.',
+        'Les opérations sur un portefeuille tontine ne passent pas par ici.',
       );
     }
   }

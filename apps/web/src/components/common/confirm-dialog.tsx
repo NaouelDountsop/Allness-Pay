@@ -25,7 +25,8 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      {/* <DialogContent className="sm:max-w-md"> */}
+      <DialogContent className="sm:max-w-md z-[9999]">
         <div className="flex flex-col items-center text-center py-2">
           <span
             className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${

@@ -1,14 +1,12 @@
 ﻿import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff, Menu, Sun, Moon, Globe } from 'lucide-react';
+import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff } from 'lucide-react';
 import { userService } from '@/lib/api/user.service';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { getFlagUrl, getCountryCodeByName } from '@/data/countries';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
-import { usePreferences } from '@/hooks/use-preferences';
-import { useSidebar } from '@/components/user_dashboard/sidebar-context';
 
 export function DashboardHeader() {
   const navigate = useNavigate();
@@ -17,8 +15,6 @@ export function DashboardHeader() {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
-  const { toggleSidebar } = useSidebar();
 
   const { data: user } = useQuery({
     queryKey: ['profile'],
@@ -74,17 +70,12 @@ export function DashboardHeader() {
 
   return (
     <header
-      className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-white border-b border-gray-100 shadow-sm shrink-0"
+      className="sticky top-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4
+      bg-white mb-0 border-b border-gray-100
+      rounded-b-[1.5rem] sm:rounded-b-[2rem] shadow-sm
+      -mx-4 sm:-mx-6 lg:-mx-8"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <button
-          onClick={toggleSidebar}
-          className="md:hidden text-afrilink-dark hover:text-afrilink-orange flex items-center justify-center w-8 h-8"
-          aria-label="Menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
         <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-2 truncate">
           Bonjour, {firstName}
         </h1>
@@ -150,21 +141,6 @@ export function DashboardHeader() {
 
         {/* Desktop: profil statique */}
         <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-            title={langLabel === 'FR' ? 'English' : 'Français'}
-          >
-            <Globe className="w-3.5 h-3.5" />
-            {langLabel}
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-            title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
-          >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </button>
           <div className="w-8 h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {userName.charAt(0)}
           </div>

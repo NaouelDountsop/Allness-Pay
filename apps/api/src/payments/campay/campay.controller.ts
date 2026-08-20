@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Req, UseGuards, Logger } from '@nes
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CampayService } from './campay.service';
 import { CampayPaymentDto } from './dto/campay-payment.dto';
+import { CampayWithdrawDto } from './dto/campay-withdraw.dto';
 import { JwtAuthGuard } from '../../modules/auth/guards/jwt-auth.guard';
 
 interface AuthenticatedRequest extends Request {
@@ -57,6 +58,14 @@ export class CampayController {
     return this.campayService.requestPayment(dto, req.user.id);
   }
 
+  @Post('withdraw')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Retirer des fonds vers un compte mobile money via Campay' })
+  async createWithdraw(@Req() req: AuthenticatedRequest, @Body() dto: CampayWithdrawDto) {
+    return this.campayService.requestWithdraw(dto, req.user.id);
+  }
+
   @Get('status/:transactionId')
   @ApiOperation({ summary: "Récupérer le statut d'une transaction (pour polling frontend)" })
   async getStatus(@Param('transactionId') transactionId: string) {
@@ -83,5 +92,13 @@ export class CampayController {
     }
 
     return this.campayService.handleCallback(reference, status ?? 'UNKNOWN');
+  }
+
+  @Post('sync')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Synchroniser les transactions PENDING avec Campay (polling manuel)' })
+  async syncPending() {
+    return this.campayService.syncPendingTransactions();
   }
 }
