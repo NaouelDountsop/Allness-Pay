@@ -15,13 +15,13 @@ export function QrCodePanel({ onScanClick }: QrCodePanelProps) {
         </p>
         <button
           onClick={onScanClick}
-          className="h-10 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
+          className="h-10 px-4 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
         >
           <ScanLine className="w-4 h-4" />
           Scanner un QR Code
         </button>
       </div>
-      <div className="w-28 h-28 rounded-xl bg-afrilink-dark flex items-center justify-center shrink-0">
+      <div className="w-28 h-28 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
         <QrCode className="w-14 h-14 text-white/80" />
       </div>
     </div>

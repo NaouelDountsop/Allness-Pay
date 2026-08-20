@@ -9,7 +9,7 @@ export function KycProcessing() {
 
       <button
         onClick={() => navigate('/dashboard')}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors"
       >
         Retour au Tableau de Bord
       </button>

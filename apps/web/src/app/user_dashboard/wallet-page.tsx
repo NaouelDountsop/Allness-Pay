@@ -174,11 +174,11 @@ export default function WalletPage() {
         )}
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-afrilink-dark">Portefeuille</h1>
+          <h1 className="text-2xl font-semibold text-allness-dark">Portefeuille</h1>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setCreateWalletOpen(true)}
-              className="h-10 px-3 sm:px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
+              className="h-10 px-3 sm:px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Créer un portefeuille</span>

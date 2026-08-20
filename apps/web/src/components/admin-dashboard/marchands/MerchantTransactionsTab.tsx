@@ -45,7 +45,7 @@ export function MerchantTransactionsTab() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-          <p className="text-sm font-semibold text-afrilink-dark">Historique des Transactions</p>
+          <p className="text-sm font-semibold text-allness-dark">Historique des Transactions</p>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-gray-300 absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -78,7 +78,7 @@ export function MerchantTransactionsTab() {
               <tr key={i} className="border-b border-gray-50 last:border-0">
                 <td className="py-3 text-xs text-gray-500">{t.date}</td>
                 <td className="text-xs text-gray-600">{t.client}</td>
-                <td className="text-xs font-medium text-afrilink-dark">{t.amount}</td>
+                <td className="text-xs font-medium text-allness-dark">{t.amount}</td>
                 <td>
                   <Badge tone={t.tone} dot>
                     {t.status}

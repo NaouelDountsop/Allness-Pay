@@ -72,7 +72,7 @@ export function ReviewStep({
     <div className="text-base">
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark hover:text-afrilink-orange transition-colors mb-5"
+        className="flex items-center gap-2 text-sm font-semibold text-allness-dark hover:text-allness-orange transition-colors mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
         Retour
@@ -115,7 +115,7 @@ export function ReviewStep({
         </div>
 
         {/* Bénéficiaire */}
-        <div className="rounded-2xl border-2 border-afrilink-green/30 p-5 bg-afrilink-green/[0.02]">
+        <div className="rounded-2xl border-2 border-allness-green/30 p-5 bg-allness-green/[0.02]">
           <div className="flex items-center gap-3 mb-3">
             {country && (
               <img
@@ -142,11 +142,11 @@ export function ReviewStep({
       </div>
 
       {/* Mode de réception */}
-      <div className="mb-5 rounded-xl border-2 border-afrilink-green/20 bg-afrilink-green/[0.03] p-4">
+      <div className="mb-5 rounded-xl border-2 border-allness-green/20 bg-allness-green/[0.03] p-4">
         <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1">
           Mode de réception
         </p>
-        <p className="text-base font-semibold text-afrilink-dark">
+        <p className="text-base font-semibold text-allness-dark">
           {RECEPTION_LABELS[receptionMode] ?? 'Wallet AllnessPay'}
         </p>
       </div>
@@ -163,20 +163,20 @@ export function ReviewStep({
       <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 mb-4 space-y-3">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Taux de change</span>
-          <span className="text-afrilink-dark font-semibold">
+          <span className="text-allness-dark font-semibold">
             1 {senderCurrency} = {exchangeRate.toFixed(4)} {receiverCurrency}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Frais de transfert (1%)</span>
-          <span className="text-afrilink-dark font-semibold">
+          <span className="text-allness-dark font-semibold">
             {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
           </span>
         </div>
         <div className="border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-afrilink-dark">Total débité</span>
-            <span className="text-xl font-bold text-afrilink-dark">
+            <span className="text-sm font-semibold text-allness-dark">Total débité</span>
+            <span className="text-xl font-bold text-allness-dark">
               {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
             </span>
           </div>
@@ -195,7 +195,7 @@ export function ReviewStep({
 
       <button
         onClick={onSend}
-        className="w-full h-14 rounded-2xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-base font-semibold transition-colors mb-6"
+        className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors mb-6"
       >
         Envoyer
       </button>
@@ -214,7 +214,7 @@ export function ReviewStep({
                       credit ? 'bg-green-50' : 'bg-red-50'
                     }`}>
                       {credit ? (
-                        <ArrowDownLeft className="w-3 h-3 text-afrilink-green" />
+                        <ArrowDownLeft className="w-3 h-3 text-allness-green" />
                       ) : (
                         <ArrowUpRight className="w-3 h-3 text-red-500" />
                       )}
@@ -231,7 +231,7 @@ export function ReviewStep({
                       </p>
                     </div>
                   </div>
-                  <span className={`font-semibold ${credit ? 'text-afrilink-green' : 'text-red-500'}`}>
+                  <span className={`font-semibold ${credit ? 'text-allness-green' : 'text-red-500'}`}>
                     {credit ? '+' : '-'}{new Intl.NumberFormat('fr-FR').format(t.amount)} {senderCurrency}
                   </span>
                 </li>

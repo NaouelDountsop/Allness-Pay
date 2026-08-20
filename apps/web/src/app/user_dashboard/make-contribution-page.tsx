@@ -133,7 +133,7 @@ export default function MakeContributionPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -146,7 +146,7 @@ export default function MakeContributionPage() {
         <div className="px-4 sm:px-8 pb-10">
           <button
             onClick={() => navigate('/dashboard/tontines')}
-            className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-1"
+            className="flex items-center gap-2 text-lg font-semibold text-allness-dark mb-1"
           >
             <ArrowLeft className="w-5 h-5" />
             Effectuer un versement
@@ -164,19 +164,19 @@ export default function MakeContributionPage() {
         <div className="px-4 sm:px-8 pb-10">
           <div className="max-w-md mx-auto text-center py-16">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <CheckCircle className="w-10 h-10 text-afrilink-green" />
+              <CheckCircle className="w-10 h-10 text-allness-green" />
             </div>
-            <h2 className="text-xl font-bold text-afrilink-dark mb-2">Versement effectué !</h2>
+            <h2 className="text-xl font-bold text-allness-dark mb-2">Versement effectué !</h2>
             <p className="text-sm text-gray-500 mb-8">
               Votre contribution de{' '}
-              <span className="font-semibold text-afrilink-dark">
+              <span className="font-semibold text-allness-dark">
                 {new Intl.NumberFormat('fr-FR').format(Number(effectiveAmount))} {displayCurrency}
               </span>{' '}
               a été débitée de votre portefeuille.
             </p>
             <button
               onClick={() => navigate(`/dashboard/tontines/${id}`)}
-              className="h-11 px-6 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
+              className="h-11 px-6 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Retour à la tontine
             </button>
@@ -208,7 +208,7 @@ export default function MakeContributionPage() {
       <div className="px-4 sm:px-8 pb-10">
         <button
           onClick={() => navigate(`/dashboard/tontines/${id}`)}
-          className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-1"
+          className="flex items-center gap-2 text-lg font-semibold text-allness-dark mb-1"
         >
           <ArrowLeft className="w-5 h-5" />
           Effectuer un versement
@@ -255,7 +255,7 @@ export default function MakeContributionPage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="Ex: +237 6XX XXX XXX"
-                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
                   Numéro associé à votre compte Mobile Money
@@ -273,7 +273,7 @@ export default function MakeContributionPage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="Ex: +237 6XX XXX XXX"
-                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
                   Numéro associé à votre compte Orange Money
@@ -292,7 +292,7 @@ export default function MakeContributionPage() {
                   onChange={(e) => setCardNumber(e.target.value)}
                   placeholder="XXXX XXXX XXXX XXXX"
                   maxLength={19}
-                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
                   Entrez le numéro de votre carte bancaire
@@ -327,7 +327,7 @@ export default function MakeContributionPage() {
             <button
               onClick={handleConfirm}
               disabled={!isFormValid || contributionMutation.isPending || insufficientBalance || !wallet || (needsExternalInfo && !hasExternalInfo)}
-              className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed disabled:bg-green-200"
+              className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed disabled:bg-green-200"
             >
               {contributionMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

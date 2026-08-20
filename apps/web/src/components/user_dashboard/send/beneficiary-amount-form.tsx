@@ -8,11 +8,11 @@ import {
   Wallet,
   Building2,
   Smartphone,
+  Loader2,
 } from 'lucide-react';
 import { CountrySelect } from '@/components/common/country-select';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 import {
-  getExchangeRate,
   CURRENCY_SYMBOLS,
 } from '@/lib/mock/send-money-data';
 
@@ -31,7 +31,6 @@ export interface SenderInfo {
   country?: string;
   currency?: string;
   walletId?: string;
-  availableCurrencies?: string[];
 }
 
 interface BeneficiaryAmountFormProps {
@@ -39,6 +38,8 @@ interface BeneficiaryAmountFormProps {
   onChange: (field: keyof FormState, value: string) => void;
   onSubmit: () => void;
   sender?: SenderInfo;
+  exchangeRate?: number | null;
+  exchangeRateLoading?: boolean;
 }
 
 const RECEPTION_OPTIONS: {
@@ -53,7 +54,7 @@ const RECEPTION_OPTIONS: {
     label: 'Wallet AllnessPay',
     image: '/allnesspay_logo2.png',
     icon: Wallet,
-    color: 'text-afrilink-green',
+    color: 'text-allness-green',
   },
   {
     id: 'mtn',
@@ -119,19 +120,16 @@ function detectNetwork(digits: string, country: string): string | null {
   return null;
 }
 
-export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: BeneficiaryAmountFormProps) {
+export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading }: BeneficiaryAmountFormProps) {
   const amountNumber = parseFloat(form.amount) || 0;
-  const senderCurrency = sender?.currency ?? 'CAD';
+  const senderCurrency = sender?.currency ?? 'XAF';
 
-  const [senderCurrencyState, setSenderCurrencyState] = useState(senderCurrency);
-
-  const availableCurrencies = sender?.availableCurrencies ?? [senderCurrency];
   const receiverCurrency = COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
 
-  const exchangeRate = getExchangeRate(senderCurrencyState, receiverCurrency);
+  const exchangeRate = dbRate ?? (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amountNumber * 0.01;
   const totalDebit = amountNumber + fees;
-  const received = amountNumber * exchangeRate;
+  const received = exchangeRate ? amountNumber * exchangeRate : 0;
 
   const selectedCountry = useMemo(
     () => getCountryByCode(form.country) ?? getCountryByCode('CM')!,
@@ -211,13 +209,13 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
                 }}
                 className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                   isSelected
-                    ? 'border-afrilink-green bg-afrilink-green/[0.05] shadow-sm'
+                    ? 'border-allness-green bg-allness-green/[0.05] shadow-sm'
                     : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    isSelected ? 'bg-afrilink-green/10' : 'bg-gray-100'
+                    isSelected ? 'bg-allness-green/10' : 'bg-gray-100'
                   }`}
                 >
                   {option.image ? (
@@ -227,7 +225,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
                   )}
                 </div>
                 <span
-                  className={`text-sm font-medium ${isSelected ? 'text-afrilink-dark' : 'text-gray-600'}`}
+                  className={`text-sm font-medium ${isSelected ? 'text-allness-dark' : 'text-gray-600'}`}
                 >
                   {option.label}
                 </span>
@@ -240,20 +238,20 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {/* Expéditeur */}
         <div className="rounded-2xl border border-gray-200 p-5 bg-gray-50/60">
-          <p className="text-xs font-semibold text-afrilink-gray tracking-wider mb-2 uppercase">
-            Expéditeur ({sender?.country ?? 'Canada'})
+          <p className="text-xs font-semibold text-allness-gray tracking-wider mb-2 uppercase">
+            Expéditeur ({sender?.country ?? ''})
           </p>
-          <p className="text-lg font-semibold text-afrilink-dark">
+          <p className="text-lg font-semibold text-allness-dark">
             {sender?.fullName ?? 'Utilisateur'}
           </p>
           <p className="text-sm text-gray-500">
-            {senderCurrencyState} · {sender?.city ?? sender?.country ?? ''}
+            {senderCurrency}
           </p>
         </div>
 
         {/* Bénéficiaire */}
         <div className="rounded-2xl border border-gray-200 p-5 space-y-3">
-          <p className="text-xs font-semibold text-afrilink-gray tracking-wider uppercase">
+          <p className="text-xs font-semibold text-allness-gray tracking-wider uppercase">
             Bénéficiaire
           </p>
 
@@ -266,12 +264,12 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
                   showPhoneError
                     ? 'border-red-300 focus-within:border-red-400 focus-within:ring-red-200'
                     : isComplete
-                      ? 'border-afrilink-green focus-within:ring-afrilink-green/30'
-                      : 'border-gray-200 focus-within:border-afrilink-green focus-within:ring-afrilink-green/30'
+                      ? 'border-allness-green focus-within:ring-allness-green/30'
+                      : 'border-gray-200 focus-within:border-allness-green focus-within:ring-allness-green/30'
                 }`}
               >
                 {isPhoneMode && (
-                  <span className="flex items-center gap-1.5 h-full pl-4 pr-2 shrink-0 border-r border-gray-100 bg-gray-50/80 text-sm sm:text-base font-medium text-afrilink-dark select-none">
+                  <span className="flex items-center gap-1.5 h-full pl-4 pr-2 shrink-0 border-r border-gray-100 bg-gray-50/80 text-sm sm:text-base font-medium text-allness-dark select-none">
                     <img
                       src={getFlagUrl(selectedCountry.code)}
                       alt={selectedCountry.name}
@@ -281,8 +279,8 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
                   </span>
                 )}
                 {!isPhoneMode && (
-                  <span className="flex items-center gap-1.5 h-full pl-4 pr-2 shrink-0 border-r border-gray-100 bg-gray-50/80 text-sm font-medium text-afrilink-dark select-none">
-                    <Wallet className="w-4 h-4 text-afrilink-green" />
+                  <span className="flex items-center gap-1.5 h-full pl-4 pr-2 shrink-0 border-r border-gray-100 bg-gray-50/80 text-sm font-medium text-allness-dark select-none">
+                    <Wallet className="w-4 h-4 text-allness-green" />
                   </span>
                 )}
                 <input
@@ -293,7 +291,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
                   value={form.beneficiaryContact}
                   onChange={(e) => handleContactChange(e.target.value)}
                   onBlur={() => setTouched(true)}
-                  className="flex-1 min-w-0 h-full px-3 text-sm sm:text-base bg-white text-afrilink-dark placeholder:text-gray-400 focus:outline-none"
+                  className="flex-1 min-w-0 h-full px-3 text-sm sm:text-base bg-white text-allness-dark placeholder:text-gray-400 focus:outline-none"
                 />
               </div>
               {showPhoneError && (
@@ -315,37 +313,17 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
       <div className="mb-4">
         <label className="text-sm font-medium text-gray-700 mb-2 block">Vous envoyez</label>
 
-        {/* Sélecteur de devise visible */}
-        {availableCurrencies.length > 1 && (
-          <div className="flex items-center gap-2 mb-3">
-            {availableCurrencies.map((cur) => (
-              <button
-                key={cur}
-                type="button"
-                onClick={() => setSenderCurrencyState(cur)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  cur === senderCurrencyState
-                    ? 'bg-afrilink-green text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {CURRENCY_SYMBOLS[cur] ?? cur} {cur}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="flex items-center rounded-2xl border-2 border-gray-200 bg-white overflow-hidden focus-within:border-afrilink-green transition-colors">
-          <Banknote className="w-5 h-5 text-afrilink-orange ml-4 shrink-0" />
+        <div className="flex items-center rounded-2xl border-2 border-gray-200 bg-white overflow-hidden focus-within:border-allness-green transition-colors">
+          <Banknote className="w-5 h-5 text-allness-orange ml-4 shrink-0" />
           <input
             type="number"
             placeholder="0.00"
             value={form.amount}
             onChange={(e) => onChange('amount', e.target.value)}
-            className="flex-1 h-16 min-w-0 px-3 text-xl sm:text-2xl font-semibold text-afrilink-dark bg-white focus:outline-none"
+            className="flex-1 h-16 min-w-0 px-3 text-xl sm:text-2xl font-semibold text-allness-dark bg-white focus:outline-none"
           />
           <span className="px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold text-gray-500 border-l border-gray-100 bg-gray-50 shrink-0">
-            {CURRENCY_SYMBOLS[senderCurrencyState] ?? senderCurrencyState}
+            {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
           </span>
         </div>
       </div>
@@ -354,33 +332,44 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
       <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 mb-4 space-y-3">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Taux de change</span>
-          <span className="text-afrilink-dark font-semibold">
-            1 {senderCurrencyState} = {exchangeRate.toFixed(4)} {receiverCurrency}
-          </span>
+          {exchangeRateLoading ? (
+            <span className="flex items-center gap-1.5 text-gray-400">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Chargement...
+            </span>
+          ) : exchangeRate ? (
+            <span className="text-allness-dark font-semibold">
+              1 {senderCurrency} = {exchangeRate.toFixed(4)} {receiverCurrency}
+            </span>
+          ) : (
+            <span className="text-gray-400">Non disponible</span>
+          )}
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Frais de transfert (1%)</span>
-          <span className="text-afrilink-dark font-semibold">
-            {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrencyState] ?? senderCurrencyState}
+          <span className="text-allness-dark font-semibold">
+            {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
           </span>
         </div>
         <div className="border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-afrilink-dark">Total débité</span>
-            <span className="text-xl font-bold text-afrilink-dark">
-              {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrencyState] ?? senderCurrencyState}
+            <span className="text-sm font-semibold text-allness-dark">Total débité</span>
+            <span className="text-xl font-bold text-allness-dark">
+              {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
             </span>
           </div>
         </div>
       </div>
 
       {/* Bénéficiaire reçoit */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-afrilink-dark text-white px-5 py-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-allness-dark text-white px-5 py-4 mb-6">
         <span className="text-sm sm:text-base font-medium text-white/80">
           Le bénéficiaire reçoit
         </span>
-        <span className="text-xl sm:text-2xl font-bold text-afrilink-orange">
-          {new Intl.NumberFormat('fr-FR').format(received)} {receiverCurrency}
+        <span className="text-xl sm:text-2xl font-bold text-allness-orange">
+          {exchangeRate
+            ? `${new Intl.NumberFormat('fr-FR').format(received)} ${receiverCurrency}`
+            : '—'}
         </span>
       </div>
 
@@ -392,7 +381,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
           }
         }}
         disabled={!canSubmit}
-        className="w-full h-14 rounded-2xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
+        className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
       >
         Confirmer
         <ArrowRight className="w-4 h-4" />
@@ -400,7 +389,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
-          <ShieldCheck className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
+          <ShieldCheck className="w-4 h-4 text-allness-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium text-gray-700">Fonds Protégés</p>
             <p className="text-[11px] text-gray-500">
@@ -409,7 +398,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender }: Bene
           </div>
         </div>
         <div className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
-          <Lock className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
+          <Lock className="w-4 h-4 text-allness-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium text-gray-700">Transaction Sécurisée</p>
             <p className="text-[11px] text-gray-500">

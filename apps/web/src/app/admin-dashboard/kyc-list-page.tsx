@@ -78,13 +78,13 @@ export default function KycListPage() {
 
   return (
     <AdminLayout active="kyc">
-      <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion KYC</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-allness-dark mb-1">Gestion KYC</h1>
       <p className="text-sm text-gray-400 mb-6">
         Validez les documents d'identité et suivez le niveau de conformité des utilisateurs.
       </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
               <Files className="w-5 h-5 text-blue-400" />
@@ -94,7 +94,7 @@ export default function KycListPage() {
           <p className="text-2xl font-bold text-white">{String(stats?.kyc.total ?? 0)}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-green-400" />
@@ -104,7 +104,7 @@ export default function KycListPage() {
           <p className="text-2xl font-bold text-white">{String(stats?.kyc.approved ?? 0)}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
               <Clock className="w-5 h-5 text-amber-400" />
@@ -114,7 +114,7 @@ export default function KycListPage() {
           <p className="text-2xl font-bold text-white">{String(stats?.kyc.pending ?? 0)}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-400" />
@@ -136,7 +136,7 @@ export default function KycListPage() {
                 placeholder="Rechercher par nom ou ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-9 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="h-9 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
               />
             </div>
             <button
@@ -154,7 +154,7 @@ export default function KycListPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+            <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
           </div>
         ) : error ? (
           <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
@@ -193,11 +193,11 @@ export default function KycListPage() {
                     <tr key={row.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+                          <span className="w-8 h-8 rounded-full bg-allness-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
                             {initials}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-afrilink-dark truncate">
+                            <p className="text-xs font-medium text-allness-dark truncate">
                               {displayName}
                             </p>
                             <p className="text-[11px] text-gray-400">
@@ -216,7 +216,7 @@ export default function KycListPage() {
                       <td className="text-right">
                         <button
                           onClick={() => navigate(`/admin/kyc/${row.id}`)}
-                          className="h-8 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
+                          className="h-8 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
                         >
                           Examiner
                         </button>

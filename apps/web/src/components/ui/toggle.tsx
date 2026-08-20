@@ -11,7 +11,7 @@ export function Toggle({
       aria-checked={checked}
       onClick={() => onChange?.(!checked)}
       className={`w-10 h-5.5 rounded-full transition-colors relative shrink-0 ${
-        checked ? 'bg-afrilink-green' : 'bg-gray-200'
+        checked ? 'bg-allness-green' : 'bg-gray-200'
       }`}
     >
       <span

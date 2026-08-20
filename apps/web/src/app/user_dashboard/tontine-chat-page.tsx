@@ -200,7 +200,7 @@ function ConversationItem({
       onClick={onClick}
       className={`flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition ${
         conversation.active
-          ? 'border-l-4 border-l-afrilink-green bg-afrilink-green/5'
+          ? 'border-l-4 border-l-allness-green bg-allness-green/5'
           : 'hover:bg-gray-50'
       }`}
     >
@@ -211,7 +211,7 @@ function ConversationItem({
           className="h-11 w-11 rounded-full object-cover"
         />
         {conversation.active && (
-          <span className="absolute right-0 top-0 h-3 w-3 rounded-full border-2 border-white bg-afrilink-green" />
+          <span className="absolute right-0 top-0 h-3 w-3 rounded-full border-2 border-white bg-allness-green" />
         )}
       </div>
       <div className="min-w-0 flex-1">
@@ -225,7 +225,7 @@ function ConversationItem({
             {preview}
           </p>
           {conversation.unreadCount ? (
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-afrilink-green text-[11px] font-semibold text-white">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-allness-green text-[11px] font-semibold text-white">
               {conversation.unreadCount}
             </span>
           ) : null}
@@ -242,9 +242,9 @@ function MessageBubble({ message }: { message: Message }) {
         <div className="max-w-[70%]">
           <div className="flex items-center justify-end gap-1.5">
             <span className="text-[11px] text-gray-400">{message.time}</span>
-            {message.read ? <span className="text-[11px] text-afrilink-green">✓✓</span> : null}
+            {message.read ? <span className="text-[11px] text-allness-green">✓✓</span> : null}
           </div>
-          <div className="mt-1 rounded-2xl rounded-br-sm bg-afrilink-green px-4 py-2.5 text-sm text-white">
+          <div className="mt-1 rounded-2xl rounded-br-sm bg-allness-green px-4 py-2.5 text-sm text-white">
             {message.content}
           </div>
           {message.reactions?.length ? (
@@ -335,7 +335,7 @@ function MemberRow({ member }: { member: Member }) {
       {member.role === 'Admin' ? (
         <span className="text-xs text-gray-400">Admin</span>
       ) : member.role === 'Prochain tour' ? (
-        <span className="rounded-full bg-afrilink-green/10 px-2.5 py-1 text-[11px] font-semibold text-afrilink-green">
+        <span className="rounded-full bg-allness-green/10 px-2.5 py-1 text-[11px] font-semibold text-allness-green">
           Prochain tour
         </span>
       ) : (
@@ -392,7 +392,7 @@ function ChatArea({
               <p className="text-sm font-semibold text-gray-900">
                 {tontine?.name ?? conversation.name}
               </p>
-              <span className="rounded-full bg-afrilink-green/10 px-2 py-0.5 text-[11px] font-semibold text-afrilink-green">
+              <span className="rounded-full bg-allness-green/10 px-2 py-0.5 text-[11px] font-semibold text-allness-green">
                 {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
               </span>
             </div>
@@ -435,7 +435,7 @@ function ChatArea({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
-            <button className="text-xs font-medium text-afrilink-green">Voir</button>
+            <button className="text-xs font-medium text-allness-green">Voir</button>
             <button
               onClick={() => setPinnedVisible(false)}
               className="text-gray-400 hover:text-gray-600"
@@ -454,9 +454,9 @@ function ChatArea({
         <MessageBubble message={MESSAGES[3]!} />
 
         <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-afrilink-green/20" />
-          <span className="text-xs font-medium text-afrilink-green">Nouveaux messages</span>
-          <div className="h-px flex-1 bg-afrilink-green/20" />
+          <div className="h-px flex-1 bg-allness-green/20" />
+          <span className="text-xs font-medium text-allness-green">Nouveaux messages</span>
+          <div className="h-px flex-1 bg-allness-green/20" />
         </div>
 
         <MessageBubble message={MESSAGES[4]!} />
@@ -478,7 +478,7 @@ function ChatArea({
         </button>
         <button
           onClick={handleSend}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-afrilink-green text-white hover:bg-afrilink-green/90"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-allness-green text-white hover:bg-allness-green/90"
           aria-label="Envoyer"
         >
           <Send className="h-4 w-4" />
@@ -508,7 +508,7 @@ function TontineAboutPanel({
         <p className="mt-3 text-sm font-semibold text-gray-900">
           {tontine?.name ?? 'Tontine Famille Unie'}
         </p>
-        <span className="mt-1 rounded-full bg-afrilink-green/10 px-2.5 py-0.5 text-[11px] font-semibold text-afrilink-green">
+        <span className="mt-1 rounded-full bg-allness-green/10 px-2.5 py-0.5 text-[11px] font-semibold text-allness-green">
           {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
         </span>
       </div>
@@ -567,7 +567,7 @@ function TontineAboutPanel({
           <p className="text-sm font-semibold text-gray-900">
             Membres ({tontine?.members?.length ?? 12})
           </p>
-          <button className="text-xs font-medium text-afrilink-green">Voir tout</button>
+          <button className="text-xs font-medium text-allness-green">Voir tout</button>
         </div>
         <div className="mt-1 divide-y divide-gray-50">
           {(members ?? MEMBERS).map((m) => {
@@ -594,7 +594,7 @@ function TontineAboutPanel({
       <div className="mt-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-gray-900">Fichiers partagés</p>
-          <button className="text-xs font-medium text-afrilink-green">Voir tout</button>
+          <button className="text-xs font-medium text-allness-green">Voir tout</button>
         </div>
         <div className="mt-2 flex items-center justify-between rounded-2xl bg-gray-50 p-3">
           <div className="flex items-center gap-2.5">
@@ -637,7 +637,7 @@ export default function TontineChatPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex h-[calc(100vh-140px)] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-afrilink-green" />
+          <Loader2 className="h-8 w-8 animate-spin text-allness-green" />
         </div>
       </DashboardLayout>
     );
@@ -656,7 +656,7 @@ export default function TontineChatPage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
+              className="mt-4 rounded-full border-allness-green text-allness-green hover:bg-allness-green/5"
               onClick={() => navigate('/dashboard/tontines')}
             >
               Retour aux tontines
@@ -744,7 +744,7 @@ export default function TontineChatPage() {
             <Button
               variant="outline"
               size="sm"
-              className="w-full rounded-full border-afrilink-green text-afrilink-green hover:bg-afrilink-green/5"
+              className="w-full rounded-full border-allness-green text-allness-green hover:bg-allness-green/5"
               onClick={() => navigate('/dashboard/tontines/create')}
             >
               <Plus className="mr-2 h-4 w-4" />

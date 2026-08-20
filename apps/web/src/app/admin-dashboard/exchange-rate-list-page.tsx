@@ -139,7 +139,7 @@ function RateRow({
   return (
     <tr
       className={`border-b border-gray-50 last:border-0 cursor-pointer transition-colors ${
-        isSelected ? 'bg-afrilink-orange/5' : 'hover:bg-gray-50/50'
+        isSelected ? 'bg-allness-orange/5' : 'hover:bg-gray-50/50'
       }`}
       onClick={onSelect}
     >
@@ -161,7 +161,7 @@ function RateRow({
       <td className="px-3 py-2.5">
         <span
           className={`inline-flex items-center gap-0.5 font-medium ${
-            rate.isActive ? 'text-afrilink-green' : 'text-gray-400'
+            rate.isActive ? 'text-allness-green' : 'text-gray-400'
           }`}
         >
           {rate.isActive ? (
@@ -290,7 +290,7 @@ export default function ExchangeRatesPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-lg font-bold text-afrilink-dark">Taux de change</h1>
+            <h1 className="text-lg font-bold text-allness-dark">Taux de change</h1>
             <p className="text-xs text-gray-400">Gérez les devises et les taux de change de la plateforme.</p>
           </div>
         </div>
@@ -315,7 +315,7 @@ export default function ExchangeRatesPage() {
           </Button>
           <Button
             size="sm"
-            className="rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs"
+            className="rounded-lg bg-allness-dark text-white hover:bg-allness-dark/90 text-xs"
             onClick={() => navigate('/admin/taux-de-change/nouveau')}
           >
             <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -329,7 +329,7 @@ export default function ExchangeRatesPage() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-afrilink-dark rounded-xl p-4">
+            <div key={stat.label} className="bg-allness-dark rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                   <Icon className={`w-4 h-4 ${stat.color}`} />
@@ -357,7 +357,7 @@ export default function ExchangeRatesPage() {
                 }}
                 className={`border-b-2 pb-2 text-xs font-medium transition whitespace-nowrap ${
                   activeTab === tab
-                    ? 'border-afrilink-orange text-afrilink-orange'
+                    ? 'border-allness-orange text-allness-orange'
                     : 'border-transparent text-gray-400 hover:text-gray-600'
                 }`}
               >
@@ -389,7 +389,7 @@ export default function ExchangeRatesPage() {
                   setBaseFilter(e.target.value);
                   setPage(1);
                 }}
-                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Base</option>
                 {currencyCodes.map((c) => (
@@ -402,7 +402,7 @@ export default function ExchangeRatesPage() {
                   setTargetFilter(e.target.value);
                   setPage(1);
                 }}
-                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Cible</option>
                 {currencyCodes.map((c) => (
@@ -415,7 +415,7 @@ export default function ExchangeRatesPage() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[11px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Statut</option>
                 <option value="actif">Actif</option>
@@ -441,7 +441,7 @@ export default function ExchangeRatesPage() {
           <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-5 h-5 text-afrilink-orange animate-spin" />
+                <Loader2 className="w-5 h-5 text-allness-orange animate-spin" />
               </div>
             ) : (
               <>
@@ -497,7 +497,7 @@ export default function ExchangeRatesPage() {
                         key={n}
                         onClick={() => setPage(n)}
                         className={`rounded px-2 py-1 text-[11px] font-medium ${
-                          page === n ? 'bg-afrilink-dark text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                          page === n ? 'bg-allness-dark text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                         }`}
                       >
                         {n}
@@ -554,7 +554,7 @@ export default function ExchangeRatesPage() {
                 </div>
                 <div className="mt-3 space-y-2">
                   <Button
-                    className="w-full rounded-lg bg-afrilink-dark text-white hover:bg-afrilink-dark/90 text-xs"
+                    className="w-full rounded-lg bg-allness-dark text-white hover:bg-allness-dark/90 text-xs"
                     onClick={() => navigate(`/admin/taux-de-change/${selectedRate.fromCurrencyCode}-${selectedRate.toCurrencyCode}/modifier`)}
                   >
                     Modifier le taux

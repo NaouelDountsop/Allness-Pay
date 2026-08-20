@@ -46,13 +46,13 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
       {pending.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="w-6 h-6 rounded-full bg-afrilink-orange/10 flex items-center justify-center">
-              <UserPlus className="w-3.5 h-3.5 text-afrilink-orange" />
+            <span className="w-6 h-6 rounded-full bg-allness-orange/10 flex items-center justify-center">
+              <UserPlus className="w-3.5 h-3.5 text-allness-orange" />
             </span>
-            <h3 className="text-sm font-semibold text-afrilink-dark">
+            <h3 className="text-sm font-semibold text-allness-dark">
               Invitations en attente
             </h3>
-            <span className="ml-auto text-[11px] font-medium bg-afrilink-orange/10 text-afrilink-orange px-2 py-0.5 rounded-full">
+            <span className="ml-auto text-[11px] font-medium bg-allness-orange/10 text-allness-orange px-2 py-0.5 rounded-full">
               {pending.length}
             </span>
           </div>
@@ -61,14 +61,14 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
               <button
                 key={inv.id}
                 onClick={() => onInvitationClick?.(inv)}
-                className="rounded-xl border border-afrilink-orange/20 bg-afrilink-orange/5 p-4 flex items-center justify-between gap-3 text-left hover:bg-afrilink-orange/10 transition-colors cursor-pointer group"
+                className="rounded-xl border border-allness-orange/20 bg-allness-orange/5 p-4 flex items-center justify-between gap-3 text-left hover:bg-allness-orange/10 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="w-10 h-10 rounded-xl bg-afrilink-orange/15 flex items-center justify-center shrink-0">
-                    <UserPlus className="w-4.5 h-4.5 text-afrilink-orange" />
+                  <span className="w-10 h-10 rounded-xl bg-allness-orange/15 flex items-center justify-center shrink-0">
+                    <UserPlus className="w-4.5 h-4.5 text-allness-orange" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-afrilink-dark truncate">
+                    <p className="text-sm font-semibold text-allness-dark truncate">
                       <InvitationTontine tontineId={inv.tontineId} />
                     </p>
                     <p className="text-xs text-gray-500 truncate">
@@ -83,10 +83,10 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-1">
-                  <span className="text-[10px] font-medium text-afrilink-orange opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] font-medium text-allness-orange opacity-0 group-hover:opacity-100 transition-opacity">
                     Voir
                   </span>
-                  <Check className="w-4 h-4 text-afrilink-orange" />
+                  <Check className="w-4 h-4 text-allness-orange" />
                 </div>
               </button>
             ))}
@@ -124,7 +124,7 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                     Refusée
                   </span>
                 ) : (
-                  <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-afrilink-orange px-2.5 py-1 rounded-full">
+                  <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-allness-orange px-2.5 py-1 rounded-full">
                     Expirée
                   </span>
                 )}

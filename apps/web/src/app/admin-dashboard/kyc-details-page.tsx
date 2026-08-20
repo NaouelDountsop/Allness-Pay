@@ -42,7 +42,7 @@ function fileUrl(path: string) {
   if (!path) return '';
   try {
     const url = new URL(path);
-    return url.pathname;
+    return url.href;
   } catch {
     return path;
   }
@@ -93,7 +93,7 @@ export default function KycDetailPage() {
     <AdminLayout active="kyc">
       <button
         onClick={() => navigate('/admin/kyc')}
-        className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark mb-5"
+        className="flex items-center gap-2 text-sm font-semibold text-allness-dark mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
         Détails de la validation KYC
@@ -101,7 +101,7 @@ export default function KycDetailPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
         </div>
       ) : error && !record ? (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
@@ -119,7 +119,7 @@ export default function KycDetailPage() {
                 }
                 size="lg"
               />
-              <p className="text-sm font-bold text-afrilink-dark mt-3">
+              <p className="text-sm font-bold text-allness-dark mt-3">
                 {record.userName && record.userNom
                   ? `${record.userName} ${record.userNom}`
                   : `Utilisateur #${record.userId}`}
@@ -142,6 +142,9 @@ export default function KycDetailPage() {
                     src={fileUrl(record.documentFrontUrl)}
                     alt="Document recto"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder-doc.svg';
+                    }}
                   />
                 </div>
                 {record.documentBackUrl ? (
@@ -150,6 +153,9 @@ export default function KycDetailPage() {
                       src={fileUrl(record.documentBackUrl)}
                       alt="Document verso"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder-doc.svg';
+                      }}
                     />
                   </div>
                 ) : (
@@ -174,11 +180,14 @@ export default function KycDetailPage() {
                     src={fileUrl(record.selfieUrl)}
                     alt="Selfie"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder-doc.svg';
+                    }}
                   />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Selfie de vérification</p>
-                  <p className="text-sm font-medium text-afrilink-dark">
+                  <p className="text-sm font-medium text-allness-dark">
                     Soumis le {formatDate(record.createdAt)}
                   </p>
                 </div>
@@ -192,6 +201,9 @@ export default function KycDetailPage() {
                     src={fileUrl(record.proofOfAddressUrl)}
                     alt="Justificatif de domicile"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder-doc.svg';
+                    }}
                   />
                 </div>
                 <div className="flex flex-col gap-3">
@@ -217,7 +229,7 @@ export default function KycDetailPage() {
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                   placeholder="Ajoutez un commentaire pour justifier votre décision"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange resize-none mb-4"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange resize-none mb-4"
                 />
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
@@ -231,7 +243,7 @@ export default function KycDetailPage() {
                   <button
                     onClick={() => handleReview('APPROVED')}
                     disabled={isReviewing}
-                    className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1 disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
                     Approuver

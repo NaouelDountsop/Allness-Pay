@@ -20,7 +20,7 @@ export default function PaymentsPage() {
       <div>
         <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-afrilink-dark mb-1">Paiements & Services</h1>
+            <h1 className="text-2xl font-bold text-allness-dark mb-1">Paiements & Services</h1>
             <p className="text-sm text-gray-500 line-clamp-2">
               Réglez vos factures, achetez du crédit et accédez à une multitude de services en
               quelques clics, en toute sécurité.
@@ -31,7 +31,7 @@ export default function PaymentsPage() {
               <Star className="w-4 h-4" />
               <span className="hidden sm:inline">Favoris</span>
             </button>
-            <button className="h-9 px-3 sm:px-4 rounded-lg border border-afrilink-orange text-afrilink-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2">
+            <button className="h-9 px-3 sm:px-4 rounded-lg border border-allness-orange text-allness-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2">
               <History className="w-4 h-4" />
               <span className="hidden sm:inline">Historique</span>
             </button>

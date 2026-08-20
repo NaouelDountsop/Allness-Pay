@@ -113,11 +113,11 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
         {/* Panneau gauche */}
-        <div className="w-full md:w-[45%] bg-gradient-to-b from-afrilink-dark to-afrilink-darker text-white p-8 sm:p-10 flex flex-col">
+        <div className="w-full md:w-[45%] bg-gradient-to-b from-allness-dark to-allness-darker text-white p-8 sm:p-10 flex flex-col">
           <div className="flex items-center gap-2 mb-10">
             <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain" />
             <span className="text-lg font-bold">
-              Allness<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
 
@@ -134,8 +134,8 @@ export default function VerifyEmailPage() {
 
           <div className="mt-auto space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full bg-afrilink-orange/15 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 text-afrilink-orange" />
+              <div className="w-11 h-11 rounded-full bg-allness-orange/15 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 text-allness-orange" />
               </div>
               <div>
                 <p className="text-sm font-semibold">Vérification en 2 étapes</p>
@@ -149,14 +149,14 @@ export default function VerifyEmailPage() {
               <p className="text-xs text-white/70 italic leading-relaxed">
                 "En quelques secondes, mon compte était vérifié. Simple, rapide et rassurant."
               </p>
-              <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
+              <div className="w-2 h-2 rounded-full bg-allness-orange absolute -bottom-1 left-4" />
             </div>
           </div>
         </div>
 
         {/* Panneau droit */}
         <div className="flex-1 p-8 sm:p-10 flex flex-col justify-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-allness-dark mb-3">
             Vérifiez votre adresse e-mail
           </h2>
 
@@ -183,7 +183,7 @@ export default function VerifyEmailPage() {
                 className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-semibold rounded-lg border bg-white text-gray-900 focus:outline-none focus:ring-2 transition-colors ${
                   i === 0
                     ? 'border-blue-400 focus:ring-blue-300'
-                    : 'border-afrilink-orange/50 focus:ring-afrilink-orange/40'
+                    : 'border-allness-orange/50 focus:ring-allness-orange/40'
                 }`}
               />
             ))}
@@ -203,7 +203,7 @@ export default function VerifyEmailPage() {
           <button
             onClick={handleVerify}
             disabled={loading}
-            className="w-full h-12 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full h-12 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
             {loading ? 'Vérification...' : 'Vérifier le code'}
@@ -216,7 +216,7 @@ export default function VerifyEmailPage() {
               className={`text-sm ${
                 countdown > 0
                   ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-afrilink-green font-medium hover:underline'
+                  : 'text-allness-green font-medium hover:underline'
               }`}
             >
               Renvoyer le code

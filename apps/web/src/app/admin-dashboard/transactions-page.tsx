@@ -111,7 +111,7 @@ export default function AdminTransactionsPage() {
     <AdminLayout active="Transactions">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion des Transactions</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-allness-dark mb-1">Gestion des Transactions</h1>
           <p className="text-sm text-gray-400">
             Surveillez, filtrez et intervenez sur l'ensemble des flux financiers.
           </p>
@@ -119,7 +119,7 @@ export default function AdminTransactionsPage() {
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           Exporter CSV
@@ -128,7 +128,7 @@ export default function AdminTransactionsPage() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
               <Wallet className="w-5 h-5 text-blue-400" />
@@ -140,7 +140,7 @@ export default function AdminTransactionsPage() {
           </p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
               <ShieldCheck className="w-5 h-5 text-green-400" />
@@ -150,7 +150,7 @@ export default function AdminTransactionsPage() {
           <p className="text-2xl font-bold text-white">{txData?.totalItems ?? 0}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-400" />
@@ -161,7 +161,7 @@ export default function AdminTransactionsPage() {
           <p className="text-xs text-red-400">✕ À traiter</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
               <ShieldAlert className="w-5 h-5 text-amber-400" />
@@ -177,7 +177,7 @@ export default function AdminTransactionsPage() {
           <select
             value={typeFilter}
             onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Tous les types</option>
             <option value="deposit">Dépôt</option>
@@ -188,7 +188,7 @@ export default function AdminTransactionsPage() {
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Tous les statuts</option>
             <option value="COMPLETED">Complété</option>
@@ -206,7 +206,7 @@ export default function AdminTransactionsPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+            <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
           </div>
         ) : (
           <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
@@ -228,13 +228,13 @@ export default function AdminTransactionsPage() {
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
-                        <p className="text-xs font-medium text-afrilink-dark truncate">{t.user}</p>
+                        <p className="text-xs font-medium text-allness-dark truncate">{t.user}</p>
                         <p className="text-[11px] text-gray-400">{t.reference}</p>
                       </td>
                       <td className="text-xs text-gray-600 hidden sm:table-cell">
                         {TYPE_LABELS[t.type] ?? t.type}
                       </td>
-                      <td className={`text-xs font-medium ${isCredit ? 'text-afrilink-green' : 'text-afrilink-dark'}`}>
+                      <td className={`text-xs font-medium ${isCredit ? 'text-allness-green' : 'text-allness-dark'}`}>
                         {formatAmount(t.amount, t.type)}
                       </td>
                       <td>
@@ -248,7 +248,7 @@ export default function AdminTransactionsPage() {
                       <td className="text-right">
                         <button
                           onClick={() => setSelected(t)}
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
+                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark ml-auto"
                           aria-label="Voir"
                         >
                           <Eye className="w-3.5 h-3.5" />

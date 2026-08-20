@@ -71,12 +71,12 @@ export default function Tontines() {
           <div className="relative z-10">
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-3 rounded-full bg-afrilink-green/10 px-5 py-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full text-afrilink-dark">
+            <div className="inline-flex items-center gap-3 rounded-full bg-allness-green/10 px-5 py-3">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full text-allness-dark">
                 <Users className="h-5 w-5" />
               </span>
 
-              <span className="text-xs font-bold uppercase tracking-wide text-afrilink-dark sm:text-sm">
+              <span className="text-xs font-bold uppercase tracking-wide text-allness-dark sm:text-sm">
                 Épargnez ensemble, réalisez plus
               </span>
             </div>
@@ -93,11 +93,11 @@ export default function Tontines() {
                 tracking-tight
               "
             >
-              <span className="block text-afrilink-dark">
+              <span className="block text-allness-dark">
                 Tontines
               </span>
 
-              <span className="block text-afrilink-orange">
+              <span className="block text-allness-orange">
                 Digitales
               </span>
             </h2>
@@ -128,7 +128,7 @@ export default function Tontines() {
                 items-center
                 gap-3
                 rounded-full
-                bg-afrilink-green
+                bg-allness-green
                 px-7
                 py-4
                 text-sm
@@ -138,7 +138,7 @@ export default function Tontines() {
                 transition-all
                 duration-300
                 hover:-translate-y-1
-                hover:bg-afrilink-greenHover
+                hover:bg-allness-greenHover
                 hover:shadow-lg
               "
             >
@@ -161,7 +161,7 @@ export default function Tontines() {
                     className="
                       rounded-2xl
                       border
-                      border-afrilink-dark/10
+                      border-allness-dark/10
                       bg-white
                       p-5
                       shadow-[0_8px_30px_rgba(8,43,55,0.06)]
@@ -180,10 +180,10 @@ export default function Tontines() {
                         items-center
                         justify-center
                         rounded-full
-                        bg-afrilink-green/10
+                        bg-allness-green/10
                       "
                     >
-                      <Icon className="h-5 w-5 text-afrilink-green" />
+                      <Icon className="h-5 w-5 text-allness-green" />
                     </div>
 
                     {/* Titre */}
@@ -194,7 +194,7 @@ export default function Tontines() {
                         text-sm
                         font-extrabold
                         leading-5
-                        text-afrilink-dark
+                        text-allness-dark
                       "
                     >
                       {stat.title}
@@ -228,13 +228,13 @@ export default function Tontines() {
                 gap-4
                 rounded-2xl
                 border
-                border-afrilink-green/10
-                bg-afrilink-green/[0.045]
+                border-allness-green/10
+                bg-allness-green/[0.045]
                 px-5
                 py-4
                 transition-all
                 duration-300
-                hover:bg-afrilink-green/[0.08]
+                hover:bg-allness-green/[0.08]
               "
             >
               {/* Icon */}
@@ -247,10 +247,10 @@ export default function Tontines() {
                   items-center
                   justify-center
                   rounded-full
-                  bg-afrilink-green/10
+                  bg-allness-green/10
                 "
               >
-                <Users className="h-6 w-6 text-afrilink-dark" />
+                <Users className="h-6 w-6 text-allness-dark" />
               </div>
 
               {/* Texte */}
@@ -260,7 +260,7 @@ export default function Tontines() {
                     font-heading
                     text-sm
                     font-extrabold
-                    text-afrilink-dark
+                    text-allness-dark
                     sm:text-base
                   "
                 >
@@ -278,7 +278,7 @@ export default function Tontines() {
                   h-6
                   w-6
                   shrink-0
-                  text-afrilink-orange
+                  text-allness-orange
                 "
               />
             </div>
@@ -307,7 +307,7 @@ export default function Tontines() {
                 h-[80%]
                 w-[80%]
                 rounded-full
-                bg-afrilink-green/[0.07]
+                bg-allness-green/[0.07]
                 blur-[2px]
               "
             /> */}
@@ -321,7 +321,7 @@ export default function Tontines() {
                 h-[65%]
                 w-[65%]
                 rounded-full
-                bg-afrilink-green/[0.06]
+                bg-allness-green/[0.06]
                 blur-3xl
               "
             /> */}
@@ -337,7 +337,7 @@ export default function Tontines() {
                 rounded-full
                 border-2
                 border-dashed
-                border-afrilink-orange/70
+                border-allness-orange/70
               "
             /> */}
 
@@ -349,7 +349,7 @@ export default function Tontines() {
                 top-[4%]
                 z-10
                 rotate-[-20deg]
-                text-afrilink-orange
+                text-allness-orange
               "
             >
               <ArrowRight className="h-8 w-8" />
@@ -374,7 +374,7 @@ export default function Tontines() {
                     h-2
                     w-2
                     rounded-full
-                    bg-afrilink-green/30
+                    bg-allness-green/30
                   "
                 />
               ))}
@@ -410,12 +410,12 @@ export default function Tontines() {
             overflow-hidden
             rounded-3xl
             border
-            border-afrilink-dark/10
+            border-allness-dark/10
             bg-white
             shadow-[0_10px_35px_rgba(8,43,55,0.07)]
           "
         >
-          <div className="grid grid-cols-1 divide-y divide-afrilink-dark/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+          <div className="grid grid-cols-1 divide-y divide-allness-dark/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
 
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
@@ -432,7 +432,7 @@ export default function Tontines() {
                     py-6
                     transition-all
                     duration-300
-                    hover:bg-afrilink-green/[0.035]
+                    hover:bg-allness-green/[0.035]
                   "
                 >
 
@@ -446,21 +446,21 @@ export default function Tontines() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-green/10
+                      bg-allness-green/10
                       transition-all
                       duration-300
                       group-hover:scale-105
-                      group-hover:bg-afrilink-green/15
+                      group-hover:bg-allness-green/15
                     "
                   >
                     <Icon
                       className="
                         h-6
                         w-6
-                        text-afrilink-dark
+                        text-allness-dark
                         transition-colors
                         duration-300
-                        group-hover:text-afrilink-green
+                        group-hover:text-allness-green
                       "
                     />
                   </div>
@@ -472,7 +472,7 @@ export default function Tontines() {
                         font-heading
                         text-sm
                         font-extrabold
-                        text-afrilink-dark
+                        text-allness-dark
                       "
                     >
                       {feature.title}

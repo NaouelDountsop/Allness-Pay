@@ -29,7 +29,7 @@ export function KycDocumentStep({
 
   return (
     <div>
-      {/* <h2 className="text-xl font-bold text-afrilink-dark mb-1">
+      {/* <h2 className="text-xl font-bold text-allness-dark mb-1">
         Téléverser votre document
       </h2> */}
       <p className="text-sm text-gray-500 mb-5">
@@ -44,7 +44,7 @@ export function KycDocumentStep({
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm transition-colors ${
               docType === value
-                ? 'bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange'
+                ? 'bg-allness-orange/10 text-allness-orange border-allness-orange'
                 : 'border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
@@ -82,7 +82,7 @@ export function KycDocumentStep({
       <button
         onClick={() => onNext({ docType, front, back })}
         disabled={!front || !back}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50"
       >
         Suivant →
       </button>
@@ -90,7 +90,7 @@ export function KycDocumentStep({
       <p className="text-center text-xs text-gray-400 mt-4">
         En continuant, vous acceptez que Allness pay traite vos données personnelles conformément à
         notre{' '}
-        <a href="/confidentialite" className="text-afrilink-green font-medium">
+        <a href="/confidentialite" className="text-allness-green font-medium">
           Politique de Confidentialité
         </a>
         .

@@ -328,7 +328,7 @@ export default function SignupPage() {
   return (
     <AuthLayout>
       <h1 className="text-xl font-semibold mb-1">Créer un compte</h1>
-      <p className="text-sm text-afrilink-gray mb-4">
+      <p className="text-sm text-allness-gray mb-4">
         {isFromGoogle
           ? 'Finalisez votre inscription avec Google'
           : "Rejoignez l'écosystème financier de nouvelle génération"}
@@ -340,13 +340,13 @@ export default function SignupPage() {
           type="button"
           onClick={() => setStep(1)}
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 1 ? 'text-afrilink-green' : 'text-afrilink-gray hover:text-gray-900'
+            step === 1 ? 'text-allness-green' : 'text-allness-gray hover:text-gray-900'
           }`}
         >
           {step === 2 && <ArrowLeft className="w-3.5 h-3.5" />}
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
-              step === 1 ? 'bg-afrilink-green text-white' : 'bg-afrilink-green text-white'
+              step === 1 ? 'bg-allness-green text-white' : 'bg-allness-green text-white'
             }`}
           >
             1
@@ -356,18 +356,18 @@ export default function SignupPage() {
 
         <div
           className={`flex-1 h-0.5 rounded-full ${
-            step === 2 ? 'bg-afrilink-green' : 'bg-gray-200'
+            step === 2 ? 'bg-allness-green' : 'bg-gray-200'
           }`}
         />
 
         <span
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 2 ? 'text-afrilink-green' : 'text-afrilink-gray'
+            step === 2 ? 'text-allness-green' : 'text-allness-gray'
           }`}
         >
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
-              step === 2 ? 'bg-afrilink-green text-white' : 'bg-gray-200 text-gray-500'
+              step === 2 ? 'bg-allness-green text-white' : 'bg-gray-200 text-gray-500'
             }`}
           >
             2
@@ -429,7 +429,7 @@ export default function SignupPage() {
             <label className="text-sm font-medium text-gray-700">Sexe</label>
             <div className="relative">
               <select
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-afrilink-green"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-allness-green"
                 value={form.gender}
                 onChange={(e) => update('gender', e.target.value)}
               >
@@ -438,7 +438,7 @@ export default function SignupPage() {
                 <option value="F">Féminin</option>
               </select>
               <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray pointer-events-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray pointer-events-none"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -492,7 +492,7 @@ export default function SignupPage() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Déjà inscrit ?{' '}
-            <a href="/login" className="text-afrilink-green font-medium">
+            <a href="/login" className="text-allness-green font-medium">
               Se connecter
             </a>
           </p>
@@ -561,13 +561,13 @@ export default function SignupPage() {
               <div className="w-full space-y-1">
                 <label className="text-sm font-medium text-gray-700">Créer un mot de passe</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     className={`w-full h-11 rounded-lg border pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 ${
                       fieldErrors.password
                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                        : 'border-gray-200 focus:border-afrilink-orange focus:ring-afrilink-orange'
+                        : 'border-gray-200 focus:border-allness-orange focus:ring-allness-orange'
                     }`}
                     value={form.password}
                     onChange={(e) => update('password', e.target.value)}
@@ -575,7 +575,7 @@ export default function SignupPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-allness-gray"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -596,17 +596,17 @@ export default function SignupPage() {
                   Confirmer le mot de passe
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
-                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                     value={form.confirmPassword}
                     onChange={(e) => update('confirmPassword', e.target.value)}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-allness-gray"
                   >
                     {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -625,17 +625,17 @@ export default function SignupPage() {
           <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-afrilink-green"
+              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-allness-green"
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
             />
             <span>
               J'accepte les{' '}
-              <a href="/cgu" className="text-afrilink-green font-medium">
+              <a href="/cgu" className="text-allness-green font-medium">
                 Conditions d'utilisation
               </a>{' '}
               et la{' '}
-              <a href="/confidentialite" className="text-afrilink-green font-medium">
+              <a href="/confidentialite" className="text-allness-green font-medium">
                 Politique de confidentialité
               </a>{' '}
               de AllnessPay.
@@ -650,7 +650,7 @@ export default function SignupPage() {
             <>
               <p className="text-center text-sm text-gray-500 mt-4">
                 Déjà inscrit ?{' '}
-                <a href="/login" className="text-afrilink-green font-medium">
+                <a href="/login" className="text-allness-green font-medium">
                   Se connecter
                 </a>
               </p>

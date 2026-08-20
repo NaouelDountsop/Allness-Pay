@@ -24,7 +24,7 @@ export function CycleSelector({ cycles, selected, onSelect }: CycleSelectorProps
             onClick={() => onSelect(c.id)}
             className={`shrink-0 rounded-lg px-4 py-2.5 text-left border transition-colors ${
               selected === c.id
-                ? 'bg-afrilink-orange border-afrilink-orange text-white'
+                ? 'bg-allness-orange border-allness-orange text-white'
                 : 'bg-white border-gray-200 text-gray-600'
             }`}
           >

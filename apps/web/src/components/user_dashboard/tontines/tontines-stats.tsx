@@ -23,7 +23,7 @@ export function TontinesStats({
 }: TontinesStatsProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Layers className="w-5 h-5 text-blue-400" />
@@ -34,7 +34,7 @@ export function TontinesStats({
         <p className="text-xs text-gray-400">Toutes tontines</p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
             <Wallet className="w-5 h-5 text-green-400" />
@@ -47,7 +47,7 @@ export function TontinesStats({
         <p className="text-xs text-green-400">↗ Depuis la création</p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Users className="w-5 h-5 text-blue-400" />
@@ -58,7 +58,7 @@ export function TontinesStats({
         <p className="text-xs text-gray-400">En cours</p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-green-400" />
@@ -73,7 +73,7 @@ export function TontinesStats({
         </p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
             <AlertCircle className="w-5 h-5 text-orange-400" />

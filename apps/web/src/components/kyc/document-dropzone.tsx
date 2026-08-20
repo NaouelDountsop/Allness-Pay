@@ -126,7 +126,7 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
                   onClick={capture}
                   className="w-16 h-16 rounded-full bg-white flex items-center justify-center hover:scale-105 transition-transform"
                 >
-                  <div className="w-13 h-13 rounded-full border-4 border-afrilink-green" />
+                  <div className="w-13 h-13 rounded-full border-4 border-allness-green" />
                 </button>
                 <button
                   onClick={switchCamera}
@@ -148,9 +148,9 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
         onDrop={handleDrop}
         className={`rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
           dragActive
-            ? 'border-afrilink-green bg-green-50'
+            ? 'border-allness-green bg-green-50'
             : file
-              ? 'border-afrilink-green/50 bg-green-50/40'
+              ? 'border-allness-green/50 bg-green-50/40'
               : 'border-gray-200 bg-gray-50 hover:border-gray-300'
         }`}
       >
@@ -177,7 +177,7 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
 
         <div className="w-9 h-9 mx-auto rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
           {file ? (
-            <CheckCircle2 className="w-4 h-4 text-afrilink-green" />
+            <CheckCircle2 className="w-4 h-4 text-allness-green" />
           ) : (
             <UploadCloud className="w-4 h-4 text-gray-400" />
           )}
@@ -204,7 +204,7 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
               startCamera();
             }}
             type="button"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-afrilink-orange/10 text-afrilink-orange text-xs font-medium hover:bg-afrilink-orange/20 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-allness-orange/10 text-allness-orange text-xs font-medium hover:bg-allness-orange/20 transition-colors"
           >
             <Camera className="w-3.5 h-3.5" />
             Scanner
@@ -215,7 +215,7 @@ export function DocumentDropzone({ label, hint, onFileSelect, file }: DocumentDr
           <button
             onClick={handlePreview}
             type="button"
-            className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-afrilink-green/10 text-afrilink-green text-xs font-medium hover:bg-afrilink-green/20 transition-colors"
+            className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-allness-green/10 text-allness-green text-xs font-medium hover:bg-allness-green/20 transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
             Voir le document

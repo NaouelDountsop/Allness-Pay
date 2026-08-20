@@ -38,11 +38,11 @@ export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
   return (
     <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
-        <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
+        <div className="bg-allness-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
             <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
-              Allness<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
           <button
@@ -55,7 +55,7 @@ export function PinSetupModal({ onComplete, onClose }: PinSetupModalProps) {
         </div>
 
         <div className="p-6 text-center">
-          <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+          <h3 className="text-base font-semibold text-allness-dark mb-1">
             {phase === 'create' ? 'Créer votre code PIN' : 'Confirmer votre code PIN'}
           </h3>
           <p className="text-xs text-red-500 mb-6">

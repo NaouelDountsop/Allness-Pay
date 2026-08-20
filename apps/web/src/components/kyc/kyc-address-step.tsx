@@ -26,7 +26,7 @@ export function KycAddressStep({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-afrilink-dark mb-1">Justificatif de domicile</h2>
+      <h2 className="text-xl font-bold text-allness-dark mb-1">Justificatif de domicile</h2>
       <p className="text-sm text-gray-500 mb-5">
         Veuillez fournir un document de moins de 3 mois (facture d'électricité, eau, gaz ou relevé
         bancaire) pour confirmer votre adresse.
@@ -39,7 +39,7 @@ export function KycAddressStep({
             onClick={() => setDocType(value)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-sm text-center transition-colors ${
               docType === value
-                ? 'bg-afrilink-orange/10 text-afrilink-orange border-afrilink-orange'
+                ? 'bg-allness-orange/10 text-allness-orange border-allness-orange'
                 : 'border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
@@ -72,7 +72,7 @@ export function KycAddressStep({
       <button
         onClick={() => onNext({ docType, file })}
         disabled={!file}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50"
       >
         Suivant →
       </button>
@@ -80,7 +80,7 @@ export function KycAddressStep({
       <p className="text-center text-xs text-gray-400 mt-4">
         En continuant, vous acceptez que Allness pay traite vos données personnelles conformément à
         notre{' '}
-        <a href="/confidentialite" className="text-afrilink-green font-medium">
+        <a href="/confidentialite" className="text-allness-green font-medium">
           Politique de Confidentialité
         </a>
         .

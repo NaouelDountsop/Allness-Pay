@@ -23,7 +23,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
           </a>
         </div>
         <div className="flex items-center justify-center py-10">
-          <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
         </div>
       </div>
     );
@@ -62,13 +62,13 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      isFailed ? 'bg-red-50' : credit ? 'bg-afrilink-green/10' : 'bg-red-50'
+                      isFailed ? 'bg-red-50' : credit ? 'bg-allness-green/10' : 'bg-red-50'
                     }`}
                   >
                     {isFailed ? (
                       <XCircle className="w-4 h-4 text-red-500" />
                     ) : credit ? (
-                      <ArrowDownLeft className="w-4 h-4 text-afrilink-green" />
+                      <ArrowDownLeft className="w-4 h-4 text-allness-green" />
                     ) : (
                       <ArrowUpRight className="w-4 h-4 text-red-500" />
                     )}
@@ -95,7 +95,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-2 shrink-0 pl-2">
                   <span
                     className={`text-xs sm:text-sm font-semibold text-right whitespace-nowrap ${
-                      isFailed ? 'text-red-500' : credit ? 'text-afrilink-green' : 'text-red-500'
+                      isFailed ? 'text-red-500' : credit ? 'text-allness-green' : 'text-red-500'
                     }`}
                   >
                     {isCompleted ? (credit ? '+' : '-') : ''}
@@ -104,11 +104,11 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                   </span>
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      isFailed ? 'bg-red-50' : 'bg-afrilink-green/10'
+                      isFailed ? 'bg-red-50' : 'bg-allness-green/10'
                     }`}
                   >
                     <ChevronRight
-                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : 'text-afrilink-green'}`}
+                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : 'text-allness-green'}`}
                     />
                   </div>
                 </div>

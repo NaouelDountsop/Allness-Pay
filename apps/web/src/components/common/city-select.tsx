@@ -40,7 +40,7 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
       <div className="w-full space-y-1">
         <label className="text-sm font-medium text-gray-700">Ville</label>
         <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
           <input
             type="text"
             disabled
@@ -59,18 +59,18 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className={`w-full h-11 rounded-lg border px-3 text-sm bg-white flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-afrilink-green ${
+          className={`w-full h-11 rounded-lg border px-3 text-sm bg-white flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-allness-green ${
             error ? '!border-destructive' : 'border-gray-200'
           }`}
         >
-          <MapPin className="w-4 h-4 text-afrilink-gray shrink-0" />
+          <MapPin className="w-4 h-4 text-allness-gray shrink-0" />
           {value ? (
             <span className="flex-1 text-left text-gray-900">{value}</span>
           ) : (
             <span className="flex-1 text-left text-gray-400">Choisir une ville</span>
           )}
           <ChevronDown
-            className={`w-4 h-4 text-afrilink-gray transition-transform ${open ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 text-allness-gray transition-transform ${open ? 'rotate-180' : ''}`}
           />
         </button>
 
@@ -78,14 +78,14 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
           <div className="absolute z-50 top-full mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg max-h-64 overflow-hidden">
             <div className="sticky top-0 p-2 bg-white border-b border-gray-100">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-afrilink-gray" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-allness-gray" />
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="Rechercher une ville..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-8 rounded-md border border-gray-200 pl-8 pr-2 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-afrilink-green"
+                  className="w-full h-8 rounded-md border border-gray-200 pl-8 pr-2 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-allness-green"
                 />
               </div>
             </div>
@@ -100,7 +100,7 @@ export function CitySelect({ countryCode, value, onChange, error }: CitySelectPr
                     setSearch('');
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors ${
-                    city === value ? 'bg-afrilink-green/5 text-afrilink-green' : ''
+                    city === value ? 'bg-allness-green/5 text-allness-green' : ''
                   }`}
                 >
                   {city}

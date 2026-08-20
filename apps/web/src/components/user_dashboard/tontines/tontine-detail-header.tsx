@@ -17,7 +17,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
       {/* Cagnotte totale — style wallet */}
-      <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-4 sm:p-6 relative overflow-hidden">
+      <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-4 sm:p-6 relative overflow-hidden">
         <svg
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-6 -right-2 w-52 h-52 opacity-60"
@@ -42,7 +42,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+          className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-allness-orange/35 to-allness-orange/10"
           style={{
             WebkitMaskImage: 'url(/allnesspay_logo1.png)',
             WebkitMaskSize: 'contain',
@@ -72,7 +72,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
         <div className="flex items-center gap-2 sm:gap-3 relative z-10">
           <p className="text-3xl sm:text-4xl font-bold truncate">
             {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * tontine.memberLimit)}{' '}
-            <span className="text-base sm:text-lg font-medium text-afrilink-orange">
+            <span className="text-base sm:text-lg font-medium text-allness-orange">
               {tontine.currency ?? 'CFA'}
             </span>
           </p>
@@ -80,15 +80,15 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
       </div>
 
       {/* Gagnant actuel */}
-      <div className="rounded-xl border-2 border-afrilink-orange bg-gradient-to-b from-orange-50/50 to-white p-5 flex flex-col items-center justify-center text-center">
-        <div className="w-11 h-11 rounded-full bg-afrilink-orange/10 flex items-center justify-center mb-2">
-          <Trophy className="w-5 h-5 text-afrilink-orange" />
+      <div className="rounded-xl border-2 border-allness-orange bg-gradient-to-b from-orange-50/50 to-white p-5 flex flex-col items-center justify-center text-center">
+        <div className="w-11 h-11 rounded-full bg-allness-orange/10 flex items-center justify-center mb-2">
+          <Trophy className="w-5 h-5 text-allness-orange" />
         </div>
         <p className="text-xs text-gray-400 mb-1">Gagnant actuel</p>
         <p className="text-sm font-semibold text-gray-900">
           {currentMember?.user?.prenom} {currentMember?.user?.nom}
         </p>
-        <p className="text-xs text-afrilink-orange font-medium">
+        <p className="text-xs text-allness-orange font-medium">
           {currentMember?.user?.ville}, {currentMember?.user?.pays}
         </p>
       </div>
@@ -96,7 +96,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
       {/* Admin */}
       <div className="rounded-xl border border-gray-100 bg-white p-5 flex flex-col items-center justify-center text-center">
         <div className="relative mb-2">
-          <div className="w-11 h-11 rounded-full bg-afrilink-dark/10 flex items-center justify-center text-sm font-semibold text-afrilink-dark">
+          <div className="w-11 h-11 rounded-full bg-allness-dark/10 flex items-center justify-center text-sm font-semibold text-allness-dark">
             {adminName
               .split(' ')
               .map((n) => n.charAt(0))
@@ -104,7 +104,7 @@ export function TontineDetailHeader({ tontine }: TontineDetailHeaderProps) {
               .slice(0, 2)
               .toUpperCase()}
           </div>
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-afrilink-dark flex items-center justify-center border-2 border-white">
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-allness-dark flex items-center justify-center border-2 border-white">
             <Crown className="w-2.5 h-2.5 text-white" />
           </div>
         </div>

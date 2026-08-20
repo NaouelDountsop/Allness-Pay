@@ -15,7 +15,7 @@ export default function Services() {
     <section className="bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <h2 className="font-heading font-extrabold text-[clamp(1.75rem,3.5vw,2.75rem)] text-afrilink-dark text-balance">
+          <h2 className="font-heading font-extrabold text-[clamp(1.75rem,3.5vw,2.75rem)] text-allness-dark text-balance">
             Payez vos services en quelques clics
           </h2>
           <p className="mt-4 text-foreground/60 text-base lg:text-lg">
@@ -29,12 +29,12 @@ export default function Services() {
             return (
               <div
                 key={s.label}
-                className="group flex flex-col items-center gap-3 p-4 rounded-2xl border border-border hover:border-afrilink-green hover:bg-muted/50 transition-all cursor-pointer"
+                className="group flex flex-col items-center gap-3 p-4 rounded-2xl border border-border hover:border-allness-green hover:bg-muted/50 transition-all cursor-pointer"
               >
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-afrilink-dark group-hover:bg-afrilink-green transition-colors">
-                  <Icon className="h-7 w-7 text-afrilink-orange" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-allness-dark group-hover:bg-allness-green transition-colors">
+                  <Icon className="h-7 w-7 text-allness-orange" />
                 </span>
-                <span className="text-xs lg:text-sm font-medium text-afrilink-dark text-center">
+                <span className="text-xs lg:text-sm font-medium text-allness-dark text-center">
                   {s.label}
                 </span>
               </div>

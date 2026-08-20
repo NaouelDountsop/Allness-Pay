@@ -64,14 +64,14 @@ export default function ExchangeRateHistoryPage() {
         <div>
           <button
             onClick={() => navigate('/admin/taux-de-change')}
-            className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
+            className="flex items-center gap-2 text-sm font-semibold text-allness-dark"
           >
             <ArrowLeft className="w-4 h-4" />
             Historique des mises à jour
           </button>
           <p className="text-[11px] text-gray-400 mt-1 ml-6">Taux de change &gt; Historique</p>
         </div>
-        <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
+        <button className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
           <Download className="w-3.5 h-3.5" />
           Exporter
         </button>
@@ -82,7 +82,7 @@ export default function ExchangeRateHistoryPage() {
           <select
             value={pairFilter}
             onChange={(e) => setPairFilter(e.target.value)}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Toutes les paires</option>
             <option value="USD/XAF">USD/XAF</option>
@@ -93,7 +93,7 @@ export default function ExchangeRateHistoryPage() {
           <select
             value={periodFilter}
             onChange={(e) => setPeriodFilter(e.target.value)}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Toutes les périodes</option>
             <option value="7d">7 derniers jours</option>
@@ -128,7 +128,7 @@ export default function ExchangeRateHistoryPage() {
               <tr key={i} className="border-b border-gray-50 last:border-0">
                 <td className="py-3 text-xs text-gray-500">{h.date}</td>
                 <td className="text-xs text-gray-600">{h.old}</td>
-                <td className="text-xs font-medium text-afrilink-dark">{h.next}</td>
+                <td className="text-xs font-medium text-allness-dark">{h.next}</td>
                 <td>
                   <span
                     className={`inline-flex items-center gap-1 text-[11px] font-semibold ${

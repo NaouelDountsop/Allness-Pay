@@ -21,14 +21,14 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
                 key={w.id}
                 className={`flex items-center justify-between py-3 px-2 -mx-2 rounded-xl cursor-pointer transition-all ${
                   isSelected
-                    ? 'bg-afrilink-green/[0.06] border border-afrilink-green/20'
+                    ? 'bg-allness-green/[0.06] border border-allness-green/20'
                     : 'hover:bg-gray-50 border border-transparent'
                 }`}
                 onClick={() => onSelectWallet?.(w)}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 bg-afrilink-dark"
+                    className="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0 bg-allness-dark"
                   >
                     <Wallet className="w-4 h-4" />
                   </span>
@@ -36,7 +36,7 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
                     <p className="text-sm text-gray-800">{w.label ?? w.walletNumber}</p>
                     {w.label && <p className="text-[11px] text-gray-400">{w.walletNumber}</p>}
                     {w.isPrimary && (
-                      <span className="text-[10px] text-afrilink-green font-medium">Principal</span>
+                      <span className="text-[10px] text-allness-green font-medium">Principal</span>
                     )}
                   </div>
                 </div>
@@ -45,7 +45,7 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
                     {new Intl.NumberFormat('fr-FR').format(Number(w.balance))} {w.currency}
                   </span>
                   {isSelected && (
-                    <CheckCircle2 className="w-4 h-4 text-afrilink-green shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-allness-green shrink-0" />
                   )}
                 </div>
               </li>
@@ -59,7 +59,7 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
 
       <button
         onClick={onAddAccount}
-        className="w-full text-left rounded-2xl border border-afrilink-orange/20 bg-gradient-to-br from-afrilink-orange via-afrilink-dark to-afrilink-darker shadow-sm p-5 flex items-center justify-between gap-3 transition hover:shadow-md hover:border-afrilink-orange/50"
+        className="w-full text-left rounded-2xl border border-allness-orange/20 bg-gradient-to-br from-allness-orange via-allness-dark to-allness-darker shadow-sm p-5 flex items-center justify-between gap-3 transition hover:shadow-md hover:border-allness-orange/50"
       >
         <div className="flex items-center gap-3">
           <span className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0">

@@ -71,7 +71,7 @@ const TRANSACTIONS = [
     label: "Transfert reçu",
     sub: "Aujourd'hui",
     amount: "+50 000 XAF",
-    color: "text-afrilink-green",
+    color: "text-allness-green",
   },
   {
     icon: Receipt,
@@ -95,7 +95,7 @@ const TRANSACTIONS = [
 
 export default function Features() {
   return (
-    <main className="min-h-screen bg-white text-afrilink-dark">
+    <main className="min-h-screen bg-white text-allness-dark">
 
 
 
@@ -127,7 +127,7 @@ export default function Features() {
             h-[600px]
             w-[600px]
             rounded-full
-            bg-afrilink-green/[0.035]
+            bg-allness-green/[0.035]
             blur-3xl
           "
         />
@@ -172,15 +172,15 @@ export default function Features() {
                   items-center
                   gap-2
                   rounded-full
-                  bg-afrilink-green/10
+                  bg-allness-green/10
                   px-4
                   py-2
                   text-sm
                   font-semibold
-                  text-afrilink-dark
+                  text-allness-dark
                 "
               >
-                <ShieldCheck className="h-4 w-4 text-afrilink-orange" />
+                <ShieldCheck className="h-4 w-4 text-allness-orange" />
 
                 <span>
                   Simple. Rapide. Sécurisé.
@@ -199,14 +199,14 @@ export default function Features() {
                   font-extrabold
                   leading-[0.98]
                   tracking-[-0.04em]
-                  text-afrilink-dark
+                  text-allness-dark
                 "
               >
                 Tout ce dont vous avez
                 <br />
 
                 besoin au{" "}
-                <span className="text-afrilink-green">
+                <span className="text-allness-green">
                   même endroit
                 </span>
               </h1>
@@ -242,14 +242,14 @@ export default function Features() {
                     items-center
                     gap-5
                     rounded-full
-                    bg-afrilink-green
+                    bg-allness-green
                     px-7
                     py-3.5
                     text-base
                     font-bold
                     text-white
                     shadow-lg
-                    shadow-afrilink-green/20
+                    shadow-allness-green/20
                     transition-all
                     duration-300
                     hover:-translate-y-1
@@ -267,7 +267,7 @@ export default function Features() {
                       justify-center
                       rounded-full
                       bg-white
-                      text-afrilink-dark
+                      text-allness-dark
                     "
                   >
                     <ArrowRight className="h-4 w-4" />
@@ -283,17 +283,17 @@ export default function Features() {
                     gap-4
                     rounded-full
                     border
-                    border-afrilink-dark/20
+                    border-allness-dark/20
                     bg-white
                     px-7
                     py-3.5
                     text-base
                     font-semibold
-                    text-afrilink-dark
+                    text-allness-dark
                     transition-all
                     duration-300
-                    hover:border-afrilink-green
-                    hover:bg-afrilink-green/[0.03]
+                    hover:border-allness-green
+                    hover:bg-allness-green/[0.03]
                   "
                 >
                   Découvrir Allness Pay
@@ -306,7 +306,7 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-dark/10
+                      bg-allness-dark/10
                     "
                   >
                     <ArrowRight className="h-4 w-4" />
@@ -340,16 +340,16 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-dark/5
+                      bg-allness-dark/5
                     "
                   >
-                    <Lock className="h-4 w-4 text-afrilink-dark" />
+                    <Lock className="h-4 w-4 text-allness-dark" />
                   </span>
 
                   Sécurité à 100%
                 </div>
 
-                <span className="hidden h-6 w-px bg-afrilink-dark/15 sm:block" />
+                <span className="hidden h-6 w-px bg-allness-dark/15 sm:block" />
 
                 {/* rapidité */}
                 <div className="flex items-center gap-2 px-5">
@@ -361,16 +361,16 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-orange/10
+                      bg-allness-orange/10
                     "
                   >
-                    <Zap className="h-4 w-4 text-afrilink-orange" />
+                    <Zap className="h-4 w-4 text-allness-orange" />
                   </span>
 
                   Transactions instantanées
                 </div>
 
-                <span className="hidden h-6 w-px bg-afrilink-dark/15 sm:block" />
+                <span className="hidden h-6 w-px bg-allness-dark/15 sm:block" />
 
                 {/* conformité */}
                 <div className="flex items-center gap-2 pl-5">
@@ -382,10 +382,10 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-dark/5
+                      bg-allness-dark/5
                     "
                   >
-                    <ShieldCheck className="h-4 w-4 text-afrilink-dark" />
+                    <ShieldCheck className="h-4 w-4 text-allness-dark" />
                   </span>
 
                   Conforme & fiable
@@ -411,7 +411,7 @@ export default function Features() {
               "
             >
 
-              {/* CARTE AFRILINK PAY DERRIÈRE */}
+              {/* CARTE allness PAY DERRIÈRE */}
 
               <div
                 className="
@@ -424,7 +424,7 @@ export default function Features() {
                   w-[300px]
                   rotate-[8deg]
                   rounded-3xl
-                  bg-afrilink-dark
+                  bg-allness-dark
                   p-6
                   shadow-2xl
                   sm:block
@@ -444,10 +444,10 @@ export default function Features() {
                         items-center
                         justify-center
                         rounded-lg
-                        bg-afrilink-orange
+                        bg-allness-orange
                         text-sm
                         font-extrabold
-                        text-afrilink-dark
+                        text-allness-dark
                       "
                     >
                       A
@@ -455,7 +455,7 @@ export default function Features() {
 
                     <span className="text-sm font-bold text-white">
                       Allness
-                      <span className="text-afrilink-orange">
+                      <span className="text-allness-orange">
                         Pay
                       </span>
                     </span>
@@ -473,7 +473,7 @@ export default function Features() {
                 <div className="mt-4 flex justify-end">
                   <div className="flex">
                     <span className="h-7 w-7 rounded-full bg-red-500/90" />
-                    <span className="-ml-3 h-7 w-7 rounded-full bg-afrilink-orange" />
+                    <span className="-ml-3 h-7 w-7 rounded-full bg-allness-orange" />
                   </div>
                 </div>
 
@@ -492,7 +492,7 @@ export default function Features() {
                   w-[520px]
                   rounded-[50%]
                   border
-                  border-afrilink-orange
+                  border-allness-orange
                   rotate-[-5deg]
                 "
               />
@@ -512,9 +512,9 @@ export default function Features() {
                   items-center
                   justify-center
                   rounded-[35px]
-                  bg-afrilink-green
+                  bg-allness-green
                   shadow-2xl
-                  shadow-afrilink-green/30
+                  shadow-allness-green/30
                   rotate-[-5deg]
                 "
               >
@@ -524,7 +524,7 @@ export default function Features() {
                     inset-[-7px]
                     rounded-[40px]
                     border-2
-                    border-afrilink-orange/70
+                    border-allness-orange/70
                   "
                 />
 
@@ -548,7 +548,7 @@ export default function Features() {
                 <div
                   className="
                     rounded-[3rem]
-                    bg-afrilink-dark
+                    bg-allness-dark
                     p-2
                     shadow-[0_30px_70px_rgba(8,43,55,0.30)]
                   "
@@ -567,14 +567,14 @@ export default function Features() {
 
                     <div className="flex items-center justify-between px-6 pt-3">
 
-                      <span className="text-[9px] font-bold text-afrilink-dark">
+                      <span className="text-[9px] font-bold text-allness-dark">
                         9:01
                       </span>
 
                       <div className="flex items-center gap-1">
-                        <span className="h-2 w-3 rounded-sm bg-afrilink-dark" />
-                        <span className="h-2 w-3 rounded-sm bg-afrilink-dark/60" />
-                        <span className="h-2 w-4 rounded-sm bg-afrilink-dark/40" />
+                        <span className="h-2 w-3 rounded-sm bg-allness-dark" />
+                        <span className="h-2 w-3 rounded-sm bg-allness-dark/60" />
+                        <span className="h-2 w-4 rounded-sm bg-allness-dark/40" />
                       </div>
 
                     </div>
@@ -582,7 +582,7 @@ export default function Features() {
 
                     {/* HEADER APP */}
 
-                    <div className="bg-afrilink-dark px-5 pb-6 pt-5">
+                    <div className="bg-allness-dark px-5 pb-6 pt-5">
 
                       <div className="flex items-center justify-between">
 
@@ -643,7 +643,7 @@ export default function Features() {
                             font-heading
                             text-[22px]
                             font-extrabold
-                            text-afrilink-dark
+                            text-allness-dark
                           "
                         >
                           245 750{" "}
@@ -700,10 +700,10 @@ export default function Features() {
                                   items-center
                                   justify-center
                                   rounded-xl
-                                  bg-afrilink-green/10
+                                  bg-allness-green/10
                                 "
                               >
-                                <Icon className="h-4 w-4 text-afrilink-dark" />
+                                <Icon className="h-4 w-4 text-allness-dark" />
                               </span>
 
                               <span className="text-[8px] text-foreground/60">
@@ -722,7 +722,7 @@ export default function Features() {
 
                     <div className="px-5 pb-7 pt-5">
 
-                      <p className="mb-3 text-[10px] font-bold text-afrilink-dark">
+                      <p className="mb-3 text-[10px] font-bold text-allness-dark">
                         Transactions récentes
                       </p>
 
@@ -751,15 +751,15 @@ export default function Features() {
                                     items-center
                                     justify-center
                                     rounded-lg
-                                    bg-afrilink-dark/5
+                                    bg-allness-dark/5
                                   "
                                 >
-                                  <Icon className="h-3.5 w-3.5 text-afrilink-dark" />
+                                  <Icon className="h-3.5 w-3.5 text-allness-dark" />
                                 </span>
 
                                 <div>
 
-                                  <p className="text-[8px] font-semibold text-afrilink-dark">
+                                  <p className="text-[8px] font-semibold text-allness-dark">
                                     {transaction.label}
                                   </p>
 
@@ -821,18 +821,18 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-full
-                      bg-afrilink-green/10
+                      bg-allness-green/10
                     "
                   >
-                    <CheckCircle2 className="h-5 w-5 text-afrilink-green" />
+                    <CheckCircle2 className="h-5 w-5 text-allness-green" />
                   </span>
 
                   <div>
-                    <p className="text-[10px] font-semibold text-afrilink-dark">
+                    <p className="text-[10px] font-semibold text-allness-dark">
                       Transfert réussi
                     </p>
 
-                    <p className="mt-1 text-sm font-extrabold text-afrilink-dark">
+                    <p className="mt-1 text-sm font-extrabold text-allness-dark">
                       +50 000 XAF
                     </p>
                   </div>
@@ -852,7 +852,7 @@ export default function Features() {
                   h-3
                   w-3
                   rounded-full
-                  bg-afrilink-green
+                  bg-allness-green
                   shadow-lg
                 "
               />
@@ -865,7 +865,7 @@ export default function Features() {
                   h-4
                   w-4
                   rounded-full
-                  bg-afrilink-green/20
+                  bg-allness-green/20
                 "
               />
 
@@ -877,7 +877,7 @@ export default function Features() {
                   h-3
                   w-3
                   rounded-full
-                  bg-afrilink-green
+                  bg-allness-green
                 "
               />
 
@@ -909,14 +909,14 @@ export default function Features() {
                     min-h-[270px]
                     rounded-3xl
                     border
-                    border-afrilink-dark/10
+                    border-allness-dark/10
                     bg-white
                     p-7
                     shadow-[0_8px_30px_rgba(8,43,55,0.05)]
                     transition-all
                     duration-300
                     hover:-translate-y-2
-                    hover:border-afrilink-green/20
+                    hover:border-allness-green/20
                     hover:shadow-[0_20px_45px_rgba(8,43,55,0.10)]
                   "
                 >
@@ -931,13 +931,13 @@ export default function Features() {
                       items-center
                       justify-center
                       rounded-2xl
-                      bg-afrilink-dark
+                      bg-allness-dark
                       transition-all
                       duration-300
-                      group-hover:bg-afrilink-green
+                      group-hover:bg-allness-green
                     "
                   >
-                    <Icon className="h-7 w-7 text-afrilink-orange" />
+                    <Icon className="h-7 w-7 text-allness-orange" />
                   </div>
 
 
@@ -949,7 +949,7 @@ export default function Features() {
                       font-heading
                       text-lg
                       font-extrabold
-                      text-afrilink-dark
+                      text-allness-dark
                     "
                   >
                     {feature.title}
@@ -982,9 +982,9 @@ export default function Features() {
                       gap-2
                       text-sm
                       font-bold
-                      text-afrilink-dark
+                      text-allness-dark
                       transition-colors
-                      group-hover:text-afrilink-green
+                      group-hover:text-allness-green
                     "
                   >
                     En savoir plus

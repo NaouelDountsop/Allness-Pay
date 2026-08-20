@@ -93,8 +93,8 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-afrilink-orange/10 flex items-center justify-center">
-                <UserPlus className="w-4 h-4 text-afrilink-orange" />
+              <span className="w-8 h-8 rounded-full bg-allness-orange/10 flex items-center justify-center">
+                <UserPlus className="w-4 h-4 text-allness-orange" />
               </span>
               Ajouter un bénéficiaire
             </div>
@@ -183,8 +183,8 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jean Dupont"
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 ${
-                  nameError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-afrilink-orange'
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 ${
+                  nameError ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-allness-orange'
                 }`}
               />
               {nameError && (
@@ -216,7 +216,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder={selectedCountry.phonePlaceholder}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -239,7 +239,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <select
                 value={network}
                 onChange={(e) => setNetwork(e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white ${
                   networkError ? 'border-red-300' : 'border-gray-200'
                 }`}
               >
@@ -265,7 +265,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="Maman, Frère, etc."
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   }
                   if (valid) setStep(2);
                 }}
-                className="bg-afrilink-orange hover:bg-afrilink-orange/90"
+                className="bg-allness-orange hover:bg-allness-orange/90"
               >
                 Suivant
               </Button>
@@ -360,7 +360,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <Button
                 onClick={handleConfirm}
                 disabled={createMutation.isPending}
-                className="bg-afrilink-orange hover:bg-afrilink-orange/90"
+                className="bg-allness-orange hover:bg-allness-orange/90"
               >
                 {createMutation.isPending ? 'Ajout...' : 'Confirmer'}
               </Button>

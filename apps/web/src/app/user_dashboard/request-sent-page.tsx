@@ -41,11 +41,11 @@ export default function RequestSentPage() {
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
           >
-            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+            <ArrowLeft className="w-5 h-5 text-allness-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">{t('requestSent.pageTitle')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">{t('requestSent.pageTitle')}</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           {isBank
@@ -62,17 +62,17 @@ export default function RequestSentPage() {
               </span>
               <div className="flex-1">
                 <p className="text-xs text-gray-400 mb-0.5">{t('requestSent.transferTo')}</p>
-                <p className="text-sm font-medium text-afrilink-dark">
+                <p className="text-sm font-medium text-allness-dark">
                   {BANK_LABELS[deposit.bankName] || deposit.bankName}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-5">
-              <p className="text-2xl font-bold text-afrilink-dark">
+              <p className="text-2xl font-bold text-allness-dark">
                 {deposit.amount || '5 000'} FCFA
               </p>
-              <span className="px-2.5 py-1 rounded-full bg-orange-50 text-afrilink-orange text-[11px] font-semibold">
+              <span className="px-2.5 py-1 rounded-full bg-orange-50 text-allness-orange text-[11px] font-semibold">
                 {t('requestSent.pendingStatus')}
               </span>
             </div>
@@ -84,32 +84,32 @@ export default function RequestSentPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{t('requestSent.bankLabel')}</span>
-                  <span className="text-xs font-medium text-afrilink-dark">
+                  <span className="text-xs font-medium text-allness-dark">
                     {BANK_LABELS[deposit.bankName] || deposit.bankName}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{t('requestSent.ibanLabel')}</span>
-                  <span className="text-xs font-mono font-medium text-afrilink-dark">
+                  <span className="text-xs font-mono font-medium text-allness-dark">
                     {maskIban(deposit.iban)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{t('requestSent.holderLabel')}</span>
-                  <span className="text-xs font-medium text-afrilink-dark">
+                  <span className="text-xs font-medium text-allness-dark">
                     {deposit.accountHolder}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{t('requestSent.amountLabel')}</span>
-                  <span className="text-sm font-bold text-afrilink-dark">
+                  <span className="text-sm font-bold text-allness-dark">
                     {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
                   </span>
                 </div>
                 {deposit.description && (
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">{t('requestSent.descriptionLabel')}</span>
-                    <span className="text-xs text-afrilink-dark">{deposit.description}</span>
+                    <span className="text-xs text-allness-dark">{deposit.description}</span>
                   </div>
                 )}
               </div>
@@ -119,7 +119,7 @@ export default function RequestSentPage() {
               <p className="text-[11px] text-gray-400 mb-1">{t('requestSent.reference')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-xs font-mono text-gray-600">{deposit.transactionId || deposit.reference}</p>
-                <button className="text-gray-300 hover:text-afrilink-dark" aria-label="Copier">
+                <button className="text-gray-300 hover:text-allness-dark" aria-label="Copier">
                   <Copy className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -129,22 +129,22 @@ export default function RequestSentPage() {
           /* ── Mobile Money: original content ── */
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-8 mb-5">
             <div className="flex items-center gap-4 mb-6">
-              <span className="w-12 h-12 rounded-full border-2 border-dashed border-afrilink-orange flex items-center justify-center shrink-0 animate-spin [animation-duration:3s]">
-                <span className="w-2 h-2 rounded-full bg-afrilink-orange" />
+              <span className="w-12 h-12 rounded-full border-2 border-dashed border-allness-orange flex items-center justify-center shrink-0 animate-spin [animation-duration:3s]">
+                <span className="w-2 h-2 rounded-full bg-allness-orange" />
               </span>
               <div className="flex-1">
                 <p className="text-xs text-gray-400 mb-0.5">{t('requestSent.requestSentTo')}</p>
-                <p className="text-sm font-medium text-afrilink-dark">
+                <p className="text-sm font-medium text-allness-dark">
                   +237 {maskPhone(deposit.phoneNumber)}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-5">
-              <p className="text-2xl font-bold text-afrilink-dark">
+              <p className="text-2xl font-bold text-allness-dark">
                 {deposit.amount || '5 000'} FCFA
               </p>
-              <span className="px-2.5 py-1 rounded-full bg-orange-50 text-afrilink-orange text-[11px] font-semibold">
+              <span className="px-2.5 py-1 rounded-full bg-orange-50 text-allness-orange text-[11px] font-semibold">
                 {t('requestSent.pendingStatus')}
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function RequestSentPage() {
               <p className="text-[11px] text-gray-400 mb-1">{t('requestSent.reference')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-xs font-mono text-gray-600">{deposit.transactionId || deposit.reference}</p>
-                <button className="text-gray-300 hover:text-afrilink-dark" aria-label="Copier">
+                <button className="text-gray-300 hover:text-allness-dark" aria-label="Copier">
                   <Copy className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -163,7 +163,7 @@ export default function RequestSentPage() {
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-8 grid grid-cols-1 sm:grid-cols-[1fr_260px] gap-6">
           <div>
-            <p className="text-sm font-semibold text-afrilink-dark mb-4">{t('requestSent.transactionTracking')}</p>
+            <p className="text-sm font-semibold text-allness-dark mb-4">{t('requestSent.transactionTracking')}</p>
             <div className="flex flex-col gap-4">
               {isBank ? (
                 <>
@@ -221,17 +221,17 @@ function TimelineItem({
   return (
     <div className="flex items-center gap-3">
       {status === 'done' ? (
-        <CheckCircle2 className="w-4.5 h-4.5 text-afrilink-green shrink-0" />
+        <CheckCircle2 className="w-4.5 h-4.5 text-allness-green shrink-0" />
       ) : (
         <span
           className={`w-4.5 h-4.5 rounded-full border-2 shrink-0 ${
-            status === 'active' ? 'border-afrilink-orange bg-orange-50' : 'border-gray-200'
+            status === 'active' ? 'border-allness-orange bg-orange-50' : 'border-gray-200'
           }`}
         />
       )}
       <div>
         <p
-          className={`text-xs font-medium ${status === 'pending' ? 'text-gray-400' : 'text-afrilink-dark'}`}
+          className={`text-xs font-medium ${status === 'pending' ? 'text-gray-400' : 'text-allness-dark'}`}
         >
           {label}
         </p>

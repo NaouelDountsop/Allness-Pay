@@ -73,7 +73,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
     <div>
       <h3 className="text-sm font-semibold text-gray-900 mb-3">Ordre de Passage</h3>
       {selectedId && (
-        <p className="text-[11px] text-afrilink-orange mb-2">
+        <p className="text-[11px] text-allness-orange mb-2">
           Cliquez sur un autre membre pour déplacer la sélection
         </p>
       )}
@@ -86,7 +86,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
               onClick={() => handleSelect(m.id)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
                 selectedId === m.id
-                  ? 'bg-afrilink-orange/10 border border-afrilink-orange/30'
+                  ? 'bg-allness-orange/10 border border-allness-orange/30'
                   : 'bg-blue-50/60 hover:bg-blue-50'
               }`}
             >
@@ -155,7 +155,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
       <button
         type="button"
         onClick={onInvite}
-        className="w-full h-10 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 flex items-center justify-center gap-2 hover:border-afrilink-orange hover:text-afrilink-orange transition-colors"
+        className="w-full h-10 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 flex items-center justify-center gap-2 hover:border-allness-orange hover:text-allness-orange transition-colors"
       >
         <Plus className="w-3.5 h-3.5" />
         Ajouter un membre

@@ -37,11 +37,11 @@ export default function DepositSuccessPage() {
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
           >
-            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+            <ArrowLeft className="w-5 h-5 text-allness-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Dépôt réussi !</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">Dépôt réussi !</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           Votre portefeuille a été crédité avec succès.
@@ -50,46 +50,46 @@ export default function DepositSuccessPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-10">
           <div className="flex justify-center mb-8">
             <span className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
-              <CheckCircle2 className="w-11 h-11 text-afrilink-green" />
+              <CheckCircle2 className="w-11 h-11 text-allness-green" />
             </span>
           </div>
 
           <div className="rounded-xl border border-gray-100 p-5 mb-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400">Montant crédité</span>
-              <span className="text-lg font-bold text-afrilink-green">
+              <span className="text-lg font-bold text-allness-green">
                 +{new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-400">Référence</span>
-              <span className="text-xs font-mono text-afrilink-dark">
+              <span className="text-xs font-mono text-allness-dark">
                 {deposit.transactionId || '—'}
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-400">Date</span>
-              <span className="text-xs text-afrilink-dark">{formatDate(deposit.createdAt)}</span>
+              <span className="text-xs text-allness-dark">{formatDate(deposit.createdAt)}</span>
             </div>
 
             {isBank ? (
               <>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs text-gray-400">Banque</span>
-                  <span className="text-xs text-afrilink-dark flex items-center gap-1.5">
+                  <span className="text-xs text-allness-dark flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-gray-400" />
                     {BANK_LABELS[deposit.bankName] || deposit.bankName}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs text-gray-400">Titulaire</span>
-                  <span className="text-xs text-afrilink-dark">{deposit.accountHolder}</span>
+                  <span className="text-xs text-allness-dark">{deposit.accountHolder}</span>
                 </div>
               </>
             ) : (
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-400">Opérateur</span>
-                <span className="text-xs text-afrilink-dark">
+                <span className="text-xs text-allness-dark">
                   {MOBILE_OPERATOR_LABEL[deposit.operator]}
                 </span>
               </div>
@@ -97,14 +97,14 @@ export default function DepositSuccessPage() {
 
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Statut</span>
-              <span className="text-xs font-semibold text-afrilink-green">Succès</span>
+              <span className="text-xs font-semibold text-allness-green">Succès</span>
             </div>
           </div>
 
           <div className="rounded-xl bg-green-50 border border-green-100 p-4 flex items-center justify-between mb-6">
             <div>
               <p className="text-[11px] text-green-700 mb-1">Montant déposé</p>
-              <p className="text-lg font-bold text-afrilink-dark">
+              <p className="text-lg font-bold text-allness-dark">
                 {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
               </p>
             </div>
@@ -114,7 +114,7 @@ export default function DepositSuccessPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleBackToWallet}
-              className="h-12 rounded-lg bg-afrilink-green text-white text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              className="h-12 rounded-lg bg-allness-green text-white text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             >
               Retour au portefeuille
               <ArrowRight className="w-4 h-4" />

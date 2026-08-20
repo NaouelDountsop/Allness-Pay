@@ -95,7 +95,7 @@ export function MonthlySummary({
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-afrilink-orange to-afrilink-dark flex items-center justify-center shrink-0">
+          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-allness-orange to-allness-dark flex items-center justify-center shrink-0">
             <LineChart className="w-3.5 h-3.5 text-white" />
           </span>
           <h3 className="text-sm font-semibold text-gray-800">Résumé mensuel</h3>
@@ -210,7 +210,7 @@ export function MonthlySummary({
       </div>
 
       <div className="flex items-center justify-between text-xs mt-2 mb-1">
-        <span className="text-afrilink-green font-semibold">+{incomePercent}%</span>
+        <span className="text-allness-green font-semibold">+{incomePercent}%</span>
         <span className="text-gray-400 font-semibold">-{expensePercent}%</span>
       </div>
 

@@ -2,11 +2,11 @@ import { Zap, ShieldCheck } from 'lucide-react';
 
 export function WhyChooseCard() {
   return (
-    <div className="rounded-2xl bg-afrilink-dark text-white p-5">
+    <div className="rounded-2xl bg-allness-dark text-white p-5">
       <h3 className="text-sm font-semibold mb-4">Pourquoi choisir AllnessPay ?</h3>
       <div className="space-y-4">
         <div className="flex items-start gap-3">
-          <Zap className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
+          <Zap className="w-4 h-4 text-allness-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium">Instantanéité</p>
             <p className="text-[11px] text-white/60">
@@ -15,7 +15,7 @@ export function WhyChooseCard() {
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <ShieldCheck className="w-4 h-4 text-afrilink-orange mt-0.5 shrink-0" />
+          <ShieldCheck className="w-4 h-4 text-allness-orange mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-medium">Sécurité Totale</p>
             <p className="text-[11px] text-white/60">

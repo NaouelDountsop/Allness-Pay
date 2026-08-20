@@ -127,7 +127,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-afrilink-orange text-white shadow-sm hover:bg-afrilink-orange/90"
+                    className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-allness-orange text-white shadow-sm hover:bg-allness-orange/90"
                     aria-label="Changer la photo de profil"
                   >
                     <Camera className="h-4 w-4" />
@@ -141,10 +141,10 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-afrilink-orange">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-allness-orange">
                     Mon profil
                   </p>
-                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark truncate">
+                  <h1 className="mt-3 text-2xl font-semibold text-allness-dark truncate">
                     {fullName}
                   </h1>
                   <p className="mt-2 text-sm text-gray-500">
@@ -166,15 +166,15 @@ export default function ProfilePage() {
               ) : null}
 
               <div className="mt-6 grid gap-3">
-                <div className="rounded-3xl border border-afrilink-green/10 bg-afrilink-green/5 p-4">
+                <div className="rounded-3xl border border-allness-green/10 bg-allness-green/5 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Statut</p>
-                      <p className="mt-2 text-lg font-semibold text-afrilink-dark">
+                      <p className="mt-2 text-lg font-semibold text-allness-dark">
                         {profile?.statut || 'Actif'}
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-afrilink-green/10 px-3 py-1 text-xs font-semibold text-afrilink-green">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-allness-green/10 px-3 py-1 text-xs font-semibold text-allness-green">
                       <CheckCircle2 className="w-4 h-4" /> Vérifié
                     </span>
                   </div>
@@ -211,15 +211,15 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-gray-700">
-                    <Mail className="w-4 h-4 text-afrilink-orange" />
+                    <Mail className="w-4 h-4 text-allness-orange" />
                     <span className="text-sm">{profile?.email ?? '-'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
-                    <Phone className="w-4 h-4 text-afrilink-orange" />
+                    <Phone className="w-4 h-4 text-allness-orange" />
                     <span className="text-sm">{profile?.telephone ?? '-'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
-                    <MapPin className="w-4 h-4 text-afrilink-orange" />
+                    <MapPin className="w-4 h-4 text-allness-orange" />
                     <span className="text-sm">
                       {profile ? `${profile.ville}, ${profile.pays}` : '-'}
                     </span>
@@ -259,7 +259,7 @@ export default function ProfilePage() {
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
                     Données utilisateur
                   </p>
-                  <h2 className="mt-3 text-2xl font-semibold text-afrilink-dark">
+                  <h2 className="mt-3 text-2xl font-semibold text-allness-dark">
                     Informations personnelles
                   </h2>
                 </div>
@@ -290,28 +290,28 @@ export default function ProfilePage() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl bg-afrilink-orange/5 p-5">
+                <div className="rounded-3xl bg-allness-orange/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <User className="w-4 h-4 text-afrilink-orange" />
-                    <p className="text-sm font-semibold text-afrilink-dark">Profil</p>
+                    <User className="w-4 h-4 text-allness-orange" />
+                    <p className="text-sm font-semibold text-allness-dark">Profil</p>
                   </div>
                   <p className="text-sm text-gray-500">
                     Modifiez vos informations personnelles et votre avatar.
                   </p>
                 </div>
-                <div className="rounded-3xl bg-afrilink-green/5 p-5">
+                <div className="rounded-3xl bg-allness-green/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <ShieldCheck className="w-4 h-4 text-afrilink-green" />
-                    <p className="text-sm font-semibold text-afrilink-dark">Sécurité</p>
+                    <ShieldCheck className="w-4 h-4 text-allness-green" />
+                    <p className="text-sm font-semibold text-allness-dark">Sécurité</p>
                   </div>
                   <p className="text-sm text-gray-500">
                     Activez l’authentification à deux facteurs et gérez vos accès.
                   </p>
                 </div>
-                <div className="rounded-3xl bg-afrilink-dark/5 p-5">
+                <div className="rounded-3xl bg-allness-dark/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <CalendarDays className="w-4 h-4 text-afrilink-dark" />
-                    <p className="text-sm font-semibold text-afrilink-dark">Notifications</p>
+                    <CalendarDays className="w-4 h-4 text-allness-dark" />
+                    <p className="text-sm font-semibold text-allness-dark">Notifications</p>
                   </div>
                   <p className="text-sm text-gray-500">
                     Recevez les alertes de transactions et les rappels.
@@ -319,8 +319,8 @@ export default function ProfilePage() {
                 </div>
                 <div className="rounded-3xl bg-gray-50 p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <Briefcase className="w-4 h-4 text-afrilink-orange" />
-                    <p className="text-sm font-semibold text-afrilink-dark">Préférences</p>
+                    <Briefcase className="w-4 h-4 text-allness-orange" />
+                    <p className="text-sm font-semibold text-allness-dark">Préférences</p>
                   </div>
                   <p className="text-sm text-gray-500">
                     Choisissez votre devise et vos options d’interface.

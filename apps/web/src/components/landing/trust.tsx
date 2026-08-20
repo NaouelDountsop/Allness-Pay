@@ -13,7 +13,7 @@ export default function Trust() {
   return (
     <section className="bg-muted py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center">
-        <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-afrilink-dark">
+        <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-allness-dark">
           Ils nous font confiance
         </h2>
 
@@ -34,7 +34,7 @@ export default function Trust() {
               </div>
 
               {/* Nom du pays */}
-              <span className="text-xs lg:text-sm font-medium text-foreground/50 transition-colors duration-300 group-hover:text-afrilink-dark">
+              <span className="text-xs lg:text-sm font-medium text-foreground/50 transition-colors duration-300 group-hover:text-allness-dark">
                 {f.name}
               </span>
             </div>

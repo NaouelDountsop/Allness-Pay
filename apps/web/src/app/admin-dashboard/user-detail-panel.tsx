@@ -56,7 +56,7 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+            <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
           </div>
         ) : (
           <div className="w-full bg-white">
@@ -66,14 +66,14 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
                 <div className="w-full h-full bg-gradient-to-b from-gray-400 to-gray-600 flex items-center justify-center">
                   <span className="text-2xl font-bold text-white">{initials}</span>
                 </div>
-                <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${user?.verificationotp ? 'bg-afrilink-green' : 'bg-afrilink-orange'}`} />
+                <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${user?.verificationotp ? 'bg-allness-green' : 'bg-allness-orange'}`} />
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-lg font-bold text-afrilink-dark">{fullName}</h2>
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${user?.verificationotp ? 'bg-green-50 text-afrilink-green' : 'bg-orange-50 text-afrilink-orange'}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${user?.verificationotp ? 'bg-afrilink-green' : 'bg-afrilink-orange'}`} />
+                  <h2 className="text-lg font-bold text-allness-dark">{fullName}</h2>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${user?.verificationotp ? 'bg-green-50 text-allness-green' : 'bg-orange-50 text-allness-orange'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${user?.verificationotp ? 'bg-allness-green' : 'bg-allness-orange'}`} />
                     {user?.verificationotp ? 'Compte Actif' : 'En attente'}
                   </span>
                 </div>
@@ -103,19 +103,19 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
               <div className="flex items-center gap-8 shrink-0">
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Solde principal</p>
-                  <p className="text-sm font-bold text-afrilink-dark">245 750 XAF</p>
-                  <a href="#" className="text-[11px] text-afrilink-green font-medium flex items-center gap-1 justify-center">
+                  <p className="text-sm font-bold text-allness-dark">245 750 XAF</p>
+                  <a href="#" className="text-[11px] text-allness-green font-medium flex items-center gap-1 justify-center">
                     Voir le portefeuille
                   </a>
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Dernière activité</p>
                   <p className="text-sm font-medium text-gray-700">Aujourd'hui à 09:42</p>
-                  <p className="text-[11px] text-afrilink-green font-medium">En ligne</p>
+                  <p className="text-[11px] text-allness-green font-medium">En ligne</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Statut</p>
-                  <p className="text-sm font-medium text-afrilink-green">Actif</p>
+                  <p className="text-sm font-medium text-allness-green">Actif</p>
                 </div>
               </div>
             </div>
@@ -129,13 +129,13 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
                     key={key}
                     onClick={() => setTab(key)}
                     className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${
-                      active ? "text-afrilink-green" : "text-gray-500 hover:text-afrilink-dark"
+                      active ? "text-allness-green" : "text-gray-500 hover:text-allness-dark"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {label}
                     {active && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-afrilink-green rounded-full" />
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-allness-green rounded-full" />
                     )}
                   </button>
                 );
@@ -202,8 +202,8 @@ function Card({
   return (
     <div className="rounded-lg border border-gray-100 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Icon className="w-4 h-4 text-afrilink-green" />
-        <p className="text-sm font-semibold text-afrilink-dark">{title}</p>
+        <Icon className="w-4 h-4 text-allness-green" />
+        <p className="text-sm font-semibold text-allness-dark">{title}</p>
       </div>
       {children}
     </div>
@@ -215,9 +215,9 @@ function Field({ label, value, badge }: { label: string; value: string; badge?: 
     <div>
       <p className="text-[11px] text-gray-400 mb-1">{label}</p>
       <div className="flex items-center gap-2">
-        <p className="text-sm font-medium text-afrilink-dark whitespace-pre-line">{value}</p>
+        <p className="text-sm font-medium text-allness-dark whitespace-pre-line">{value}</p>
         {badge && (
-          <span className="text-[10px] font-medium text-afrilink-green bg-green-50 px-1.5 py-0.5 rounded">
+          <span className="text-[10px] font-medium text-allness-green bg-green-50 px-1.5 py-0.5 rounded">
             {badge}
           </span>
         )}
@@ -228,25 +228,25 @@ function Field({ label, value, badge }: { label: string; value: string; badge?: 
 
 function ComplianceCard() {
   const items = [
-    { icon: ShieldCheck, label: "Vérification d'identité", status: "Approuvée", style: "bg-afrilink-green text-white" },
+    { icon: ShieldCheck, label: "Vérification d'identité", status: "Approuvée", style: "bg-allness-green text-white" },
     { icon: MapPin, label: "Justificatif de domicile", status: "Validé", sub: "15/03/2023", style: "text-gray-600 font-semibold" },
     { icon: CircleDollarSign, label: "Origine des fonds", status: "Auto-déclaré", style: "bg-blue-50 text-blue-600" },
-    { icon: ShieldCheck, label: "Vérification AML", status: "Aucun signal", style: "bg-green-50 text-afrilink-green" },
-    { icon: Activity, label: "Score de risque", status: "Faible", style: "bg-green-50 text-afrilink-green" },
+    { icon: ShieldCheck, label: "Vérification AML", status: "Aucun signal", style: "bg-green-50 text-allness-green" },
+    { icon: Activity, label: "Score de risque", status: "Faible", style: "bg-green-50 text-allness-green" },
   ];
 
   return (
     <div className="rounded-lg border border-gray-100 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <ShieldCheck className="w-4 h-4 text-afrilink-green" />
-        <p className="text-sm font-semibold text-afrilink-dark">Résumé de conformité</p>
+        <ShieldCheck className="w-4 h-4 text-allness-green" />
+        <p className="text-sm font-semibold text-allness-dark">Résumé de conformité</p>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
           <div key={item.label} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
-                <item.icon className="w-3.5 h-3.5 text-afrilink-green" />
+                <item.icon className="w-3.5 h-3.5 text-allness-green" />
               </span>
               <span className="text-xs text-gray-600">{item.label}</span>
             </div>
@@ -270,23 +270,23 @@ function ComplianceCard() {
 function StatsCard() {
   return (
     <div className="rounded-lg border border-gray-100 p-4">
-      <p className="text-sm font-semibold text-afrilink-dark mb-4">Statistiques du compte</p>
+      <p className="text-sm font-semibold text-allness-dark mb-4">Statistiques du compte</p>
       <div className="grid grid-cols-2 gap-y-4 text-sm">
         <div>
           <p className="text-[11px] text-gray-400">Total des transactions</p>
-          <p className="font-semibold text-afrilink-dark">128</p>
+          <p className="font-semibold text-allness-dark">128</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Volume total</p>
-          <p className="font-semibold text-afrilink-dark">4 250 000 XAF</p>
+          <p className="font-semibold text-allness-dark">4 250 000 XAF</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Tontines créées</p>
-          <p className="font-semibold text-afrilink-dark">2</p>
+          <p className="font-semibold text-allness-dark">2</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Tontines rejointes</p>
-          <p className="font-semibold text-afrilink-dark">5</p>
+          <p className="font-semibold text-allness-dark">5</p>
         </div>
       </div>
     </div>
@@ -297,25 +297,25 @@ function SecurityCard() {
   return (
     <div className="rounded-lg border border-gray-100 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Smartphone className="w-4 h-4 text-afrilink-green" />
-        <p className="text-sm font-semibold text-afrilink-dark">Appareils &amp; sécurité</p>
+        <Smartphone className="w-4 h-4 text-allness-green" />
+        <p className="text-sm font-semibold text-allness-dark">Appareils &amp; sécurité</p>
       </div>
       <div className="space-y-3 text-sm">
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Appareils enregistrés</span>
-          <span className="font-medium text-afrilink-dark">2</span>
+          <span className="font-medium text-allness-dark">2</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Dernière connexion</span>
-          <span className="font-medium text-afrilink-dark">Aujourd'hui à 09:42</span>
+          <span className="font-medium text-allness-dark">Aujourd'hui à 09:42</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Adresse IP</span>
-          <span className="font-medium text-afrilink-dark">197.210.14.23</span>
+          <span className="font-medium text-allness-dark">197.210.14.23</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Authentification 2FA</span>
-          <span className="text-[10px] font-semibold text-afrilink-green bg-green-50 px-2 py-1 rounded-full">
+          <span className="text-[10px] font-semibold text-allness-green bg-green-50 px-2 py-1 rounded-full">
             Activée
           </span>
         </div>

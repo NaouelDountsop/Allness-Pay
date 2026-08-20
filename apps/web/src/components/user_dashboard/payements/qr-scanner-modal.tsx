@@ -59,7 +59,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
       ) : (
         <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-gray-900">
           <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-          <div className="absolute inset-8 border-2 border-afrilink-orange rounded-xl" />
+          <div className="absolute inset-8 border-2 border-allness-orange rounded-xl" />
         </div>
       )}
 
@@ -70,7 +70,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
       {scanning && !error && (
         <button
           onClick={handleSimulateScan}
-          className="mt-6 h-11 px-6 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2"
+          className="mt-6 h-11 px-6 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2"
         >
           <ScanLine className="w-4 h-4" />
           Simuler la lecture (démo)

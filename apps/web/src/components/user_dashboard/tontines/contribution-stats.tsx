@@ -17,7 +17,7 @@ export function ContributionStats({
 }: ContributionStatsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
             <Wallet className="w-5 h-5 text-green-400" />
@@ -30,7 +30,7 @@ export function ContributionStats({
         <p className="text-xs text-green-400">+12% par rapport au mois dernier</p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Repeat className="w-5 h-5 text-blue-400" />
@@ -41,7 +41,7 @@ export function ContributionStats({
         <p className="text-xs text-gray-400">Total depuis le début de la session</p>
       </div>
 
-      <div className="bg-afrilink-dark rounded-2xl p-5">
+      <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-[#D28E2F]/20 flex items-center justify-center">
             <Activity className="w-5 h-5 text-[#D28E2F]" />

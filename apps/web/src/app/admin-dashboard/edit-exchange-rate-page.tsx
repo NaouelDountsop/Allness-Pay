@@ -15,7 +15,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange"
     />
   );
 }
@@ -70,7 +70,7 @@ export default function EditExchangeRatePage() {
     <AdminLayout active="parametres">
       <button
         onClick={() => navigate('/admin/taux-de-change')}
-        className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark mb-6"
+        className="flex items-center gap-2 text-sm font-semibold text-allness-dark mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         Modifier un taux de change
@@ -78,7 +78,7 @@ export default function EditExchangeRatePage() {
 
       {loadingRate || loadingCurrencies ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-5 h-5 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-5 h-5 text-allness-orange animate-spin" />
         </div>
       ) : (
         <div className="max-w-2xl flex flex-col gap-5">
@@ -86,13 +86,13 @@ export default function EditExchangeRatePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <Label>Devise source</Label>
-                <div className="h-10 px-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-sm text-afrilink-dark font-medium">
+                <div className="h-10 px-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-sm text-allness-dark font-medium">
                   {fromCurrency} {fromLabel ? `- ${fromLabel.name}` : ''}
                 </div>
               </div>
               <div>
                 <Label>Devise cible</Label>
-                <div className="h-10 px-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-sm text-afrilink-dark font-medium">
+                <div className="h-10 px-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-sm text-allness-dark font-medium">
                   {toCurrency} {toLabel ? `- ${toLabel.name}` : ''}
                 </div>
               </div>
@@ -113,7 +113,7 @@ export default function EditExchangeRatePage() {
               <div className="flex items-center gap-3 h-10">
                 <span className="text-xs text-gray-500">Statut</span>
                 <Toggle checked={isActive} onChange={setIsActive} />
-                <span className={`text-xs font-medium ${isActive ? 'text-afrilink-green' : 'text-gray-400'}`}>
+                <span className={`text-xs font-medium ${isActive ? 'text-allness-green' : 'text-gray-400'}`}>
                   {isActive ? 'Actif' : 'Inactif'}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export default function EditExchangeRatePage() {
             <button
               onClick={handleSave}
               disabled={!canSubmit || updateMutation.isPending}
-              className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+              className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               Enregistrer les modifications

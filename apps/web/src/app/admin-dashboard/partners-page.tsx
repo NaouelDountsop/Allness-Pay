@@ -26,7 +26,7 @@ const STATS = [
     label: 'Total partenaires',
     value: '28',
     change: '+12% vs mois dernier',
-    changeColor: 'text-afrilink-green',
+    changeColor: 'text-allness-green',
     iconBg: 'bg-blue-500/20',
     iconColor: 'text-blue-400',
     icon: Users,
@@ -35,7 +35,7 @@ const STATS = [
     label: 'Partenaires actifs',
     value: '24',
     change: '85.7% du total',
-    changeColor: 'text-afrilink-green',
+    changeColor: 'text-allness-green',
     iconBg: 'bg-green-500/20',
     iconColor: 'text-green-400',
     icon: Users,
@@ -53,7 +53,7 @@ const STATS = [
     label: 'Transactions (Janvier)',
     value: '128 540',
     change: '+21.4% vs Décembre',
-    changeColor: 'text-afrilink-orange',
+    changeColor: 'text-allness-orange',
     iconBg: 'bg-amber-500/20',
     iconColor: 'text-amber-400',
     icon: Receipt,
@@ -236,7 +236,7 @@ const DISTRIBUTION_DATA = [
 ];
 
 const STATUS_STYLES: Record<Partner['status'], string> = {
-  Actif: 'bg-afrilink-green/10 text-afrilink-green',
+  Actif: 'bg-allness-green/10 text-allness-green',
   'En maintenance': 'bg-orange-50 text-orange-500',
   Inactif: 'bg-red-50 text-red-500',
   Suspendu: 'bg-red-50 text-red-500',
@@ -245,7 +245,7 @@ const STATUS_STYLES: Record<Partner['status'], string> = {
 function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
   const Icon = stat.icon;
   return (
-    <div className="bg-afrilink-dark rounded-2xl p-3">
+    <div className="bg-allness-dark rounded-2xl p-3">
       <div className="flex items-center gap-2 mb-2">
         <span className={`w-8 h-8 rounded-full flex items-center justify-center ${stat.iconBg}`}>
           <Icon className={`w-4 h-4 ${stat.iconColor}`} />
@@ -504,7 +504,7 @@ export default function PartnersPage() {
               Ajoutez, configurez et suivez vos partenaires.
             </p>
           </div>
-          <Button className="h-8 rounded-lg bg-afrilink-green px-3 text-xs text-white hover:bg-afrilink-green/90 shrink-0">
+          <Button className="h-8 rounded-lg bg-allness-green px-3 text-xs text-white hover:bg-allness-green/90 shrink-0">
             <Plus className="mr-1 h-3 w-3" />
             Ajouter un partenaire
           </Button>
@@ -536,7 +536,7 @@ export default function PartnersPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 >
                   <option value="all">Type</option>
                   <option value="Opérateur Mobile">Opérateur Mobile</option>
@@ -547,7 +547,7 @@ export default function PartnersPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 >
                   <option value="all">Statut</option>
                   <option value="Actif">Actif</option>
@@ -558,7 +558,7 @@ export default function PartnersPage() {
                 <select
                   value={countryFilter}
                   onChange={(e) => setCountryFilter(e.target.value)}
-                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 >
                   <option value="all">Pays</option>
                   <option value="Cameroun">Cameroun</option>
@@ -630,7 +630,7 @@ export default function PartnersPage() {
                       onClick={() => setPage(n)}
                       className={`rounded-lg px-1.5 py-0.5 text-[10px] font-medium ${
                         page === n
-                          ? 'bg-afrilink-dark text-white'
+                          ? 'bg-allness-dark text-white'
                           : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                       }`}
                     >

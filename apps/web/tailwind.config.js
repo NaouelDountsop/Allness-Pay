@@ -52,8 +52,8 @@ export default {
           border: 'var(--sidebar-border)',
           ring: 'var(--sidebar-ring)',
         },
-        // Palette officielle AfrilinkPay
-        afrilink: {
+        // Palette officielle AllnessPay
+        allness: {
           dark: '#0F2E33',
           darker: '#0A2226',
           green: '#006C49',

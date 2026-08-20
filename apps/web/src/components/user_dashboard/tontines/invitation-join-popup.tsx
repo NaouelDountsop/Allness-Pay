@@ -52,7 +52,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
     <div className="rounded-xl bg-gray-50 p-4 transition-all">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-afrilink-dark">
+          <p className="text-sm font-semibold text-allness-dark">
             <TontineName tontineId={invitation.tontineId} />
           </p>
           <p className="text-xs text-gray-500 mt-1">
@@ -80,7 +80,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
               <button
                 disabled={isMutating}
                 onClick={() => respondMutation.mutate('ACCEPT')}
-                className="h-8 px-3 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-1 hover:bg-afrilink-greenHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-8 px-3 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-1 hover:bg-allness-greenHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isMutating ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -117,11 +117,11 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
   return (
     <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
-        <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
+        <div className="bg-allness-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
             <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
-              Allness<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
           <button
@@ -135,8 +135,8 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
 
         <div className="p-6">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <UserPlus className="w-4 h-4 text-afrilink-orange" />
-            <h3 className="text-base font-semibold text-afrilink-dark">
+            <UserPlus className="w-4 h-4 text-allness-orange" />
+            <h3 className="text-base font-semibold text-allness-dark">
               Invitation en attente
             </h3>
           </div>

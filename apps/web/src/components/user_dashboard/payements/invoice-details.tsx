@@ -36,7 +36,7 @@ export function InvoiceDetails({
         </div>
         <div className="flex items-center justify-between">
           <dt className="text-gray-500">Montant à payer</dt>
-          <dd className="font-semibold text-afrilink-orange">{format(amount)} CFA</dd>
+          <dd className="font-semibold text-allness-orange">{format(amount)} CFA</dd>
         </div>
         {dueDate && (
           <div className="flex items-center justify-between">
@@ -65,7 +65,7 @@ export function InvoiceDetails({
 
       <button
         onClick={onConfirm}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors"
       >
         Confirmer le paiement
       </button>

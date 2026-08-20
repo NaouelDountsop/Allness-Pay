@@ -100,7 +100,7 @@ export default function ContributionHistoryPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -136,7 +136,7 @@ export default function ContributionHistoryPage() {
           <div>
             <button
               onClick={() => navigate(id ? `/dashboard/tontines/${id}` : '/dashboard/tontines')}
-              className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
+              className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
             >
               <ArrowLeft className="w-5 h-5" />
               Historique des Versements
@@ -146,13 +146,13 @@ export default function ContributionHistoryPage() {
             )}
           </div>
           <div className="flex gap-2">
-            <button className="h-9 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-sm flex items-center gap-2">
+            <button className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2">
               <Download className="w-4 h-4" />
               Exporter CSV
             </button>
             <button
               onClick={() => setTontineModalOpen(true)}
-              className="h-9 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm flex items-center gap-2"
+              className="h-9 px-4 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Nouveau Versement
@@ -219,7 +219,7 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+        <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
       </div>
     );
   }
@@ -237,7 +237,7 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
               <button
                 key={t.id}
                 onClick={() => onSelect(t)}
-                className="w-full text-left rounded-xl border border-gray-200 p-4 hover:border-afrilink-green hover:bg-afrilink-green/[0.02] transition-all"
+                className="w-full text-left rounded-xl border border-gray-200 p-4 hover:border-allness-green hover:bg-allness-green/[0.02] transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -247,7 +247,7 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-afrilink-dark">
+                    <p className="text-sm font-bold text-allness-dark">
                       {new Intl.NumberFormat('fr-FR').format(pot)} {t.currency}
                     </p>
                     <p className="text-[10px] text-gray-400">Cagnotte</p>
@@ -263,11 +263,11 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
         </p>
       )}
 
-      <div className="rounded-xl bg-afrilink-dark p-4 text-white">
+      <div className="rounded-xl bg-allness-dark p-4 text-white">
         <p className="text-xs text-white/60 mb-1">Solde portefeuille</p>
         <p className="text-lg font-bold">
           {new Intl.NumberFormat('fr-FR').format(walletBalance)}{' '}
-          <span className="text-sm font-medium text-afrilink-orange">{walletCurrency}</span>
+          <span className="text-sm font-medium text-allness-orange">{walletCurrency}</span>
         </p>
       </div>
     </div>

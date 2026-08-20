@@ -145,9 +145,9 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-afrilink-orange/10 flex items-center justify-center">
+              <span className="w-8 h-8 rounded-full bg-allness-orange/10 flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 text-afrilink-orange"
+                  className="w-4 h-4 text-allness-orange"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -240,17 +240,17 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 onClick={() => setAccountType('mobile_money')}
                 className={`relative p-4 rounded-xl border-2 text-center transition ${
                   accountType === 'mobile_money'
-                    ? 'border-afrilink-green bg-afrilink-green/5'
+                    ? 'border-allness-green bg-allness-green/5'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {accountType === 'mobile_money' && (
-                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-green flex items-center justify-center">
+                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-allness-green flex items-center justify-center">
                     <Check className="h-3 w-3 text-white" />
                   </span>
                 )}
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <Smartphone className="h-6 w-6 text-afrilink-dark" />
+                  <Smartphone className="h-6 w-6 text-allness-dark" />
                 </div>
                 <p className="font-semibold text-sm text-gray-800">Mobile Money</p>
                 <p className="text-xs text-gray-500 mt-1">Orange Money, MTN Mobile Money, etc.</p>
@@ -260,25 +260,25 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 onClick={() => setAccountType('international_account')}
                 className={`relative p-4 rounded-xl border-2 text-center transition ${
                   accountType === 'international_account'
-                    ? 'border-afrilink-orange bg-afrilink-orange/5'
+                    ? 'border-allness-orange bg-allness-orange/5'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {accountType === 'international_account' && (
-                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-orange flex items-center justify-center">
+                  <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-allness-orange flex items-center justify-center">
                     <Check className="h-3 w-3 text-white" />
                   </span>
                 )}
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <Building2 className="h-6 w-6 text-afrilink-dark" />
+                  <Building2 className="h-6 w-6 text-allness-dark" />
                 </div>
                 <p className="font-semibold text-sm text-gray-800">Compte Bancaire</p>
                 <p className="text-xs text-gray-500 mt-1">Compte bancaire local (CEMAC)</p>
               </button>
             </div>
 
-            <div className="flex items-start gap-2 bg-afrilink-green/5 border border-afrilink-green/20 rounded-xl p-3 mt-4">
-              <ShieldCheck className="h-5 w-5 text-afrilink-green shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 bg-allness-green/5 border border-allness-green/20 rounded-xl p-3 mt-4">
+              <ShieldCheck className="h-5 w-5 text-allness-green shrink-0 mt-0.5" />
               <p className="text-xs text-gray-600">
                 Vos informations sont sécurisées et cryptées. Elles ne sont jamais partagées sans
                 votre consentement.
@@ -310,7 +310,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 <select
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white"
                 >
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -328,7 +328,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={operator}
                     onChange={(e) => setOperator(e.target.value as LinkedAccountOperator)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white"
                   >
                     {MOBILE_OPERATORS.map((op) => (
                       <option key={op.value} value={op.value}>
@@ -344,7 +344,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="MTN MoMo personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -364,7 +364,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       }}
                       placeholder="6 12 34 56 78"
                       maxLength={13}
-                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                     />
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white"
                   >
                     <option value="">Sélectionnez une banque</option>
                     {BANKS.map((b) => (
@@ -395,7 +395,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="Compte Ecobank personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -405,7 +405,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder="10012345678901"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                   />
                 </div>
               </>
@@ -418,7 +418,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white"
                   >
                     <option value="">Sélectionnez une banque</option>
                     {INTERNATIONAL_BANKS.map((b) => (
@@ -435,7 +435,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     placeholder="Compte HSBC personnel"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                   />
                 </div>
                 <div className="space-y-2">
@@ -445,7 +445,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder="GB29NWBK60161331926819"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
@@ -456,7 +456,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       value={iban}
                       onChange={(e) => setIban(e.target.value)}
                       placeholder="Optionnel"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                     />
                   </div>
                   <div className="space-y-2">
@@ -466,7 +466,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                       value={swiftCode}
                       onChange={(e) => setSwiftCode(e.target.value)}
                       placeholder="Optionnel"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
                     />
                   </div>
                 </div>
@@ -478,7 +478,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange appearance-none bg-white"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange appearance-none bg-white"
               >
                 <option value="XAF">XAF - Franc CFA</option>
                 <option value="EUR">EUR - Euro</option>
@@ -571,7 +571,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <Button
                 disabled={step === 1 ? !accountType : !isStep2Valid()}
                 onClick={() => setStep((s) => (s + 1) as 2 | 3)}
-                className="bg-afrilink-orange hover:bg-afrilink-orange/90"
+                className="bg-allness-orange hover:bg-allness-orange/90"
               >
                 Suivant
               </Button>
@@ -590,7 +590,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
               <Button
                 onClick={handleConfirm}
                 disabled={createMutation.isPending}
-                className="bg-afrilink-orange hover:bg-afrilink-orange/90"
+                className="bg-allness-orange hover:bg-allness-orange/90"
               >
                 {createMutation.isPending ? 'Création...' : 'Confirmer'}
               </Button>

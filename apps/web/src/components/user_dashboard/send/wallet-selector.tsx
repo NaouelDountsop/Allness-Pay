@@ -27,10 +27,10 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
 
   if (!selected) return null;
 
-  const formatBalance = (balance: string, currency: string) => {
-    const num = parseFloat(balance) || 0;
+  const formatBalance = (balance: string | number, currency: string) => {
+    const num = typeof balance === 'string' ? parseFloat(balance) : balance;
     const symbol = CURRENCY_SYMBOLS[currency] ?? currency;
-    return `${new Intl.NumberFormat('fr-FR').format(num)} ${symbol}`;
+    return `${new Intl.NumberFormat('fr-FR').format(num || 0)} ${symbol}`;
   };
 
   return (
@@ -40,14 +40,14 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-afrilink-green transition-colors"
+          className="w-full flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-allness-green transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-afrilink-green/10 flex items-center justify-center overflow-hidden">
+            <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center overflow-hidden">
               <img src="/allnesspay_logo2.png" alt="AllnessPay" className="w-7 h-7 object-contain" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-afrilink-dark">
+              <p className="text-sm font-semibold text-allness-dark">
                 {selected.label ?? selected.walletNumber}
               </p>
               <p className="text-xs text-gray-500">
@@ -74,13 +74,13 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                     isSelected
-                      ? 'bg-afrilink-green/5'
+                      ? 'bg-allness-green/5'
                       : 'hover:bg-gray-50'
                   }`}
                 >
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center overflow-hidden ${
-                      isSelected ? 'bg-afrilink-green/10' : 'bg-gray-100'
+                      isSelected ? 'bg-allness-green/10' : 'bg-gray-100'
                     }`}
                   >
                     <img src="/allnesspay_logo2.png" alt="AllnessPay" className="w-6 h-6 object-contain" />
@@ -88,7 +88,7 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
                   <div className="flex-1 min-w-0">
                     <p
                       className={`text-sm font-medium truncate ${
-                        isSelected ? 'text-afrilink-green' : 'text-afrilink-dark'
+                        isSelected ? 'text-allness-green' : 'text-allness-dark'
                       }`}
                     >
                       {wallet.label ?? wallet.walletNumber}
@@ -97,7 +97,7 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
                       {wallet.currency} · {formatBalance(wallet.balance, wallet.currency)}
                     </p>
                   </div>
-                  {isSelected && <Check className="w-4 h-4 text-afrilink-green shrink-0" />}
+                  {isSelected && <Check className="w-4 h-4 text-allness-green shrink-0" />}
                 </button>
               );
             })}

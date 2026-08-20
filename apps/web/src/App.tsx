@@ -22,6 +22,7 @@ import ContributionHistoryPage from "@/app/user_dashboard/contribution-history-p
 import MakeContributionPage from "@/app/user_dashboard/make-contribution-page";
 import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
 import TontineChatPage from "@/app/user_dashboard/tontine-chat-page";
+import TontinesInvitationsPage from "@/app/user_dashboard/tontines-invitations-page";
 import ProfilePage from "@/app/user_dashboard/profile-page";
 import SettingsPage from "@/app/user_dashboard/settings-page";
 import AdminLoginPage from "@/app/admin-dashboard/admin-login-page";
@@ -77,6 +78,7 @@ export function App() {
         <Route path="/dashboard/tontines/:id/contribute" element={<UserProtectedRoute><MakeContributionPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/:id/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/invitations" element={<UserProtectedRoute><TontinesInvitationsPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/:id/settings" element={<UserProtectedRoute><TontineSettingsPage /></UserProtectedRoute>} />
         <Route path="/dashboard/transactions" element={<UserProtectedRoute><TransactionsPage /></UserProtectedRoute>} />
         <Route path="/dashboard/beneficiaries" element={<UserProtectedRoute><BeneficiariesPage /></UserProtectedRoute>} />

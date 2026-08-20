@@ -40,7 +40,7 @@ export default function BillPaymentPage() {
       <div className="max-w-4xl">
         <button
           onClick={() => navigate('/dashboard/payments')}
-          className="flex items-center gap-2 text-2xl font-semibold text-afrilink-dark mb-1"
+          className="flex items-center gap-2 text-2xl font-semibold text-allness-dark mb-1"
         >
           <ArrowLeft className="w-5 h-5" />
           {title}
@@ -56,7 +56,7 @@ export default function BillPaymentPage() {
             onSearch={handleSearch}
           />
 
-          <div className="rounded-xl border-2 border-afrilink-orange p-4 flex items-center justify-center">
+          <div className="rounded-xl border-2 border-allness-orange p-4 flex items-center justify-center">
             {supplier ? (
               <img src="/socadel.svg" alt={supplier} className="max-h-24 object-contain" />
             ) : (

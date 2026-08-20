@@ -39,7 +39,7 @@ function SettingCard({
           <p className="mt-1 text-xs text-gray-500">{description}</p>
         </div>
         {badge ? (
-          <span className="rounded-full bg-afrilink-green/10 px-3 py-1 text-[11px] font-semibold text-afrilink-green">
+          <span className="rounded-full bg-allness-green/10 px-3 py-1 text-[11px] font-semibold text-allness-green">
             {badge}
           </span>
         ) : null}
@@ -156,7 +156,7 @@ export default function SettingsPage() {
           <aside className="space-y-6 xl:w-1/3">
             <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-afrilink-dark text-3xl font-semibold text-white">
+                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-allness-dark text-3xl font-semibold text-white">
                   {fullName
                     .split(' ')
                     .map((part) => part[0])
@@ -164,23 +164,23 @@ export default function SettingsPage() {
                     .join('')}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-afrilink-orange">
+                  <p className="text-xs uppercase tracking-[0.24em] text-allness-orange">
                     Paramètres
                   </p>
-                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark">
+                  <h1 className="mt-3 text-2xl font-semibold text-allness-dark">
                     Compte Allness
                   </h1>
                 </div>
               </div>
 
               <div className="mt-6 space-y-5">
-                <div className="rounded-3xl bg-afrilink-orange/5 p-5">
+                <div className="rounded-3xl bg-allness-orange/5 p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
                     Email principal
                   </p>
                   <p className="mt-3 text-sm font-medium text-gray-900">{profile?.email ?? '-'}</p>
                 </div>
-                <div className="rounded-3xl bg-afrilink-green/5 p-5">
+                <div className="rounded-3xl bg-allness-green/5 p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-gray-500">2FA</p>
                   <p className="mt-3 text-sm font-medium text-gray-900">
                     {twoFaEnabled ? 'Activée' : 'Désactivée'}
@@ -190,8 +190,8 @@ export default function SettingsPage() {
 
               <div className="mt-6 rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-4 h-4 text-afrilink-orange" />
-                  <p className="text-sm font-semibold text-afrilink-dark">Préférences rapides</p>
+                  <Sparkles className="w-4 h-4 text-allness-orange" />
+                  <p className="text-sm font-semibold text-allness-dark">Préférences rapides</p>
                 </div>
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                       Authentification
                     </p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-green">
+                    <p className="mt-2 text-sm font-medium text-allness-green">
                       {twoFaEnabled ? '2FA activée' : '2FA désactivée'}
                     </p>
                   </div>
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Email</p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-dark">
+                    <p className="mt-2 text-sm font-medium text-allness-dark">
                       {emailNotifs ? 'Activées' : 'Désactivées'}
                     </p>
                   </div>
@@ -322,7 +322,7 @@ export default function SettingsPage() {
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <CreditCard className="w-4 h-4 text-afrilink-orange shrink-0" />
+                    <CreditCard className="w-4 h-4 text-allness-orange shrink-0" />
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                         Moyens liés
@@ -350,7 +350,7 @@ export default function SettingsPage() {
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <Users className="w-4 h-4 text-afrilink-green shrink-0" />
+                    <Users className="w-4 h-4 text-allness-green shrink-0" />
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                         Rappel avant mon tour
@@ -379,7 +379,7 @@ export default function SettingsPage() {
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <LifeBuoy className="w-4 h-4 text-afrilink-orange shrink-0" />
+                    <LifeBuoy className="w-4 h-4 text-allness-orange shrink-0" />
                     <p className="text-sm font-medium text-gray-900">Une question, un problème ?</p>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">

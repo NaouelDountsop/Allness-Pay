@@ -114,11 +114,11 @@ export default function InitiateDepositPage() {
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
           >
-            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+            <ArrowLeft className="w-5 h-5 text-allness-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">{t('deposit.pageTitle')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">{t('deposit.pageTitle')}</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           {t('deposit.pageDescription')}
@@ -137,7 +137,7 @@ export default function InitiateDepositPage() {
         {/* Encart sécurité */}
         <div className="flex items-start gap-3 rounded-xl bg-green-50 border border-green-100 p-4 mb-6">
           <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-4 h-4 text-afrilink-green" />
+            <ShieldCheck className="w-4 h-4 text-allness-green" />
           </div>
           <p className="text-xs text-green-700 leading-relaxed">
             {t('deposit.securityNotice')}
@@ -157,22 +157,22 @@ export default function InitiateDepositPage() {
                   onClick={() => setMethod(m.key)}
                   className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
                     deposit.method === m.key
-                      ? 'border-afrilink-green bg-green-50/50 shadow-sm'
+                      ? 'border-allness-green bg-green-50/50 shadow-sm'
                       : 'border-gray-100 hover:border-gray-200'
                   }`}
                 >
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       deposit.method === m.key
-                        ? 'bg-afrilink-green/10 text-afrilink-green'
+                        ? 'bg-allness-green/10 text-allness-green'
                         : 'bg-gray-100 text-gray-500'
                     }`}
                   >
                     {m.icon}
                   </div>
-                  <span className="text-xs font-semibold text-afrilink-dark">{t(m.labelKey)}</span>
+                  <span className="text-xs font-semibold text-allness-dark">{t(m.labelKey)}</span>
                   {deposit.method === m.key && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-afrilink-green" />
+                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
                   )}
                 </button>
               ))}
@@ -196,16 +196,16 @@ export default function InitiateDepositPage() {
                           onClick={() => setOperator(op.key)}
                           className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
                             deposit.operator === op.key
-                              ? 'border-afrilink-green bg-green-50/50 shadow-sm'
+                              ? 'border-allness-green bg-green-50/50 shadow-sm'
                               : 'border-gray-100 hover:border-gray-200'
                           }`}
                         >
                           <img src={op.image} alt={op.label} className="w-7 h-7 object-contain" />
-                          <span className="text-xs font-semibold text-afrilink-dark">
+                          <span className="text-xs font-semibold text-allness-dark">
                             {op.label}
                           </span>
                           {deposit.operator === op.key && (
-                            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-afrilink-green" />
+                            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
                           )}
                         </button>
                       ))}
@@ -222,8 +222,8 @@ export default function InitiateDepositPage() {
                         phoneTouched && !phoneValid
                           ? 'border-red-400 focus-within:ring-2 focus-within:ring-red-200'
                           : phoneTouched && phoneValid
-                            ? 'border-afrilink-green focus-within:ring-2 focus-within:ring-green-200'
-                            : 'border-gray-200 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange'
+                            ? 'border-allness-green focus-within:ring-2 focus-within:ring-green-200'
+                            : 'border-gray-200 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange'
                       }`}
                     >
                       <span className="flex items-center gap-1.5 px-3.5 h-full bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-600 shrink-0">
@@ -242,12 +242,12 @@ export default function InitiateDepositPage() {
                         }}
                         placeholder={deposit.operator === 'mtn' ? '670000000' : '690000000'}
                         maxLength={9}
-                        className="flex-1 h-full px-2.5 text-sm text-afrilink-dark focus:outline-none tracking-widest"
+                        className="flex-1 h-full px-2.5 text-sm text-allness-dark focus:outline-none tracking-widest"
                       />
                       {phoneTouched && (
                         <div className="pr-3 shrink-0">
                           {phoneValid ? (
-                            <span className="text-afrilink-green text-xs font-medium">✓ Valide</span>
+                            <span className="text-allness-green text-xs font-medium">✓ Valide</span>
                           ) : phoneDigits.length === 9 ? (
                             <span className="text-red-500 text-xs font-medium">✗ Invalide</span>
                           ) : null}
@@ -277,7 +277,7 @@ export default function InitiateDepositPage() {
                     <select
                       value={deposit.bankName}
                       onChange={(e) => setBankName(e.target.value)}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all bg-white"
+                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white"
                     >
                       <option value="">{t('deposit.selectBank')}</option>
                       <option value="sgbc">SGBC (Société Générale Cameroun)</option>
@@ -301,7 +301,7 @@ export default function InitiateDepositPage() {
                       value={deposit.iban}
                       onChange={(e) => setIban(e.target.value)}
                       placeholder={t('deposit.ibanPlaceholder')}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all uppercase"
+                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all uppercase"
                     />
                   </div>
 
@@ -315,7 +315,7 @@ export default function InitiateDepositPage() {
                       value={deposit.accountHolder}
                       onChange={(e) => setAccountHolder(e.target.value)}
                       placeholder={t('deposit.accountHolderPlaceholder')}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all"
+                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all"
                     />
                   </div>
                 </>
@@ -331,7 +331,7 @@ export default function InitiateDepositPage() {
                   value={deposit.description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={t('deposit.descriptionPlaceholder')}
-                  className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-2 focus:ring-afrilink-orange/30 focus:border-afrilink-orange transition-all"
+                  className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all"
                 />
               </div>
             </div>
@@ -343,13 +343,13 @@ export default function InitiateDepositPage() {
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                   {t('deposit.amountLabel')}
                 </label>
-                <div className="flex items-center h-12 rounded-lg border border-gray-200 overflow-hidden mb-3 focus-within:ring-2 focus-within:ring-afrilink-orange/30 focus-within:border-afrilink-orange transition-all">
+                <div className="flex items-center h-12 rounded-lg border border-gray-200 overflow-hidden mb-3 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange transition-all">
                   <input
                     type="number"
                     value={deposit.amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder={t('deposit.amountPlaceholder')}
-                    className="flex-1 h-full px-4 text-base font-semibold text-afrilink-dark focus:outline-none"
+                    className="flex-1 h-full px-4 text-base font-semibold text-allness-dark focus:outline-none"
                   />
                   <select
                     value={deposit.currency}
@@ -370,7 +370,7 @@ export default function InitiateDepositPage() {
                       onClick={() => setAmount(String(amt))}
                       className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors ${
                         Number(deposit.amount) === amt
-                          ? 'bg-afrilink-orange text-white border-afrilink-orange'
+                          ? 'bg-allness-orange text-white border-allness-orange'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}
                     >
@@ -414,7 +414,7 @@ export default function InitiateDepositPage() {
                 onClick={handleSubmit}
                 disabled={!canSubmit || submitting}
                 className="w-full h-12 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-opacity
-                  bg-afrilink-green text-white hover:opacity-90
+                  bg-allness-green text-white hover:opacity-90
                   disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-100"
               >
                 {submitting ? (

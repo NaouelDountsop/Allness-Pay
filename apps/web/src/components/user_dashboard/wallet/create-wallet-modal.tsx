@@ -89,8 +89,8 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-afrilink-green/10 flex items-center justify-center">
-                <WalletMinimal className="w-4 h-4 text-afrilink-green" />
+              <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
+                <WalletMinimal className="w-4 h-4 text-allness-green" />
               </span>
               Nouveau portefeuille
             </div>
@@ -105,7 +105,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
         </DialogHeader>
 
         {/* Stepper */}
-        <div className="rounded-xl bg-afrilink-dark px-4 pt-5 pb-4 my-4">
+        <div className="rounded-xl bg-allness-dark px-4 pt-5 pb-4 my-4">
           {/* <StepIndicator
             steps={STEPS}
             currentStep={step - 1}
@@ -127,16 +127,16 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
                   className={cn(
                     "relative p-4 rounded-xl border-2 text-left transition",
                     currency === c.code
-                      ? "border-afrilink-green bg-afrilink-green/5"
+                      ? "border-allness-green bg-allness-green/5"
                       : "border-gray-200 hover:border-gray-300"
                   )}
                 >
                   {currency === c.code && (
-                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-afrilink-green flex items-center justify-center">
+                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-allness-green flex items-center justify-center">
                       <Check className="h-3 w-3 text-white" />
                     </span>
                   )}
-                  <p className="text-lg font-bold text-afrilink-dark">{c.symbol}</p>
+                  <p className="text-lg font-bold text-allness-dark">{c.symbol}</p>
                   <p className="text-xs font-medium text-gray-600 mt-1">{c.label}</p>
                 </button>
               ))}
@@ -155,7 +155,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="Ex: Épargne, Courant, Affaires..."
                 maxLength={100}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-afrilink-green/20 focus:border-afrilink-green"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-allness-green/20 focus:border-allness-green"
                 autoFocus
               />
               <p className="text-[11px] text-gray-400">
@@ -189,7 +189,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Statut initial</span>
-              <span className={`font-medium ${kycApproved ? 'text-afrilink-green' : 'text-afrilink-orange'}`}>
+              <span className={`font-medium ${kycApproved ? 'text-allness-green' : 'text-allness-orange'}`}>
                 {kycApproved ? 'Actif' : 'Inactif'}
               </span>
             </div>
@@ -232,7 +232,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
               <Button
                 disabled={!canProceed}
                 onClick={() => setStep((s) => (s + 1) as 2 | 3)}
-                className="bg-afrilink-green hover:bg-afrilink-greenHover"
+                className="bg-allness-green hover:bg-allness-greenHover"
               >
                 Suivant
               </Button>
@@ -251,7 +251,7 @@ export function CreateWalletModal({ open, onOpenChange }: CreateWalletModalProps
               <Button
                 onClick={handleConfirm}
                 disabled={createMutation.isPending}
-                className="bg-afrilink-green hover:bg-afrilink-greenHover"
+                className="bg-allness-green hover:bg-allness-greenHover"
               >
                 {createMutation.isPending ? (
                   <span className="flex items-center gap-2">

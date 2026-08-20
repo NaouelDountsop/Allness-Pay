@@ -76,11 +76,11 @@ export default function ProcessingPage() {
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-afrilink-orange/10 flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
           >
-            <ArrowLeft className="w-5 h-5 text-afrilink-orange" />
+            <ArrowLeft className="w-5 h-5 text-allness-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">{t('processing.pageTitle')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">{t('processing.pageTitle')}</h1>
         </div>
         <p className="text-sm text-gray-500 mb-4 ml-[52px]">
           {isBank
@@ -153,17 +153,17 @@ export default function ProcessingPage() {
           <div className="flex justify-center mb-8">
             <span className="w-24 h-24 rounded-full bg-green-50 flex items-center justify-center">
               {status === 'success' ? (
-                <CheckCircle2 className="w-10 h-10 text-afrilink-green" />
+                <CheckCircle2 className="w-10 h-10 text-allness-green" />
               ) : status === 'failed' ? (
                 <XCircle className="w-10 h-10 text-red-500" />
               ) : (
-                <RefreshCcw className="w-10 h-10 text-afrilink-green animate-spin [animation-duration:2.5s]" />
+                <RefreshCcw className="w-10 h-10 text-allness-green animate-spin [animation-duration:2.5s]" />
               )}
             </span>
           </div>
 
           <div className="rounded-xl border border-gray-100 p-5 mb-6">
-            <p className="text-xs font-semibold text-afrilink-dark mb-4">
+            <p className="text-xs font-semibold text-allness-dark mb-4">
               {t('processing.statusTitle')}
             </p>
             <div className="flex flex-col gap-3">
@@ -171,12 +171,12 @@ export default function ProcessingPage() {
                 <div key={label} className="flex items-center justify-between">
                   <span className="text-xs text-gray-600">{label}</span>
                   {isDone(i) ? (
-                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-green">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-allness-green">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       {t('processing.statusDone')}
                     </span>
                   ) : isCurrent(i) ? (
-                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-afrilink-orange">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-allness-orange">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       {t('processing.statusInProgress')}
                     </span>
@@ -191,7 +191,7 @@ export default function ProcessingPage() {
           <button
             onClick={handleGoToWallet}
             className="w-full h-12 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-opacity
-              bg-afrilink-green text-white hover:opacity-90"
+              bg-allness-green text-white hover:opacity-90"
           >
             <Wallet className="w-4 h-4" />
             {t('processing.goToWallet')}

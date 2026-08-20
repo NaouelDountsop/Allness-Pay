@@ -13,6 +13,7 @@ import { WalletSelector } from '@/components/user_dashboard/send/wallet-selector
 import { usePin } from '@/hooks/use-pin';
 import { userService } from '@/lib/api/user.service';
 import { walletService } from '@/lib/api/wallet.service';
+import { currencyService } from '@/lib/api/currency.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { getCountryByCode } from '@/data/countries';
 
@@ -31,13 +32,6 @@ const NETWORK_TO_MODE: Record<string, string> = {
   ORANGE_MONEY: 'orange',
   wave: 'wallet',
   WAVE: 'wallet',
-};
-
-const COUNTRY_TO_CURRENCY: Record<string, string> = {
-  CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
-  SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
-  CA: 'CAD',
-  FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
 };
 
 export default function SendMoneyPage() {
@@ -67,18 +61,6 @@ export default function SendMoneyPage() {
     queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
-  const availableCurrencies = [...new Set(wallets.map((w) => w.currency).filter(Boolean))];
-
-  const senderInfo = profile
-    ? {
-        fullName: `${profile.prenom} ${profile.nom}`,
-        city: profile.ville,
-        country: profile.pays,
-        currency: selectedWallet?.currency ?? COUNTRY_TO_CURRENCY[profile.pays] ?? 'XAF',
-        walletId: selectedWallet?.walletNumber,
-        availableCurrencies: availableCurrencies.length > 0 ? availableCurrencies : [selectedWallet?.currency ?? 'XAF'],
-      }
-    : undefined;
 
   const [form, setForm] = useState({
     beneficiaryContact: '',
@@ -87,6 +69,34 @@ export default function SendMoneyPage() {
     amount: '',
     receptionMode: 'wallet' as string,
   });
+
+  const receiverCurrency = useMemo(() => {
+    const COUNTRY_TO_CURRENCY: Record<string, string> = {
+      CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
+      SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
+      CA: 'CAD',
+      FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
+    };
+    return COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
+  }, [form.country]);
+
+  const senderCurrency = selectedWallet?.currency ?? 'XAF';
+
+  const { data: exchangeRate, isLoading: exchangeRateLoading } = useQuery({
+    queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
+    queryFn: () => currencyService.getExchangeRate(senderCurrency, receiverCurrency),
+    enabled: senderCurrency !== receiverCurrency,
+  });
+
+  const senderInfo = profile
+    ? {
+        fullName: `${profile.prenom} ${profile.nom}`,
+        city: profile.ville,
+        country: profile.pays,
+        currency: senderCurrency,
+        walletId: selectedWallet?.walletNumber,
+      }
+    : undefined;
 
   const destCountry = useMemo(() => getCountryByCode(form.country), [form.country]);
   const destCountryName = destCountry?.name ?? 'l\'étranger';
@@ -202,7 +212,7 @@ export default function SendMoneyPage() {
       <DashboardHeader />
 
       <div>
-        <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
+        <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-allness-dark mb-2 sm:mb-3 leading-tight">
           Transfert vers {destCountryName}
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8">
@@ -210,9 +220,8 @@ export default function SendMoneyPage() {
         </p>
 
         <div
-          className="rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-4 sm:mb-6"
+          className="rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-4 sm:mb-6 bg-allness-dark"
           style={{
-            backgroundColor: '#082B37',
             boxShadow: '0 1px 2px rgba(8,43,55,0.15), 0 8px 20px -6px rgba(8,43,55,0.35)',
           }}
         >
@@ -229,8 +238,7 @@ export default function SendMoneyPage() {
           <div className="p-4 sm:p-6 md:p-8">
             <div className="flex items-center gap-2 mb-5 sm:mb-6">
               <span
-                className="inline-block h-2 w-2 rounded-full"
-                style={{ backgroundColor: '#D28E2F' }}
+                className="inline-block h-2 w-2 rounded-full bg-allness-orange"
               />
               <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-gray-400">
                 {steps[currentStepIndex]?.label}
@@ -252,6 +260,8 @@ export default function SendMoneyPage() {
                   onChange={handleChange}
                   onSubmit={handleFormSubmit}
                   sender={senderInfo}
+                  exchangeRate={exchangeRate?.rate ?? null}
+                  exchangeRateLoading={exchangeRateLoading}
                 />
               </>
             )}
@@ -277,7 +287,7 @@ export default function SendMoneyPage() {
                   alt="Merci"
                   className="mx-auto mb-4 h-56 w-auto"
                 />
-                <h2 className="text-base sm:text-lg font-bold text-afrilink-green mb-2">
+                <h2 className="text-base sm:text-lg font-bold text-allness-green mb-2">
                   Transfert envoyé avec succès !
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
@@ -293,8 +303,7 @@ export default function SendMoneyPage() {
                     setShowPinConfirm(false);
                     setPendingAction(null);
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors"
-                  style={{ backgroundColor: '#082B37' }}
+                  className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white bg-allness-dark hover:bg-allness-darker transition-colors"
                 >
                   Nouveau transfert
                 </button>

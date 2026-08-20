@@ -28,8 +28,8 @@ export function PinPad({ value, length = 4, onChange, error }: PinPadProps) {
               error
                 ? 'border-red-400'
                 : value[i]
-                  ? 'border-afrilink-orange'
-                  : 'border-afrilink-orange/40'
+                  ? 'border-allness-orange'
+                  : 'border-allness-orange/40'
             }`}
           >
             {value[i] ? '•' : ''}
@@ -46,9 +46,9 @@ export function PinPad({ value, length = 4, onChange, error }: PinPadProps) {
               key={i}
               type="button"
               onClick={() => handlePress(key)}
-              className="h-14 rounded-xl bg-afrilink-dark hover:bg-afrilink-darker text-white flex items-center justify-center text-lg font-medium transition-colors"
+              className="h-14 rounded-xl bg-allness-dark hover:bg-allness-darker text-white flex items-center justify-center text-lg font-medium transition-colors"
             >
-              {key === 'del' ? <Delete className="w-4 h-4 text-afrilink-orange" /> : key}
+              {key === 'del' ? <Delete className="w-4 h-4 text-allness-orange" /> : key}
             </button>
           ),
         )}

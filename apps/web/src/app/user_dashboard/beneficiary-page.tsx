@@ -88,7 +88,7 @@ function BeneficiaryActionsMenu({
       <button
         ref={buttonRef}
         onClick={handleToggle}
-        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
         aria-label="Plus d'options"
       >
         <MoreVertical className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ function NetworkBadge({ network }: { network: string }) {
     <div className="flex items-center gap-2">
       <span
         className={`w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold shrink-0 ${
-          isMtn ? 'bg-yellow-400 text-afrilink-dark' : isOrange ? 'bg-orange-500 text-white' : 'bg-gray-400 text-white'
+          isMtn ? 'bg-yellow-400 text-allness-dark' : isOrange ? 'bg-orange-500 text-white' : 'bg-gray-400 text-white'
         }`}
       >
         {isMtn ? 'MTN' : isOrange ? 'OM' : label.slice(0, 2).toUpperCase()}
@@ -221,7 +221,7 @@ export default function BeneficiariesPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -234,7 +234,7 @@ export default function BeneficiariesPage() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-allness-dark mb-1">
               Gestion des Bénéficiaires
             </h1>
             <p className="text-sm text-gray-400">
@@ -244,7 +244,7 @@ export default function BeneficiariesPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setAddModalOpen(true)}
-              className="group relative h-10 rounded-lg bg-afrilink-green text-white text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:opacity-90 transition-opacity"
+              className="group relative h-10 rounded-lg bg-allness-green text-white text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline ml-2">Ajouter un bénéficiaire</span>
@@ -252,7 +252,7 @@ export default function BeneficiariesPage() {
                 Ajouter
               </span>
             </button>
-            <button className="group relative h-10 rounded-lg border border-afrilink-green bg-white text-gray-600 text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:bg-gray-50 transition-colors">
+            <button className="group relative h-10 rounded-lg border border-allness-green bg-white text-gray-600 text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:bg-gray-50 transition-colors">
               <UserPlus className="w-4 h-4" />
               <span className="hidden sm:inline ml-2">Importer depuis les contacts</span>
               <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
@@ -263,7 +263,7 @@ export default function BeneficiariesPage() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <Users className="w-5 h-5 text-blue-400" />
@@ -273,7 +273,7 @@ export default function BeneficiariesPage() {
             <p className="text-2xl font-bold text-white mb-2">{stats.total}</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-green-400" />
@@ -286,7 +286,7 @@ export default function BeneficiariesPage() {
             </p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <Send className="w-5 h-5 text-green-400" />
@@ -296,7 +296,7 @@ export default function BeneficiariesPage() {
             <p className="text-2xl font-bold text-white mb-2">—</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
                 <Star className="w-5 h-5 text-amber-400" />
@@ -320,7 +320,7 @@ export default function BeneficiariesPage() {
                   placeholder="Nom, numéro..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
             </div>
@@ -336,7 +336,7 @@ export default function BeneficiariesPage() {
               <select
                 value={networkFilter}
                 onChange={(e) => setNetworkFilter(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Tous</option>
                 <option value="MTN_MOMO">MTN Mobile Money</option>
@@ -366,7 +366,7 @@ export default function BeneficiariesPage() {
               <RotateCcw className="w-3.5 h-3.5" />
               Réinitialiser
             </button>
-            <button className="h-9 px-5 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
+            <button className="h-9 px-5 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
               Filtrer
             </button>
           </div>
@@ -400,11 +400,11 @@ export default function BeneficiariesPage() {
                     <tr key={b.id} className="border-b border-gray-50 last:border-0">
                       <td>
                         <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-full bg-afrilink-orange/10 text-afrilink-orange flex items-center justify-center text-[11px] font-semibold shrink-0">
+                          <span className="w-8 h-8 rounded-full bg-allness-orange/10 text-allness-orange flex items-center justify-center text-[11px] font-semibold shrink-0">
                             {initials}
                           </span>
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <p className="text-xs font-medium text-afrilink-dark truncate">{b.name}</p>
+                            <p className="text-xs font-medium text-allness-dark truncate">{b.name}</p>
                             {b.isFavorite && (
                               <Star className="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" />
                             )}
@@ -456,7 +456,7 @@ export default function BeneficiariesPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleSend(b)}
-                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-afrilink-green hover:bg-afrilink-green/10 transition-colors"
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-allness-green hover:bg-allness-green/10 transition-colors"
                             aria-label="Envoyer de l'argent"
                           >
                             <Send className="w-3.5 h-3.5" />
@@ -494,10 +494,10 @@ export default function BeneficiariesPage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-5 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">Transferts sécurisés</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">Transferts sécurisés</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
                 Vos transferts sont protégés par un chiffrement de bout en bout.
               </p>
@@ -505,10 +505,10 @@ export default function BeneficiariesPage() {
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">
+              <p className="text-xs font-semibold text-allness-dark mb-1">
                 Vérification des bénéficiaires
               </p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
@@ -518,10 +518,10 @@ export default function BeneficiariesPage() {
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <Link2 className="w-4 h-4 text-afrilink-green" />
+              <Link2 className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">Gestion simplifiée</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">Gestion simplifiée</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
                 Ajoutez, modifiez ou supprimez vos bénéficiaires à tout moment.
               </p>

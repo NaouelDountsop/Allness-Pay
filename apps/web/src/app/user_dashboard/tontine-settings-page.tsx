@@ -114,7 +114,7 @@ export default function TontineSettingsPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -152,7 +152,7 @@ export default function TontineSettingsPage() {
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => navigate(`/dashboard/tontines/${id}`)}
-            className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
+            className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
           >
             <ArrowLeft className="w-5 h-5" />
             Paramètres Généraux
@@ -161,7 +161,7 @@ export default function TontineSettingsPage() {
             <button
               onClick={() => startMutation.mutate()}
               disabled={startMutation.isPending || activeMembers.length < 2}
-              className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
+              className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
             >
               {startMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -223,7 +223,7 @@ export default function TontineSettingsPage() {
                   <input
                     type="number"
                     defaultValue={5}
-                    className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                   />
                 </div>
                 <div>
@@ -233,7 +233,7 @@ export default function TontineSettingsPage() {
                   <input
                     type="number"
                     defaultValue={3}
-                    className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                    className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                   />
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function TontineSettingsPage() {
               <button
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
-                className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
+                className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
               >
                 {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Enregistrer les modifications
@@ -272,7 +272,7 @@ export default function TontineSettingsPage() {
             {/* Rotation Order Summary */}
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex items-center gap-2 mb-3">
-                <CalendarDays className="w-4 h-4 text-afrilink-green" />
+                <CalendarDays className="w-4 h-4 text-allness-green" />
                 <h3 className="text-sm font-semibold text-gray-900">Ordre de Passage</h3>
               </div>
 
@@ -282,7 +282,7 @@ export default function TontineSettingsPage() {
                   <p className="text-[11px] text-blue-700">
                     La tontine démarrera une fois au moins <span className="font-semibold">2 membres actifs</span> inscrits.
                     {activeMembers.length >= 2 && (
-                      <span className="text-afrilink-green font-semibold"> Prêt !</span>
+                      <span className="text-allness-green font-semibold"> Prêt !</span>
                     )}
                   </p>
                 </div>
@@ -290,7 +290,7 @@ export default function TontineSettingsPage() {
 
               {!isDraft && tontine.nextContributionAt && (
                 <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-green-50 border border-green-100">
-                  <CalendarDays className="w-3.5 h-3.5 text-afrilink-green shrink-0" />
+                  <CalendarDays className="w-3.5 h-3.5 text-allness-green shrink-0" />
                   <p className="text-[11px] text-green-700">
                     Prochaine cotisation le{' '}
                     <span className="font-semibold">
@@ -310,7 +310,7 @@ export default function TontineSettingsPage() {
                     key={m.id}
                     className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-gray-50"
                   >
-                    <span className="w-5 h-5 rounded-full bg-afrilink-green text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-allness-green text-white text-[9px] font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -318,7 +318,7 @@ export default function TontineSettingsPage() {
                       <p className="text-[10px] text-gray-400">{m.month}</p>
                     </div>
                     {tontine.status === 'ACTIVE' && i === 0 && (
-                      <span className="text-[9px] font-semibold text-afrilink-green bg-green-50 px-1.5 py-0.5 rounded-full">
+                      <span className="text-[9px] font-semibold text-allness-green bg-green-50 px-1.5 py-0.5 rounded-full">
                         Actuel
                       </span>
                     )}

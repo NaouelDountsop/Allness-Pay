@@ -25,10 +25,10 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
       <div className="w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden bg-white flex flex-col md:flex-row">
         {/* Panneau gauche */}
-        <div className="hidden md:flex md:w-[42%] bg-gradient-to-b from-afrilink-dark to-afrilink-darker flex-col p-8 lg:p-10 text-white">
+        <div className="hidden md:flex md:w-[42%] bg-gradient-to-b from-allness-dark to-allness-darker flex-col p-8 lg:p-10 text-white">
           <div>
             <h2 className="text-3xl font-bold mb-4">
-              Allness<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </h2>
             <p className="text-sm text-white/70 leading-relaxed mb-8">
               Le futur de la gestion de patrimoine d'entreprise, simplifié pour vous.
@@ -37,8 +37,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <div className="space-y-5">
               {features.map(({ icon: Icon, title, description }) => (
                 <div key={title} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-md bg-afrilink-orange/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5 text-afrilink-orange" />
+                  <div className="w-8 h-8 rounded-md bg-allness-orange/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-allness-orange" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold">{title}</p>
@@ -60,7 +60,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
                 "AllnessPay a transformé notre façon de gérer nos actifs internationaux. Une
                 interface d'une fluidité rare."
               </p>
-              <div className="w-2 h-2 rounded-full bg-afrilink-orange absolute -bottom-1 left-4" />
+              <div className="w-2 h-2 rounded-full bg-allness-orange absolute -bottom-1 left-4" />
             </div>
           </div>
         </div>
@@ -68,10 +68,10 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         {/* Panneau droit — formulaire */}
         <div className="flex-1 w-full p-6 sm:p-8 lg:p-10 overflow-y-auto">
           {/* Branding mobile — visible uniquement sur petit écran */}
-          <div className="md:hidden flex items-center gap-2 mb-6 bg-afrilink-dark px-4 py-3 rounded-t-xl">
+          <div className="md:hidden flex items-center gap-2 mb-6 bg-allness-dark px-4 py-3 rounded-t-xl">
             <img src="/allnesspay_logo1.png" alt="AllnessPay" className="h-8 w-auto" />
             <span className="text-lg font-bold text-white">
-              Allness<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
           {children}

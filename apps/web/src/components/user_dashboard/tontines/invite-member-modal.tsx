@@ -40,8 +40,8 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-lg bg-afrilink-orange/10 flex items-center justify-center">
-              <Mail className="w-4.5 h-4.5 text-afrilink-orange" />
+            <span className="w-9 h-9 rounded-lg bg-allness-orange/10 flex items-center justify-center">
+              <Mail className="w-4.5 h-4.5 text-allness-orange" />
             </span>
             <div>
               <p className="text-sm font-semibold text-gray-900">Inviter un membre</p>
@@ -57,7 +57,7 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
           {success ? (
             <div className="text-center py-6">
               <span className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-                <CheckCircle2 className="w-6 h-6 text-afrilink-green" />
+                <CheckCircle2 className="w-6 h-6 text-allness-green" />
               </span>
               <p className="text-sm font-semibold text-gray-900 mb-1">Invitation envoyée</p>
               <p className="text-xs text-gray-500 mb-5">
@@ -68,7 +68,7 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
               </p>
               <button
                 onClick={onClose}
-                className="h-10 px-6 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                className="h-10 px-6 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
               >
                 Fermer
               </button>
@@ -94,7 +94,7 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemple@email.com"
                   required
-                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
 
@@ -109,7 +109,7 @@ export function InviteMemberModal({ tontineId, tontineName, onClose }: InviteMem
                 <button
                   type="submit"
                   disabled={!email.trim() || inviteMutation.isPending}
-                  className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
+                  className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
                 >
                   {inviteMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

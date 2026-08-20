@@ -25,7 +25,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" hideHeader>
         <div className="flex flex-col items-center text-center py-2">
           <span
             className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
@@ -50,7 +50,7 @@ export function ConfirmDialog({
             className={
               variant === 'danger'
                 ? 'bg-red-600 text-white hover:bg-red-700'
-                : 'bg-afrilink-green text-white hover:bg-afrilink-green/90'
+                : 'bg-allness-green text-white hover:bg-allness-green/90'
             }
           >
             {confirmLabel}

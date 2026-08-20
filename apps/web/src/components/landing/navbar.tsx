@@ -47,11 +47,11 @@ export default function Navbar() {
             <p
               className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
                 scrolled
-                  ? 'text-afrilink-dark/70 hover:text-afrilink-orange'
-                  : 'text-white/85 hover:text-afrilink-orange'
+                  ? 'text-allness-dark/70 hover:text-allness-orange'
+                  : 'text-white/85 hover:text-allness-orange'
               }`}
             >
-              Allness <span className="text-afrilink-orange">Pay</span>{' '}
+              Allness <span className="text-allness-orange">Pay</span>{' '}
             </p>
           </a>
 
@@ -62,8 +62,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
                   scrolled
-                    ? 'text-afrilink-dark/70 hover:text-afrilink-orange'
-                    : 'text-white/85 hover:text-afrilink-orange'
+                    ? 'text-allness-dark/70 hover:text-allness-orange'
+                    : 'text-white/85 hover:text-allness-orange'
                 }`}
               >
                 {link.label}
@@ -76,8 +76,8 @@ export default function Navbar() {
               href="/login"
               className={`text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 ${
                 scrolled
-                  ? 'bg-afrilink-dark text-white hover:bg-afrilink-darker'
-                  : 'bg-afrilink-orange text-afrilink-dark hover:bg-afrilink-orange/90'
+                  ? 'bg-allness-dark text-white hover:bg-allness-darker'
+                  : 'bg-allness-orange text-allness-dark hover:bg-allness-orange/90'
               }`}
             >
               Se connecter
@@ -87,7 +87,7 @@ export default function Navbar() {
           <button
             onClick={() => setMenuOpen(true)}
             className={`md:hidden p-2 -mr-2 transition-colors duration-500 ${
-              scrolled ? 'text-afrilink-dark' : 'text-white'
+              scrolled ? 'text-allness-dark' : 'text-white'
             }`}
             aria-label="Ouvrir le menu"
           >
@@ -97,10 +97,10 @@ export default function Navbar() {
       </header>
 
       {menuOpen && (
-        <div className="fixed inset-0 z-[60] bg-afrilink-dark flex flex-col">
+        <div className="fixed inset-0 z-[60] bg-allness-dark flex flex-col">
           <div className="h-16 px-5 flex items-center justify-between">
             <span className="font-heading font-extrabold text-lg text-white">
-              Allness<span className="text-afrilink-orange"> Pay</span>
+              Allness<span className="text-allness-orange"> Pay</span>
             </span>
             <button
               onClick={() => setMenuOpen(false)}
@@ -116,7 +116,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="font-heading font-bold text-3xl py-3 text-white animate-fade-up hover:text-afrilink-orange transition-colors"
+                className="font-heading font-bold text-3xl py-3 text-white animate-fade-up hover:text-allness-orange transition-colors"
                 style={{ animationDelay: `${i * 70}ms` }}
               >
                 {link.label}
@@ -125,7 +125,7 @@ export default function Navbar() {
             <a
               href="/login"
               onClick={() => setMenuOpen(false)}
-              className="mt-6 bg-afrilink-orange text-afrilink-dark text-center font-semibold px-6 py-4 rounded-full hover:bg-afrilink-orange/90 transition-colors"
+              className="mt-6 bg-allness-orange text-allness-dark text-center font-semibold px-6 py-4 rounded-full hover:bg-allness-orange/90 transition-colors"
             >
               Se connecter
             </a>

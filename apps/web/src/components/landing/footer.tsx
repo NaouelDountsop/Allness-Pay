@@ -65,7 +65,7 @@ const LINK_MAP: Record<string, string> = {
 
 export default function Footer() {
   return (
-    <footer id="contact" className="bg-afrilink-dark text-white">
+    <footer id="contact" className="bg-allness-dark text-white">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-14 lg:py-16">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
@@ -87,7 +87,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-afrilink-orange hover:text-afrilink-dark transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-afrilink-orange/20"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-allness-orange hover:text-allness-dark transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-allness-orange/20"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -98,7 +98,7 @@ export default function Footer() {
 
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h4 className="font-heading font-bold text-sm text-afrilink-orange">{col.title}</h4>
+              <h4 className="font-heading font-bold text-sm text-allness-orange">{col.title}</h4>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l}>

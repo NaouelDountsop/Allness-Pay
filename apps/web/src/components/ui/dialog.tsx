@@ -39,20 +39,32 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 export function DialogContent({
   className,
   children,
+  hideHeader,
 }: {
   className?: string;
   children: React.ReactNode;
+  hideHeader?: boolean;
 }) {
   return (
     <div
       role="dialog"
       aria-modal="true"
       className={cn(
-        'relative z-10 w-full max-w-lg rounded-[1.75rem] bg-white p-6 shadow-xl',
+        'relative z-10 w-full max-w-lg rounded-2xl overflow-hidden bg-white shadow-xl',
         className,
       )}
     >
-      {children}
+      {!hideHeader && (
+        <div className="bg-allness-dark px-6 py-5 flex items-center justify-center relative">
+          <div className="flex flex-col items-center">
+            <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
+            <span className="text-white text-sm font-semibold">
+              Allness<span className="text-allness-orange">Pay</span>
+            </span>
+          </div>
+        </div>
+      )}
+      <div className="p-6">{children}</div>
     </div>
   );
 }
@@ -62,7 +74,7 @@ export function DialogHeader({ children }: { children: React.ReactNode }) {
 }
 
 export function DialogTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-lg font-semibold text-afrilink-dark">{children}</h2>;
+  return <h2 className="text-lg font-semibold text-allness-dark">{children}</h2>;
 }
 
 export function DialogDescription({ children }: { children: React.ReactNode }) {
@@ -78,7 +90,7 @@ export function DialogClose({ onOpenChange }: { onOpenChange: (open: boolean) =>
     <button
       type="button"
       onClick={() => onOpenChange(false)}
-      className="absolute right-5 top-5 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+      className="absolute right-5 top-5 z-10 rounded-full p-1 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 transition-colors"
       aria-label="Fermer"
     >
       <X className="h-4 w-4" />

@@ -29,7 +29,7 @@ export function TransactionDetailModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-afrilink-dark px-4 py-3 flex items-center justify-between shrink-0 rounded-t-2xl">
+        <div className="bg-allness-dark px-4 py-3 flex items-center justify-between shrink-0 rounded-t-2xl">
           <button onClick={onClose} className="text-white/70 hover:text-white">
             <X className="w-5 h-5" />
           </button>
@@ -40,11 +40,11 @@ export function TransactionDetailModal({
         </div>
 
         {/* Status + Montant */}
-        <div className="bg-afrilink-dark px-5 pt-4 pb-6 text-center">
-          <div className={`w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ${fail ? 'bg-red-500' : 'bg-afrilink-green'}`}>
+        <div className="bg-allness-dark px-5 pt-4 pb-6 text-center">
+          <div className={`w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ${fail ? 'bg-red-500' : 'bg-allness-green'}`}>
             {fail ? <span className="text-white text-lg">✕</span> : <CheckCircle2 className="w-5 h-5 text-white" />}
           </div>
-          <p className={`text-xs font-semibold mb-1 ${fail ? 'text-red-400' : 'text-afrilink-green'}`}>
+          <p className={`text-xs font-semibold mb-1 ${fail ? 'text-red-400' : 'text-allness-green'}`}>
             {ok ? 'Réussie' : transaction.status === 'pending' ? 'En attente' : 'Échouée'}
           </p>
           <p className="text-white text-2xl font-bold">
@@ -59,7 +59,7 @@ export function TransactionDetailModal({
           <div className="flex items-center justify-between py-2 border-b border-gray-100">
             <div>
               <p className="text-[10px] text-gray-400 uppercase">{credit ? 'Expéditeur' : 'Destinataire'}</p>
-              <p className="text-sm font-medium text-afrilink-dark">
+              <p className="text-sm font-medium text-allness-dark">
                 {transaction.description ?? (credit ? 'Expéditeur inconnu' : 'Bénéficiaire')}
               </p>
               <p className="text-[11px] text-gray-400">{transaction.phoneNumber ?? '—'}</p>
@@ -70,15 +70,15 @@ export function TransactionDetailModal({
           <div className="space-y-2 py-2 border-b border-gray-100">
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Montant</span>
-              <span className="font-medium text-afrilink-dark">{fmt(transaction.amount)} XAF</span>
+              <span className="font-medium text-allness-dark">{fmt(transaction.amount)} XAF</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Frais</span>
-              <span className="font-medium text-afrilink-dark">{fmt(fees)} XAF</span>
+              <span className="font-medium text-allness-dark">{fmt(fees)} XAF</span>
             </div>
             <div className="flex justify-between text-xs font-semibold pt-1 border-t border-gray-100">
-              <span className="text-afrilink-dark">Total</span>
-              <span className="text-afrilink-dark">{fmt(transaction.amount + fees)} XAF</span>
+              <span className="text-allness-dark">Total</span>
+              <span className="text-allness-dark">{fmt(transaction.amount + fees)} XAF</span>
             </div>
           </div>
 
@@ -87,18 +87,18 @@ export function TransactionDetailModal({
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Référence</span>
               <div className="flex items-center gap-1">
-                <span className="font-medium text-afrilink-dark">{transaction.reference ?? transaction.id.slice(0, 12)}</span>
+                <span className="font-medium text-allness-dark">{transaction.reference ?? transaction.id.slice(0, 12)}</span>
                 <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
               </div>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-gray-500">Motif</span>
-              <span className="font-medium text-afrilink-dark">{transaction.description ?? '—'}</span>
+              <span className="font-medium text-allness-dark">{transaction.description ?? '—'}</span>
             </div>
             {transaction.provider && (
               <div className="flex justify-between text-xs">
                 <span className="text-gray-500">Fournisseur</span>
-                <span className="font-medium text-afrilink-dark">{transaction.provider}</span>
+                <span className="font-medium text-allness-dark">{transaction.provider}</span>
               </div>
             )}
           </div>
@@ -109,7 +109,7 @@ export function TransactionDetailModal({
           <button onClick={onClose} className="flex-1 h-9 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50">
             Fermer
           </button>
-          <button className="flex-1 h-9 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90">
+          <button className="flex-1 h-9 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90">
             Télécharger
           </button>
         </div>

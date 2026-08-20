@@ -42,7 +42,7 @@ export function StatCard({
         {tag && <Badge tone={tag.tone}>{tag.label}</Badge>}
       </div>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-xl font-bold text-afrilink-dark">{value}</p>
+      <p className="text-xl font-bold text-allness-dark">{value}</p>
       {hint && (
         <p
           className={`text-[11px] mt-1 ${hintTone === 'green' ? 'text-green-600' : 'text-gray-400'}`}

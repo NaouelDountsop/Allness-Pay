@@ -30,7 +30,7 @@ export default function TontineDetailPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -48,7 +48,7 @@ export default function TontineDetailPage() {
             </p>
             <button
               onClick={() => navigate('/dashboard/tontines')}
-              className="mt-6 inline-flex items-center justify-center rounded-lg bg-afrilink-green px-4 py-2 text-sm font-medium text-white hover:bg-afrilink-greenHover"
+              className="mt-6 inline-flex items-center justify-center rounded-lg bg-allness-green px-4 py-2 text-sm font-medium text-white hover:bg-allness-greenHover"
             >
               Retour aux tontines
             </button>
@@ -70,7 +70,7 @@ export default function TontineDetailPage() {
           <div>
             <button
               onClick={() => navigate('/dashboard/tontines')}
-              className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
+              className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
             >
               <ArrowLeft className="w-5 h-5" />
               Tontine {tontine.name}
@@ -83,7 +83,7 @@ export default function TontineDetailPage() {
           <div className="flex flex-wrap gap-3 items-center">
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}/history`)}
-              className="h-10 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-sm font-medium hover:bg-afrilink-green/10 transition flex items-center gap-2"
+              className="h-10 px-4 rounded-lg border border-allness-green text-allness-green text-sm font-medium hover:bg-allness-green/10 transition flex items-center gap-2"
             >
               <Clock className="w-4 h-4" />
               <span className="hidden sm:inline">Historique des versements</span>
@@ -100,7 +100,7 @@ export default function TontineDetailPage() {
             )}
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}/contribute`)}
-              className="h-10 px-4 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
+              className="h-10 px-4 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <Send className="w-4 h-4" />
               <span className="hidden md:inline">Nouveau versement</span>

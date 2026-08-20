@@ -59,7 +59,7 @@ export default function LoginPage() {
   return (
     <AuthLayout>
       <h1 className="text-xl font-semibold mb-1">Connexion</h1>
-      <p className="text-sm text-afrilink-gray mb-6">
+      <p className="text-sm text-allness-gray mb-6">
         Ravi de vous revoir sur l'écosystème financier de nouvelle génération
       </p>
 
@@ -78,16 +78,16 @@ export default function LoginPage() {
         <div className="w-full space-y-1">
           <label className="text-sm font-medium text-gray-700">Mot de passe</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
             <input
               type={showPassword ? 'text' : 'password'}
-              className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+              className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               {...register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-allness-gray"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -98,7 +98,7 @@ export default function LoginPage() {
         <div className="text-right">
           <a
             href="/forgot-password"
-            className="text-sm text-afrilink-green font-medium hover:underline"
+            className="text-sm text-allness-green font-medium hover:underline"
           >
             Mot de passe oublié ?
           </a>
@@ -112,7 +112,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           Pas encore inscrit ?{' '}
-          <a href="/signup" className="text-afrilink-green font-medium">
+          <a href="/signup" className="text-allness-green font-medium">
             S'inscrire
           </a>
         </p>

@@ -75,7 +75,7 @@ export default function DashboardPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -91,7 +91,7 @@ export default function DashboardPage() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="h-10 px-6 rounded-lg bg-afrilink-orange text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            className="h-10 px-6 rounded-lg bg-allness-orange text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Réessayer
           </button>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
               />
 
               <div className="flex gap-3">
-                <div className="flex-1 min-w-0 rounded-2xl bg-afrilink-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
+                <div className="flex-1 min-w-0 rounded-2xl bg-allness-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
                   <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-[#D28E2F]" />
                   <div>
                     <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0 rounded-2xl bg-afrilink-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
+                <div className="flex-1 min-w-0 rounded-2xl bg-allness-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
                   <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-[#D28E2F]" />
                   <div>
                     <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">

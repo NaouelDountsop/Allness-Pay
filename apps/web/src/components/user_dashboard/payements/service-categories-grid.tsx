@@ -29,7 +29,7 @@ export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-afrilink-dark mb-4">Catégories de services</h3>
+      <h3 className="text-base font-semibold text-allness-dark mb-4">Catégories de services</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         {categories.map((cat) => {
           const Icon = iconMap[cat.icon];
@@ -37,10 +37,10 @@ export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps
             <button
               key={cat.key}
               onClick={() => navigate(`/dashboard/payments/${cat.key}`)}
-              className="relative rounded-xl border border-gray-100 bg-white p-3 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 hover:border-afrilink-green/40 hover:shadow-sm transition-all"
+              className="relative rounded-xl border border-gray-100 bg-white p-3 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 hover:border-allness-green/40 hover:shadow-sm transition-all"
             >
               {cat.favorite && (
-                <Star className="w-3.5 h-3.5 text-afrilink-orange fill-afrilink-orange absolute top-2 sm:top-3 right-2 sm:right-3" />
+                <Star className="w-3.5 h-3.5 text-allness-orange fill-allness-orange absolute top-2 sm:top-3 right-2 sm:right-3" />
               )}
               <span
                 className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${colorMap[cat.icon]}`}

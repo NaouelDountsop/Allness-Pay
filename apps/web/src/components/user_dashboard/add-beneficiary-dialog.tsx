@@ -388,7 +388,7 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
               <Button
                 disabled={!isStep1Valid}
                 onClick={() => setStep(2)}
-                className="bg-afrilink-green text-white hover:bg-afrilink-green/90"
+                className="bg-allness-green text-white hover:bg-allness-green/90"
               >
                 Suivant
               </Button>
@@ -399,7 +399,7 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                 Annuler
               </Button>
               <Button
-                className="rounded-full bg-afrilink-green text-white hover:bg-afrilink-green/90"
+                className="rounded-full bg-allness-green text-white hover:bg-allness-green/90"
                 onClick={handleSubmit}
               >
                 Ajouter le bénéficiaire

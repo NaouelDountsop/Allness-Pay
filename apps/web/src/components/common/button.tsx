@@ -18,7 +18,7 @@ export function AppButton({
     'w-full h-11 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors';
   const styles =
     variant === 'primary'
-      ? 'bg-afrilink-green hover:bg-afrilink-greenHover text-white disabled:opacity-60'
+      ? 'bg-allness-green hover:bg-allness-greenHover text-white disabled:opacity-60'
       : 'border border-gray-300 text-gray-700 hover:bg-gray-50';
 
   return (

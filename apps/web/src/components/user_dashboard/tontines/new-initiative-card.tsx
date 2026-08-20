@@ -7,7 +7,7 @@ export function NewInitiativeCard() {
   return (
     <button
       onClick={() => navigate('/dashboard/tontines/create')}
-      className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-4 flex flex-col items-center justify-center gap-3 text-center hover:border-afrilink-green/40 transition-colors"
+      className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-4 flex flex-col items-center justify-center gap-3 text-center hover:border-allness-green/40 transition-colors"
     >
       <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
         <Plus className="w-5 h-5 text-gray-400" />

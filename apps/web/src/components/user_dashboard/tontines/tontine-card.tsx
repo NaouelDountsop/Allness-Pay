@@ -1,14 +1,28 @@
 import { useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { Users, Crown } from 'lucide-react';
 import type { Tontine } from '@/lib/api/tontine.service';
+import { authStorage } from '@/lib/auth-storage';
+
+function getCurrentUserId(): number | null {
+  try {
+    const token = authStorage.getToken();
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3 || !parts[1]) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
 
 interface TontineCardProps {
   tontine: Tontine;
 }
 
 const avatarColors = [
-  'bg-afrilink-green/10 text-afrilink-green',
-  'bg-afrilink-orange/10 text-afrilink-orange',
+  'bg-allness-green/10 text-allness-green',
+  'bg-allness-orange/10 text-allness-orange',
   'bg-blue-50 text-blue-500',
   'bg-purple-50 text-purple-500',
 ];
@@ -20,18 +34,29 @@ export function TontineCard({ tontine }: TontineCardProps) {
   const progressPercent =
     tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
 
+  const currentUserId = getCurrentUserId();
+  const isAdmin = currentUserId === tontine.creatorId;
+
   return (
     <div className="min-h-[420px] flex flex-col rounded-xl border border-gray-100 bg-white p-6 hover:shadow-md hover:border-gray-200 transition-all">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm font-semibold text-gray-900 truncate pr-2">{tontine.name}</p>
-        <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-afrilink-green px-2 py-0.5 rounded-full whitespace-nowrap">
+        <div className="flex items-center gap-1.5 min-w-0 pr-2">
+          <p className="text-sm font-semibold text-gray-900 truncate">{tontine.name}</p>
+          {isAdmin && (
+            <span className="inline-flex items-center gap-0.5 shrink-0 text-[10px] font-medium bg-allness-orange/10 text-allness-orange px-1.5 py-0.5 rounded-full" title="Admin">
+              <Crown className="w-3 h-3" />
+              <span>Admin</span>
+            </span>
+          )}
+        </div>
+        <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-allness-green px-2 py-0.5 rounded-full whitespace-nowrap">
           {tontine.frequency}
         </span>
       </div>
 
       {/* Cagnotte — style wallet */}
-      <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-5 relative overflow-hidden mb-6">
+      <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-5 relative overflow-hidden mb-6">
         <svg
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-4 -right-2 w-32 h-32 opacity-60"
@@ -56,7 +81,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+          className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-white/40 via-allness-orange/35 to-allness-orange/10"
           style={{
             WebkitMaskImage: 'url(/allnesspay_logo1.png)',
             WebkitMaskSize: 'contain',
@@ -81,7 +106,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
 
         <p className="text-2xl font-bold relative z-10">
           {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * tontine.memberLimit)}{' '}
-          <span className="text-sm font-medium text-afrilink-orange">
+          <span className="text-sm font-medium text-allness-orange">
             {tontine.currency ?? 'CFA'}
           </span>
         </p>
@@ -120,18 +145,18 @@ export function TontineCard({ tontine }: TontineCardProps) {
           Tour <span className="font-medium text-gray-600">{tontine.currentCycle}</span> /{' '}
           {tontine.memberLimit}
         </span>
-        <span className="text-afrilink-green font-semibold">{progressPercent}%</span>
+        <span className="text-allness-green font-semibold">{progressPercent}%</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden mb-6">
         <div
-          className="h-full rounded-full bg-afrilink-orange transition-all"
+          className="h-full rounded-full bg-allness-orange transition-all"
           style={{ width: `${Math.min(progressPercent, 100)}%` }}
         />
       </div>
 
       <button
         onClick={() => navigate(`/dashboard/tontines/${tontine.id}`)}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-xs font-medium transition-colors"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors"
       >
         Voir les détails
       </button>

@@ -60,7 +60,7 @@ export default function TransactionsPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -73,11 +73,11 @@ export default function TransactionsPage() {
       <div>
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-afrilink-dark">Transactions</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">Transactions</h1>
             <p className="text-sm text-gray-400">Consultez l'historique de vos transactions.</p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="group relative h-9 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center justify-center sm:px-4 px-0 w-9 sm:w-auto hover:opacity-90 transition-opacity">
+            <button className="group relative h-9 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center justify-center sm:px-4 px-0 w-9 sm:w-auto hover:opacity-90 transition-opacity">
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline ml-2">Exporter</span>
               <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
@@ -88,7 +88,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <Wallet className="w-5 h-5 text-green-400" />
@@ -101,7 +101,7 @@ export default function TransactionsPage() {
             <p className="text-xs text-green-400">↗ Solde net</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-blue-400" />
@@ -112,7 +112,7 @@ export default function TransactionsPage() {
             <p className="text-xs text-gray-400">Depuis la création</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-green-400" />
@@ -123,7 +123,7 @@ export default function TransactionsPage() {
             <p className="text-xs text-green-400">↗ Réussites</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
                 <XCircle className="w-5 h-5 text-red-400" />
@@ -146,7 +146,7 @@ export default function TransactionsPage() {
                   placeholder="Référence, type..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
             </div>
@@ -155,7 +155,7 @@ export default function TransactionsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Tous les types</option>
                 <option value="deposit">Dépôt</option>
@@ -169,7 +169,7 @@ export default function TransactionsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="all">Tous les statuts</option>
                 <option value="completed">Complété</option>
@@ -211,14 +211,14 @@ export default function TransactionsPage() {
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
-                        <p className="text-xs font-medium text-afrilink-dark truncate max-w-[140px]">{t.reference}</p>
+                        <p className="text-xs font-medium text-allness-dark truncate max-w-[140px]">{t.reference}</p>
                       </td>
                       <td className="text-xs text-gray-600 hidden sm:table-cell">
                         {transactionService.getTypeLabel(t.type)}
                       </td>
                       <td
                         className={`text-xs font-medium ${
-                          t.status === 'failed' ? 'text-red-500' : credit ? 'text-afrilink-green' : 'text-red-500'
+                          t.status === 'failed' ? 'text-red-500' : credit ? 'text-allness-green' : 'text-red-500'
                         }`}
                       >
                         {isCompleted ? (credit ? '+' : '-') : ''} {new Intl.NumberFormat('fr-FR').format(t.amount)} XAF
@@ -251,7 +251,7 @@ export default function TransactionsPage() {
                       <td className="text-right">
                         <button
                           onClick={() => setSelected(t)}
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark ml-auto"
+                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark ml-auto"
                           aria-label="Voir"
                         >
                           <Eye className="w-3.5 h-3.5" />

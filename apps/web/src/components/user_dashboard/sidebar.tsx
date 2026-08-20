@@ -50,12 +50,12 @@ export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () =>
     // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
     // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
     // presque toujours le cas pour un layout sidebar+contenu classique.
-    <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col`}>
+    <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-allness-dark text-white flex-col`}>
       <div className="flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
           <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
           <span className="font-bold text-lg">
-            Allness<span className="text-afrilink-orange">Pay</span>
+            Allness<span className="text-allness-orange">Pay</span>
           </span>
         </div>
         {mobile && onClose && (
@@ -76,7 +76,7 @@ export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () =>
             className={({ isActive }) =>
               `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? 'bg-white text-afrilink-orange font-medium'
+                  ? 'bg-white text-allness-orange font-medium'
                   : 'text-white hover:bg-white/5'
               }`
             }

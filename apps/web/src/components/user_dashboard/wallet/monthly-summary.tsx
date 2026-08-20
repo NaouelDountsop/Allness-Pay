@@ -179,7 +179,7 @@ export function MonthlySummary({
       </div>
 
       <div className="flex items-center justify-between text-xs mb-1">
-        <span className="text-afrilink-green font-semibold">+{incomePercent}%</span>
+        <span className="text-allness-green font-semibold">+{incomePercent}%</span>
         <span className="text-gray-400 font-semibold">-{expensePercent}%</span>
       </div>
 

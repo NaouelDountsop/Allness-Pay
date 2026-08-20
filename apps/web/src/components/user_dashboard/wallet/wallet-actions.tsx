@@ -36,26 +36,26 @@ export function WalletActions() {
             }}
             className="flex flex-col items-center gap-1.5"
           >
-            <span className="w-11 h-11 rounded-full bg-afrilink-dark text-afrilink-orange flex items-center justify-center">
+            <span className="w-11 h-11 rounded-full bg-allness-dark text-allness-orange flex items-center justify-center">
               <Icon className="w-4 h-4" />
             </span>
-            <span className="text-xs text-afrilink-dark">{label}</span>
+            <span className="text-xs text-allness-dark">{label}</span>
           </button>
 
           {key === 'transfer' && showTransferMenu && (
-            <div className="absolute z-20 top-full mt-3 left-1/2 -translate-x-1/2 w-64 rounded-xl border border-afrilink-green/30 bg-white shadow-lg p-3">
+            <div className="absolute z-20 top-full mt-3 left-1/2 -translate-x-1/2 w-64 rounded-xl border border-allness-green/30 bg-white shadow-lg p-3">
               <p className="text-xs font-medium text-gray-500 px-1 mb-2">Types de transactions</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setShowTransferMenu(false)}
-                  className="flex flex-col items-center gap-2 rounded-lg bg-afrilink-dark text-white p-3 hover:bg-afrilink-darker transition-colors"
+                  className="flex flex-col items-center gap-2 rounded-lg bg-allness-dark text-white p-3 hover:bg-allness-darker transition-colors"
                 >
                   <Wallet className="w-4 h-4" />
                   <span className="text-[11px] text-center leading-tight">Wallet Interne</span>
                 </button>
                 <button
                   onClick={() => setShowTransferMenu(false)}
-                  className="flex flex-col items-center gap-2 rounded-lg bg-afrilink-dark text-white p-3 hover:bg-afrilink-darker transition-colors"
+                  className="flex flex-col items-center gap-2 rounded-lg bg-allness-dark text-white p-3 hover:bg-allness-darker transition-colors"
                 >
                   <Send className="w-4 h-4" />
                   <span className="text-[11px] text-center leading-tight">Transfert Externe</span>

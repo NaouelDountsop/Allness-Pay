@@ -25,7 +25,7 @@ export function Avatar({
 
   return (
     <span
-      className={`${sizes[size]} rounded-full bg-afrilink-dark text-white flex items-center justify-center font-semibold shrink-0`}
+      className={`${sizes[size]} rounded-full bg-allness-dark text-white flex items-center justify-center font-semibold shrink-0`}
     >
       {initials}
     </span>

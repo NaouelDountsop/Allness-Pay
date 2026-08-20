@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import type { TontineMember } from '@/lib/api/tontine.service';
 
 const statusStyles: Record<string, { label: string; className: string }> = {
-  active: { label: 'Actif', className: 'bg-green-50 text-afrilink-green' },
-  pending: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
+  active: { label: 'Actif', className: 'bg-green-50 text-allness-green' },
+  pending: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
   inactive: { label: 'Inactif', className: 'bg-red-50 text-red-600' },
 };
 
@@ -37,7 +37,7 @@ export function MembersTable({ members, tontineId, memberLimit, status, onAddMem
         <button
           type="button"
           onClick={handleViewAll}
-          className="text-xs text-afrilink-green font-medium"
+          className="text-xs text-allness-green font-medium"
         >
           Voir tout →
         </button>
@@ -46,7 +46,7 @@ export function MembersTable({ members, tontineId, memberLimit, status, onAddMem
       <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
         <table className="w-full text-sm min-w-[460px]">
           <thead>
-            <tr className="bg-afrilink-dark text-white text-xs">
+            <tr className="bg-allness-dark text-white text-xs">
               <th className="text-left font-medium px-4 py-2.5">Nom du Membre</th>
               <th className="text-left font-medium px-4 py-2.5 hidden sm:table-cell">Localisation</th>
               <th className="text-left font-medium px-4 py-2.5">Statut</th>
@@ -99,7 +99,7 @@ export function MembersTable({ members, tontineId, memberLimit, status, onAddMem
                 <td colSpan={5} className="px-4 py-3">
                   <button
                     onClick={onAddMember}
-                    className="flex items-center gap-2 text-sm text-afrilink-green font-medium hover:text-afrilink-green/80 transition-colors"
+                    className="flex items-center gap-2 text-sm text-allness-green font-medium hover:text-allness-green/80 transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />
                     Ajouter un membre

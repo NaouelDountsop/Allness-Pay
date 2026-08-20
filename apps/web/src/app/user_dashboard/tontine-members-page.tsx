@@ -21,7 +21,7 @@ export default function TontineMembersPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -39,7 +39,7 @@ export default function TontineMembersPage() {
             </p>
             <button
               onClick={() => navigate('/dashboard/tontines')}
-              className="mt-6 inline-flex items-center justify-center rounded-lg bg-afrilink-green px-4 py-2 text-sm font-medium text-white hover:bg-afrilink-greenHover"
+              className="mt-6 inline-flex items-center justify-center rounded-lg bg-allness-green px-4 py-2 text-sm font-medium text-white hover:bg-allness-greenHover"
             >
               Retour aux tontines
             </button>
@@ -57,7 +57,7 @@ export default function TontineMembersPage() {
           <div>
             <button
               onClick={() => navigate(`/dashboard/tontines/${tontine.id}`)}
-              className="inline-flex items-center gap-2 text-lg font-semibold text-afrilink-dark"
+              className="inline-flex items-center gap-2 text-lg font-semibold text-allness-dark"
             >
               <ArrowLeft className="w-5 h-5" />
               Retour à {tontine.name}
@@ -69,11 +69,11 @@ export default function TontineMembersPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Fréquence</p>
-              <p className="font-semibold text-afrilink-dark">{tontine.frequency}</p>
+              <p className="font-semibold text-allness-dark">{tontine.frequency}</p>
             </div>
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
               <p className="text-gray-400">Tour actuel</p>
-              <p className="font-semibold text-afrilink-dark">
+              <p className="font-semibold text-allness-dark">
                 {tontine.currentCycle} / {tontine.memberLimit}
               </p>
             </div>
@@ -84,11 +84,11 @@ export default function TontineMembersPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-400">Tontine</p>
-              <h2 className="text-xl font-semibold text-afrilink-dark">{tontine.name}</h2>
+              <h2 className="text-xl font-semibold text-allness-dark">{tontine.name}</h2>
             </div>
             <div className="text-right">
               <p className="text-xs text-gray-400">Devise</p>
-              <p className="text-sm font-semibold text-afrilink-dark">
+              <p className="text-sm font-semibold text-allness-dark">
                 {tontine.currency ?? 'CFA'}
               </p>
             </div>

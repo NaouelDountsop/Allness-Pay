@@ -1,13 +1,13 @@
-﻿import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff, Menu, Sun, Moon, Globe } from 'lucide-react';
+import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff, Menu } from 'lucide-react';
 import { userService } from '@/lib/api/user.service';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { getFlagUrl, getCountryCodeByName } from '@/data/countries';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
-import { usePreferences } from '@/hooks/use-preferences';
+//import { usePreferences } from '@/hooks/use-preferences';
 import { useSidebar } from '@/components/user_dashboard/sidebar-context';
 
 export function DashboardHeader() {
@@ -17,7 +17,7 @@ export function DashboardHeader() {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
+  //const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
   const { toggleSidebar } = useSidebar();
 
   const { data: user } = useQuery({
@@ -75,17 +75,17 @@ export function DashboardHeader() {
   return (
     <header
       className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-white border-b border-gray-100 shadow-sm shrink-0"
+      bg-white border-b border-gray-100 shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={toggleSidebar}
-          className="md:hidden text-afrilink-dark hover:text-afrilink-orange flex items-center justify-center w-8 h-8"
+          className="md:hidden text-allness-dark hover:text-allness-orange flex items-center justify-center w-8 h-8"
           aria-label="Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="text-sm sm:text-lg font-semibold text-afrilink-dark flex items-center gap-2 truncate">
+        <h1 className="text-sm sm:text-lg font-semibold text-allness-dark flex items-center gap-2 truncate">
           Bonjour, {firstName}
         </h1>
         {countryFlag && (
@@ -102,7 +102,7 @@ export function DashboardHeader() {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative text-afrilink-orange hover:text-afrilink-orange/80 flex items-center justify-center w-8 h-8"
+            className="relative text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8"
             aria-label="Notifications"
           >
             <Bell className="w-5 h-5" />
@@ -116,7 +116,7 @@ export function DashboardHeader() {
               <div className="fixed inset-0 bg-black/20 z-40 md:hidden" onClick={() => setNotifOpen(false)} />
               <div className="fixed bottom-0 left-0 right-0 z-50 md:absolute md:right-0 md:top-full md:bottom-auto md:left-auto md:mt-2 w-auto md:w-80 bg-white md:rounded-2xl rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden max-h-[70vh] md:max-h-80">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-afrilink-dark">Notifications</p>
+                  <p className="text-sm font-semibold text-allness-dark">Notifications</p>
                   <button onClick={() => setNotifOpen(false)} className="text-gray-400 hover:text-gray-600">
                     <X className="w-4 h-4" />
                   </button>
@@ -125,7 +125,7 @@ export function DashboardHeader() {
                   {hasNotifications ? (
                     notifications.map((n: { id: string; title: string; message: string }) => (
                       <div key={n.id} className="px-4 py-3 border-b border-gray-50 last:border-0">
-                        <p className="text-sm font-medium text-afrilink-dark">{n.title}</p>
+                        <p className="text-sm font-medium text-allness-dark">{n.title}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{n.message}</p>
                       </div>
                     ))
@@ -144,13 +144,13 @@ export function DashboardHeader() {
           )}
         </div>
 
-        <button className="text-afrilink-orange hover:text-afrilink-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
+        <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
           <HelpCircle className="w-5 h-5" />
         </button>
 
         {/* Desktop: profil statique */}
         <div className="hidden md:flex items-center gap-2">
-          <button
+          {/* <button
             onClick={toggleLanguage}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
             title={langLabel === 'FR' ? 'English' : 'Français'}
@@ -164,13 +164,13 @@ export function DashboardHeader() {
             title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
           >
             {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </button>
-          <div className="w-8 h-8 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+          </button> */}
+          <div className="w-8 h-8 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {userName.charAt(0)}
           </div>
           <div className="text-right">
             <div className="flex items-center gap-1.5 justify-end">
-              <p className="text-sm font-medium text-afrilink-dark leading-tight">{userName}</p>
+              <p className="text-sm font-medium text-allness-dark leading-tight">{userName}</p>
             </div>
             <p className="text-xs text-gray-500 leading-tight">{memberLabel}</p>
           </div>
@@ -182,7 +182,7 @@ export function DashboardHeader() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 hover:bg-gray-50 rounded-xl p-1 transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-afrilink-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+            <div className="w-7 h-7 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
               {userName.charAt(0)}
             </div>
             <ChevronDown
@@ -194,7 +194,7 @@ export function DashboardHeader() {
             <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 py-2 z-50">
               <div className="px-4 py-3 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-afrilink-dark">{userName}</p>
+                  <p className="text-sm font-semibold text-allness-dark">{userName}</p>
                   {countryFlag && (
                     <img
                       src={countryFlag}

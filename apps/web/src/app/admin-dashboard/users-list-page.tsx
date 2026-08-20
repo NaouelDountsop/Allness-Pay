@@ -71,7 +71,7 @@ export default function UsersListPage() {
     <AdminLayout active="utilisateurs">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-lg sm:text-xl font-bold text-afrilink-dark mb-1">Gestion Utilisateurs</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-allness-dark mb-1">Gestion Utilisateurs</h1>
           <p className="text-sm text-gray-400">
             Surveillez les comptes, validez les KYC et gérez les limites financières.
           </p>
@@ -80,12 +80,12 @@ export default function UsersListPage() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="h-9 px-4 rounded-lg border border-afrilink-green text-afrilink-green text-xs font-medium flex items-center gap-2 hover:bg-afrilink-green/5 transition-colors disabled:opacity-50"
+            className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-xs font-medium flex items-center gap-2 hover:bg-allness-green/5 transition-colors disabled:opacity-50"
           >
             {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
             Exporter
           </button>
-          <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <button className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
             <UserPlus className="w-3.5 h-3.5" />
             Inviter
           </button>
@@ -93,7 +93,7 @@ export default function UsersListPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-400" />
@@ -103,7 +103,7 @@ export default function UsersListPage() {
           <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalUsers ?? users?.length ?? 0)}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-green-400" />
@@ -113,7 +113,7 @@ export default function UsersListPage() {
           <p className="text-2xl font-bold text-white">{stats?.kyc.approved ?? 0}</p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
               <ArrowLeftRight className="w-5 h-5 text-green-400" />
@@ -125,7 +125,7 @@ export default function UsersListPage() {
           </p>
         </div>
 
-        <div className="bg-afrilink-dark rounded-2xl p-5">
+        <div className="bg-allness-dark rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -141,7 +141,7 @@ export default function UsersListPage() {
           <select
             value={countryFilter}
             onChange={(e) => setCountryFilter(e.target.value)}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Tous les pays</option>
             <option value="CM">Cameroun</option>
@@ -156,7 +156,7 @@ export default function UsersListPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
           >
             <option value="all">Tous les statuts</option>
             <option value="active">Actif</option>
@@ -176,7 +176,7 @@ export default function UsersListPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 text-afrilink-orange animate-spin" />
+            <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
           </div>
         ) : (
           <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
@@ -200,11 +200,11 @@ export default function UsersListPage() {
                     <tr key={u.idutilisateur} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-full bg-afrilink-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
+                          <span className="w-8 h-8 rounded-full bg-allness-dark text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
                             {initials}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-afrilink-dark truncate">
+                            <p className="text-xs font-medium text-allness-dark truncate">
                               {u.prenom} {u.nom}
                             </p>
                             <p className="text-[11px] text-gray-400 truncate">{u.email}</p>
@@ -224,13 +224,13 @@ export default function UsersListPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setSelectedUserId(u.idutilisateur)}
-                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
                             aria-label="Voir"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
+                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
                             aria-label="Modifier"
                           >
                             <Pencil className="w-3.5 h-3.5" />

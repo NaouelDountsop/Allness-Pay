@@ -14,7 +14,7 @@ export default function CreateTontinePage() {
       <div>
         <button
           onClick={() => navigate('/dashboard/tontines')}
-          className="flex items-center gap-2 text-lg font-semibold text-afrilink-dark mb-6"
+          className="flex items-center gap-2 text-lg font-semibold text-allness-dark mb-6"
         >
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           Créer une tontine

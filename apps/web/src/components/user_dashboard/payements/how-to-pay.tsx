@@ -25,7 +25,7 @@ export function HowToPay() {
         <ul className="space-y-5">
           {steps.map((step) => (
             <li key={step.number} className="flex gap-3 relative">
-              <span className="w-7 h-7 rounded-full bg-afrilink-orange text-white text-xs font-semibold flex items-center justify-center shrink-0 z-10">
+              <span className="w-7 h-7 rounded-full bg-allness-orange text-white text-xs font-semibold flex items-center justify-center shrink-0 z-10">
                 {step.number}
               </span>
               <div>

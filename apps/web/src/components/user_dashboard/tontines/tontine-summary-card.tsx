@@ -56,11 +56,11 @@ export function TontineSummaryCard({
         <div className="mt-4">
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-gray-400">Progression du cycle</span>
-            <span className="text-afrilink-green font-medium">{progressPercent}%</span>
+            <span className="text-allness-green font-medium">{progressPercent}%</span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
             <div
-              className="h-full rounded-full bg-afrilink-green"
+              className="h-full rounded-full bg-allness-green"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -75,7 +75,7 @@ export function TontineSummaryCard({
         </div>
       </div>
 
-      <div className="rounded-xl bg-afrilink-dark p-5 relative overflow-hidden">
+      <div className="rounded-xl bg-allness-dark p-5 relative overflow-hidden">
         <p className="text-xs text-white/60 mb-1">Bâtir l'avenir ensemble</p>
         <p className="text-[11px] text-white/40">
           Chaque versement rapproche votre communauté de ses objectifs.

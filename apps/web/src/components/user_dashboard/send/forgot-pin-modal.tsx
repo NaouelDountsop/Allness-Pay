@@ -89,11 +89,11 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
-        <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
+        <div className="bg-allness-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
             <img src="/afrilinkpay_logo1.svg" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
+              allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
           <button
@@ -109,7 +109,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
           {/* Step: Sending OTP */}
           {step === 'sending' && (
             <>
-              <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
                 Réinitialisation du PIN
               </h3>
               <p className="text-xs text-gray-500 mb-6">
@@ -118,7 +118,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
               <button
                 onClick={sendOtp}
                 disabled={loading}
-                className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 {loading ? 'Envoi en cours...' : 'Envoyer le code'}
@@ -129,7 +129,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
           {/* Step: Enter OTP */}
           {step === 'otp' && (
             <>
-              <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
                 Saisir le code OTP
               </h3>
               <p className="text-xs text-gray-500 mb-6">
@@ -146,7 +146,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
                   if (v.length === 6) setStep('new-pin');
                 }}
                 placeholder="000000"
-                className="w-full h-12 text-center text-2xl tracking-[0.5em] font-mono border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-afrilink-orange/20 focus:border-afrilink-orange"
+                className="w-full h-12 text-center text-2xl tracking-[0.5em] font-mono border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-allness-orange/20 focus:border-allness-orange"
               />
               {error && <p className="text-xs text-red-500 mt-4">{error}</p>}
             </>
@@ -155,7 +155,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
           {/* Step: Create new PIN */}
           {step === 'new-pin' && (
             <>
-              <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
                 Créer un nouveau PIN
               </h3>
               <p className="text-xs text-gray-500 mb-6">
@@ -172,7 +172,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
           {/* Step: Confirm new PIN */}
           {step === 'confirm-pin' && (
             <>
-              <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
                 Confirmer le nouveau PIN
               </h3>
               <p className="text-xs text-gray-500 mb-6">
@@ -180,7 +180,7 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
               </p>
               {loading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+                  <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
                 </div>
               ) : (
                 <PinPad
@@ -197,9 +197,9 @@ export function ForgotPinModal({ walletId, onClose, onSuccess }: ForgotPinModalP
           {step === 'success' && (
             <>
               <div className="flex justify-center mb-4">
-                <CheckCircle2 className="w-16 h-16 text-afrilink-green" />
+                <CheckCircle2 className="w-16 h-16 text-allness-green" />
               </div>
-              <h3 className="text-base font-semibold text-afrilink-dark mb-1">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
                 PIN réinitialisé !
               </h3>
               <p className="text-xs text-gray-500">

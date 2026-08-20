@@ -135,7 +135,7 @@ export function CreateTontineForm() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab.key
-                ? 'border-afrilink-green text-afrilink-dark'
+                ? 'border-allness-green text-allness-dark'
                 : 'border-transparent text-gray-400'
             }`}
           >
@@ -147,7 +147,7 @@ export function CreateTontineForm() {
       {activeTab === 'general' && (
         <form onSubmit={handleSubmit(onGeneralSubmit)} noValidate>
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-5 h-5 rounded-full bg-afrilink-orange text-white text-[10px] font-semibold flex items-center justify-center">
+            <span className="w-5 h-5 rounded-full bg-allness-orange text-white text-[10px] font-semibold flex items-center justify-center">
               1
             </span>
             <p className="text-sm font-semibold text-gray-800">Informations Générales</p>
@@ -160,7 +160,7 @@ export function CreateTontineForm() {
                 type="text"
                 placeholder="ex: Épargne Exécutive T4"
                 {...register('name')}
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               />
               {errors.name && (
                 <p className="text-[11px] text-red-500 mt-1">{errors.name.message}</p>
@@ -197,7 +197,7 @@ export function CreateTontineForm() {
               rows={3}
               placeholder="Décrivez brièvement le but de ce cercle d'épargne..."
               {...register('description')}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange resize-none"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange resize-none"
             />
             {errors.description && (
               <p className="text-[11px] text-red-500 mt-1">{errors.description.message}</p>
@@ -249,7 +249,7 @@ export function CreateTontineForm() {
                 min={2}
                 placeholder="ex: 25"
                 {...register('memberLimit')}
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               />
               {errors.memberLimit && (
                 <p className="text-[11px] text-red-500 mt-1">{errors.memberLimit.message}</p>
@@ -257,7 +257,7 @@ export function CreateTontineForm() {
             </div>
           </div>
 
-          <div className="rounded-xl bg-afrilink-dark text-white p-4 flex items-center justify-between mb-6">
+          <div className="rounded-xl bg-allness-dark text-white p-4 flex items-center justify-between mb-6">
             <div>
               <p className="text-[11px] text-white/60">POT TOTAL ESTIMÉ</p>
               <p className="text-[10px] text-white/40">
@@ -280,7 +280,7 @@ export function CreateTontineForm() {
             <button
               type="submit"
               disabled={!isValid}
-              className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium transition-colors"
+              className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium transition-colors"
             >
               Suivant
             </button>
@@ -319,7 +319,7 @@ function FinancesTab({ onNext }: { onNext: () => void }) {
       <div className="flex justify-end">
         <button
           onClick={onNext}
-          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium"
         >
           Suivant
         </button>
@@ -338,14 +338,14 @@ function ReglesTab({ onNext }: { onNext: () => void }) {
           className="w-full max-w-[360px] object-contain"
         />
       </div>
-      <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-afrilink-orange">
+      <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-allness-orange">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
         <p>Des frais de retard de 5% s'appliquent automatiquement après le délai de grâce.</p>
       </div>
       <div className="flex justify-end">
         <button
           onClick={onNext}
-          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium"
         >
           Suivant
         </button>
@@ -388,7 +388,7 @@ function MembresTab({
         <button
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium"
+          className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover disabled:cursor-not-allowed disabled:bg-green-200 text-white text-sm font-medium"
         >
           {isSubmitting ? 'Création en cours...' : 'Initialiser la Tontine'}
         </button>

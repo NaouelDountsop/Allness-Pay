@@ -26,7 +26,7 @@ export function BillerLookupForm({
             value={supplier}
             onChange={(e) => onSupplierChange(e.target.value)}
             placeholder="Sélectionner un fournisseur"
-            className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+            className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
           />
         </div>
       </div>
@@ -40,14 +40,14 @@ export function BillerLookupForm({
             value={reference}
             onChange={(e) => onReferenceChange(e.target.value)}
             placeholder="Entrez votre référence client"
-            className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+            className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
           />
         </div>
       </div>
 
       <button
         onClick={onSearch}
-        className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+        className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors"
       >
         Rechercher la facture
       </button>

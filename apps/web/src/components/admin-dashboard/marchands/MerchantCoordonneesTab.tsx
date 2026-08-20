@@ -18,11 +18,11 @@ export function MerchantCoordonneesTab() {
           <div className="flex flex-col gap-3 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-gray-500">Type de compte</span>
-              <span className="font-medium text-afrilink-dark">Marchand Premium</span>
+              <span className="font-medium text-allness-dark">Marchand Premium</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-500">Commission</span>
-              <span className="font-medium text-afrilink-dark">1.5%</span>
+              <span className="font-medium text-allness-dark">1.5%</span>
             </div>
           </div>
         </SectionCard>
@@ -31,11 +31,11 @@ export function MerchantCoordonneesTab() {
           <ul className="flex flex-col gap-2 text-xs text-gray-600">
             <li className="flex items-center justify-between">
               Registre de commerce
-              <span className="text-afrilink-green font-medium">Validé</span>
+              <span className="text-allness-green font-medium">Validé</span>
             </li>
             <li className="flex items-center justify-between">
               Pièce d'identité gérant
-              <span className="text-afrilink-green font-medium">Validé</span>
+              <span className="text-allness-green font-medium">Validé</span>
             </li>
           </ul>
         </SectionCard>

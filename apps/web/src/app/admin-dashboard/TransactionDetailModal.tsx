@@ -56,7 +56,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between py-1.5">
       <span className="text-[11px] text-gray-500">{label}</span>
-      <span className="text-[11px] font-medium text-afrilink-dark">{value}</span>
+      <span className="text-[11px] font-medium text-allness-dark">{value}</span>
     </div>
   );
 }
@@ -92,7 +92,7 @@ export function TransactionDetailModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-start justify-between shrink-0">
           <div>
-            <h2 className="text-base font-bold text-afrilink-dark mb-1">
+            <h2 className="text-base font-bold text-allness-dark mb-1">
               TRANSACTION #{transaction.reference ?? transaction.id.slice(0, 16)}
             </h2>
             <div className="flex items-center gap-3">
@@ -130,11 +130,11 @@ export function TransactionDetailModal({
                 Expéditeur
               </p>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-afrilink-dark flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-full bg-allness-dark flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold text-white">{getInitials(transaction.user)}</span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-afrilink-dark truncate">
+                  <p className="text-sm font-semibold text-allness-dark truncate">
                     {transaction.user ?? '—'}
                   </p>
                   <p className="text-[11px] text-gray-400">{transaction.email ?? '—'}</p>
@@ -144,7 +144,7 @@ export function TransactionDetailModal({
                 <Row label="ID" value={`USR-${transaction.id.slice(0, 6).toUpperCase()}`} />
                 <Row
                   label="KYC"
-                  value={<span className="text-afrilink-green font-semibold">Vérifié</span>}
+                  value={<span className="text-allness-green font-semibold">Vérifié</span>}
                 />
               </div>
             </div>
@@ -155,13 +155,13 @@ export function TransactionDetailModal({
                 Destinataire
               </p>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-afrilink-orange/20 flex items-center justify-center shrink-0">
-                  <span className="text-sm font-bold text-afrilink-orange">
+                <div className="w-10 h-10 rounded-full bg-allness-orange/20 flex items-center justify-center shrink-0">
+                  <span className="text-sm font-bold text-allness-orange">
                     {transaction.type === 'transfer_out' ? getInitials(null) : getInitials(transaction.user)}
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-afrilink-dark truncate">
+                  <p className="text-sm font-semibold text-allness-dark truncate">
                     {transaction.type === 'transfer_out' ? '—' : transaction.user ?? '—'}
                   </p>
                   <p className="text-[11px] text-gray-400">
@@ -180,7 +180,7 @@ export function TransactionDetailModal({
                 />
                 <Row
                   label="KYC"
-                  value={<span className="text-afrilink-green font-semibold">Vérifié</span>}
+                  value={<span className="text-allness-green font-semibold">Vérifié</span>}
                 />
               </div>
             </div>
@@ -191,15 +191,15 @@ export function TransactionDetailModal({
                 Statut
               </p>
               <div className="flex items-center gap-2 mb-4">
-                <CheckCircle2 className="w-5 h-5 text-afrilink-green" />
-                <span className="text-sm font-semibold text-afrilink-dark">
+                <CheckCircle2 className="w-5 h-5 text-allness-green" />
+                <span className="text-sm font-semibold text-allness-dark">
                   Transaction {status.label.toLowerCase()}
                 </span>
               </div>
               <div className="space-y-1.5 text-[11px]">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Score de risque</span>
-                  <span className="text-afrilink-green font-semibold bg-green-50 px-2 py-0.5 rounded-full">
+                  <span className="text-allness-green font-semibold bg-green-50 px-2 py-0.5 rounded-full">
                     Faible
                   </span>
                 </div>
@@ -221,8 +221,8 @@ export function TransactionDetailModal({
                 <Row label="Frais plateforme" value={`${fmt(platformFees)} XAF`} />
                 <div className="border-t border-gray-100 my-2" />
                 <div className="flex items-center justify-between py-1.5">
-                  <span className="text-[11px] font-semibold text-afrilink-dark">Total débité</span>
-                  <span className="text-xs font-bold text-afrilink-orange">{fmt(totalDebit)} XAF</span>
+                  <span className="text-[11px] font-semibold text-allness-dark">Total débité</span>
+                  <span className="text-xs font-bold text-allness-orange">{fmt(totalDebit)} XAF</span>
                 </div>
                 <Row label="Montant reçu" value={`${fmt(transaction.amount)} XAF`} />
               </div>
@@ -239,7 +239,7 @@ export function TransactionDetailModal({
                 <div className="flex items-center justify-between py-1.5">
                   <span className="text-[11px] text-gray-500">Référence</span>
                   <div className="flex items-center gap-1">
-                    <span className="text-[11px] font-medium text-afrilink-dark">
+                    <span className="text-[11px] font-medium text-allness-dark">
                       {transaction.reference ?? transaction.id.slice(0, 12)}
                     </span>
                     <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
@@ -267,10 +267,10 @@ export function TransactionDetailModal({
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-3 h-3 text-afrilink-green" />
+                      <ShieldCheck className="w-3 h-3 text-allness-green" />
                       <span className="text-[11px] text-gray-600">{item.label}</span>
                     </div>
-                    <span className="text-[10px] font-semibold text-afrilink-green bg-green-50 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-allness-green bg-green-50 px-2 py-0.5 rounded-full">
                       {item.value}
                     </span>
                   </div>
@@ -298,7 +298,7 @@ export function TransactionDetailModal({
                     <div className="flex flex-col items-center">
                       <div
                         className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
-                          step.done ? 'bg-afrilink-green' : 'bg-gray-200'
+                          step.done ? 'bg-allness-green' : 'bg-gray-200'
                         }`}
                       >
                         {step.done ? (
@@ -310,7 +310,7 @@ export function TransactionDetailModal({
                       {i < 4 && <div className="w-px h-5 bg-gray-200 my-0.5" />}
                     </div>
                     <div className="pb-2">
-                      <p className="text-[11px] font-medium text-afrilink-dark">{step.label}</p>
+                      <p className="text-[11px] font-medium text-allness-dark">{step.label}</p>
                       <p className="text-[10px] text-gray-400">{step.time}</p>
                     </div>
                   </div>

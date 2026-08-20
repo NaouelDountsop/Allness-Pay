@@ -207,13 +207,13 @@ export const kycNotificationBannerMessages: Record<KycBannerStatus, string> = {
 
 export const tontineBannerStyle = {
   wrapper:
-    'mb-4 sm:mb-6 rounded-xl bg-afrilink-orange/10 border border-afrilink-orange/30 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4',
+    'mb-4 sm:mb-6 rounded-xl bg-allness-orange/10 border border-allness-orange/30 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4',
   iconWrapper:
-    'w-9 h-9 rounded-lg bg-afrilink-orange/20 flex items-center justify-center shrink-0',
-  iconColor: 'text-afrilink-orange',
-  textColor: 'text-afrilink-dark',
+    'w-9 h-9 rounded-lg bg-allness-orange/20 flex items-center justify-center shrink-0',
+  iconColor: 'text-allness-orange',
+  textColor: 'text-allness-dark',
   button:
-    'group w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-afrilink-orange text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 active:scale-[0.98] transition-all',
+    'group w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-allness-orange text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 active:scale-[0.98] transition-all',
 };
 
 export const scheduledPaymentsBannerStyle = {
@@ -224,5 +224,5 @@ export const scheduledPaymentsBannerStyle = {
   iconColor: 'text-blue-600',
   titleColor: 'text-gray-800',
   descriptionColor: 'text-gray-500',
-  linkColor: 'text-afrilink-green',
+  linkColor: 'text-allness-green',
 };

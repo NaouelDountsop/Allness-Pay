@@ -23,20 +23,20 @@ export function PaymentMethodsGrid({ selected, onSelect }: PaymentMethodsGridPro
             onClick={() => onSelect(key)}
             className={`h-24 rounded-xl border-2 p-3 flex flex-col items-center justify-center gap-2 text-center transition-colors ${
               isSelected
-                ? 'border-afrilink-green bg-green-50/40'
+                ? 'border-allness-green bg-green-50/40'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
             <img src={image} alt={label} className="w-8 h-8 object-contain" />
             <span
               className={`text-xs leading-tight ${
-                isSelected ? 'text-afrilink-green font-medium' : 'text-gray-700'
+                isSelected ? 'text-allness-green font-medium' : 'text-gray-700'
               }`}
             >
               {label}
             </span>
             {isSelected && (
-              <span className="text-[10px] font-medium text-afrilink-green">SÉLECTIONNÉ</span>
+              <span className="text-[10px] font-medium text-allness-green">SÉLECTIONNÉ</span>
             )}
           </button>
         );

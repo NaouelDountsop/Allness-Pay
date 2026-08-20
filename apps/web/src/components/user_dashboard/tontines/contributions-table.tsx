@@ -12,10 +12,10 @@ interface ContributionRow {
 }
 
 const statusStyles: Record<string, { label: string; className: string }> = {
-  valide: { label: 'Validé', className: 'bg-green-50 text-afrilink-green' },
-  paid: { label: 'Validé', className: 'bg-green-50 text-afrilink-green' },
-  en_attente: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
-  PENDING: { label: 'En attente', className: 'bg-orange-50 text-afrilink-orange' },
+  valide: { label: 'Validé', className: 'bg-green-50 text-allness-green' },
+  paid: { label: 'Validé', className: 'bg-green-50 text-allness-green' },
+  en_attente: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
+  PENDING: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
   echoue: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
   FAILED: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
   LATE: { label: 'En retard', className: 'bg-yellow-50 text-yellow-600' },
@@ -49,13 +49,13 @@ export function ContributionsTable({ contributions, currency = 'CFA' }: Contribu
             placeholder="Filtrer par nom de membre..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+            className="w-full h-10 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
         >
           <option value="all">Tous les statuts</option>
           <option value="valide">Validé</option>
@@ -66,7 +66,7 @@ export function ContributionsTable({ contributions, currency = 'CFA' }: Contribu
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
         />
         <button
           onClick={() => {
@@ -124,7 +124,7 @@ export function ContributionsTable({ contributions, currency = 'CFA' }: Contribu
                 </td>
                 <td className="px-4 py-3">
                   {normalizedStatus !== 'echoue' ? (
-                    <a href="#" className="text-xs text-afrilink-green font-medium">
+                    <a href="#" className="text-xs text-allness-green font-medium">
                       Voir Reçu
                     </a>
                   ) : (

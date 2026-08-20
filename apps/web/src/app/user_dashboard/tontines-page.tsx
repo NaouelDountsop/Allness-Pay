@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Loader2, MessageCircle } from 'lucide-react';
+import { Plus, Loader2, Mail } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { TontinesEmptyState } from '@/components/user_dashboard/tontines/tontines-empty-state';
@@ -51,7 +51,7 @@ export default function TontinesPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-afrilink-orange animate-spin" />
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -109,20 +109,25 @@ export default function TontinesPage() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h1 className="text-2xl font-semibold text-afrilink-dark">Tontines</h1>
+                <h1 className="text-2xl font-semibold text-allness-dark">Tontines</h1>
                 <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => navigate('/dashboard/tontines/chat')}
-                  className="h-10 px-4 rounded-lg border border-afrilink-dark text-afrilink-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50"
+                  onClick={() => navigate('/dashboard/tontines/invitations')}
+                  className="h-10 px-4 rounded-lg border border-allness-dark text-allness-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50 relative"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="hidden md:inline">Conversations</span>
+                  <Mail className="w-4 h-4" />
+                  <span className="hidden md:inline">Invitations</span>
+                  {pendingInvitations.length > 0 && (
+                    <span className="absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
+                      {pendingInvitations.length}
+                    </span>
+                  )}
                 </button>
                 <button
                   onClick={() => navigate('/dashboard/tontines/create')}
-                  className="h-10 px-5 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
+                  className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   <span className="hidden md:inline">Nouvelle Tontine</span>

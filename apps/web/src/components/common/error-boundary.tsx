@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <AlertTriangle className="w-7 h-7 text-red-500" />
               </span>
             </div>
-            <h2 className="text-lg font-semibold text-afrilink-dark mb-2">
+            <h2 className="text-lg font-semibold text-allness-dark mb-2">
               Une erreur est survenue
             </h2>
             <p className="text-sm text-gray-500 mb-6">
@@ -48,7 +48,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 this.setState({ hasError: false, error: null });
                 window.location.reload();
               }}
-              className="h-10 px-6 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
+              className="h-10 px-6 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Réessayer
             </button>

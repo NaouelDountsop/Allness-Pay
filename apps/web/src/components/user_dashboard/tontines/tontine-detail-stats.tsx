@@ -17,7 +17,7 @@ export function TontineDetailStats({ tontine, progressPercent = 0 }: TontineDeta
         </div>
       </div>
       <div className="rounded-xl border border-gray-100 bg-white p-4 flex items-center gap-3">
-        <Repeat className="w-5 h-5 text-afrilink-green" />
+        <Repeat className="w-5 h-5 text-allness-green" />
         <div>
           <p className="text-xs text-gray-400">Cycle de Rotation</p>
           <p className="text-sm font-semibold text-gray-900">
