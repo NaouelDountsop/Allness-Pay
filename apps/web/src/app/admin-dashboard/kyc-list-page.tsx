@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Files, CheckCircle2, Clock, XCircle, Search, RotateCcw, Loader2 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge, Tabs } from '../../components/ui';
+import { Pagination } from '../../components/ui/pagination';
+import { TableActions } from '../../components/common/table-actions';
 import { adminService } from '../../lib/api/admin.service';
 import type { AdminKycRecord } from '../../lib/api/admin.service';
 
@@ -36,6 +38,8 @@ function formatDate(iso: string) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+const PAGE_SIZE = 10;
+
 export default function KycListPage() {
   const [tab, setTab] = useState('Tous');
   const navigate = useNavigate();
@@ -43,6 +47,7 @@ export default function KycListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   const { data: stats } = useQuery({
     queryKey: ['admin-dashboard-stats'],
@@ -64,6 +69,7 @@ export default function KycListPage() {
 
   useEffect(() => {
     fetchRecords(STATUS_FILTER_MAP[tab]);
+    setPage(1);
   }, [tab, fetchRecords]);
 
   const filtered =
@@ -75,6 +81,9 @@ export default function KycListPage() {
       (r.userNom ?? '').toLowerCase().includes(search.toLowerCase()) ||
       (r.userEmail ?? '').toLowerCase().includes(search.toLowerCase()),
   );
+
+  const totalPages = Math.ceil(searched.length / PAGE_SIZE);
+  const paginated = searched.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <AdminLayout active="kyc">
@@ -175,7 +184,7 @@ export default function KycListPage() {
                 </tr>
               </thead>
               <tbody>
-                {searched.map((row) => {
+                {paginated.map((row) => {
                   const badge = STATUS_BADGE[row.status] ?? {
                     tone: 'orange' as const,
                     label: row.status,
@@ -214,18 +223,29 @@ export default function KycListPage() {
                         <Badge tone={badge.tone}>{badge.label}</Badge>
                       </td>
                       <td className="text-right">
-                        <button
-                          onClick={() => navigate(`/admin/kyc/${row.id}`)}
-                          className="h-8 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
-                        >
-                          Examiner
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`/admin/kyc/${row.id}`)}
+                            className="h-8 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity"
+                          >
+                            Examiner
+                          </button>
+                          <TableActions
+                            onView={() => navigate(`/admin/kyc/${row.id}`)}
+                          />
+                        </div>
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>

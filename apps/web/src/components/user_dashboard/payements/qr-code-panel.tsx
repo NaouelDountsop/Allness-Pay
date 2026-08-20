@@ -10,8 +10,7 @@ export function QrCodePanel({ onScanClick }: QrCodePanelProps) {
       <div className="flex-1">
         <h3 className="text-sm font-semibold text-gray-800 mb-1">Paiement par QR Code</h3>
         <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-          Payez instantanément chez vos marchands en votre présence en scannant leur code QR. C'est
-          rapide, sécurisé et sans contact.
+          Payez instantanément chez vos marchands en scannant leur code QR.
         </p>
         <button
           onClick={onScanClick}

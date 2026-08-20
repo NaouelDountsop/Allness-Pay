@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
 import { SectionCard } from '@/components/ui/section-card';
@@ -22,6 +22,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
 
 export default function EditExchangeRatePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const [fromCurrency, toCurrency] = (id ?? '').split('-');
   const [rate, setRate] = useState('');
@@ -52,6 +53,8 @@ export default function EditExchangeRatePage() {
         isActive,
       }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-exchange-rates'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-exchange-rate', fromCurrency, toCurrency] });
       navigate('/admin/taux-de-change');
     },
   });

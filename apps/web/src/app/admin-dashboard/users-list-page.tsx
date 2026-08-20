@@ -8,13 +8,11 @@ import {
   Download,
   UserPlus,
   RotateCcw,
-  Eye,
-  Pencil,
-  Ban,
   Loader2,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Pagination, Badge } from '../../components/ui';
+import { TableActions } from '../../components/common/table-actions';
 import { UserDetailPanel } from './user-detail-panel';
 import { adminService } from '../../lib/api/admin.service';
 
@@ -52,6 +50,10 @@ export default function UsersListPage() {
       (statusFilter === 'pending' && !u.verificationotp);
     return matchesCountry && matchesStatus;
   });
+
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil((filtered?.length ?? 0) / PAGE_SIZE);
+  const paginated = filtered?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
@@ -191,7 +193,7 @@ export default function UsersListPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered?.map((u) => {
+                {paginated?.map((u) => {
                   const initials =
                     `${u.prenom?.charAt(0) ?? ''}${u.nom?.charAt(0) ?? ''}`.toUpperCase();
                   const statusTone = u.verificationotp ? ('green' as const) : ('orange' as const);
@@ -221,26 +223,12 @@ export default function UsersListPage() {
                         {new Date(u.dateinscription).toLocaleDateString('fr-FR')}
                       </td>
                       <td>
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setSelectedUserId(u.idutilisateur)}
-                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
-                            aria-label="Voir"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
-                            aria-label="Modifier"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500"
-                            aria-label="Bloquer"
-                          >
-                            <Ban className="w-3.5 h-3.5" />
-                          </button>
+                        <div className="flex items-center justify-end">
+                          <TableActions
+                            onView={() => setSelectedUserId(u.idutilisateur)}
+                            onEdit={() => {/* TODO: edit user */}}
+                            onDelete={() => {/* TODO: block user */}}
+                          />
                         </div>
                       </td>
                     </tr>

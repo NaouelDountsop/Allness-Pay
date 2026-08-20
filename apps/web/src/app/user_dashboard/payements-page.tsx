@@ -8,7 +8,7 @@ import { ServiceCategoriesGrid } from '@/components/user_dashboard/payements/ser
 import { WhyChooseCard } from '@/components/user_dashboard/payements/why-choose-card';
 import { RecentPaymentsList } from '@/components/user_dashboard/payements/recent-payements-list';
 import { ScheduledPaymentsBanner } from '@/components/user_dashboard/payements/scheduled-payements-banner';
-import { serviceCategories, mockRecentPayments } from '@/lib/mock/payements-data';
+import { serviceCategories, mockRecentPayments } from '@/lib/mock/payments-data';
 
 export default function PaymentsPage() {
   const navigate = useNavigate();

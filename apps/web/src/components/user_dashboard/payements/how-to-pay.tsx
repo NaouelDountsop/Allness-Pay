@@ -7,12 +7,12 @@ const steps = [
   {
     number: 2,
     title: 'Vérifier les informations',
-    description: 'Utilisez la caméra pour scanner le QR code affiché par le marchand.',
+    description: 'Vérifiez les détails du marchand et le montant à payer.',
   },
   {
     number: 3,
     title: 'Confirmer le paiement',
-    description: 'Utilisez la caméra pour scanner le QR code affiché par le marchand.',
+    description: 'Entrez votre PIN et confirmez la transaction en toute sécurité.',
   },
 ];
 
