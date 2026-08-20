@@ -22,7 +22,6 @@ import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { AddMemberDto } from './dto/add-member.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { RespondInvitationDto } from './dto/respond-invitation.dto';
 import { ContributeFromWalletDto } from './dto/contribute-from-wallet.dto';
 import { TontineStatus } from './entities/tontine.entity';
 
@@ -155,31 +154,6 @@ export class TontineController {
       walletId: dto.walletId,
       pin: dto.pin,
     });
-  }
-
-  @Get('invitations/pending')
-  @ApiOperation({ summary: "Lister les invitations en attente de l'utilisateur" })
-  listPendingInvitations(@Req() req: AuthenticatedRequest) {
-    return this.invitationService.findPendingByUserId(req.user.sub);
-  }
-
-  @Post('invitations/:invitationId/respond')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Répondre à une invitation' })
-  @ApiParam({ name: 'invitationId', type: String })
-  respondInvitation(
-    @Param('invitationId', ParseUUIDPipe) invitationId: string,
-    @Req() req: AuthenticatedRequest,
-    @Body() dto: RespondInvitationDto,
-  ) {
-    return this.invitationService.respond(invitationId, req.user.sub, dto);
-  }
-
-  @Post('invitations/accept')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Accepter une invitation par token (lien email)' })
-  acceptByToken(@Req() req: AuthenticatedRequest, @Body('token') token: string) {
-    return this.invitationService.acceptByToken(token, req.user.sub);
   }
 
   @Post(':id/invitations')

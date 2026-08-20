@@ -138,6 +138,11 @@ export const tontineService = {
     return res.data;
   },
 
+  listAllMyInvitations: async (): Promise<TontineInvitation[]> => {
+    const res = await apiClient.get<TontineInvitation[]>(`${basePath}/invitations`);
+    return res.data;
+  },
+
   acceptByToken: async (token: string): Promise<TontineMember> => {
     const res = await apiClient.post<TontineMember>(`${basePath}/invitations/accept`, { token });
     return res.data;

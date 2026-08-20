@@ -224,6 +224,31 @@ export class InvitationService {
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
   }
+
+  async findAllByUserId(userId: number): Promise<TontineInvitation[]> {
+    const user = await this.userRepo.findOne({ where: { idutilisateur: userId } });
+    const email = user?.email;
+
+    const byUserId = await this.invitationRepo.find({
+      where: { inviteeUserId: userId },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!email) return byUserId;
+
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email },
+      order: { createdAt: 'DESC' },
+    });
+
+    const all = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return all.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
+    });
+  }
   async acceptByToken(token: string, userId: number): Promise<TontineMember> {
     const invitation = await this.findByToken(token);
     if (!invitation) {

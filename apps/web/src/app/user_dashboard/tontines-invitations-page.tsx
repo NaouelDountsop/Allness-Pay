@@ -74,7 +74,7 @@ function InvitationCard({
     <div className="rounded-xl border border-gray-100 bg-white p-5 hover:shadow-sm transition-all">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4 min-w-0 flex-1">
-          <div className="w-12 h-12 rounded-xl bg-allness-orange/10 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-allness-orange" />
           </div>
           <div className="min-w-0 flex-1">
@@ -98,9 +98,9 @@ function InvitationCard({
                 EXPIRÉE
               </span>
             )}
-            <h3 className="text-sm font-semibold text-gray-900">{tontine?.name ?? 'Chargement...'}</h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Invité par : <InvitationUser userId={invitation.inviterUserId} />
+            <h3 className="text-sm font-semibold text-gray-900">{tontine?.name }</h3>
+            <p className="text-xs text-allness-dark mt-0.5">
+              Invité par : <span className="text-allness-orange"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
             {tontine && (
               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
@@ -188,14 +188,14 @@ export default function TontinesInvitationsPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
   const { data: invitations = [], isLoading } = useQuery({
-    queryKey: ['pending-invitations'],
-    queryFn: tontineService.listPendingInvitations,
+    queryKey: ['all-my-invitations'],
+    queryFn: tontineService.listAllMyInvitations,
   });
 
   const acceptMutation = useMutation({
     mutationFn: (invitationId: string) => tontineService.respondInvitation(invitationId, 'ACCEPT'),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
+      queryClient.invalidateQueries({ queryKey: ['all-my-invitations'] });
       queryClient.invalidateQueries({ queryKey: ['tontines'] });
     },
   });
@@ -203,7 +203,7 @@ export default function TontinesInvitationsPage() {
   const declineMutation = useMutation({
     mutationFn: (invitationId: string) => tontineService.respondInvitation(invitationId, 'DECLINE'),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
+      queryClient.invalidateQueries({ queryKey: ['all-my-invitations'] });
     },
   });
 
@@ -320,6 +320,8 @@ export default function TontinesInvitationsPage() {
           <div className="w-full lg:w-80 shrink-0 space-y-4">
             {/* Summary card */}
             <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-6 relative overflow-hidden">
+              <img src="/enveloppe.png" alt="" className="w-full  object-contain mb-1" />
+
               <svg
                 aria-hidden="true"
                 className="pointer-events-none select-none absolute -top-4 -right-2 w-32 h-32 opacity-60"

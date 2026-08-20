@@ -14,7 +14,7 @@ export function TontineInvitationBanner({ count }: TontineInvitationBannerProps)
   return (
     <div className={tontineBannerStyle.wrapper}>
       <div className="flex items-start sm:items-center gap-3">
-       
+
         <span className={tontineBannerStyle.iconWrapper}>
           <UserPlus className={`w-4 h-4 ${tontineBannerStyle.iconColor}`} />
         </span>
@@ -23,7 +23,7 @@ export function TontineInvitationBanner({ count }: TontineInvitationBannerProps)
         </p>
       </div>
       <button
-        onClick={() => navigate('/dashboard/tontines', { state: { fromBanner: true } })}
+        onClick={() => navigate('/dashboard/tontines/invitations', { state: { fromBanner: true } })}
         className={tontineBannerStyle.button}
       >
         Voir

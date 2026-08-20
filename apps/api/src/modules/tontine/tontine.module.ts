@@ -6,6 +6,7 @@ import { TontineCycle } from './entities/tontine-cycle.entity';
 import { TontineContribution } from './entities/tontine-contribution.entity';
 import { TontineInvitation } from './entities/tontine-invitation.entity';
 import { TontineController } from './tontine.controller';
+import { TontineInvitationController } from './tontine-invitation.controller';
 import { TontineService } from './tontine.service';
 import { CycleService } from './services/cycle.service';
 import { ContributionService } from './services/contribution.service';
@@ -36,7 +37,7 @@ import { User } from '../users/entities/user.entity';
     PinModule,
     MailModule,
   ],
-  controllers: [TontineController],
+  controllers: [TontineController, TontineInvitationController],
   providers: [
     TontineService,
     CycleService,

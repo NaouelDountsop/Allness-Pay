@@ -8,7 +8,6 @@ import { TontinesEmptyState } from '@/components/user_dashboard/tontines/tontine
 import { TontinesStats } from '@/components/user_dashboard/tontines/tontines-stats';
 import { TontineCard } from '@/components/user_dashboard/tontines/tontine-card';
 import { NewInitiativeCard } from '@/components/user_dashboard/tontines/new-initiative-card';
-import { InvitationsList } from '@/components/user_dashboard/tontines/invitations-list';
 import { KycGuardPopup } from '@/components/user_dashboard/tontines/kyc-guard-popup';
 import { InvitationJoinPopup } from '@/components/user_dashboard/tontines/invitation-join-popup';
 import { tontineService } from '@/lib/api/tontine.service';
@@ -96,15 +95,6 @@ export default function TontinesPage() {
         ) : null
         }
 
-        {invitations && invitations.length > 0 && (
-          <div className={!hasTontines ? "mt-6" : ""}>
-            <InvitationsList
-              invitations={invitations ?? []}
-              onInvitationClick={() => setShowInvitationPopup(true)}
-            />
-          </div>
-        )}
-
         {hasTontines && (
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -160,10 +150,6 @@ export default function TontinesPage() {
               <NewInitiativeCard />
             </div>
 
-            <InvitationsList
-              invitations={invitations ?? []}
-              onInvitationClick={() => setShowInvitationPopup(true)}
-            />
           </div>
         )}
       </div>
