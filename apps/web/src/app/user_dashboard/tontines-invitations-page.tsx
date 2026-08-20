@@ -248,19 +248,21 @@ export default function TontinesInvitationsPage() {
 
       <div className="max-w-6xl mx-auto">
         {/* Back button */}
-        <button
-          onClick={() => navigate('/dashboard/tontines')}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-allness-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Retour aux tontines
-        </button>
+       
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="mb-6">
-              <h1 className="text-2xl font-semibold text-allness-dark">Invitations aux tontines</h1>
+              <h1 className="text-2xl font-semibold text-allness-dark">
+                
+                 <button
+          onClick={() => navigate('/dashboard/tontines')}
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-allness-dark mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          
+        </button>Invitations aux tontines</h1>
               <p className="text-sm text-gray-500 mt-1">
                 {pending.length > 0
                   ? `Vous avez ${pending.length} invitation${pending.length > 1 ? 's' : ''} en attente.`

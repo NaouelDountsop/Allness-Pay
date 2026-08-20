@@ -73,7 +73,7 @@ export function DashboardHeader() {
 
   return (
     <header
-      className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
+      className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4
       bg-white border-b border-gray-100 shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">

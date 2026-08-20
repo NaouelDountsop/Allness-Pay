@@ -35,7 +35,7 @@ export function TontinesStats({
       </div>
 
       {/* <div className="bg-allness-dark rounded-2xl p-5">
-       <div className="bg-afrilink-dark rounded-2xl p-5">
+       <div className="bg-allness-dark rounded-2xl p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
             <Wallet className="w-5 h-5 text-green-400" />
