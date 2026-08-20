@@ -1,23 +1,35 @@
-import { CalendarClock } from 'lucide-react';
-import { scheduledPaymentsBannerStyle } from '@/styles/banners';
+import { CalendarDays, Check, Clock } from 'lucide-react';
 
 export function ScheduledPaymentsBanner() {
-  const s = scheduledPaymentsBannerStyle;
-
   return (
-    <div className={s.wrapper}>
-      <span className={s.iconWrapper}>
-        <CalendarClock className={`w-5 h-5 ${s.iconColor}`} />
-      </span>
-      <div className="min-w-0">
-        <p className={`text-sm font-medium ${s.titleColor} mb-0.5`}>Paiements programmés</p>
-        <p className={`text-xs ${s.descriptionColor} line-clamp-3`}>
+    <div className="rounded-2xl border border-gray-100 shadow-sm p-5 flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-semibold text-gray-800 mb-1">Paiements programmés</h3>
+        <p className="text-xs text-gray-500 leading-relaxed mb-3">
           Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre
-          wallet AllnessPay.{' '}
-          <a href="#" className={`${s.linkColor} font-medium`}>
-            En savoir plus
-          </a>
+          wallet AfriLinkPay.
         </p>
+        <a
+          href="#"
+          className="text-xs text-allness-green font-medium inline-flex items-center gap-1"
+        >
+          En savoir plus
+          <span className="text-allness-green">→</span>
+        </a>
+      </div>
+      <div className="relative shrink-0 w-24 h-24">
+        {/* Calendar icon illustration */}
+        <div className="w-20 h-20 rounded-2xl bg-allness-dark/5 flex items-center justify-center">
+          <CalendarDays className="w-10 h-10 text-allness-dark/40" />
+        </div>
+        {/* Green check badge */}
+        <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-allness-green flex items-center justify-center border-2 border-white">
+          <Check className="w-3.5 h-3.5 text-white" />
+        </span>
+        {/* Clock badge */}
+        <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-allness-orange flex items-center justify-center border-2 border-white">
+          <Clock className="w-3 h-3 text-white" />
+        </span>
       </div>
     </div>
   );

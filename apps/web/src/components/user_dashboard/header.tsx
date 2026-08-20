@@ -37,7 +37,6 @@ export function DashboardHeader() {
       }
     },
     retry: false,
-    refetchOnWindowFocus: false,
   });
 
   const hasNotifications = notifications.length > 0;

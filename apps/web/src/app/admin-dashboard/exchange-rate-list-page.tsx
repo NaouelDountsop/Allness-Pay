@@ -19,6 +19,7 @@ import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'rec
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
+import { TableActions } from '@/components/common/table-actions';
 import { adminService, type AdminCurrency, type AdminExchangeRate } from '@/lib/api/admin.service';
 import { getFlagUrl } from '@/data/countries';
 
@@ -130,11 +131,13 @@ function RateRow({
   isSelected,
   onSelect,
   onEdit,
+  onDelete,
 }: {
   rate: AdminExchangeRate;
   isSelected: boolean;
   onSelect: () => void;
   onEdit: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <tr
@@ -175,15 +178,19 @@ function RateRow({
         </span>
       </td>
       <td className="px-3 py-2.5 text-right">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit();
-          }}
-          className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex items-center justify-end">
+          <TableActions
+            onView={onSelect}
+            onEdit={(e?: React.MouseEvent) => {
+              e?.stopPropagation();
+              onEdit();
+            }}
+            onDelete={onDelete ? (e?: React.MouseEvent) => {
+              e?.stopPropagation();
+              onDelete();
+            } : undefined}
+          />
+        </div>
       </td>
     </tr>
   );
@@ -464,6 +471,11 @@ export default function ExchangeRatesPage() {
                           isSelected={selectedRate?.fromCurrencyCode === rate.fromCurrencyCode && selectedRate?.toCurrencyCode === rate.toCurrencyCode}
                           onSelect={() => setSelectedRate(rate)}
                           onEdit={() => navigate(`/admin/taux-de-change/${rate.fromCurrencyCode}-${rate.toCurrencyCode}/modifier`)}
+                          onDelete={() => {
+                            if (confirm('Supprimer ce taux de change ?')) {
+                              // TODO: implement delete
+                            }
+                          }}
                         />
                       ))}
                       {paginatedRates.length === 0 && (

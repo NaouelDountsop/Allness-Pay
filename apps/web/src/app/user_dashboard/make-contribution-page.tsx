@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Lock, Info, Loader2, CheckCircle } from 'lucide-react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -36,6 +36,7 @@ const PAYMENT_TO_METHOD: Record<PaymentMethod, ContributionFormData['method']> =
 export default function MakeContributionPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     data: tontine,
@@ -96,6 +97,11 @@ export default function MakeContributionPage() {
         pin,
       }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tontine', id] });
+      queryClient.invalidateQueries({ queryKey: ['tontines'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-primary'] });
+      queryClient.invalidateQueries({ queryKey: ['wallets'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions', wallet?.id] });
       setSuccess(true);
     },
   });

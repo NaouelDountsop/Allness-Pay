@@ -11,7 +11,11 @@ import {
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Tabs, Badge } from '../../components/ui';
+import { Pagination } from '../../components/ui/pagination';
+import { TableActions } from '../../components/common/table-actions';
 import { adminService } from '../../lib/api/admin.service';
+
+const PAGE_SIZE = 10;
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -25,6 +29,7 @@ function downloadBlob(blob: Blob, filename: string) {
 export default function TontinesSupervisionPage() {
   const [tab, setTab] = useState('Toutes les Tontines');
   const [exporting, setExporting] = useState(false);
+  const [page, setPage] = useState(1);
 
   const { data: tontines, isLoading: loadingTontines } = useQuery({
     queryKey: ['admin-tontines'],
@@ -38,6 +43,13 @@ export default function TontinesSupervisionPage() {
   const totalVolume = tontines?.reduce((sum, t) => sum + Number(t.contributionAmount) * t.currentCycle, 0) ?? 0;
 
   const isLoading = loadingTontines;
+
+  const filteredTontines = tab === 'Alertes Actives'
+    ? tontines?.filter((t) => t.status === 'pending' || Number(t.contributionAmount) * t.memberLimit > 1000000) ?? []
+    : tontines ?? [];
+
+  const totalPages = Math.ceil(filteredTontines.length / PAGE_SIZE);
+  const paginatedTontines = filteredTontines.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleExport = async () => {
     setExporting(true);
@@ -140,7 +152,7 @@ export default function TontinesSupervisionPage() {
             </tr>
           </thead>
           <tbody>
-            {tontines?.map((t) => {
+            {paginatedTontines.map((t) => {
               const progressPercent =
                 t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
               const statusTone =
@@ -178,7 +190,7 @@ export default function TontinesSupervisionPage() {
                 </tr>
               );
             })}
-            {tontines?.length === 0 && (
+            {paginatedTontines.length === 0 && (
               <tr>
                 <td colSpan={6} className="py-12 text-center text-sm text-gray-400">
                   Aucune tontine trouvée.
@@ -188,6 +200,12 @@ export default function TontinesSupervisionPage() {
           </tbody>
         </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+          </div>
+        )}
 
         <div className="mt-5 rounded-xl bg-red-50 border border-red-100 p-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">

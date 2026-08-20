@@ -14,15 +14,19 @@ import {
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
 import { Badge } from '../../components/ui';
+import { Pagination } from '../../components/ui/pagination';
 import { TransactionDetailModal } from './transaction-detail-modal';
 import { transactionService, type WalletTransaction } from '../../lib/api/transaction.service';
 import { walletService } from '../../lib/api/wallet.service';
+
+const PAGE_SIZE = 10;
 
 export default function TransactionsPage() {
   const [selected, setSelected] = useState<WalletTransaction | null>(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [page, setPage] = useState(1);
 
   const { data: wallet } = useQuery({
     queryKey: ['wallet-primary'],
@@ -43,6 +47,9 @@ export default function TransactionsPage() {
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
     return matchesSearch && matchesType && matchesStatus;
   });
+
+  const totalPages = Math.ceil((filtered?.length ?? 0) / PAGE_SIZE);
+  const paginated = filtered?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const totalVolume =
     transactions?.reduce((sum, t) => {
@@ -205,7 +212,7 @@ export default function TransactionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered?.map((t) => {
+                {paginated?.map((t) => {
                   const credit = transactionService.isCredit(t.type);
                   const isCompleted = t.status === 'completed';
                   return (
@@ -263,6 +270,12 @@ export default function TransactionsPage() {
               </tbody>
             </table>
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            </div>
+          )}
         </div>
       </div>
 

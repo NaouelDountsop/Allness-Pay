@@ -38,6 +38,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
     mutationFn: (response: 'ACCEPT' | 'DECLINE') =>
       tontineService.respondInvitation(invitation.id, response),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-my-invitations'] });
       queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
       queryClient.invalidateQueries({ queryKey: ['tontines'] });
     },
