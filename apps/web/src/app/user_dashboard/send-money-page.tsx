@@ -9,7 +9,6 @@ import { BeneficiaryAmountForm } from '@/components/user_dashboard/send/benefici
 import { ReviewStep } from '@/components/user_dashboard/send/review-step';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
-import { WalletSelector } from '@/components/user_dashboard/send/wallet-selector';
 import { usePin } from '@/hooks/use-pin';
 import { userService } from '@/lib/api/user.service';
 import { walletService } from '@/lib/api/wallet.service';
@@ -42,16 +41,9 @@ export default function SendMoneyPage() {
     queryFn: walletService.list,
   });
 
-  const sendableWallets = wallets.filter(
-    (w) => w.status === 'active' && !w.label?.toLowerCase().includes('tontine'),
-  );
   const primaryWallet = wallets.find((w) => w.isPrimary) ?? wallets[0] ?? null;
-  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(
-    primaryWallet?.id ?? null,
-  );
-  const selectedWallet = sendableWallets.find((w) => w.id === selectedWalletId) ?? primaryWallet;
 
-  const { hasPin, createPin, checkPinStatus } = usePin(selectedWallet?.id ?? null);
+  const { hasPin, createPin, checkPinStatus } = usePin(primaryWallet?.id ?? null);
 
   useEffect(() => {
     checkPinStatus();
@@ -80,7 +72,7 @@ export default function SendMoneyPage() {
     return COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
   }, [form.country]);
 
-  const senderCurrency = selectedWallet?.currency ?? 'XAF';
+  const senderCurrency = primaryWallet?.currency ?? 'XAF';
 
   const { data: exchangeRate, isLoading: exchangeRateLoading } = useQuery({
     queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
@@ -94,7 +86,7 @@ export default function SendMoneyPage() {
         city: profile.ville,
         country: profile.pays,
         currency: senderCurrency,
-        walletId: selectedWallet?.walletNumber,
+        walletId: primaryWallet?.walletNumber,
       }
     : undefined;
 
@@ -107,6 +99,9 @@ export default function SendMoneyPage() {
   const [showPinConfirm, setShowPinConfirm] = useState(false);
   const [pendingAction, setPendingAction] = useState<'toReview' | 'toSend' | null>(null);
   const [beneficiaryName, setBeneficiaryName] = useState('');
+  const [preValidationError, setPreValidationError] = useState<string | null>(null);
+  const [beneficiaryInfo, setBeneficiaryInfo] = useState<{ ownerName?: string; currency?: string } | null>(null);
+  const [walletValidationError, setWalletValidationError] = useState<string | null>(null);
 
   // Set sender country from profile
   useEffect(() => {
@@ -115,6 +110,37 @@ export default function SendMoneyPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.pays]);
+
+  // Fetch beneficiary info when wallet number changes in wallet mode
+  useEffect(() => {
+    if (form.receptionMode !== 'wallet' || !form.beneficiaryContact) {
+      setBeneficiaryInfo(null);
+      setWalletValidationError(null);
+      return;
+    }
+
+    const fetchBeneficiary = async () => {
+      try {
+        const validation = await walletService.validateByNumber(form.beneficiaryContact);
+        if (validation.valid) {
+          setBeneficiaryInfo({ ownerName: validation.ownerName, currency: validation.currency });
+          setWalletValidationError(null);
+          if (validation.ownerName) {
+            setBeneficiaryName(validation.ownerName);
+          }
+        } else {
+          setBeneficiaryInfo(null);
+          setWalletValidationError(validation.message ?? null);
+        }
+      } catch {
+        setBeneficiaryInfo(null);
+        setWalletValidationError(null);
+      }
+    };
+
+    const timeoutId = setTimeout(fetchBeneficiary, 500);
+    return () => clearTimeout(timeoutId);
+  }, [form.receptionMode, form.beneficiaryContact]);
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -154,7 +180,32 @@ export default function SendMoneyPage() {
     });
   };
 
+  const amountNum = parseFloat(form.amount) || 0;
+  const fees = amountNum * 0.01;
+  const totalDebit = amountNum + fees;
+  const walletBalance = Number(primaryWallet?.balance) || 0;
+  const isInsufficientBalance = amountNum > 0 && walletBalance < totalDebit;
+
   const handleFormSubmit = () => {
+    setPreValidationError(null);
+
+    const amountNum = parseFloat(form.amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setPreValidationError('Le montant doit être supérieur à 0.');
+      return;
+    }
+
+    const fees = amountNum * 0.01;
+    const totalDebit = amountNum + fees;
+    const walletBalance = Number(primaryWallet?.balance) || 0;
+
+    if (walletBalance < totalDebit) {
+      setPreValidationError(
+        `Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'} mais le total débité est de ${new Intl.NumberFormat('fr-FR').format(totalDebit)} ${primaryWallet?.currency ?? 'XAF'}.`,
+      );
+      return;
+    }
+
     setCompletedSteps((prev) => {
       const updated = [...prev];
       updated[2] = true;
@@ -163,7 +214,44 @@ export default function SendMoneyPage() {
     setPhase('review');
   };
 
-  const handleSendClick = () => {
+  const handleSendClick = async () => {
+    setPreValidationError(null);
+
+    if (!primaryWallet?.id || !form.beneficiaryContact || !form.amount) {
+      setPreValidationError('Wallet ou bénéficiaire non configuré.');
+      return;
+    }
+
+    const amountNum = parseFloat(form.amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setPreValidationError('Le montant doit être supérieur à 0.');
+      return;
+    }
+
+    const fees = amountNum * 0.01;
+    const totalDebit = amountNum + fees;
+    const walletBalance = Number(primaryWallet.balance) || 0;
+
+    if (walletBalance < totalDebit) {
+      setPreValidationError(
+        `Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet.currency ?? 'XAF'} mais le total débité est de ${new Intl.NumberFormat('fr-FR').format(totalDebit)} ${primaryWallet.currency ?? 'XAF'}.`,
+      );
+      return;
+    }
+
+    if (form.receptionMode === 'wallet') {
+      try {
+        const validation = await walletService.validateByNumber(form.beneficiaryContact);
+        if (!validation.valid) {
+          setPreValidationError(validation.message ?? 'Wallet bénéficiaire invalide.');
+          return;
+        }
+      } catch {
+        setPreValidationError('Impossible de vérifier le wallet bénéficiaire. Réessayez.');
+        return;
+      }
+    }
+
     setPendingAction('toSend');
     if (!hasPin) {
       setShowPinSetup(true);
@@ -172,8 +260,10 @@ export default function SendMoneyPage() {
     }
   };
 
-  const handlePinConfirm = async (pin: string): Promise<boolean> => {
-    if (!selectedWallet?.id || !form.beneficiaryContact || !form.amount) return false;
+  const handlePinConfirm = async (pin: string): Promise<string | null> => {
+    if (!primaryWallet?.id || !form.beneficiaryContact || !form.amount) {
+      return 'Wallet ou bénéficiaire non configuré.';
+    }
 
     try {
       const isMobileMoney = form.receptionMode === 'mtn' || form.receptionMode === 'orange';
@@ -183,13 +273,13 @@ export default function SendMoneyPage() {
         const phoneWithPrefix = phoneDigits.length === 9 ? `237${phoneDigits}` : phoneDigits;
 
         await transactionService.campayWithdraw({
-          walletNumber: selectedWallet.walletNumber,
+          walletNumber: primaryWallet.walletNumber,
           amount: form.amount,
           phone_number: phoneWithPrefix,
           description: `Retrait via ${form.receptionMode === 'mtn' ? 'MTN Mobile Money' : 'Orange Money'}`,
         });
       } else {
-        await transactionService.createTransfer(selectedWallet.id, {
+        await transactionService.createTransfer(primaryWallet.id, {
           toWalletId: form.beneficiaryContact,
           amount: form.amount,
           description: form.receptionMode === 'wallet' ? 'Transfert' : undefined,
@@ -206,9 +296,13 @@ export default function SendMoneyPage() {
         return updated;
       });
       setPhase('success');
-      return true;
-    } catch {
-      return false;
+      return null;
+    } catch (err: unknown) {
+      const axiosData = (err as { response?: { data?: { message?: string } } })?.response?.data;
+      const msg = axiosData?.message;
+      if (typeof msg === 'string' && msg.length > 0) return msg;
+      if (Array.isArray(msg) && msg.length > 0) return msg[0];
+      return 'Une erreur est survenue. Réessayez.';
     }
   };
 
@@ -261,37 +355,98 @@ export default function SendMoneyPage() {
 
             {phase === 'form' && (
               <>
-                <WalletSelector
-                  wallets={sendableWallets}
-                  selectedWalletId={selectedWalletId}
-                  onSelect={(w) => {
-                    setSelectedWalletId(w.id);
-                    checkPinStatus();
-                  }}
-                />
+                {preValidationError && (
+                  <div className="mb-4 p-4 rounded-xl border border-red-200 bg-red-50 flex items-start gap-3">
+                    <span className="text-red-500 text-lg shrink-0">⚠</span>
+                    <div>
+                      <p className="text-sm font-medium text-red-800">{preValidationError}</p>
+                      <button
+                        onClick={() => setPreValidationError(null)}
+                        className="text-xs text-red-600 mt-1 hover:underline"
+                      >
+                        Réessayer
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {primaryWallet && (
+                  <div className="mb-6 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
+                    <p className="text-sm font-semibold text-gray-700 mb-3">Wallet expéditeur</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center overflow-hidden">
+                        <img src="/allnesspay_logo2.png" alt="AllnessPay" className="w-7 h-7 object-contain" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-allness-dark">
+                          {primaryWallet.label ?? primaryWallet.walletNumber}
+                        </p>
+                                             </div>
+                    </div>
+                  </div>
+                )}
+                {form.receptionMode === 'wallet' && form.beneficiaryContact && beneficiaryInfo && (
+                  <div className="mb-6 p-4 rounded-xl border border-allness-green/20 bg-allness-green/5">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Bénéficiaire</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center">
+                        <span className="text-sm font-bold text-allness-green">
+                          {beneficiaryInfo.ownerName?.charAt(0) ?? '?'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-allness-dark">
+                          {beneficiaryInfo.ownerName ?? 'Utilisateur inconnu'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {form.beneficiaryContact} · {beneficiaryInfo.currency ?? '—'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <BeneficiaryAmountForm
                   form={form}
                   onChange={handleChange}
                   onSubmit={handleFormSubmit}
                   sender={senderInfo}
-                  exchangeRate={exchangeRate?.rate ?? null}
+                  exchangeRate={exchangeRate?.rate != null ? Number(exchangeRate.rate) : null}
                   exchangeRateLoading={exchangeRateLoading}
+                  disabled={isInsufficientBalance}
+                  insufficientBalance={isInsufficientBalance ? `Solde : ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'}` : undefined}
+                  walletError={walletValidationError ?? undefined}
                 />
               </>
             )}
 
             {phase === 'review' && (
-              <ReviewStep
-                beneficiaryContact={form.beneficiaryContact}
-                senderCountryCode={form.senderCountry}
-                countryCode={form.country}
-                receptionMode={form.receptionMode}
-                amount={parseFloat(form.amount) || 0}
-                onSend={handleSendClick}
-                onBack={() => setPhase('form')}
-                sender={senderInfo}
-                beneficiaryName={beneficiaryName}
-              />
+              <>
+                {preValidationError && (
+                  <div className="mb-4 p-4 rounded-xl border border-red-200 bg-red-50 flex items-start gap-3">
+                    <span className="text-red-500 text-lg shrink-0">⚠</span>
+                    <div>
+                      <p className="text-sm font-medium text-red-800">{preValidationError}</p>
+                      <button
+                        onClick={() => setPreValidationError(null)}
+                        className="text-xs text-red-600 mt-1 hover:underline"
+                      >
+                        Réessayer
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <ReviewStep
+                  beneficiaryContact={form.beneficiaryContact}
+                  senderCountryCode={form.senderCountry}
+                  countryCode={form.country}
+                  receptionMode={form.receptionMode}
+                  amount={parseFloat(form.amount) || 0}
+                  exchangeRate={exchangeRate?.rate != null ? Number(exchangeRate.rate) : null}
+                  onSend={handleSendClick}
+                  onBack={() => setPhase('form')}
+                  sender={senderInfo}
+                  beneficiaryName={beneficiaryName}
+                />
+              </>
             )}
 
             {phase === 'success' && (
@@ -333,7 +488,7 @@ export default function SendMoneyPage() {
 
       {showPinConfirm && (
         <PinConfirmModal
-          walletId={selectedWallet?.id ?? ''}
+          walletId={primaryWallet?.id ?? ''}
           onConfirm={handlePinConfirm}
           onClose={() => setShowPinConfirm(false)}
         />

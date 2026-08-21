@@ -10,18 +10,17 @@ import { QuickActionsGrid } from '@/components/user_dashboard/wallet/quick-actio
 import { MonthlySummary } from '@/components/user_dashboard/spending-charts';
 import { SecurityCard } from '@/components/user_dashboard/wallet/security-card';
 import { AddLinkedAccountModal } from '@/components/user_dashboard/wallet/add-linked-account-modal';
-import { CreateWalletModal } from '@/components/user_dashboard/wallet/create-wallet-modal';
 import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { campayService } from '@/lib/api/campay.service';
 import { kycService } from '@/lib/api/kyc.service';
 import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
 import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
 export default function WalletPage() {
   const { t } = useTranslation();
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [createWalletOpen, setCreateWalletOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [depositStatus, setDepositStatus] = useState<'pending' | 'success' | 'failed'>('pending');
@@ -175,15 +174,6 @@ export default function WalletPage() {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-allness-dark">Portefeuille</h1>
-          <div className="flex items-center gap-3">
-            {/* <button
-              onClick={() => setCreateWalletOpen(true)}
-              className="h-10 px-3 sm:px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Créer un portefeuille</span>
-            </button> */}
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -210,7 +200,6 @@ export default function WalletPage() {
               onOpenChange={setAddAccountOpen}
               wallets={wallets}
             />
-            <CreateWalletModal open={createWalletOpen} onOpenChange={setCreateWalletOpen} />
           </div>
 
           <div className="space-y-6">

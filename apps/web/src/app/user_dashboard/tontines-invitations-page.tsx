@@ -9,7 +9,6 @@ import {
   Calendar,
   Clock,
   Check,
-  XIcon,
   ChevronRight,
   HelpCircle,
   Shield,
@@ -71,15 +70,16 @@ function InvitationCard({
   };
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 hover:shadow-sm transition-all">
+    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4 min-w-0 flex-1">
           <div className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-allness-orange" />
           </div>
           <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold text-gray-900 mb-1.5">{tontine?.name}</h3>
             {isPending && (
-              <span className="inline-flex items-center text-[10px] font-semibold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full mb-1.5">
+              <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
                 EN ATTENTE
               </span>
             )}
@@ -98,7 +98,6 @@ function InvitationCard({
                 EXPIRÉE
               </span>
             )}
-            <h3 className="text-sm font-semibold text-gray-900">{tontine?.name }</h3>
             <p className="text-xs text-allness-dark mt-0.5">
               Invité par : <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
@@ -115,6 +114,8 @@ function InvitationCard({
                 <span className="inline-flex items-center gap-1">
                   <Coins className="w-3.5 h-3.5" />
                   <span className="font-medium text-gray-700">
+                  <Coins className="w-3.5 h-3.5" />
+                  <span className="font-medium text-allness-dark">
                     {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
                     {tontine.currency ?? 'XAF'}
                   </span>
@@ -143,10 +144,11 @@ function InvitationCard({
         </div>
         <div className="flex flex-col gap-2 shrink-0">
           {/* <button
+        <div className="flex flex-col gap-2 shrink-0 w-36">
+          {/* <button
             onClick={() => navigate(`/dashboard/tontines/${invitation.tontineId}`)}
-            className="h-8 px-3 rounded-lg border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-colors inline-flex items-center gap-1"
+            className="h-9 w-full rounded-lg border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
           >
-            <Eye className="w-3.5 h-3.5" />
             Voir les détails
           </button> */}
           {isPending && (
@@ -154,26 +156,17 @@ function InvitationCard({
               <button
                 onClick={() => onAccept(invitation.id)}
                 disabled={isAccepting}
-                className="h-8 px-3 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors inline-flex items-center gap-1 disabled:opacity-50"
+                className="h-9 w-full rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                {isAccepting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Check className="w-3.5 h-3.5" />
-                )}
-                Accepter
+                {isAccepting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Accepter'}
               </button>
+
               <button
                 onClick={() => onDecline(invitation.id)}
                 disabled={isDeclining}
-                className="h-8 px-3 rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors inline-flex items-center gap-1 disabled:opacity-50"
+                className="h-9 w-full rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                {isDeclining ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <XIcon className="w-3.5 h-3.5" />
-                )}
-                Refuser
+                {isDeclining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Refuser'}
               </button>
             </>
           )}
@@ -247,30 +240,22 @@ export default function TontinesInvitationsPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className=" mx-auto">
-        {/* Back button */}
-
-
+      <div className="mx-auto">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="mb-6">
               <h1 className="text-2xl font-semibold text-allness-dark">
-
                 <button
-                onClick={() => navigate('/dashboard/tontines')}
-                className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
+                  onClick={() => navigate('/dashboard/tontines')}
+                  className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-7 h-7" />
                   Invitations aux tontines
                 </button>
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Rejoignez une tontine ou consultez les détails avant de décider.
-              </p>
+              <p className="text-sm text-dark-500 mt-1.5"></p>
             </div>
 
-            {/* Filter tabs */}
             <div className="flex items-center gap-2 mb-6 flex-wrap">
               {tabs.map((tab) => (
                 <button
@@ -287,7 +272,6 @@ export default function TontinesInvitationsPage() {
               ))}
             </div>
 
-            {/* Invitations list */}
             <div className="space-y-4">
               {filteredInvitations.length === 0 ? (
                 <div className="text-center py-16">
@@ -316,11 +300,9 @@ export default function TontinesInvitationsPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="w-full lg:w-80 shrink-0 space-y-4">
-            {/* Summary card */}
             <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-6 relative overflow-hidden">
-              <img src="/enveloppe.png" alt="" className="w-full  object-contain mb-1" />
+              <img src="/enveloppe.png" alt="" className="w-full object-contain mb-1" />
 
               <svg
                 aria-hidden="true"
@@ -357,7 +339,6 @@ export default function TontinesInvitationsPage() {
               </button>
             </div>
 
-            {/* Conseils card */}
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
@@ -381,7 +362,6 @@ export default function TontinesInvitationsPage() {
               </ul>
             </div>
 
-            {/* Help card */}
             <button className="w-full rounded-2xl border border-gray-100 bg-white p-5 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
               <div className="flex items-center gap-3">
                 <span className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">

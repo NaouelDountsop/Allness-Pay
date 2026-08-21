@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Send, Settings, MessageCircle, Loader2, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, Settings, Send, Loader2, MessageCircle } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { TontineDetailHeader } from '@/components/user_dashboard/tontines/tontine-detail-header';
 import { TontineDetailStats } from '@/components/user_dashboard/tontines/tontine-detail-stats';
+import { CycleTimeline } from '@/components/user_dashboard/tontines/cycle-timeline';
 import { MembersTable } from '@/components/user_dashboard/tontines/members-table';
 import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-member-modal';
 import { tontineService } from '@/lib/api/tontine.service';
 import { useUserProfile } from '@/hooks/use-user-profile';
+
+const statusBadge: Record<string, { label: string; className: string }> = {
+  ACTIVE: { label: 'ACTIVE', className: 'bg-allness-green/10 text-allness-green' },
+  DRAFT: { label: 'BROUILLON', className: 'bg-gray-100 text-gray-500' },
+  COMPLETED: { label: 'TERMINÉE', className: 'bg-blue-50 text-blue-600' },
+  PAUSED: { label: 'EN PAUSE', className: 'bg-amber-50 text-amber-600' },
+};
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +28,12 @@ export default function TontineDetailPage() {
   const { data: tontine, isLoading } = useQuery({
     queryKey: ['tontine', id],
     queryFn: () => tontineService.getById(id!),
+    enabled: !!id,
+  });
+
+  const { data: contributions = [] } = useQuery({
+    queryKey: ['tontine-contributions', id],
+    queryFn: () => tontineService.listContributions(id!),
     enabled: !!id,
   });
 
@@ -59,24 +73,47 @@ export default function TontineDetailPage() {
   }
 
   const progressPercent =
-    tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
+    tontine.memberLimit > 0
+      ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100)
+      : 0;
+
+  const badge = statusBadge[tontine.status] ?? statusBadge.DRAFT;
+
+  const descriptionParts: string[] = [];
+  descriptionParts.push('Groupe d\'épargne collaborative');
+  descriptionParts.push(`Fréquence : ${tontine.frequency}`);
+  if (tontine.createdAt) {
+    descriptionParts.push(
+      `Créée le ${new Date(tontine.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+    );
+  }
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div className="pb-10">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
           <div>
-            <button
-              onClick={() => navigate('/dashboard/tontines')}
-              className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Tontine {tontine.name}
-            </button>
-            <p className="text-sm text-gray-500 mt-1">
-              Groupe d'épargne collaborative · Cycle {tontine.frequency}
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                onClick={() => navigate('/dashboard/tontines')}
+                className="flex items-center gap-1.5 text-lg font-semibold text-allness-dark hover:text-allness-dark/80 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <h1 className="text-lg font-semibold text-allness-dark">
+                Tontine {tontine.name}
+              </h1>
+              <span
+                className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${badge?.className}`}
+              >
+                {badge?.label}
+              </span>
+            </div>
+            <p className="text-sm text-gray-500 mt-1 ml-8">
+              {descriptionParts.join(' · ')}
             </p>
           </div>
 
@@ -108,13 +145,30 @@ export default function TontineDetailPage() {
           </div>
         </div>
 
+        {/* 3 summary cards */}
         <TontineDetailHeader tontine={tontine} progressPercent={progressPercent} />
-        <TontineDetailStats tontine={tontine} progressPercent={progressPercent} />
+
+        {/* Cycle timeline */}
+        <CycleTimeline
+          currentCycle={tontine.currentCycle}
+          totalTurns={tontine.memberLimit}
+          members={tontine.members ?? []}
+          currency={tontine.currency}
+          contributionAmount={Number(tontine.contributionAmount)}
+        />
+
+        {/* 3 columns: versements / contribution / activité */}
+        <TontineDetailStats tontine={tontine} contributions={contributions} />
+
+        {/* Members table */}
         <MembersTable
           members={tontine.members ?? []}
           tontineId={tontine.id}
           memberLimit={tontine.memberLimit}
           status={tontine.status}
+          contributionAmount={Number(tontine.contributionAmount)}
+          currency={tontine.currency ?? 'XAF'}
+          currentCycle={tontine.currentCycle}
           onAddMember={() => setInviteOpen(true)}
         />
 
@@ -127,7 +181,7 @@ export default function TontineDetailPage() {
 
         <button
           aria-label="Support"
-          className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg"
+          className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors z-50"
           onClick={() => navigate(`/dashboard/tontines/${tontine.id}/chat`)}
         >
           <MessageCircle className="w-5 h-5" />
