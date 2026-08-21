@@ -5,28 +5,28 @@ import { ForgotPinModal } from './forgot-pin-modal';
 
 interface PinConfirmModalProps {
   walletId: string;
-  onConfirm: (pin: string) => boolean | Promise<boolean>;
+  onConfirm: (pin: string) => Promise<string | null>;
   onClose: () => void;
 }
 
 export function PinConfirmModal({ walletId, onConfirm, onClose }: PinConfirmModalProps) {
   const [pin, setPin] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showForgotPin, setShowForgotPin] = useState(false);
 
   const handleChange = (value: string) => {
     setPin(value);
-    setError(false);
+    setError(null);
   };
 
   const handleConfirm = async () => {
     if (pin.length < 4 || loading) return;
     setLoading(true);
     try {
-      const ok = await onConfirm(pin);
-      if (!ok) {
-        setError(true);
+      const errorMsg = await onConfirm(pin);
+      if (errorMsg) {
+        setError(errorMsg);
         setPin('');
       }
     } finally {
@@ -71,9 +71,9 @@ export function PinConfirmModal({ walletId, onConfirm, onClose }: PinConfirmModa
             Veuillez saisir votre code PIN à 4 chiffres.
           </p>
 
-          <PinPad value={pin} onChange={handleChange} error={error} />
+          <PinPad value={pin} onChange={handleChange} error={!!error} />
 
-          {error && <p className="text-xs text-red-500 mt-4">Code PIN incorrect, réessayez.</p>}
+          {error && <p className="text-xs text-red-500 mt-4">{error}</p>}
 
           <button
             onClick={handleConfirm}

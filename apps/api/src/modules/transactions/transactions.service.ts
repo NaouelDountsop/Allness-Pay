@@ -9,6 +9,7 @@ import {
 } from './entities/wallet-transaction.entity';
 import { WalletsService } from '../wallet/wallet.service';
 import { PinService } from '../pin/pin.service';
+import { CurrencyService } from '../currency/currency.service';
 import { LinkedAccountOperator } from '../linked-account/enums/linked-account-operator.enum';
 import { TransferDto } from './dto/transfer.dto';
 
@@ -19,6 +20,7 @@ export class TransactionsService {
     private readonly dataSource: DataSource,
     private readonly walletsService: WalletsService,
     private readonly pinService: PinService,
+    private readonly currencyService: CurrencyService,
   ) {}
 
   /**
@@ -132,21 +134,29 @@ export class TransactionsService {
       this.walletsService.assertActive(toWallet);
       this.assertNotTontine(toWallet);
 
-      if (fromWallet.currency !== toWallet.currency) {
-        throw new BadRequestException(
-          'Transfert entre devises différentes non supporté pour le moment',
-        );
+      if (toWallet.userId === userId) {
+        throw new BadRequestException('Vous ne pouvez pas transférer vers votre propre wallet');
       }
 
-      const amount = BigInt(dto.amount);
-      if (fromWallet.balance < amount) {
+      const senderAmount = BigInt(dto.amount);
+      if (fromWallet.balance < senderAmount) {
         throw new BadRequestException('Solde insuffisant');
+      }
+
+      let receiverAmount = senderAmount;
+      if (fromWallet.currency !== toWallet.currency) {
+        const conversion = await this.currencyService.convertAmount(
+          Number(senderAmount),
+          fromWallet.currency,
+          toWallet.currency,
+        );
+        receiverAmount = BigInt(Math.round(conversion.amount));
       }
 
       const outEntry = manager.create(WalletTransaction, {
         walletId: fromId,
         type: WalletTransactionType.TRANSFER_OUT,
-        amount,
+        amount: senderAmount,
         relatedWalletId: toId,
         description: dto.description ?? `Transfert vers ${toId}`,
         reference: 'allnesspay',
@@ -154,7 +164,7 @@ export class TransactionsService {
       const inEntry = manager.create(WalletTransaction, {
         walletId: toId,
         type: WalletTransactionType.TRANSFER_IN,
-        amount,
+        amount: receiverAmount,
         relatedWalletId: fromId,
         description: dto.description ?? `Transfert depuis ${fromId}`,
         reference: 'allnesspay',

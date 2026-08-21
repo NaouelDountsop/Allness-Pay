@@ -65,4 +65,11 @@ export class WalletsController {
   activate(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.walletsService.activate(id, req.user.sub);
   }
+
+  @Get('validate/:walletNumber')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  validateByWalletNumber(@Req() req: AuthenticatedRequest, @Param('walletNumber') walletNumber: string) {
+    return this.walletsService.validateByWalletNumber(walletNumber, req.user.sub);
+  }
 }

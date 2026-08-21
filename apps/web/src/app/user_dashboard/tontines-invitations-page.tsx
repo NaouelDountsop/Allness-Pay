@@ -70,13 +70,14 @@ function InvitationCard({
   };
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 hover:shadow-sm transition-all">
+    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4 min-w-0 flex-1">
           <div className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-allness-orange" />
           </div>
           <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold text-gray-900 mb-1.5">{tontine?.name}</h3>
             {isPending && (
               <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
                 EN ATTENTE
@@ -97,7 +98,6 @@ function InvitationCard({
                 EXPIRÉE
               </span>
             )}
-            <h3 className="text-[15px] font-bold text-gray-900">{tontine?.name}</h3>
             <p className="text-xs text-allness-dark mt-0.5">
               Invité par : <span className="text-allness-orange"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>

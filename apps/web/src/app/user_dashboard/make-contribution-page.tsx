@@ -125,12 +125,16 @@ export default function MakeContributionPage() {
     setShowPinConfirm(true);
   };
 
-  const handlePinConfirm = async (pin: string): Promise<boolean> => {
+  const handlePinConfirm = async (pin: string): Promise<string | null> => {
     try {
       await contributionMutation.mutateAsync(pin);
-      return true;
-    } catch {
-      return false;
+      return null;
+    } catch (err: unknown) {
+      const axiosData = (err as { response?: { data?: { message?: string } } })?.response?.data;
+      const msg = axiosData?.message;
+      if (typeof msg === 'string' && msg.length > 0) return msg;
+      if (Array.isArray(msg) && msg.length > 0) return msg[0];
+      return 'Une erreur est survenue. Réessayez.';
     }
   };
 

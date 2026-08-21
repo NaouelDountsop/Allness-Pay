@@ -64,16 +64,21 @@ export function WalletBalanceCard({
     }
   };
 
-  const handlePinVerify = async (pin: string): Promise<boolean> => {
+  const handlePinVerify = async (pin: string): Promise<string | null> => {
     try {
       const ok = await pinService.verify(walletInternalId, pin);
       if (ok) {
         setPinModal(null);
         setVisible(true);
+        return null;
       }
-      return ok;
-    } catch {
-      return false;
+      return 'Code PIN incorrect.';
+    } catch (err: unknown) {
+      const axiosData = (err as { response?: { data?: { message?: string } } })?.response?.data;
+      const msg = axiosData?.message;
+      if (typeof msg === 'string' && msg.length > 0) return msg;
+      if (Array.isArray(msg) && msg.length > 0) return msg[0];
+      return 'Une erreur est survenue. Réessayez.';
     }
   };
 

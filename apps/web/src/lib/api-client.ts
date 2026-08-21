@@ -10,7 +10,7 @@ import axios, { type AxiosError, type AxiosInstance } from 'axios';
  * erreurs en un seul endroit.
  */
 
-const baseURL = import.meta.env.VITE_API_URL ?? 'http://192.168.1.158:3000/api/v1';
+const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL,

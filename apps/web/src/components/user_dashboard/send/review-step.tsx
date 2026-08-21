@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getExchangeRate, CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
+import { CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
 import { getCountryByCode, getFlagUrl } from '@/data/countries';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 import { Info, ArrowLeft, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -17,6 +17,7 @@ interface ReviewStepProps {
   countryCode: string;
   receptionMode: string;
   amount: number;
+  exchangeRate?: number | null;
   onSend: () => void;
   onBack: () => void;
   sender?: {
@@ -42,6 +43,7 @@ export function ReviewStep({
   countryCode,
   receptionMode,
   amount,
+  exchangeRate: dbRate,
   onSend,
   onBack,
   sender,
@@ -49,10 +51,10 @@ export function ReviewStep({
 }: ReviewStepProps) {
   const senderCurrency = sender?.currency ?? 'CAD';
   const receiverCurrency = COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF';
-  const exchangeRate = getExchangeRate(senderCurrency, receiverCurrency);
+  const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amount * 0.01;
   const totalDebit = amount + fees;
-  const received = amount * exchangeRate;
+  const received = exchangeRate ? amount * exchangeRate : 0;
 
   const senderCountry = getCountryByCode(senderCountryCode);
   const senderCountryName = senderCountry?.name ?? 'Expéditeur';
@@ -164,7 +166,9 @@ export function ReviewStep({
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Taux de change</span>
           <span className="text-allness-dark font-semibold">
-            1 {senderCurrency} = {exchangeRate.toFixed(4)} {receiverCurrency}
+            {exchangeRate
+              ? `1 ${senderCurrency} = ${exchangeRate.toFixed(4)} ${receiverCurrency}`
+              : 'Non disponible'}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">

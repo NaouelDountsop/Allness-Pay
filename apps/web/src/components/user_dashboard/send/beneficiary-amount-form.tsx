@@ -40,6 +40,9 @@ interface BeneficiaryAmountFormProps {
   sender?: SenderInfo;
   exchangeRate?: number | null;
   exchangeRateLoading?: boolean;
+  disabled?: boolean;
+  insufficientBalance?: string;
+  walletError?: string;
 }
 
 const RECEPTION_OPTIONS: {
@@ -120,13 +123,13 @@ function detectNetwork(digits: string, country: string): string | null {
   return null;
 }
 
-export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading }: BeneficiaryAmountFormProps) {
+export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError }: BeneficiaryAmountFormProps) {
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'XAF';
 
   const receiverCurrency = COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
 
-  const exchangeRate = dbRate ?? (senderCurrency === receiverCurrency ? 1 : null);
+  const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amountNumber * 0.01;
   const totalDebit = amountNumber + fees;
   const received = exchangeRate ? amountNumber * exchangeRate : 0;
@@ -261,7 +264,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
             <div>
               <div
                 className={`flex items-center w-full h-12 rounded-xl border bg-white overflow-hidden focus-within:ring-2 transition-colors ${
-                  showPhoneError
+                  showPhoneError || walletError
                     ? 'border-red-300 focus-within:border-red-400 focus-within:ring-red-200'
                     : isComplete
                       ? 'border-allness-green focus-within:ring-allness-green/30'
@@ -304,6 +307,12 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
                   </span>
                 </div>
               )}
+              {walletError && (
+                <div className="flex items-start gap-1.5 mt-1.5 text-xs text-red-600">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>{walletError}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -313,8 +322,12 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
       <div className="mb-4">
         <label className="text-sm font-medium text-gray-700 mb-2 block">Vous envoyez</label>
 
-        <div className="flex items-center rounded-2xl border-2 border-gray-200 bg-white overflow-hidden focus-within:border-allness-green transition-colors">
-          <Banknote className="w-5 h-5 text-allness-orange ml-4 shrink-0" />
+        <div className={`flex items-center rounded-2xl border-2 bg-white overflow-hidden transition-colors ${
+          insufficientBalance
+            ? 'border-red-300 focus-within:border-red-400'
+            : 'border-gray-200 focus-within:border-allness-green'
+        }`}>
+          <Banknote className={`w-5 h-5 ml-4 shrink-0 ${insufficientBalance ? 'text-red-400' : 'text-allness-orange'}`} />
           <input
             type="number"
             placeholder="0.00"
@@ -322,10 +335,18 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
             onChange={(e) => onChange('amount', e.target.value)}
             className="flex-1 h-16 min-w-0 px-3 text-xl sm:text-2xl font-semibold text-allness-dark bg-white focus:outline-none"
           />
-          <span className="px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold text-gray-500 border-l border-gray-100 bg-gray-50 shrink-0">
+          <span className={`px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold border-l border-gray-100 bg-gray-50 shrink-0 ${
+            insufficientBalance ? 'text-red-400' : 'text-gray-500'
+          }`}>
             {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
           </span>
         </div>
+        {insufficientBalance && (
+          <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5" />
+            {insufficientBalance}
+          </p>
+        )}
       </div>
 
       {/* Taux de change + frais */}
@@ -376,11 +397,11 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
       <button
         onClick={() => {
           setTouched(true);
-          if (canSubmit) {
+          if (canSubmit && !disabled) {
             onSubmit();
           }
         }}
-        disabled={!canSubmit}
+        disabled={!canSubmit || disabled}
         className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
       >
         Confirmer

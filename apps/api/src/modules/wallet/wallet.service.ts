@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
@@ -37,6 +38,14 @@ export class WalletsService {
         .setLock('pessimistic_write')
         .where('wallet.userId = :userId', { userId })
         .getMany();
+
+      const hasPersonal = existingWallets.some((w) => w.type === WalletType.PERSONAL);
+      if (hasPersonal) {
+        throw new ConflictException({
+          code: 'WALLET_EXISTS',
+          message: 'Vous ne pouvez avoir qu\'un seul portefeuille personnel.',
+        });
+      }
 
       const kyc = await manager.findOne(Kyc, { where: { userId } });
       const kycApproved = kyc?.status === KycStatus.APPROVED;
@@ -99,6 +108,36 @@ export class WalletsService {
       throw new NotFoundException(`Wallet ${walletNumber} introuvable`);
     }
     return wallet;
+  }
+
+  async validateByWalletNumber(walletNumber: string, userId?: number): Promise<{ valid: boolean; message?: string; ownerName?: string; currency?: string }> {
+    const wallet = await this.walletRepo.findOne({
+      where: { walletNumber },
+      select: ['id', 'status', 'type', 'currency', 'userId'],
+      relations: ['user'],
+    });
+
+    if (!wallet) {
+      return { valid: false, message: 'Wallet bénéficiaire introuvable.' };
+    }
+
+    if (wallet.status !== WalletStatus.ACTIVE) {
+      return { valid: false, message: `Ce wallet est ${wallet.status} et ne peut pas recevoir de fonds.` };
+    }
+
+    if (wallet.type === WalletType.TONTINE) {
+      return { valid: false, message: 'Les wallets tontine ne peuvent pas recevoir de transferts directs.' };
+    }
+
+    if (userId && wallet.userId === userId) {
+      return { valid: false, message: 'Vous ne pouvez pas transférer vers votre propre wallet.' };
+    }
+
+    const ownerName = wallet.user
+      ? `${wallet.user.prenom ?? ''} ${wallet.user.nom ?? ''}`.trim()
+      : undefined;
+
+    return { valid: true, ownerName, currency: wallet.currency };
   }
 
   async findOne(id: string, userId: number): Promise<Wallet> {
