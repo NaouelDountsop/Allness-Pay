@@ -10,7 +10,10 @@ export interface WalletTransaction {
   description: string | null;
   status: 'pending' | 'completed' | 'failed' | 'cancelled';
   provider: string | null;
+  operator: 'MTN_MOMO' | 'ORANGE_MONEY' | 'WAVE' | 'FREE_MONEY' | 'MOOV_MONEY' | 'AIRTEL_MONEY' | 'BANK_APP' | 'OTHER' | null;
   phoneNumber: string | null;
+  counterpartyName: string | null;
+  counterpartyPhone: string | null;
   createdAt: string;
 }
 
@@ -29,6 +32,17 @@ const TYPE_LABELS: Record<string, string> = {
   withdrawal: 'Retrait',
   transfer_in: 'Transfert reçu',
   transfer_out: 'Transfert envoyé',
+};
+
+const OPERATOR_LABELS: Record<string, string> = {
+  MTN_MOMO: 'MTN Mobile Money',
+  ORANGE_MONEY: 'Orange Money',
+  WAVE: 'Wave',
+  FREE_MONEY: 'Free Money',
+  MOOV_MONEY: 'Moov Money',
+  AIRTEL_MONEY: 'Airtel Money',
+  BANK_APP: 'Application Bancaire',
+  OTHER: 'Autre',
 };
 
 export interface TransferResult {
@@ -72,6 +86,8 @@ export const transactionService = {
   },
 
   getTypeLabel: (type: string): string => TYPE_LABELS[type] ?? type,
+
+  getOperatorLabel: (operator: string | null): string => operator ? (OPERATOR_LABELS[operator] ?? operator) : '',
 
   isCredit: (type: string): boolean => type === 'deposit' || type === 'transfer_in',
 };

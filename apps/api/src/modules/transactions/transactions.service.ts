@@ -177,13 +177,42 @@ export class TransactionsService {
     });
   }
 
-  async listByWallet(walletId: string): Promise<WalletTransaction[]> {
-    return this.dataSource
+  async listByWallet(walletId: string) {
+    const transactions = await this.dataSource
       .getRepository(WalletTransaction)
       .createQueryBuilder('wt')
+      .leftJoinAndSelect('wt.relatedWallet', 'relatedWallet')
+      .leftJoinAndSelect('relatedWallet.user', 'relatedUser')
       .where('wt.walletId = :walletId', { walletId })
       .orderBy('wt.createdAt', 'DESC')
       .getMany();
+
+    return transactions.map((t) => {
+      const plain = {
+        id: t.id,
+        walletId: t.walletId,
+        type: t.type,
+        amount: t.amount,
+        relatedWalletId: t.relatedWalletId,
+        reference: t.reference,
+        description: t.description,
+        status: t.status,
+        provider: t.provider,
+        operator: t.operator,
+        phoneNumber: t.phoneNumber,
+        createdAt: t.createdAt,
+        counterpartyName: null as string | null,
+        counterpartyPhone: null as string | null,
+      };
+
+      if (t.relatedWallet?.user) {
+        const user = t.relatedWallet.user as any;
+        plain.counterpartyName = [user.prenom, user.nom].filter(Boolean).join(' ') || null;
+        plain.counterpartyPhone = user.telephone ?? null;
+      }
+
+      return plain;
+    });
   }
 
   async getMonthlySummary(walletId: string) {

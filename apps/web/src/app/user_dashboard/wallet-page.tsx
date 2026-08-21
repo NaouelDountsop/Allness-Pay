@@ -16,7 +16,7 @@ import { transactionService } from '@/lib/api/transaction.service';
 import { campayService } from '@/lib/api/campay.service';
 import { kycService } from '@/lib/api/kyc.service';
 import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
-import { Plus, Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
 export default function WalletPage() {
   const { t } = useTranslation();
@@ -176,13 +176,13 @@ export default function WalletPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-allness-dark">Portefeuille</h1>
           <div className="flex items-center gap-3">
-            <button
+            {/* <button
               onClick={() => setCreateWalletOpen(true)}
               className="h-10 px-3 sm:px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Créer un portefeuille</span>
-            </button>
+            </button> */}
           </div>
         </div>
 

@@ -134,7 +134,7 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0 rounded-2xl bg-allness-dark px-3 sm:px-4 py-4 sm:py-5 flex flex-col items-center text-center gap-2">
                   <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-[#D28E2F]" />
                   <div>
-                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 tracking-wide">
+                    <p className="text-[10px] sm:text-[11px] text-[#D28E2F]/80 dark:text-[#E0A23B] tracking-wide">
                       ENTRÉES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
@@ -166,9 +166,13 @@ export default function DashboardPage() {
               contacts={beneficiaries.map((b) => ({
                 id: b.id,
                 name: b.name,
+                phone: b.phone,
+                network: b.network,
+                country: b.country,
                 avatarUrl: null,
               }))}
               walletId={wallet?.id}
+              walletNumber={wallet?.walletNumber}
               isLoading={beneficiariesLoading}
             />
             {!summaryLoading && monthlySummary && (

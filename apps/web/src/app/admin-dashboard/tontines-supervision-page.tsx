@@ -12,7 +12,7 @@ import {
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Tabs, Badge } from '../../components/ui';
 import { Pagination } from '../../components/ui/pagination';
-import { TableActions } from '../../components/common/table-actions';
+//import { TableActions } from '../../components/common/table-actions';
 import { adminService } from '../../lib/api/admin.service';
 
 const PAGE_SIZE = 10;
@@ -45,7 +45,7 @@ export default function TontinesSupervisionPage() {
   const isLoading = loadingTontines;
 
   const filteredTontines = tab === 'Alertes Actives'
-    ? tontines?.filter((t) => t.status === 'pending' || Number(t.contributionAmount) * t.memberLimit > 1000000) ?? []
+    ? tontines?.filter((t) => t.status === 'DRAFT' || Number(t.contributionAmount) * t.memberLimit > 1000000) ?? []
     : tontines ?? [];
 
   const totalPages = Math.ceil(filteredTontines.length / PAGE_SIZE);

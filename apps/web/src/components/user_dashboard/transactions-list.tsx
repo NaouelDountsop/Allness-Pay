@@ -14,7 +14,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
     return (
       <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#082B37]">Dernières transactions</h3>
+          <h3 className="text-sm font-semibold text-[#082B37]" >Dernières transactions</h3>
           <a
             href="/dashboard/transactions"
             className="text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
@@ -32,7 +32,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
   return (
     <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#082B37]">Dernières transactions</h3>
+        <h3 className="text-sm font-semibold text-[#082B37] dark:text-white/90">Dernières transactions</h3>
         <a
           href="/dashboard/transactions"
           className="text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
@@ -74,11 +74,11 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-[#082B37] font-medium truncate">
+                    <p className="text-sm text-[#082B37] dark:text-white/90font-medium truncate">
                       {transactionService.getTypeLabel(t.type)}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-medium bg-[#082B37]/10 text-[#082B37] px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] dark:text-white/90font-medium bg-[#082B37]/10 text-[#082B37] px-1.5 py-0.5 rounded">
                         {t.reference || '—'}
                       </span>
                       <p className="text-xs text-[#D28E2F]">

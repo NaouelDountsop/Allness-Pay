@@ -67,8 +67,8 @@ export class TontineController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtenir une tontine par ID' })
   @ApiParam({ name: 'id', type: String })
-  findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
-    return this.tontineService.findOne(id, req.user.sub);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.tontineService.findOne(id);
   }
 
   @Patch(':id')
@@ -177,6 +177,17 @@ export class TontineController {
     @Body() dto: CreateInvitationDto,
   ) {
     return this.invitationService.create(id, req.user.sub, dto);
+  }
+
+  @Patch(':id/members/reorder')
+  @ApiOperation({ summary: "Réordonner l'ordre de passage des membres" })
+  @ApiParam({ name: 'id', type: String })
+  reorderMembers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body('memberIds') memberIds: string[],
+  ) {
+    return this.tontineService.reorderMembers(id, req.user.sub, memberIds);
   }
 
   @Get(':id/invitations')

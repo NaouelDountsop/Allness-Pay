@@ -241,7 +241,7 @@ export default function UsersListPage() {
 
         <Pagination
           page={page}
-          totalPages={Math.ceil((users?.length ?? 0) / 10)}
+          totalPages={totalPages}
           onChange={setPage}
         />
       </div>

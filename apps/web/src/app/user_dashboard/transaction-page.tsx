@@ -40,9 +40,13 @@ export default function TransactionsPage() {
   });
 
   const filtered = transactions?.filter((t) => {
+    const query = search.toLowerCase();
     const matchesSearch =
-      (t.reference ?? '').toLowerCase().includes(search.toLowerCase()) ||
-      transactionService.getTypeLabel(t.type).toLowerCase().includes(search.toLowerCase());
+      (t.reference ?? '').toLowerCase().includes(query) ||
+      transactionService.getTypeLabel(t.type).toLowerCase().includes(query) ||
+      (t.counterpartyName ?? '').toLowerCase().includes(query) ||
+      (t.phoneNumber ?? '').toLowerCase().includes(query) ||
+      transactionService.getOperatorLabel(t.operator).toLowerCase().includes(query);
     const matchesType = typeFilter === 'all' || t.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
     return matchesSearch && matchesType && matchesStatus;
@@ -200,13 +204,14 @@ export default function TransactionsPage() {
           </div>
 
           <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-            <table className="w-full text-sm min-w-[480px]">
+            <table className="w-full text-sm min-w-[540px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
                   <th className="font-medium pb-3">Référence</th>
                   <th className="font-medium pb-3 hidden sm:table-cell">Type</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">Personne</th>
                   <th className="font-medium pb-3">Montant</th>
-                  <th className="font-medium pb-3 hidden md:table-cell">Statut</th>
+                  <th className="font-medium pb-3 hidden lg:table-cell">Statut</th>
                   <th className="font-medium pb-3 hidden lg:table-cell">Date</th>
                   <th className="font-medium pb-3 text-right">Actions</th>
                 </tr>
@@ -215,6 +220,13 @@ export default function TransactionsPage() {
                 {paginated?.map((t) => {
                   const credit = transactionService.isCredit(t.type);
                   const isCompleted = t.status === 'completed';
+                  const personName = credit
+                    ? (t.type === 'deposit'
+                        ? transactionService.getOperatorLabel(t.operator) || 'Dépôt externe'
+                        : t.counterpartyName ?? 'Expéditeur')
+                    : (t.type === 'withdrawal'
+                        ? transactionService.getOperatorLabel(t.operator) || 'Retrait externe'
+                        : t.counterpartyName ?? 'Bénéficiaire');
                   return (
                     <tr key={t.id} className="border-b border-gray-50 last:border-0">
                       <td className="py-3.5">
@@ -223,14 +235,17 @@ export default function TransactionsPage() {
                       <td className="text-xs text-gray-600 hidden sm:table-cell">
                         {transactionService.getTypeLabel(t.type)}
                       </td>
+                      <td className="text-xs text-gray-600 hidden md:table-cell truncate max-w-[120px]">
+                        {personName}
+                      </td>
                       <td
                         className={`text-xs font-medium ${
-                          t.status === 'failed' ? 'text-red-500' : credit ? 'text-allness-green' : 'text-red-500'
+                          t.status === 'failed' ? 'text-gray-700' : credit ? 'text-allness-green' : 'text-red-500'
                         }`}
                       >
                         {isCompleted ? (credit ? '+' : '-') : ''} {new Intl.NumberFormat('fr-FR').format(t.amount)} XAF
                       </td>
-                      <td className="hidden md:table-cell">
+                      <td className="hidden lg:table-cell">
                         <Badge
                           tone={
                             t.status === 'completed'

@@ -11,7 +11,7 @@ function DashboardLayoutInner({ children }: { children: ReactNode }) {
   const content = childArray.slice(1);
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-50">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-[#F8FAFB] dark:bg-[#071418]">
       <Sidebar />
 
       {/* Mobile sidebar overlay */}

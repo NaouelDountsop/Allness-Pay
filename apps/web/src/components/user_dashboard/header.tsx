@@ -1,23 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff, Menu } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Bell, HelpCircle, ChevronDown, User, Settings, LogOut, X, BellOff, Menu, Globe, Moon, Sun } from 'lucide-react';
 import { userService } from '@/lib/api/user.service';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { getFlagUrl, getCountryCodeByName } from '@/data/countries';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
-//import { usePreferences } from '@/hooks/use-preferences';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useSidebar } from '@/components/user_dashboard/sidebar-context';
 
 export function DashboardHeader() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  //const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
+  const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
   const { toggleSidebar } = useSidebar();
 
   const { data: user } = useQuery({
@@ -42,7 +44,7 @@ export function DashboardHeader() {
   const hasNotifications = notifications.length > 0;
   const firstName = user?.prenom ?? '';
   const userName = user ? `${firstName} ${user.nom}` : '';
-  const memberLabel = user?.profession || 'Membre';
+  const memberLabel = user?.profession || t('header.member');
   const paysValue = user?.pays ?? '';
   const countryCode = paysValue.length === 2 ? paysValue : getCountryCodeByName(paysValue) ?? '';
   const countryFlag = countryCode ? getFlagUrl(countryCode) : null;
@@ -74,24 +76,24 @@ export function DashboardHeader() {
   return (
     <header
       className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-white border-b border-gray-100 shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
+      bg-white dark:bg-[#08191E] border-b border-gray-100 dark:border-[#18353B] shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={toggleSidebar}
-          className="md:hidden text-allness-dark hover:text-allness-orange flex items-center justify-center w-8 h-8"
+          className="md:hidden text-[#082B37] dark:text-[#F1F5F5] hover:text-[#D28E2F] flex items-center justify-center w-8 h-8"
           aria-label="Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="text-sm sm:text-lg font-semibold text-allness-dark flex items-center gap-2 truncate">
-          Bonjour, {firstName}
+        <h1 className="text-sm sm:text-lg font-semibold text-[#082B37] dark:text-[#F1F5F5] flex items-center gap-2 truncate">
+          {t('header.greeting')}, {firstName}
         </h1>
         {countryFlag && (
           <img
             src={countryFlag}
             alt={user?.pays ?? ''}
-            className="w-7 h-5 rounded object-cover border border-gray-200"
+            className="w-7 h-5 rounded object-cover border border-brand-border dark:border-brand-border"
           />
         )}
       </div>
@@ -101,39 +103,39 @@ export function DashboardHeader() {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8"
-            aria-label="Notifications"
+            className="relative text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8"
+            aria-label={t('header.notifications')}
           >
             <Bell className="w-5 h-5" />
             {hasNotifications && (
-              <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+              <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-brand-red rounded-full border-2 border-brand-header dark:border-brand-header" />
             )}
           </button>
 
           {notifOpen && (
             <>
               <div className="fixed inset-0 bg-black/20 z-40 md:hidden" onClick={() => setNotifOpen(false)} />
-              <div className="fixed bottom-0 left-0 right-0 z-50 md:absolute md:right-0 md:top-full md:bottom-auto md:left-auto md:mt-2 w-auto md:w-80 bg-white md:rounded-2xl rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden max-h-[70vh] md:max-h-80">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-allness-dark">Notifications</p>
-                  <button onClick={() => setNotifOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <div className="fixed bottom-0 left-0 right-0 z-50 md:absolute md:right-0 md:top-full md:bottom-auto md:left-auto md:mt-2 w-auto md:w-80 bg-brand-header dark:bg-brand-header md:rounded-2xl rounded-t-2xl shadow-lg border border-brand-border dark:border-brand-border overflow-hidden max-h-[70vh] md:max-h-80">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border dark:border-brand-border">
+                  <p className="text-sm font-semibold text-brand-text dark:text-brand-text">{t('header.notifications')}</p>
+                  <button onClick={() => setNotifOpen(false)} className="text-brand-text-secondary dark:text-brand-text-secondary hover:text-brand-text dark:hover:text-brand-text">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="overflow-y-auto max-h-[calc(70vh-52px)] md:max-h-[268px]">
                   {hasNotifications ? (
                     notifications.map((n: { id: string; title: string; message: string }) => (
-                      <div key={n.id} className="px-4 py-3 border-b border-gray-50 last:border-0">
-                        <p className="text-sm font-medium text-allness-dark">{n.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{n.message}</p>
+                      <div key={n.id} className="px-4 py-3 border-b border-brand-border/50 dark:border-brand-border/50 last:border-0">
+                        <p className="text-sm font-medium text-brand-text dark:text-brand-text">{n.title}</p>
+                        <p className="text-xs text-brand-text-secondary dark:text-brand-text-secondary mt-0.5">{n.message}</p>
                       </div>
                     ))
                   ) : (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
-                      <BellOff className="w-10 h-10 text-gray-200 mb-3" />
-                      <p className="text-sm font-medium text-gray-500">Aucune notification</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Vous serez notifié des nouvelles activités.
+                      <BellOff className="w-10 h-10 text-brand-text-disabled dark:text-brand-text-disabled mb-3" />
+                      <p className="text-sm font-medium text-brand-text-secondary dark:text-brand-text-secondary">{t('header.noNotifications')}</p>
+                      <p className="text-xs text-brand-text-disabled dark:text-brand-text-disabled mt-1">
+                        {t('header.noNotificationsHint')}
                       </p>
                     </div>
                   )}
@@ -143,35 +145,36 @@ export function DashboardHeader() {
           )}
         </div>
 
-        <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
-          <HelpCircle className="w-5 h-5" />
-        </button>
+        
 
         {/* Desktop: profil statique */}
         <div className="hidden md:flex items-center gap-2">
-          {/* <button
+          <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-brand-orange hover:bg-brand-hover dark:hover:bg-brand-hover transition-colors"
             title={langLabel === 'FR' ? 'English' : 'Français'}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-5 h-5" />
             {langLabel}
           </button>
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-brand-orange hover:bg-brand-hover dark:hover:bg-brand-hover transition-colors"
             title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
           >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </button> */}
-          <div className="w-8 h-8 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </button>
+          <button className="text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8" aria-label={t('header.help')}>
+          <HelpCircle className="w-5 h-5" />
+        </button>
+          <div className="w-8 h-8 rounded-full bg-brand-sidebar dark:bg-brand-sidebar overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {userName.charAt(0)}
           </div>
           <div className="text-right">
             <div className="flex items-center gap-1.5 justify-end">
-              <p className="text-sm font-medium text-allness-dark leading-tight">{userName}</p>
+              <p className="text-sm font-medium text-brand-text dark:text-brand-text leading-tight">{userName}</p>
             </div>
-            <p className="text-xs text-gray-500 leading-tight">{memberLabel}</p>
+            <p className="text-xs text-brand-text-secondary dark:text-brand-text-secondary leading-tight">{memberLabel}</p>
           </div>
         </div>
 
@@ -179,21 +182,21 @@ export function DashboardHeader() {
         <div className="relative md:hidden" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 hover:bg-gray-50 rounded-xl p-1 transition-colors"
+            className="flex items-center gap-2 hover:bg-brand-hover dark:hover:bg-brand-hover rounded-xl p-1 transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+            <div className="w-7 h-7 rounded-full bg-brand-sidebar dark:bg-brand-sidebar overflow-hidden flex items-center justify-center text-xs font-medium text-white">
               {userName.charAt(0)}
             </div>
             <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-brand-text-secondary dark:text-brand-text-secondary transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 py-2 z-50">
-              <div className="px-4 py-3 border-b border-gray-100">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-brand-header dark:bg-brand-header rounded-2xl shadow-lg border border-brand-border dark:border-brand-border py-2 z-50">
+              <div className="px-4 py-3 border-b border-brand-border dark:border-brand-border">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-allness-dark">{userName}</p>
+                  <p className="text-sm font-semibold text-brand-text dark:text-brand-text">{userName}</p>
                   {countryFlag && (
                     <img
                       src={countryFlag}
@@ -202,38 +205,38 @@ export function DashboardHeader() {
                     />
                   )}
                 </div>
-                <p className="text-xs text-gray-500">{user?.email}</p>
+                <p className="text-xs text-brand-text-secondary dark:text-brand-text-secondary">{user?.email}</p>
               </div>
               <button
                 onClick={() => {
                   setDropdownOpen(false);
                   navigate('/dashboard/profile');
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-brand-text dark:text-brand-text hover:bg-brand-hover dark:hover:bg-brand-hover transition-colors"
               >
-                <User className="w-4 h-4 text-gray-400" />
-                Profil
+                <User className="w-4 h-4 text-brand-text-secondary dark:text-brand-text-secondary" />
+                {t('header.profile')}
               </button>
               <button
                 onClick={() => {
                   setDropdownOpen(false);
                   navigate('/dashboard/settings');
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-brand-text dark:text-brand-text hover:bg-brand-hover dark:hover:bg-brand-hover transition-colors"
               >
-                <Settings className="w-4 h-4 text-gray-400" />
-                Paramètres
+                <Settings className="w-4 h-4 text-brand-text-secondary dark:text-brand-text-secondary" />
+                {t('header.settings')}
               </button>
-              <div className="border-t border-gray-100 mt-1 pt-1">
+              <div className="border-t border-brand-border dark:border-brand-border mt-1 pt-1">
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
                     setLogoutOpen(true);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-brand-red hover:bg-brand-bg-red-light dark:hover:bg-brand-bg-red-light transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                  Se déconnecter
+                  {t('header.logout')}
                 </button>
               </div>
             </div>
@@ -244,10 +247,10 @@ export function DashboardHeader() {
       <ConfirmDialog
         open={logoutOpen}
         onOpenChange={setLogoutOpen}
-        title="Se déconnecter"
-        description="Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
-        confirmLabel="Se déconnecter"
-        cancelLabel="Rester"
+        title={t('header.logoutTitle')}
+        description={t('header.logoutDescription')}
+        confirmLabel={t('header.logoutConfirm')}
+        cancelLabel={t('header.logoutCancel')}
         variant="danger"
         onConfirm={handleLogout}
       />

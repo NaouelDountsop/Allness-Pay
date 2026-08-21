@@ -5,7 +5,6 @@ import {
   ShieldCheck,
   ShieldAlert,
   RotateCcw,
-  Eye,
   AlertTriangle,
   Download,
   Loader2,
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge, Pagination } from '../../components/ui';
+import { TableActions } from '../../components/common/table-actions';
 import { TransactionDetailModal } from './TransactionDetailModal';
 import { adminService, type AdminTransaction } from '../../lib/api/admin.service';
 
@@ -246,13 +246,11 @@ export default function AdminTransactionsPage() {
                         {formatDateTime(t.createdAt)}
                       </td>
                       <td className="text-right">
-                        <button
-                          onClick={() => setSelected(t)}
-                          className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark ml-auto"
-                          aria-label="Voir"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center justify-end">
+                          <TableActions
+                            onView={() => setSelected(t)}
+                          />
+                        </div>
                       </td>
                     </tr>
                   );

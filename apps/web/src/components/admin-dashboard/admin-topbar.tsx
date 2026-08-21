@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, HelpCircle, ChevronDown, LogOut, Menu } from 'lucide-react';
+import { Bell, HelpCircle, ChevronDown, LogOut, Menu, Globe, Moon, Sun } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
-//import { usePreferences } from '@/hooks/use-preferences';
+import { usePreferences } from '@/hooks/use-preferences';
 
 interface AdminProfile {
   idutilisateur: number;
@@ -28,7 +28,7 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  //const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
+  const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
 
   const { data: admin } = useQuery({
     queryKey: ['admin-profile'],
@@ -102,27 +102,28 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           </button>
         </div>
 
-        <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
-          <HelpCircle className="w-5 h-5" />
-        </button>
+      
 
         {/* Desktop: profil statique */}
         <div className="hidden md:flex items-center gap-2">
-          {/* <button
+          <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-allness-orange hover:bg-gray-100 transition-colors"
             title={langLabel === 'FR' ? 'English' : 'Français'}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-5 h-5" />
             {langLabel}
           </button>
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-allness-orange hover:bg-gray-100 transition-colors"
             title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
           >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </button> */}
+            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-4 h-4" />}
+          </button>
+            <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
+          <HelpCircle className="w-5 h-5" />
+        </button>
           <div className="w-8 h-8 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {initials}
           </div>

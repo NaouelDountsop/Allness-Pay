@@ -14,7 +14,7 @@ import {
   HelpCircle,
   Shield,
   Lock,
-  Eye,
+  Coins,
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -53,7 +53,7 @@ function InvitationCard({
   isAccepting: boolean;
   isDeclining: boolean;
 }) {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const { data: tontine } = useQuery({
     queryKey: ['tontine', invitation.tontineId],
     queryFn: () => tontineService.getById(invitation.tontineId),
@@ -100,7 +100,7 @@ function InvitationCard({
             )}
             <h3 className="text-sm font-semibold text-gray-900">{tontine?.name }</h3>
             <p className="text-xs text-allness-dark mt-0.5">
-              Invité par : <span className="text-allness-orange"> <InvitationUser userId={invitation.inviterUserId} /> </span>
+              Invité par : <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
             {tontine && (
               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
@@ -113,7 +113,8 @@ function InvitationCard({
                   {frequencyMap[tontine.frequency] ?? tontine.frequency}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="font-medium text-allness-dark">
+                  <Coins className="w-3.5 h-3.5" />
+                  <span className="font-medium text-gray-700">
                     {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
                     {tontine.currency ?? 'XAF'}
                   </span>
@@ -141,13 +142,13 @@ function InvitationCard({
           </div>
         </div>
         <div className="flex flex-col gap-2 shrink-0">
-          <button
+          {/* <button
             onClick={() => navigate(`/dashboard/tontines/${invitation.tontineId}`)}
             className="h-8 px-3 rounded-lg border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-colors inline-flex items-center gap-1"
           >
             <Eye className="w-3.5 h-3.5" />
             Voir les détails
-          </button>
+          </button> */}
           {isPending && (
             <>
               <button
@@ -246,28 +247,25 @@ export default function TontinesInvitationsPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="max-w-6xl mx-auto">
+      <div className=" mx-auto">
         {/* Back button */}
-       
+
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="mb-6">
               <h1 className="text-2xl font-semibold text-allness-dark">
-                
-                 <button
-          onClick={() => navigate('/dashboard/tontines')}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-allness-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          
-        </button>Invitations aux tontines</h1>
+
+                <button
+                onClick={() => navigate('/dashboard/tontines')}
+                className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  Invitations aux tontines
+                </button>
+              </h1>
               <p className="text-sm text-gray-500 mt-1">
-                {pending.length > 0
-                  ? `Vous avez ${pending.length} invitation${pending.length > 1 ? 's' : ''} en attente.`
-                  : "Vous n'avez aucune invitation en attente."}
-                <br />
                 Rejoignez une tontine ou consultez les détails avant de décider.
               </p>
             </div>

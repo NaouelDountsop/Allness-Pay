@@ -1,4 +1,4 @@
-import { X, Pencil, Trash2, Eye } from 'lucide-react';
+import { X, Pencil, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 export interface ActionPopupField {
