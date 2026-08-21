@@ -180,6 +180,17 @@ findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.invitationService.create(id, req.user.sub, dto);
   }
 
+  @Patch(':id/members/reorder')
+  @ApiOperation({ summary: "Réordonner l'ordre de passage des membres" })
+  @ApiParam({ name: 'id', type: String })
+  reorderMembers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body('memberIds') memberIds: string[],
+  ) {
+    return this.tontineService.reorderMembers(id, req.user.sub, memberIds);
+  }
+
   @Get(':id/invitations')
   @ApiOperation({ summary: "Lister les invitations d'une tontine" })
   @ApiParam({ name: 'id', type: String })

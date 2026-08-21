@@ -238,6 +238,28 @@ export class TontineService {
     return member;
   }
 
+  async reorderMembers(tontineId: string, userId: number, memberIds: string[]): Promise<TontineMember[]> {
+    const tontine = await this.findOne(tontineId, userId);
+    this.assertAdmin(tontine, userId);
+
+    const activeMembers = tontine.members.filter((m) => m.status === TontineMemberStatus.ACTIVE);
+    const activeIds = new Set(activeMembers.map((m) => m.id));
+
+    const validIds = memberIds.filter((id) => activeIds.has(id));
+    if (validIds.length !== activeMembers.length) {
+      throw new BadRequestException("La liste des membres ne correspond pas aux membres actifs");
+    }
+
+    for (let i = 0; i < validIds.length; i++) {
+      await this.memberRepo.update(validIds[i], { beneficiaryOrder: i + 1 });
+    }
+
+    return this.memberRepo.find({
+      where: { tontineId, status: TontineMemberStatus.ACTIVE },
+      order: { beneficiaryOrder: 'ASC' },
+    });
+  }
+
   private assertMembership(tontine: Tontine, userId: number): void {
     const isMember = tontine.members?.some((m) => m.userId === userId);
     if (!isMember) {

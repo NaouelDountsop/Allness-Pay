@@ -172,13 +172,12 @@ export default function TontineDetailPage() {
           onAddMember={() => setInviteOpen(true)}
         />
 
-        {inviteOpen && (
-          <InviteMemberModal
-            tontineId={tontine.id}
-            tontineName={tontine.name}
-            onClose={() => setInviteOpen(false)}
-          />
-        )}
+        <InviteMemberModal
+          open={inviteOpen}
+          onOpenChange={setInviteOpen}
+          tontineId={tontine.id}
+          tontineName={tontine.name}
+        />
 
         <button
           aria-label="Support"

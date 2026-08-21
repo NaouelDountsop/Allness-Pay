@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Store, UserCheck, Clock, Coins, Plus, RotateCcw, Eye } from 'lucide-react';
+import { Store, UserCheck, Clock, Coins, Plus, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge, Pagination } from '../../components/ui';
+import { TableActions } from '../../components/common/table-actions';
 
 const MERCHANTS = [
   {
@@ -45,6 +46,10 @@ export default function MerchantsListPage() {
     const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
     return matchesCategory && matchesStatus;
   });
+
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <AdminLayout active="marchands">
@@ -154,7 +159,7 @@ export default function MerchantsListPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((m) => (
+              {paginated.map((m) => (
                 <tr key={m.name} className="border-b border-gray-50 last:border-0">
                   <td className="py-3.5">
                     <div className="flex items-center gap-2.5">
@@ -174,13 +179,13 @@ export default function MerchantsListPage() {
                     </Badge>
                   </td>
                   <td className="text-right">
-                    <button
-                      onClick={() => navigate('/admin/marchands/1')}
-                      className="w-7 h-7 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark ml-auto"
-                      aria-label="Voir"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center justify-end">
+                      <TableActions
+                        onView={() => navigate('/admin/marchands/1')}
+                        onEdit={() => navigate('/admin/marchands/1')}
+                        onDelete={() => {/* TODO: delete merchant */}}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -188,7 +193,7 @@ export default function MerchantsListPage() {
           </table>
         </div>
 
-        <Pagination page={page} totalPages={5} onChange={setPage} />
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
     </AdminLayout>
   );

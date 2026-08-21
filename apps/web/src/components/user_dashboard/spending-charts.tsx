@@ -53,9 +53,9 @@ export function MonthlySummary({
 }: MonthlySummaryProps) {
   const arrowId = useId();
 
-  const { seriesPaths, gridY, gridX, axisX, axisY, xEnd, yEnd } = useMemo(() => {
+  const { seriesPaths, gridY, gridX, axisX, axisY, xEnd, yEnd, tickLabels, yTickLabels } = useMemo(() => {
     if (data.length === 0) {
-      return { seriesPaths: [], gridY: [], gridX: [], axisX: 0, axisY: 0, xEnd: 0, yEnd: 0 };
+      return { seriesPaths: [], gridY: [], gridX: [], axisX: 0, axisY: 0, xEnd: 0, yEnd: 0, tickLabels: [], yTickLabels: [] };
     }
 
     const allValues = data.flatMap((d) => SERIES.map((s) => d[s.key]));
@@ -75,10 +75,14 @@ export function MonthlySummary({
       return { key: s.key, color: s.color, path: buildLinePath(pts) };
     });
 
-    // Grille horizontale (fond)
     const gridY = [0.25, 0.5, 0.75, 1].map((t) => PAD_TOP + innerH * t);
-    // Grille verticale, alignée sur chaque point de donnée
     const gridX = data.map((_, i) => xFor(i));
+
+    const tickLabels = data.map((d, i) => ({ x: xFor(i), label: d.label }));
+    const yTickLabels = [0, 0.25, 0.5, 0.75, 1].map((t) => ({
+      y: PAD_TOP + innerH * t,
+      label: Math.round(min + span * (1 - t)).toLocaleString('fr-FR'),
+    }));
 
     return {
       seriesPaths,
@@ -88,6 +92,8 @@ export function MonthlySummary({
       axisY: VIEW_H - PAD_BOTTOM,
       xEnd: VIEW_W - PAD_RIGHT + 6,
       yEnd: PAD_TOP - 8,
+      tickLabels,
+      yTickLabels,
     };
   }, [data]);
 
@@ -143,6 +149,20 @@ export function MonthlySummary({
           />
         ))}
 
+        {/* Labels Y (valeurs) */}
+        {yTickLabels.map((t, i) => (
+          <text
+            key={`yl-${i}`}
+            x={axisX - 4}
+            y={t.y + 3}
+            textAnchor="end"
+            fontSize={9}
+            fill="#9CA3AF"
+          >
+            {t.label}
+          </text>
+        ))}
+
         {/* Grille de fond verticale, alignée sur chaque point */}
         {gridX.map((x, i) => (
           <line
@@ -196,6 +216,17 @@ export function MonthlySummary({
         )}
       </svg>
 
+      {/* Labels des mois sous le graphique */}
+      {tickLabels.length > 0 && (
+        <div className="flex justify-between px-[18px] mt-1 mb-2">
+          {tickLabels.map((t, i) => (
+            <span key={i} className="text-[10px] text-gray-400">
+              {t.label}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Légende */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-[11px]">
         {SERIES.map((s) => (
@@ -214,9 +245,39 @@ export function MonthlySummary({
         <span className="text-gray-400 font-semibold">-{expensePercent}%</span>
       </div>
 
-      <p className="text-sm font-semibold text-gray-800 mt-3">
+      <p className="text-sm font-semibold text-gray-800 mt-3 mb-4">
         {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
       </p>
+
+      {/* Tableau vertical des données */}
+      {data.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full text-[11px]">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-1.5 font-medium text-gray-400">Mois</th>
+                {SERIES.map((s) => (
+                  <th key={s.key} className="text-right py-1.5 font-medium text-gray-400">
+                    {s.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((d, i) => (
+                <tr key={i} className="border-b border-gray-50">
+                  <td className="py-1.5 font-medium text-gray-600">{d.label}</td>
+                  {SERIES.map((s) => (
+                    <td key={s.key} className="text-right py-1.5 text-gray-700">
+                      {new Intl.NumberFormat('fr-FR').format(d[s.key])}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

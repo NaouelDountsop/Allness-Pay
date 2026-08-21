@@ -1,27 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Send, Plus, ChevronDown, Check } from 'lucide-react';
+import { Send, Plus, ChevronDown, Check, CheckCircle2 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { transactionService } from '@/lib/api/transaction.service';
+import { PinConfirmModal } from './send/pin-confirm-modal';
 
 interface QuickSendContact {
   id: string | number;
   name: string;
+  phone: string;
+  network: string;
+  country: string;
   avatarUrl?: string | null;
 }
 
 interface QuickSendProps {
   contacts: QuickSendContact[];
   walletId?: string;
+  walletNumber?: string;
   isLoading?: boolean;
 }
 
 const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
 
-export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
-  const navigate = useNavigate();
+export function QuickSend({ contacts, walletId, walletNumber, isLoading }: QuickSendProps) {
+  const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [open, setOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<QuickSendContact | null>(null);
+  const [showPin, setShowPin] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,29 +43,85 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const transferMutation = useMutation({
+    mutationFn: () =>
+      transactionService.campayWithdraw({
+        walletNumber: walletNumber ?? '',
+        amount,
+        phone_number: selectedContact!.phone,
+        description: `Envoi rapide vers ${selectedContact!.name}`,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-primary'] });
+      setSuccess(true);
+      setError('');
+      setShowPin(false);
+    },
+    onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
+      const msg = err.response?.data?.message ?? err.message ?? '';
+      if (msg.includes('Solde insuffisant') || msg.includes('insufficient') || msg.includes('insuffisant')) {
+        setError('Solde insuffisant');
+      } else {
+        setError(msg || 'Erreur lors du transfert');
+      }
+      setShowPin(false);
+    },
+  });
+
   const handleSend = () => {
     if (!selectedContact || !amount || !walletId) return;
-    const params = new URLSearchParams({
-      name: selectedContact.name,
-      amount,
-      currency: currency ?? 'USD',
-    });
-    navigate(`/dashboard/send?${params.toString()}`);
+    setError('');
+    setShowPin(true);
   };
+
+  const handlePinConfirm = async (_pin: string): Promise<boolean> => {
+    try {
+      await transferMutation.mutateAsync();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
+        <div className="flex flex-col items-center text-center py-6">
+          <span className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
+            <CheckCircle2 className="w-6 h-6 text-allness-green" />
+          </span>
+          <p className="text-sm font-semibold text-gray-900 mb-1">Transfert envoyé</p>
+          <p className="text-xs text-gray-500 mb-4">
+            {amount} {currency} envoyés à {selectedContact?.name}
+          </p>
+          <button
+            onClick={() => {
+              setSuccess(false);
+              setAmount('');
+              setSelectedContact(null);
+            }}
+            className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90"
+          >
+            Nouveau transfert
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
       <div className="flex items-center justify-between gap-2 mb-4">
-        <h3 className="text-sm font-semibold text-[#082B37]">Envoi rapide</h3>
+        <h3 className="text-sm font-semibold text-[#082B37] dark:text-white/90">Envoi rapide</h3>
         <a
           href="/dashboard/beneficiaries"
-          className="shrink-0 whitespace-nowrap text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
+          className="shrink-0 whitespace-nowrap text-xs text-[#D28E2F]  font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
         >
           Voir tout
         </a>
       </div>
 
-      {/* Contacts: scroll horizontal sur petits écrans au lieu de déborder ou de s'écraser */}
       <div className="flex gap-3 mb-5 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
         {isLoading ? (
           <div className="flex gap-3">
@@ -78,7 +143,7 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
                   selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
                 }`}
               >
-                <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
+                <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 dark:bg-white/80 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
                   selectedContact?.id === c.id ? 'ring-[#D28E2F]' : 'ring-transparent group-hover:ring-[#D28E2F]/50'
                 } transition-all`}>
                   {c.avatarUrl ? (
@@ -87,14 +152,14 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
                     c.name.charAt(0)
                   )}
                 </div>
-                <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">{c.name}</span>
+                <span className="text-[11px] text-[#082B37]/60 dark:text-white max-w-[52px] truncate">{c.name}</span>
               </button>
             ))}
             <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
               <button
                 type="button"
                 aria-label="Ajouter un bénéficiaire"
-                onClick={() => navigate('/dashboard/beneficiaries')}
+                onClick={() => { window.location.href = '/dashboard/beneficiaries'; }}
                 className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
               >
                 <Plus className="w-4 h-4" />
@@ -105,15 +170,27 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
         )}
       </div>
 
-      {/* Montant + devise: min-w-0 empêche l'input de forcer un débordement horizontal,
-          et le tout passe sur deux lignes plutôt que d'être coupé en dessous de ~340px */}
+      {selectedContact && (
+        <div className="mb-3 p-2.5 rounded-lg bg-gray-50 border border-gray-100">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#082B37]/10 flex items-center justify-center text-[10px] font-medium text-[#082B37]">
+              {selectedContact.name.charAt(0)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-800 truncate">{selectedContact.name}</p>
+              <p className="text-[10px] text-gray-400">{selectedContact.phone} · {selectedContact.network}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 mb-3">
         <input
           type="number"
           placeholder="Entrez le montant"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="flex-1 min-w-[140px] h-11 rounded-lg border border-[#082B37]/15 px-3 text-sm bg-white text-[#082B37] placeholder:text-[#082B37]/40 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 focus:border-[#D28E2F]/50"
+          className="flex-1 min-w-[140px] h-11 rounded-lg border border-[#082B37]/15 px-3 text-sm bg-white text-[#082B37] dark:text-white placeholder:text-[#082B37]/40 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 focus:border-[#D28E2F]/50"
         />
 
         <div className="relative shrink-0" ref={dropdownRef}>
@@ -157,6 +234,12 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 mb-3">
+          {error}
+        </div>
+      )}
+
       <button
         onClick={handleSend}
         disabled={!selectedContact || !amount}
@@ -165,6 +248,14 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
         <Send className="w-4 h-4" />
         Envoyer maintenant
       </button>
+
+      {showPin && walletId && (
+        <PinConfirmModal
+          walletId={walletId}
+          onConfirm={handlePinConfirm}
+          onClose={() => setShowPin(false)}
+        />
+      )}
     </div>
   );
 }

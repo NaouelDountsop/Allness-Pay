@@ -99,7 +99,7 @@ function InvitationCard({
               </span>
             )}
             <p className="text-xs text-allness-dark mt-0.5">
-              Invité par : <span className="text-allness-orange"> <InvitationUser userId={invitation.inviterUserId} /> </span>
+              Invité par : <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
             {tontine && (
               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">

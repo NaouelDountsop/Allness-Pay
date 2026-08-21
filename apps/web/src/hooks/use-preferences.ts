@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import i18n from '@/i18n';
 
 type Language = 'fr' | 'en';
 type Theme = 'light' | 'dark';
@@ -46,10 +47,17 @@ export function usePreferences() {
 
   useEffect(() => {
     savePreferences(prefs);
+
+    // Sync theme
     if (prefs.theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
+    }
+
+    // Sync language with i18n
+    if (i18n.language !== prefs.language) {
+      i18n.changeLanguage(prefs.language);
     }
   }, [prefs]);
 

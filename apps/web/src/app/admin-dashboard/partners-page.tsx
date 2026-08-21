@@ -7,8 +7,6 @@ import {
   ChevronDown,
   RotateCcw,
   Plus,
-  Eye,
-  MoreVertical,
   Download,
   X,
   ArrowRight,
@@ -17,7 +15,7 @@ import {
 import { AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell, XAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
-//import { Avatar } from "@/components/ui/avatar";
+import { TableActions } from '@/components/common/table-actions';
 
 // Données de démonstration
 
@@ -309,21 +307,11 @@ function PartnerRow({ partner, onSelect }: { partner: Partner; onSelect: () => v
       </td>
       <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-700 hidden xl:table-cell">{partner.transactions}</td>
       <td className="whitespace-nowrap px-3 py-2">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={onSelect}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            aria-label="Voir le détail"
-          >
-            <Eye className="h-3.5 w-3.5" />
-          </button>
-          <button
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            aria-label="Plus d'options"
-          >
-            <MoreVertical className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        <TableActions
+          onView={onSelect}
+          onEdit={() => {/* TODO: edit partner */}}
+          onDelete={() => {/* TODO: delete partner */}}
+        />
       </td>
     </tr>
   );

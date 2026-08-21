@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   Send,
@@ -16,21 +17,22 @@ import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
-const navItems = [
-  { to: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
-  { to: '/dashboard/send', label: 'Envoyer', icon: Send },
-  { to: '/dashboard/wallet', label: 'Portefeuille', icon: Wallet },
-  { to: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
-  { to: '/dashboard/beneficiaries', label: 'Bénéficiaires', icon: Users },
-  { to: '/dashboard/tontines', label: 'Tontines', icon: PiggyBank },
-  { to: '/dashboard/payments', label: 'Paiements', icon: CreditCard },
-  { to: '/dashboard/profile', label: 'Profil', icon: User },
-  { to: '/dashboard/settings', label: 'Settings', icon: Settings },
-];
-
 export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () => void }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [logoutOpen, setLogoutOpen] = useState(false);
+
+  const navItems = [
+    { to: '/dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard, end: true },
+    { to: '/dashboard/send', label: t('sidebar.send'), icon: Send },
+    { to: '/dashboard/wallet', label: t('sidebar.wallet'), icon: Wallet },
+    { to: '/dashboard/transactions', label: t('sidebar.transactions'), icon: ArrowLeftRight },
+    { to: '/dashboard/beneficiaries', label: t('sidebar.beneficiaries'), icon: Users },
+    { to: '/dashboard/tontines', label: t('sidebar.tontines'), icon: PiggyBank },
+    { to: '/dashboard/payments', label: t('sidebar.payments'), icon: CreditCard },
+    { to: '/dashboard/profile', label: t('sidebar.profile'), icon: User },
+    { to: '/dashboard/settings', label: t('sidebar.settings'), icon: Settings },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -44,18 +46,12 @@ export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () =>
   };
 
   return (
-    // sticky (pas fixed) : la sidebar reste "clouée" à l'écran pendant le scroll,
-    // mais reste dans le flux normal du layout. Résultat : aucune page n'a besoin
-    // d'un padding/margin compensatoire, contrairement à une sidebar en "fixed".
-    // Condition : le composant parent qui affiche <Sidebar /> + le contenu doit
-    // être un flex/grid en ligne (ex: <div className="flex">) — c'est déjà
-    // presque toujours le cas pour un layout sidebar+contenu classique.
-    <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-allness-dark text-white flex-col`}>
+    <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-[#0D343A] dark:bg-[#061216] text-white flex-col`}>
       <div className="flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
           <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
           <span className="font-bold text-lg">
-            Allness<span className="text-allness-orange">Pay</span>
+            Allness<span className="text-brand-orange dark:text-brand-orange">Pay</span>
           </span>
         </div>
         {mobile && onClose && (
@@ -93,17 +89,17 @@ export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () =>
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          Se déconnecter
+          {t('sidebar.logout')}
         </button>
       </div>
 
       <ConfirmDialog
         open={logoutOpen}
         onOpenChange={setLogoutOpen}
-        title="Se déconnecter"
-        description="Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
-        confirmLabel="Se déconnecter"
-        cancelLabel="Annuler"
+        title={t('sidebar.logoutTitle')}
+        description={t('sidebar.logoutDescription')}
+        confirmLabel={t('sidebar.logout')}
+        cancelLabel={t('sidebar.logoutCancel')}
         variant="danger"
         onConfirm={handleLogout}
       />

@@ -191,4 +191,12 @@ export const tontineService = {
     );
     return res.data;
   },
+
+  reorderMembers: async (tontineId: string, memberIds: string[]): Promise<TontineMember[]> => {
+    const res = await apiClient.patch<TontineMember[]>(
+      `${basePath}/${tontineId}/members/reorder`,
+      { memberIds },
+    );
+    return res.data;
+  },
 };

@@ -11,8 +11,6 @@ import {
 } from '@/components/user_dashboard/tontines/payment-methods-grid';
 import { TontineSummaryCard } from '@/components/user_dashboard/tontines/tontine-summary-card';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
-import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
-import { usePin } from '@/hooks/use-pin';
 import { tontineService } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
 
@@ -53,15 +51,12 @@ export default function MakeContributionPage() {
     queryFn: walletService.getPrimary,
   });
 
-  const { hasPin, createPin } = usePin(wallet?.id ?? null);
-
   const suggestedAmount = tontine ? String(tontine.contributionAmount) : '500';
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<PaymentMethod>('wallet');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
 
-  const [showPinSetup, setShowPinSetup] = useState(false);
   const [showPinConfirm, setShowPinConfirm] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -112,16 +107,6 @@ export default function MakeContributionPage() {
   const handleConfirm = () => {
     if (!isFormValid || !wallet) return;
     if (needsExternalInfo && !hasExternalInfo) return;
-    if (hasPin) {
-      setShowPinConfirm(true);
-    } else {
-      setShowPinSetup(true);
-    }
-  };
-
-  const handlePinSetupComplete = async (pin: string) => {
-    await createPin(pin);
-    setShowPinSetup(false);
     setShowPinConfirm(true);
   };
 
@@ -359,10 +344,6 @@ export default function MakeContributionPage() {
           />
         </div>
       </div>
-
-      {showPinSetup && (
-        <PinSetupModal onComplete={handlePinSetupComplete} onClose={() => setShowPinSetup(false)} />
-      )}
 
       {showPinConfirm && (
         <PinConfirmModal

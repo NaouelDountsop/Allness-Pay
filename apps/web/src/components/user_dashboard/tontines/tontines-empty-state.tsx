@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { PiggyBank, ShieldCheck, Target, Plus } from 'lucide-react';
 
 interface TontinesEmptyStateProps {
   onCreate: () => void;
   onJoin: () => void;
 }
+
 
 const benefits = [
   {
@@ -23,7 +25,10 @@ const benefits = [
   },
 ];
 
-export function TontinesEmptyState({ onCreate, onJoin }: TontinesEmptyStateProps) {
+export function TontinesEmptyState({ onCreate }: TontinesEmptyStateProps) {
+
+    const navigate = useNavigate();
+
   return (
     <div className="max-w-2xl mx-auto text-center">
       <div className="flex items-end justify-center gap-4 mb-8">
@@ -61,7 +66,7 @@ export function TontinesEmptyState({ onCreate, onJoin }: TontinesEmptyStateProps
             <span className="hidden md:inline">Créer une tontine</span>
           </button>
           <button
-            onClick={onJoin}
+            onClick={() => navigate('/dashboard/tontines/invitations')}
             className="flex-1 h-11 rounded-lg border border-allness-green text-allness-green text-sm font-medium hover:bg-green-50 transition-colors"
           >
             Rejoindre une tontine

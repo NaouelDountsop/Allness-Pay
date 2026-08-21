@@ -1,17 +1,20 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Home, Wallet, Send, PiggyBank, CreditCard } from 'lucide-react';
 
-const tabs = [
-  { to: '/dashboard', label: 'Accueil', icon: Home, end: true },
-  { to: '/dashboard/wallet', label: 'Portefeuille', icon: Wallet },
-  { to: '/dashboard/send', label: 'Envoyer', icon: Send, center: true },
-  { to: '/dashboard/tontines', label: 'Tontines', icon: PiggyBank },
-  { to: '/dashboard/payments', label: 'Paiements', icon: CreditCard },
-];
-
 export function BottomNav() {
+  const { t } = useTranslation();
+
+  const tabs = [
+    { to: '/dashboard', label: t('bottomNav.home'), icon: Home, end: true },
+    { to: '/dashboard/wallet', label: t('bottomNav.wallet'), icon: Wallet },
+    { to: '/dashboard/send', label: t('bottomNav.send'), icon: Send, center: true },
+    { to: '/dashboard/tontines', label: t('bottomNav.tontines'), icon: PiggyBank },
+    { to: '/dashboard/payments', label: t('bottomNav.payments'), icon: CreditCard },
+  ];
+
   return (
-    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 bg-allness-dark rounded-2xl shadow-lg px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 bg-[#0D343A] dark:bg-[#061216] rounded-2xl shadow-lg px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
       <div className="relative">
         <div className="grid grid-cols-5 items-center">
           {tabs.map(({ to, label, icon: Icon, end, center }) => (
@@ -25,15 +28,15 @@ export function BottomNav() {
                 center ? (
                   <>
                     <span
-                      className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center border-4 border-allness-dark transition-colors ${
-                        isActive ? 'bg-allness-green' : 'bg-allness-green/80'
+                      className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center border-4 border-brand-sidebar dark:border-brand-sidebar transition-colors ${
+                        isActive ? 'bg-brand-green' : 'bg-brand-green/80'
                       }`}
                     >
                       <Icon className="w-6 h-6 text-white" />
                     </span>
                     <span
                       className={
-                        isActive ? 'text-allness-orange font-medium mt-1' : 'text-white/50 mt-1'
+                        isActive ? 'text-brand-orange font-medium mt-1' : 'text-white/50 mt-1'
                       }
                     >
                       {label}
@@ -43,12 +46,12 @@ export function BottomNav() {
                   <>
                     <Icon
                       className={
-                        isActive ? 'w-5 h-5 text-allness-orange' : 'w-5 h-5 text-white/60'
+                        isActive ? 'w-5 h-5 text-brand-orange' : 'w-5 h-5 text-white/60'
                       }
                       strokeWidth={isActive ? 2.4 : 2}
                     />
                     <span
-                      className={isActive ? 'text-allness-orange font-medium' : 'text-white/60'}
+                      className={isActive ? 'text-brand-orange font-medium' : 'text-white/60'}
                     >
                       {label}
                     </span>
