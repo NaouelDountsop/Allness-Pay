@@ -16,7 +16,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
     return (
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Dernières transactions</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
           <a
             href="/dashboard/transactions"
             className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
@@ -24,8 +24,8 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
             Voir tout
           </a>
         </div>
-        <div className="flex items-center justify-center py-10 dark:text-white">
-          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
+        <div className="flex items-center justify-center py-10">
+          <LoadingSpinner size="md" />
         </div>
       </div>
     );
@@ -76,11 +76,11 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-[#082B37] dark:text-white/90font-medium truncate dark:text-white">
+                    <p className="text-sm text-gray-900 dark:text-white font-medium truncate">
                       {transactionService.getTypeLabel(tx.type)}
                     </p>
-                    <div className="flex items-center gap-2 mt-0.5 ">
-                      <span className="text-[10px] dark:text-white/90font-medium bg-[#082B37]/10 text-[#082B37] px-1.5 py-0.5 rounded dark:text-allness-green">
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded">
                         {tx.reference || '—'}
                       </span>
                       <p className="text-xs text-allness-orange">
