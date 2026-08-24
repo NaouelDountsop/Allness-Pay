@@ -92,6 +92,27 @@ export interface TontineContribution {
   };
 }
 
+export interface TontineMessage {
+  id: string;
+  tontineId: string;
+  senderId: number | null;
+  content: string | null;
+  attachmentUrl: string | null;
+  attachmentName: string | null;
+  isSystem: boolean;
+  createdAt: string;
+  sender?: {
+    idutilisateur?: number;
+    nom?: string;
+    prenom?: string;
+  };
+}
+
+export interface UnreadCount {
+  total: number;
+  unread: number;
+}
+
 const basePath = '/tontines';
 
 export const tontineService = {
@@ -197,6 +218,39 @@ export const tontineService = {
       `${basePath}/${tontineId}/members/reorder`,
       { memberIds },
     );
+    return res.data;
+  },
+
+  getMessages: async (tontineId: string): Promise<TontineMessage[]> => {
+    const res = await apiClient.get<TontineMessage[]>(`${basePath}/${tontineId}/messages`);
+    return res.data;
+  },
+
+  sendMessage: async (
+    tontineId: string,
+    payload: { content?: string; file?: File },
+  ): Promise<TontineMessage> => {
+    const formData = new FormData();
+    if (payload.content) {
+      formData.append('content', payload.content);
+    }
+    if (payload.file) {
+      formData.append('file', payload.file);
+    }
+    const res = await apiClient.post<TontineMessage>(
+      `${basePath}/${tontineId}/messages`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    );
+    return res.data;
+  },
+
+  markMessageAsRead: async (tontineId: string, messageId: string): Promise<void> => {
+    await apiClient.post(`${basePath}/${tontineId}/messages/${messageId}/read`);
+  },
+
+  getUnreadCounts: async (tontineId: string): Promise<UnreadCount> => {
+    const res = await apiClient.get<UnreadCount>(`${basePath}/${tontineId}/messages/unread`);
     return res.data;
   },
 };

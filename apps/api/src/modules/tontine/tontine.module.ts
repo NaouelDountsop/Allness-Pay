@@ -16,7 +16,9 @@ import { GenerateCycleJob } from './jobs/generate-cycle.job';
 import { LatePenaltyJob } from './jobs/late-penalty.job';
 import { PayoutJob } from './jobs/payout.job';
 import { ContributionReminderJob } from './jobs/contribution-reminder.job';
+import { CompleteCycleJob } from './jobs/complete-cycle.job';
 import { WalletsModule } from '../wallet/wallet.module';
+import { MessagingModule } from '../messaging/messaging.module';
 import { Wallet } from '../wallet/entities/wallet.entity';
 import { PinModule } from '../pin/pin.module';
 import { MailModule } from '../mail/mail.module';
@@ -36,6 +38,7 @@ import { User } from '../users/entities/user.entity';
     WalletsModule,
     PinModule,
     MailModule,
+    MessagingModule,
   ],
   controllers: [TontineController, TontineInvitationController],
   providers: [
@@ -48,6 +51,7 @@ import { User } from '../users/entities/user.entity';
     LatePenaltyJob,
     PayoutJob,
     ContributionReminderJob,
+    CompleteCycleJob,
   ],
   exports: [TontineService, CycleService, ContributionService, InvitationService, PayoutService],
 })

@@ -12,17 +12,22 @@ import {
   UseGuards,
   Req,
   BadRequestException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
 import { ContributionService } from './services/contribution.service';
 import { InvitationService } from './services/invitation.service';
+import { MessageService } from '../messaging/message.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { AddMemberDto } from './dto/add-member.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { ContributeFromWalletDto } from './dto/contribute-from-wallet.dto';
+import { CreateMessageDto } from '../messaging/dto/create-message.dto';
 import { TontineStatus } from './entities/tontine.entity';
 
 interface AuthenticatedRequest extends Request {
@@ -38,6 +43,7 @@ export class TontineController {
     private readonly tontineService: TontineService,
     private readonly contributionService: ContributionService,
     private readonly invitationService: InvitationService,
+    private readonly messageService: MessageService,
   ) {}
 
   @Post()
@@ -64,12 +70,61 @@ export class TontineController {
     return this.invitationService.findPendingByUserId(req.user.sub);
   }
 
+  @Get(':id/messages')
+  @ApiOperation({ summary: 'Lister les messages d une tontine' })
+  @ApiParam({ name: 'id', type: String })
+  listMessages(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.messageService.findAll(id, req.user.sub);
+  }
+
+  @Post(':id/messages')
+  @ApiOperation({ summary: 'Envoyer un message (texte et/ou fichier)' })
+  @ApiParam({ name: 'id', type: String })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads/tontines',
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
+  createMessage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateMessageDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.messageService.create(id, req.user.sub, dto, file);
+  }
+
+  @Get(':id/messages/unread')
+  @ApiOperation({ summary: 'Nombre de messages non lus' })
+  @ApiParam({ name: 'id', type: String })
+  getUnreadCounts(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.messageService.getUnreadCounts(id, req.user.sub);
+  }
+
+  @Post(':id/messages/:messageId/read')
+  @ApiOperation({ summary: 'Marquer un message comme lu' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'messageId', type: String })
+  markMessageAsRead(
+    @Param('messageId', ParseUUIDPipe) messageId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.messageService.markAsRead(messageId, req.user.sub);
+  }
+
  
   @Get(':id')
 @ApiOperation({ summary: 'Obtenir une tontine par ID' })
 @ApiParam({ name: 'id', type: String })
-findOne(@Param('id', ParseUUIDPipe) id: string) {
-  return this.tontineService.findOne(id);
+findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
+  return this.tontineService.findOne(id, req.user.sub);
 }
 
   @Patch(':id')

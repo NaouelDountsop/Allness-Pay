@@ -1,4 +1,3 @@
-import type { EntityManager } from 'typeorm';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -12,6 +11,7 @@ import {
 } from '../../transactions/entities/wallet-transaction.entity';
 import { TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
+import { recalculateBalance } from '../utils/balance.util';
 
 @Injectable()
 export class PayoutService {
@@ -58,7 +58,7 @@ export class PayoutService {
         where: { walletNumber: tontine.walletNumber },
       });
 
-      const amount = BigInt(cycle.totalPot);
+      const amount = BigInt(cycle.collectedAmount);
 
       if (BigInt(tontineWallet.balance.toString()) < amount) {
         throw new BadRequestException('Solde wallet tontine insuffisant');
@@ -83,8 +83,8 @@ export class PayoutService {
       await manager.save(creditEntry);
 
       const [newTontineBalance, newBeneficiaryBalance] = await Promise.all([
-        this.recalculateBalance(manager, tontineWallet.id),
-        this.recalculateBalance(manager, beneficiaryWallet.id),
+        recalculateBalance(manager, tontineWallet.id),
+        recalculateBalance(manager, beneficiaryWallet.id),
       ]);
       await manager.update(Wallet, { id: tontineWallet.id }, { balance: newTontineBalance });
       await manager.update(
@@ -93,7 +93,6 @@ export class PayoutService {
         { balance: newBeneficiaryBalance },
       );
 
-      cycle.collectedAmount = cycle.totalPot;
       cycle.status = TontineCycleStatus.COMPLETED;
       cycle.completedAt = new Date();
       await manager.save(cycle);
@@ -105,25 +104,9 @@ export class PayoutService {
         beneficiaryWallet: await manager.findOneOrFail(Wallet, {
           where: { id: beneficiaryWallet.id },
         }),
-        amount: cycle.totalPot,
+        amount: cycle.collectedAmount,
       };
     });
   }
 
-  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
-    const result = await manager
-      .createQueryBuilder(WalletTransaction, 'wt')
-      .select(
-        `COALESCE(
-          SUM(CASE WHEN wt.type IN ('deposit', 'transfer_in') THEN wt.amount ELSE 0 END)
-          - SUM(CASE WHEN wt.type IN ('withdrawal', 'transfer_out') THEN wt.amount ELSE 0 END),
-          0
-        )`,
-        'balance',
-      )
-      .where('wt.walletId = :walletId', { walletId })
-      .getRawOne<{ balance: string }>();
-
-    return BigInt(result?.balance ?? '0');
-  }
 }

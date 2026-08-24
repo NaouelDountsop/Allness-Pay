@@ -16,7 +16,7 @@ import { campayService } from '@/lib/api/campay.service';
 import { kycService } from '@/lib/api/kyc.service';
 import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
 import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
-import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
+
 
 export default function WalletPage() {
   const { t } = useTranslation();

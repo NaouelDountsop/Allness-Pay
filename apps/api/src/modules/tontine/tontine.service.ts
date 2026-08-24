@@ -1,20 +1,15 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { CycleService } from './services/cycle.service';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Tontine, TontineStatus } from './entities/tontine.entity';
-import {
-  TontineMember,
-  TontineMemberRole,
-  TontineMemberStatus,
-} from './entities/tontine-member.entity';
+import { TontineMember, TontineMemberRole, TontineMemberStatus } from './entities/tontine-member.entity';
+import { TontineCycle } from './entities/tontine-cycle.entity';
+import { TontineCycleStatus } from './enums/tontine-cycle-status.enum';
 import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { WalletsService } from '../wallet/wallet.service';
+import { MessageService } from '../messaging/message.service';
 
 @Injectable()
 export class TontineService {
@@ -23,9 +18,13 @@ export class TontineService {
     private readonly tontineRepo: Repository<Tontine>,
     @InjectRepository(TontineMember)
     private readonly memberRepo: Repository<TontineMember>,
+    @InjectRepository(TontineCycle)
+    private readonly cycleRepo: Repository<TontineCycle>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly walletsService: WalletsService,
+    private readonly cycleService: CycleService,
+    private readonly messageService: MessageService,
   ) {}
 
   async create(dto: CreateTontineDto, creatorId: number): Promise<Tontine> {
@@ -46,7 +45,6 @@ export class TontineService {
       });
       const saved = await manager.save(tontine);
 
-      // Création atomique du wallet TONTINE lié à cette tontine
       const wallet = await this.walletsService.createTontineWallet(
         creatorId,
         saved.id,
@@ -54,7 +52,6 @@ export class TontineService {
         manager,
       );
 
-      // Liaison du wallet à la tontine via le walletNumber
       saved.walletNumber = wallet.walletNumber;
       await manager.save(saved);
 
@@ -66,7 +63,6 @@ export class TontineService {
       });
       await manager.save(creatorMember);
 
-      // Retourner depuis le manager ( données non commitées visibles )
       return manager.findOneOrFail(Tontine, {
         where: { id: saved.id },
         relations: ['members', 'members.user', 'creator'],
@@ -118,7 +114,7 @@ export class TontineService {
     return this.tontineRepo.save(tontine);
   }
 
-  async updateStatus(id: string, userId: number, newStatus: TontineStatus): Promise<Tontine> {
+   async updateStatus(id: string, userId: number, newStatus: TontineStatus): Promise<Tontine> {
     const tontine = await this.findOne(id, userId);
     this.assertAdmin(tontine, userId);
 
@@ -134,7 +130,13 @@ export class TontineService {
     }
 
     tontine.status = newStatus;
-    return this.tontineRepo.save(tontine);
+    const saved = await this.tontineRepo.save(tontine);
+
+    if (newStatus === TontineStatus.ACTIVE) {
+      await this.cycleService.generateNextCycle(saved.id);
+    }
+
+    return this.findOne(saved.id, userId);
   }
 
   async remove(id: string, userId: number): Promise<void> {
@@ -173,12 +175,28 @@ export class TontineService {
       status: TontineMemberStatus.ACTIVE,
     });
 
-    return this.memberRepo.save(member);
+    const saved = await this.memberRepo.save(member);
+
+    await this.messageService.createSystemMessage(
+      tontineId,
+      `Un nouveau membre a rejoint la tontine`,
+    );
+
+    return saved;
   }
 
   async removeMember(tontineId: string, userId: number, memberId: string): Promise<void> {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
+
+    const activeCycle = await this.cycleRepo.findOne({
+      where: { tontineId, status: TontineCycleStatus.ACTIVE },
+    });
+    if (activeCycle) {
+      throw new BadRequestException(
+        'Impossible de retirer un membre pendant un cycle actif.',
+      );
+    }
 
     const member = tontine.members.find((m) => m.id === memberId);
     if (!member) {
@@ -191,6 +209,11 @@ export class TontineService {
 
     member.status = TontineMemberStatus.REMOVED;
     await this.memberRepo.save(member);
+
+    await this.messageService.createSystemMessage(
+      tontineId,
+      `Un membre a été retiré de la tontine`,
+    );
   }
 
   async join(id: string, userId: number): Promise<TontineMember> {
@@ -208,11 +231,28 @@ export class TontineService {
       role: TontineMemberRole.MEMBER,
       status: TontineMemberStatus.ACTIVE,
     });
-    return this.memberRepo.save(member);
+    const saved = await this.memberRepo.save(member);
+
+    await this.messageService.createSystemMessage(
+      id,
+      `Un nouveau membre a rejoint la tontine`,
+    );
+
+    return saved;
   }
 
   async leave(id: string, userId: number): Promise<void> {
     const tontine = await this.findOne(id, userId);
+
+    const activeCycle = await this.cycleRepo.findOne({
+      where: { tontineId: id, status: TontineCycleStatus.ACTIVE },
+    });
+    if (activeCycle) {
+      throw new BadRequestException(
+        'Impossible de quitter la tontine pendant un cycle actif. Attendez la fin du cycle.',
+      );
+    }
+
     const member = tontine.members.find(
       (m) => m.userId === userId && m.status === TontineMemberStatus.ACTIVE,
     );
@@ -226,6 +266,11 @@ export class TontineService {
     }
     member.status = TontineMemberStatus.LEFT;
     await this.memberRepo.save(member);
+
+    await this.messageService.createSystemMessage(
+      id,
+      `Un membre a quitté la tontine`,
+    );
   }
 
   async findMember(tontineId: string, userId: number): Promise<TontineMember> {
