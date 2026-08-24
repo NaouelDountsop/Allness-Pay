@@ -1,5 +1,6 @@
 import { X, Check, XIcon, Loader2, Calendar, UserPlus } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { tontineService } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
 import type { TontineInvitation } from '@/lib/api/tontine.service';
@@ -32,6 +33,7 @@ function TontineName({ tontineId }: { tontineId: string }) {
 }
 
 function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const respondMutation = useMutation({
@@ -57,12 +59,12 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
             <TontineName tontineId={invitation.tontineId} />
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            <InviterName userId={invitation.inviterUserId} /> vous invite à rejoindre
+            <InviterName userId={invitation.inviterUserId} /> {t('tontines.invitesYouToJoin')}
           </p>
           <div className="flex items-center gap-1.5 mt-2">
             <Calendar className="w-3 h-3 text-gray-300" />
             <p className="text-[11px] text-gray-400">
-              Expire le {new Date(invitation.expiresAt).toLocaleDateString('fr-FR')}
+              {t('tontines.expiresAt', { date: new Date(invitation.expiresAt).toLocaleDateString('fr-FR') })}
             </p>
           </div>
         </div>
@@ -71,7 +73,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
           {isPending && (
             <div className="flex items-center gap-1.5">
               <button
-                aria-label="Refuser"
+                aria-label={t('tontines.decline')}
                 disabled={isMutating}
                 onClick={() => respondMutation.mutate('DECLINE')}
                 className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors disabled:opacity-50"
@@ -88,20 +90,20 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
                 ) : (
                   <Check className="w-3 h-3" />
                 )}
-                Rejoindre
+                {t('tontines.join')}
               </button>
             </div>
           )}
           {isAccepted && (
             <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-green-50 text-green-600 px-3 py-1.5 rounded-lg">
               <Check className="w-3 h-3" />
-              Acceptée
+              {t('tontines.accepted')}
             </span>
           )}
           {isDeclined && (
             <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-red-50 text-red-500 px-3 py-1.5 rounded-lg">
               <XIcon className="w-3 h-3" />
-              Refusée
+              {t('tontines.declined')}
             </span>
           )}
         </div>
@@ -111,6 +113,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
 }
 
 export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopupProps) {
+  const { t } = useTranslation();
   const pending = invitations.filter((inv) => inv.status === 'PENDING');
 
   if (pending.length === 0) return null;
@@ -128,7 +131,7 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
           <button
             onClick={onClose}
             className="absolute right-5 top-5 text-white/70 hover:text-white"
-            aria-label="Fermer"
+            aria-label={t('tontines.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -138,11 +141,11 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
           <div className="flex items-center justify-center gap-2 mb-1">
             <UserPlus className="w-4 h-4 text-allness-orange" />
             <h3 className="text-base font-semibold text-allness-dark">
-              Invitation en attente
+              {t('tontines.pendingInvitations')}
             </h3>
           </div>
           <p className="text-xs text-gray-500 text-center mb-5">
-            {pending.length} invitation{pending.length > 1 ? 's' : ''} à traiter
+            {t('tontines.invitationsToProcess', { count: pending.length })}
           </p>
 
           <div className="space-y-3 max-h-[50vh] overflow-y-auto">
@@ -155,7 +158,7 @@ export function InvitationJoinPopup({ invitations, onClose }: InvitationJoinPopu
             onClick={onClose}
             className="w-full h-11 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 mt-5 hover:bg-gray-50 transition-colors"
           >
-            Fermer
+            {t('tontines.close')}
           </button>
         </div>
       </div>

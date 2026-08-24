@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Plus, ChevronDown, Check, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionService } from '@/lib/api/transaction.service';
 import { PinConfirmModal } from './send/pin-confirm-modal';
@@ -23,6 +24,7 @@ interface QuickSendProps {
 const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
 
 export function QuickSend({ contacts, walletId, walletNumber, isLoading }: QuickSendProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(CURRENCIES[0]);
@@ -61,9 +63,9 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       const msg = err.response?.data?.message ?? err.message ?? '';
       if (msg.includes('Solde insuffisant') || msg.includes('insufficient') || msg.includes('insuffisant')) {
-        setError('Solde insuffisant');
+        setError(t('tontines.insufficientBalance'));
       } else {
-        setError(msg || 'Erreur lors du transfert');
+        setError(msg || t('tontines.transferError'));
       }
       setShowPin(false);
     },
@@ -75,24 +77,24 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
     setShowPin(true);
   };
 
-  const handlePinConfirm = async (_pin: string): Promise<boolean> => {
+  const handlePinConfirm = async (_pin: string): Promise<string | null> => {
     try {
       await transferMutation.mutateAsync();
-      return true;
+      return null;
     } catch {
-      return false;
+      return t('tontines.transferError');
     }
   };
 
   if (success) {
     return (
-      <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5 bg-white dark:bg-gray-800">
         <div className="flex flex-col items-center text-center py-6">
-          <span className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
+          <span className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center mb-3">
             <CheckCircle2 className="w-6 h-6 text-allness-green" />
           </span>
-          <p className="text-sm font-semibold text-gray-900 mb-1">Transfert envoyé</p>
-          <p className="text-xs text-gray-500 mb-4">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t('tontines.transferSent')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
             {amount} {currency} envoyés à {selectedContact?.name}
           </p>
           <button
@@ -103,7 +105,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
             }}
             className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90"
           >
-            Nouveau transfert
+            {t('tontines.newTransfer')}
           </button>
         </div>
       </div>
@@ -111,14 +113,14 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
   }
 
   return (
-    <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between gap-2 mb-4">
-        <h3 className="text-sm font-semibold text-[#082B37] dark:text-white/90">Envoi rapide</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.quickSend')}</h3>
         <a
           href="/dashboard/beneficiaries"
-          className="shrink-0 whitespace-nowrap text-xs text-[#D28E2F]  font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
+          className="shrink-0 whitespace-nowrap text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
         >
-          Voir tout
+          {t('tontines.viewAll')}
         </a>
       </div>
 
@@ -127,8 +129,8 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
           <div className="flex gap-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex flex-col items-center gap-1 shrink-0">
-                <div className="w-11 h-11 rounded-full bg-gray-100 animate-pulse" />
-                <div className="w-8 h-2 bg-gray-100 rounded animate-pulse" />
+                <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 animate-pulse" />
+                <div className="w-8 h-2 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
               </div>
             ))}
           </div>
@@ -143,8 +145,8 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
                   selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
                 }`}
               >
-                <div className={`w-11 h-11 rounded-full bg-[#082B37]/10 dark:bg-white/80 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ${
-                  selectedContact?.id === c.id ? 'ring-[#D28E2F]' : 'ring-transparent group-hover:ring-[#D28E2F]/50'
+                <div className={`w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-200 overflow-hidden ring-2 ${
+                  selectedContact?.id === c.id ? 'ring-allness-orange' : 'ring-transparent group-hover:ring-allness-orange/50'
                 } transition-all`}>
                   {c.avatarUrl ? (
                     <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
@@ -152,33 +154,33 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
                     c.name.charAt(0)
                   )}
                 </div>
-                <span className="text-[11px] text-[#082B37]/60 dark:text-white max-w-[52px] truncate">{c.name}</span>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 max-w-[52px] truncate">{c.name}</span>
               </button>
             ))}
             <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
               <button
                 type="button"
-                aria-label="Ajouter un bénéficiaire"
+                aria-label={t('tontines.addBeneficiary')}
                 onClick={() => { window.location.href = '/dashboard/beneficiaries'; }}
-                className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
+                className="w-11 h-11 rounded-full border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:border-allness-orange hover:text-allness-orange transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>
-              <span className="text-[11px] text-[#082B37]/40">New</span>
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">{t('tontines.new')}</span>
             </div>
           </>
         )}
       </div>
 
       {selectedContact && (
-        <div className="mb-3 p-2.5 rounded-lg bg-gray-50 border border-gray-100">
+        <div className="mb-3 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#082B37]/10 flex items-center justify-center text-[10px] font-medium text-[#082B37]">
+            <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center text-[10px] font-medium text-gray-700 dark:text-gray-200">
               {selectedContact.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-gray-800 truncate">{selectedContact.name}</p>
-              <p className="text-[10px] text-gray-400">{selectedContact.phone} · {selectedContact.network}</p>
+              <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{selectedContact.name}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">{selectedContact.phone} · {selectedContact.network}</p>
             </div>
           </div>
         </div>
@@ -187,10 +189,10 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
       <div className="flex flex-wrap gap-2 mb-3">
         <input
           type="number"
-          placeholder="Entrez le montant"
+          placeholder={t('tontines.enterAmount')}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="flex-1 min-w-[140px] h-11 rounded-lg border border-[#082B37]/15 px-3 text-sm bg-white text-[#082B37] dark:text-white placeholder:text-[#082B37]/40 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 focus:border-[#D28E2F]/50"
+          className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
         />
 
         <div className="relative shrink-0" ref={dropdownRef}>
@@ -199,11 +201,11 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
             onClick={() => setOpen((v) => !v)}
             aria-haspopup="listbox"
             aria-expanded={open}
-            className="h-11 min-w-[92px] rounded-lg border border-[#082B37]/15 px-3 flex items-center justify-between gap-2 text-sm font-medium text-[#082B37] bg-white hover:border-[#D28E2F]/50 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 transition-colors"
+            className="h-11 min-w-[92px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center justify-between gap-2 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:border-allness-orange/50 focus:outline-none focus:ring-2 focus:ring-allness-orange/40 transition-colors"
           >
             {currency}
             <ChevronDown
-              className={`w-4 h-4 text-[#082B37]/50 transition-transform ${
+              className={`w-4 h-4 text-gray-400 transition-transform ${
                 open ? 'rotate-180' : ''
               }`}
             />
@@ -212,7 +214,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
           {open && (
             <ul
               role="listbox"
-              className="absolute right-0 mt-1.5 w-28 rounded-lg border border-[#082B37]/10 bg-white shadow-lg overflow-hidden z-20 animate-in fade-in slide-in-from-top-1 duration-150"
+              className="absolute right-0 mt-1.5 w-28 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg overflow-hidden z-20 animate-in fade-in slide-in-from-top-1 duration-150"
             >
               {CURRENCIES.map((cur) => (
                 <li key={cur} role="option" aria-selected={currency === cur}>
@@ -222,10 +224,10 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
                       setCurrency(cur);
                       setOpen(false);
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-[#082B37] hover:bg-[#082B37]/[0.05] transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     {cur}
-                    {currency === cur && <Check className="w-3.5 h-3.5 text-[#D28E2F]" />}
+                    {currency === cur && <Check className="w-3.5 h-3.5 text-allness-orange" />}
                   </button>
                 </li>
               ))}
@@ -235,7 +237,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 mb-3">
+        <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-2.5 text-xs text-red-700 dark:text-red-400 mb-3">
           {error}
         </div>
       )}
@@ -243,10 +245,10 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
       <button
         onClick={handleSend}
         disabled={!selectedContact || !amount}
-        className="w-full h-11 rounded-lg bg-[#082B37] hover:bg-[#082B37]/90 active:scale-[0.98] text-[#D28E2F] text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full h-11 rounded-lg bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] text-white dark:text-gray-900 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Send className="w-4 h-4" />
-        Envoyer maintenant
+        {t('tontines.sendNow')}
       </button>
 
       {showPin && walletId && (

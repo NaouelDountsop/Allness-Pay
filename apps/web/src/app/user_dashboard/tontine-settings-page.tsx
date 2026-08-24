@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Loader2, Play, Clock, CalendarDays, Mail } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { RotationOrderList } from '@/components/user_dashboard/tontines/rotation-order-list';
@@ -24,29 +25,30 @@ function getCurrentUserId(): number | null {
   }
 }
 
-function getFrequencyLabel(freq: string): string {
-  const map: Record<string, string> = {
-    WEEKLY: 'Hebdomadaire',
-    BIWEEKLY: 'Bimensuelle',
-    MONTHLY: 'Mensuelle',
-  };
-  return map[freq] ?? freq;
-}
-
-function getInvitationStatusBadge(status: string): { label: string; className: string } {
-  const map: Record<string, { label: string; className: string }> = {
-    PENDING: { label: 'En attente', className: 'bg-amber-50 text-amber-600' },
-    ACCEPTED: { label: 'Acceptée', className: 'bg-green-50 text-allness-green' },
-    DECLINED: { label: 'Refusée', className: 'bg-red-50 text-red-500' },
-    REFUSED: { label: 'Refusée', className: 'bg-red-50 text-red-500' },
-  };
-  return map[status] ?? { label: status, className: 'bg-gray-50 text-gray-500' };
-}
-
 export default function TontineSettingsPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const getFrequencyLabel = (freq: string): string => {
+    const map: Record<string, string> = {
+      WEEKLY: t('tontines.weekly'),
+      BIWEEKLY: t('tontines.biweekly'),
+      MONTHLY: t('tontines.monthly'),
+    };
+    return map[freq] ?? freq;
+  };
+
+  const getInvitationStatusBadge = (status: string): { label: string; className: string } => {
+    const map: Record<string, { label: string; className: string }> = {
+      PENDING: { label: t('tontines.pending'), className: 'bg-amber-50 text-amber-600' },
+      ACCEPTED: { label: t('tontines.accepted'), className: 'bg-green-50 text-allness-green' },
+      DECLINED: { label: t('tontines.declined'), className: 'bg-red-50 text-red-500' },
+      REFUSED: { label: t('tontines.declined'), className: 'bg-red-50 text-red-500' },
+    };
+    return map[status] ?? { label: status, className: 'bg-gray-50 text-gray-600' };
+  };
   const tontineId = id;
   const currentUserId = getCurrentUserId();
   const [showCalendar, setShowCalendar] = useState(false);
@@ -189,7 +191,7 @@ export default function TontineSettingsPage() {
             className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
           >
             <ArrowLeft className="w-5 h-5" />
-            Paramètres Généraux
+            {t('tontines.settingsTitle')}
           </button>
           {isDraft && (
             <button
@@ -202,14 +204,14 @@ export default function TontineSettingsPage() {
               ) : (
                 <Play className="w-4 h-4" />
               )}
-              Démarrer la Tontine
+              {t('tontines.startTontine')}
             </button>
           )}
         </div>
 
         {activeMembers.length < 2 && isDraft && (
           <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mb-4">
-            Au moins 2 membres actifs sont nécessaires pour démarrer la tontine.
+            {t('tontines.needMinMembers')}
           </p>
         )}
 
@@ -218,14 +220,14 @@ export default function TontineSettingsPage() {
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                 <div>
-                  <label className="text-xs font-medium text-gray-500">Nom de la Tontine</label>
+                  <label className="text-xs font-medium text-gray-600">{t('tontines.tontineName')}</label>
                   <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
                     {tontine.name}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-500">
-                    Montant de Cotisation ({displayCurrency})
+                  <label className="text-xs font-medium text-gray-600">
+                    {t('tontines.contributionAmount')} ({displayCurrency})
                   </label>
                   <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
                     {new Intl.NumberFormat('fr-FR').format(contributionAmount)} {displayCurrency}
@@ -246,18 +248,18 @@ export default function TontineSettingsPage() {
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Règles de Participation</h3>
-              <label className="text-xs font-medium text-gray-500">Logique de rotation</label>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.participationRules')}</h3>
+              <label className="text-xs font-medium text-gray-600">{t('tontines.rotationLogic')}</label>
               <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
                 {getFrequencyLabel(frequency)}
               </div>
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Règles de Sanction</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.sanctionRules')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-xs font-medium text-gray-500">Frais de retard (%)</label>
+                  <label className="text-xs font-medium text-gray-600">{t('tontines.lateFeePercent')}</label>
                   <input
                     type="number"
                     defaultValue={5}
@@ -265,8 +267,8 @@ export default function TontineSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-500">
-                    Délai de Grâce (Jours)
+                  <label className="text-xs font-medium text-gray-600">
+                    {t('tontines.gracePeriodDays')}
                   </label>
                   <input
                     type="number"
@@ -276,8 +278,7 @@ export default function TontineSettingsPage() {
                 </div>
               </div>
               <div className="rounded-lg bg-red-50 p-3 text-xs text-red-600">
-                Pénalité : Des frais de retard de 5% s'appliquent automatiquement après le délai
-                de grâce. Les frais sont redistribués au dernier bénéficiaire de la tontine.
+                {t('tontines.lateFeeWarning')}
               </div>
             </div>
 
@@ -288,7 +289,7 @@ export default function TontineSettingsPage() {
                 className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
               >
                 {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Enregistrer les modifications
+                {t('tontines.saveChanges')}
               </button>
             </div>
           </div>
@@ -351,7 +352,7 @@ export default function TontineSettingsPage() {
                       </span>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-gray-800 truncate">{m.name}</p>
-                        <p className="text-[10px] text-gray-400">{m.month}</p>
+                        <p className="text-[10px] text-gray-500">{m.month}</p>
                       </div>
                       {tontine.status === 'ACTIVE' && i === 0 && (
                         <span className="text-[9px] font-semibold text-allness-green bg-green-50 px-1.5 py-0.5 rounded-full">
@@ -362,8 +363,8 @@ export default function TontineSettingsPage() {
                   ))}
 
                   {activeRotationMembers.length === 0 && pendingRotationMembers.length === 0 && (
-                    <p className="text-[11px] text-gray-400 text-center py-2">
-                      Aucun membre dans l'ordre de passage.
+                    <p className="text-[11px] text-gray-500 text-center py-2">
+                      {t('tontines.noMembers')}
                     </p>
                   )}
                 </div>
@@ -374,7 +375,7 @@ export default function TontineSettingsPage() {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                   <Mail className="w-4 h-4 text-allness-green" />
-                  Invitations envoyées
+                   {t('tontines.sentInvitations')}
                 </h3>
                 {/* <button className="text-xs font-medium text-allness-green hover:underline">
                   Voir toutes →
@@ -390,7 +391,7 @@ export default function TontineSettingsPage() {
                         <p className="text-xs font-medium text-gray-800 truncate">
                           {inv.inviteeEmail}
                         </p>
-                        <p className="text-[10px] text-gray-400">
+                        <p className="text-[10px] text-gray-500">
                           Invité le{' '}
                           {new Date(inv.createdAt).toLocaleDateString('fr-FR', {
                             day: '2-digit',
@@ -409,8 +410,8 @@ export default function TontineSettingsPage() {
                 })}
 
                 {recentInvitations.length === 0 && (
-                  <p className="text-[11px] text-gray-400 text-center py-2">
-                    Aucune invitation envoyée.
+                  <p className="text-[11px] text-gray-500 text-center py-2">
+                    {t('tontines.noInvitations')}
                   </p>
                 )}
               </div>
@@ -419,7 +420,7 @@ export default function TontineSettingsPage() {
                 onClick={() => setShowInvite(true)}
                 className="mt-4 text-xs font-medium text-allness-green hover:underline flex items-center gap-1"
               >
-                + Inviter un membre
+                {t('tontines.inviteMember')}
               </button>
             </div>
           </div>

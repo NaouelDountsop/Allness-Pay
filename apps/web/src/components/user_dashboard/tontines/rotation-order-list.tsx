@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { GripVertical, Plus, ChevronUp, ChevronDown, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface RotationMember {
   id: string;
@@ -15,6 +16,7 @@ interface RotationOrderListProps {
 }
 
 export function RotationOrderList({ members, onInvite, onReorder }: RotationOrderListProps) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<RotationMember[]>(members);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -71,10 +73,10 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">Ordre de Passage</h3>
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.rotationOrder')}</h3>
       {selectedId && (
         <p className="text-[11px] text-allness-orange mb-2">
-          Cliquez sur un autre membre pour déplacer la sélection
+          {t('tontines.clickToMove')}
         </p>
       )}
       <div className="space-y-2 mb-3">
@@ -100,7 +102,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-800 truncate">{m.name}</p>
                 <p className="text-[11px] text-gray-400">
-                  Tour {i + 1} - {m.month}
+                  {t('tontines.turnNumber', { number: i + 1 })} - {m.month}
                 </p>
               </div>
               <div className="flex flex-col gap-0.5">
@@ -145,7 +147,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-orange-700 italic truncate">{m.name}</p>
-                <p className="text-[11px] text-orange-400">Invité — en attente d'adhésion</p>
+                <p className="text-[11px] text-orange-400">{t('tontines.invitedPending')}</p>
               </div>
             </div>
           ))}
@@ -158,7 +160,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
         className="w-full h-10 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 flex items-center justify-center gap-2 hover:border-allness-orange hover:text-allness-orange transition-colors"
       >
         <Plus className="w-3.5 h-3.5" />
-        Ajouter un membre
+        {t('tontines.addMember')}
       </button>
     </div>
   );

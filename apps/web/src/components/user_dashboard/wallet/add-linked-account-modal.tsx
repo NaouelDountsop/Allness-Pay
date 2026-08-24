@@ -171,11 +171,7 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
         </DialogHeader>
 
         <div
-          className="rounded-2xl p-3 my-4"
-          style={{
-            backgroundColor: '#082B37',
-            boxShadow: '0 1px 2px rgba(8,43,55,0.15), 0 8px 20px -6px rgba(8,43,55,0.35)',
-          }}
+          className="rounded-2xl p-3 my-4 bg-gray-900 dark:bg-gray-800 shadow-lg"
         >
           <div className="flex items-center">
             {[
@@ -190,37 +186,29 @@ export function AddLinkedAccountModal({ open, onOpenChange, wallets }: AddLinked
                 <div key={num} className={`flex items-center ${isLast ? '' : 'flex-1'}`}>
                   <div className="flex flex-col items-center gap-1.5 min-w-[56px]">
                     <div
-                      className="relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0"
-                      style={{
-                        backgroundColor: isDone || isActive ? '#D28E2F' : 'rgba(255,255,255,0.08)',
-                        color: isDone || isActive ? '#082B37' : 'rgba(255,255,255,0.4)',
-                        border: isDone || isActive ? 'none' : '2px solid rgba(255,255,255,0.25)',
-                        boxShadow: isActive ? '0 0 0 4px rgba(210,142,47,0.25)' : 'none',
-                      }}
+                      className={`relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0 ${
+                        isDone || isActive
+                          ? 'bg-allness-orange text-allness-dark'
+                          : 'bg-white/10 text-white/40 border-2 border-white/25'
+                      } ${isActive ? 'ring-4 ring-allness-orange/25' : ''}`}
                     >
                       {isDone ? <Check className="w-4 h-4" strokeWidth={3} /> : num}
                     </div>
                     <span
-                      className="text-[10px] text-center leading-tight whitespace-nowrap transition-colors duration-300"
-                      style={{
-                        color: isActive
-                          ? '#FFFFFF'
+                      className={`text-[10px] text-center leading-tight whitespace-nowrap transition-colors duration-300 ${
+                        isActive
+                          ? 'text-white font-bold'
                           : isDone
-                            ? 'rgba(255,255,255,0.75)'
-                            : 'rgba(255,255,255,0.35)',
-                        fontWeight: isActive ? 700 : 500,
-                      }}
+                            ? 'text-white/75 font-medium'
+                            : 'text-white/35 font-medium'
+                      }`}
                     >
                       {label}
                     </span>
                   </div>
                   {!isLast && (
                     <div
-                      className="flex-1 mx-1.5 -mt-5"
-                      style={{
-                        borderTop: '2px dashed rgba(255,255,255,0.5)',
-                        minWidth: '20px',
-                      }}
+                      className="flex-1 mx-1.5 -mt-5 border-t-2 border-dashed border-white/50 min-w-[20px]"
                     />
                   )}
                 </div>

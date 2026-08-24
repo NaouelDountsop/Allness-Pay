@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Loader2, Mail } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -14,6 +15,7 @@ import { tontineService } from '@/lib/api/tontine.service';
 import { kycService } from '@/lib/api/kyc.service';
 
 export default function TontinesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [showKycGuard, setShowKycGuard] = useState(false);
@@ -99,8 +101,8 @@ export default function TontinesPage() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h1 className="text-2xl font-semibold text-allness-dark">Tontines</h1>
-                <p className="text-sm text-gray-500">Épargnez ensemble, à tour de rôle</p>
+                <h1 className="text-2xl font-semibold text-allness-dark">{t('tontines.pageTitle')}</h1>
+                <p className="text-sm text-gray-600">{t('tontines.pageSubtitle')}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -108,7 +110,7 @@ export default function TontinesPage() {
                   className="h-10 px-4 rounded-lg border border-allness-dark text-allness-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50 relative"
                 >
                   <Mail className="w-4 h-4" />
-                  <span className="hidden md:inline">Invitations</span>
+                  <span className="hidden md:inline">{t('tontines.invitations')}</span>
                   {pendingInvitations.length > 0 && (
                     <span className="absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
                       {pendingInvitations.length}
@@ -120,7 +122,7 @@ export default function TontinesPage() {
                   className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  <span className="hidden md:inline">Nouvelle Tontine</span>
+                  <span className="hidden md:inline">{t('tontines.newTontine')}</span>
                 </button>
               </div>
             </div>
@@ -142,7 +144,7 @@ export default function TontinesPage() {
               />
             </div>
 
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Mes Tontines Actives</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.myActiveTontines')}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {tontines?.map((t) => (
                 <TontineCard key={t.id} tontine={t} />

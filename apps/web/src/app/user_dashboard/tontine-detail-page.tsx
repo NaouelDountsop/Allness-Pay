@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Clock, Settings, Send, Loader2, MessageCircle } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -12,16 +13,17 @@ import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-m
 import { tontineService } from '@/lib/api/tontine.service';
 import { useUserProfile } from '@/hooks/use-user-profile';
 
-const statusBadge: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: 'ACTIVE', className: 'bg-allness-green/10 text-allness-green' },
-  DRAFT: { label: 'BROUILLON', className: 'bg-gray-100 text-gray-500' },
-  COMPLETED: { label: 'TERMINÉE', className: 'bg-blue-50 text-blue-600' },
-  PAUSED: { label: 'EN PAUSE', className: 'bg-amber-50 text-amber-600' },
+const statusBadgeClass: Record<string, string> = {
+  ACTIVE: 'bg-allness-green/10 text-allness-green',
+  DRAFT: 'bg-gray-100 text-gray-500',
+  COMPLETED: 'bg-blue-50 text-blue-600',
+  PAUSED: 'bg-amber-50 text-amber-600',
 };
 
 export default function TontineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [inviteOpen, setInviteOpen] = useState(false);
   const { profile } = useUserProfile();
 
@@ -56,15 +58,15 @@ export default function TontineDetailPage() {
         <DashboardHeader />
         <div className="px-4 sm:px-8 pb-10">
           <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-700">
-            <p className="text-lg font-semibold">Tontine introuvable</p>
+            <p className="text-lg font-semibold">{t('tontines.tontineNotFound')}</p>
             <p className="mt-2 text-sm text-gray-500">
-              Le groupe d'épargne demandé est introuvable. Retournez à la liste des tontines.
+              {t('tontines.tontineNotFoundDesc')}
             </p>
             <button
               onClick={() => navigate('/dashboard/tontines')}
               className="mt-6 inline-flex items-center justify-center rounded-lg bg-allness-green px-4 py-2 text-sm font-medium text-white hover:bg-allness-greenHover"
             >
-              Retour aux tontines
+              {t('tontines.backToTontines')}
             </button>
           </div>
         </div>
@@ -77,14 +79,23 @@ export default function TontineDetailPage() {
       ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100)
       : 0;
 
-  const badge = statusBadge[tontine.status] ?? statusBadge.DRAFT;
+  const statusLabelKey: Record<string, string> = {
+    ACTIVE: 'tontines.activeStatus',
+    DRAFT: 'tontines.draftStatus',
+    COMPLETED: 'tontines.completedStatus',
+    PAUSED: 'tontines.pausedStatus',
+  };
+  const badge = {
+    label: t(statusLabelKey[tontine.status] ?? 'tontines.draftStatus'),
+    className: statusBadgeClass[tontine.status] ?? statusBadgeClass.DRAFT,
+  };
 
   const descriptionParts: string[] = [];
-  descriptionParts.push('Groupe d\'épargne collaborative');
-  descriptionParts.push(`Fréquence : ${tontine.frequency}`);
+  descriptionParts.push(t('tontines.collaborativeSavings'));
+  descriptionParts.push(`${t('tontines.frequency')} : ${tontine.frequency}`);
   if (tontine.createdAt) {
     descriptionParts.push(
-      `Créée le ${new Date(tontine.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+      `${t('tontines.createdOn')} ${new Date(tontine.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
     );
   }
 
@@ -112,7 +123,7 @@ export default function TontineDetailPage() {
                 {badge?.label}
               </span>
             </div>
-            <p className="text-sm text-gray-500 mt-1 ml-8">
+            <p className="text-sm text-gray-600 mt-1 ml-8">
               {descriptionParts.join(' · ')}
             </p>
           </div>
@@ -123,14 +134,14 @@ export default function TontineDetailPage() {
               className="h-10 px-4 rounded-lg border border-allness-green text-allness-green text-sm font-medium hover:bg-allness-green/10 transition flex items-center gap-2"
             >
               <Clock className="w-4 h-4" />
-              <span className="hidden sm:inline">Historique des versements</span>
-              <span className="sm:hidden">Historique</span>
+              <span className="hidden sm:inline">{t('tontines.history')}</span>
+              <span className="sm:hidden">{t('tontines.history')}</span>
             </button>
             {isCreator && (
               <button
                 onClick={() => navigate(`/dashboard/tontines/${tontine.id}/settings`)}
                 aria-label="Paramètres"
-                className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
+                className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50"
               >
                 <Settings className="w-4 h-4" />
               </button>
@@ -140,7 +151,7 @@ export default function TontineDetailPage() {
               className="h-10 px-4 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <Send className="w-4 h-4" />
-              <span className="hidden md:inline">Nouveau versement</span>
+              <span className="hidden md:inline">{t('tontines.newPayment')}</span>
             </button>
           </div>
         </div>

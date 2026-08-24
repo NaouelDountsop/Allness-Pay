@@ -156,7 +156,7 @@
     --brand-border: #18353B;
     --brand-text: #F1F5F5;
     --brand-text-secondary: #94A6AA;
-    --brand-text-disabled: #5F7378;
+    --brand-text-disabled: #7A8C92;
     --brand-orange: #E0A23B;
     --brand-green: #20C98A;
     --brand-green-light: #20C98A;
@@ -173,7 +173,7 @@
     --gray-100: #0D252B;
     --gray-200: #18353B;
     --gray-300: #1C383E;
-    --gray-400: #5F7378;
+    --gray-400: #8A9CA2;
     --gray-500: #94A6AA;
     --gray-600: #94A6AA;
     --gray-700: #F1F5F5;
@@ -327,6 +327,9 @@
 .dark .text-gray-900,
 .dark [class*="text-gray-900"] { color: var(--gray-900) !important; }
 .dark .text-black { color: var(--brand-text) !important; }
+.dark .text-white\/50 { color: rgba(255, 255, 255, 0.7) !important; }
+.dark .text-white\/60 { color: rgba(255, 255, 255, 0.75) !important; }
+.dark .text-white\/40 { color: rgba(255, 255, 255, 0.6) !important; }
 
 .dark .border-gray-100,
 .dark [class*="border-gray-100"] { border-color: var(--gray-100) !important; }

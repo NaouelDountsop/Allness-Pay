@@ -13,6 +13,13 @@ interface PreferencesState {
 
 const STORAGE_KEY = 'afrilinkpay-preferences';
 
+function getSystemTheme(): Theme {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'light';
+}
+
 function loadPreferences(): PreferencesState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -22,7 +29,7 @@ function loadPreferences(): PreferencesState {
         if (parsed.theme === 'light' || parsed.theme === 'dark') {
           return { language: parsed.language, theme: parsed.theme };
         }
-        return { language: parsed.language, theme: 'light' };
+        return { language: parsed.language, theme: getSystemTheme() };
       }
       if (parsed.theme === 'light' || parsed.theme === 'dark') {
         return { language: 'fr', theme: parsed.theme };
@@ -31,7 +38,7 @@ function loadPreferences(): PreferencesState {
   } catch {
     // ignore
   }
-  return { language: 'fr', theme: 'light' };
+  return { language: 'fr', theme: getSystemTheme() };
 }
 
 function savePreferences(state: PreferencesState) {
@@ -60,6 +67,19 @@ export function usePreferences() {
       i18n.changeLanguage(prefs.language);
     }
   }, [prefs]);
+
+  // Listen for system theme changes (only applies if user has no saved preference)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        setPrefs((prev) => ({ ...prev, theme: e.matches ? 'dark' : 'light' }));
+      }
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const toggleLanguage = useCallback(() => {
     setPrefs((prev) => ({
