@@ -1,12 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan } from 'typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { Repository, DataSource, LessThan } from 'typeorm';
 import { TontineContribution } from '../entities/tontine-contribution.entity';
 import { TontineMember } from '../entities/tontine-member.entity';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
-import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
-
-const MAX_MISSED_CONTRIBUTIONS = 3;
 
 @Injectable()
 export class LatePenaltyJob {
@@ -15,8 +12,8 @@ export class LatePenaltyJob {
   constructor(
     @InjectRepository(TontineContribution)
     private readonly contributionRepo: Repository<TontineContribution>,
-    @InjectRepository(TontineMember)
-    private readonly memberRepo: Repository<TontineMember>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   async handle(): Promise<void> {
@@ -27,32 +24,44 @@ export class LatePenaltyJob {
         status: TontineContributionStatus.PENDING,
         dueDate: LessThan(now),
       },
-      relations: ['cycle'],
     });
 
     this.logger.log(`${overdueContributions.length} contributions en retard détectées`);
 
+    let succeeded = 0;
+    let failed = 0;
+
     for (const contribution of overdueContributions) {
-      contribution.status = TontineContributionStatus.LATE;
-      contribution.penaltyCount += 1;
-      await this.contributionRepo.save(contribution);
+      try {
+        await this.dataSource.transaction(async (manager) => {
+          contribution.status = TontineContributionStatus.LATE;
+          contribution.penaltyCount += 1;
+          await manager.save(contribution);
 
-      const member = await this.memberRepo.findOne({
-        where: { id: contribution.memberId },
-      });
+          const member = await manager.findOne(TontineMember, {
+            where: { id: contribution.memberId },
+          });
 
-      if (member) {
-        member.missedContributions += 1;
-
-        if (member.missedContributions >= MAX_MISSED_CONTRIBUTIONS) {
-          member.status = TontineMemberStatus.SUSPENDED;
-          this.logger.warn(
-            `Membre ${member.id} suspendu après ${member.missedContributions} contributions manquées`,
-          );
-        }
-
-        await this.memberRepo.save(member);
+          if (member) {
+            member.missedContributions += 1;
+            await manager.save(member);
+          } else {
+            this.logger.warn(
+              `Membre introuvable pour la contribution ${contribution.id} (memberId: ${contribution.memberId})`,
+            );
+          }
+        });
+        succeeded++;
+      } catch (err) {
+        failed++;
+        const error = err instanceof Error ? err : new Error(String(err));
+        this.logger.error(
+          `Échec du traitement de la contribution ${contribution.id}: ${error.message}`,
+          error.stack,
+        );
       }
     }
+
+    this.logger.log(`Job terminé: ${succeeded} traitées, ${failed} échecs`);
   }
 }

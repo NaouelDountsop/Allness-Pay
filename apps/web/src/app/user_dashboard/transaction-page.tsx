@@ -84,7 +84,7 @@ export default function TransactionsPage() {
       <div>
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">Transactions</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-allness-dark dark:text-white">Transactions</h1>
             <p className="text-sm text-gray-400">Consultez l'historique de vos transactions.</p>
           </div>
           <div className="flex items-center gap-2">

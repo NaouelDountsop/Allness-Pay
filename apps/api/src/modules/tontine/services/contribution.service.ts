@@ -1,4 +1,3 @@
-import type { EntityManager } from 'typeorm';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
@@ -16,6 +15,7 @@ import { PinService } from '../../pin/pin.service';
 import { ContributeDto } from '../dto/contribute.dto';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
 import { TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
+import { recalculateBalance } from '../utils/balance.util';
 
 @Injectable()
 export class ContributionService {
@@ -95,8 +95,8 @@ export class ContributionService {
       await manager.save(creditEntry);
 
       const [newMemberBalance, newTontineBalance] = await Promise.all([
-        this.recalculateBalance(manager, dto.walletId),
-        this.recalculateBalance(manager, tontineWallet.id),
+        recalculateBalance(manager, dto.walletId),
+        recalculateBalance(manager, tontineWallet.id),
       ]);
       await manager.update(Wallet, { id: dto.walletId }, { balance: newMemberBalance });
       await manager.update(Wallet, { id: tontineWallet.id }, { balance: newTontineBalance });
@@ -155,20 +155,4 @@ export class ContributionService {
     return this.contributionRepo.save(contribution);
   }
 
-  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
-    const result = await manager
-      .createQueryBuilder(WalletTransaction, 'wt')
-      .select(
-        `COALESCE(
-          SUM(CASE WHEN wt.type IN ('deposit', 'transfer_in') THEN wt.amount ELSE 0 END)
-          - SUM(CASE WHEN wt.type IN ('withdrawal', 'transfer_out') THEN wt.amount ELSE 0 END),
-          0
-        )`,
-        'balance',
-      )
-      .where('wt.walletId = :walletId', { walletId })
-      .getRawOne<{ balance: string }>();
-
-    return BigInt(result?.balance ?? '0');
-  }
 }

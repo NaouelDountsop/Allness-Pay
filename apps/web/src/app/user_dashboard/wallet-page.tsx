@@ -17,6 +17,7 @@ import { kycService } from '@/lib/api/kyc.service';
 import { getPendingDeposit, clearPendingDeposit, type DepositState } from '../../context/deposit-flow-context';
 import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
+
 export default function WalletPage() {
   const { t } = useTranslation();
   const [addAccountOpen, setAddAccountOpen] = useState(false);

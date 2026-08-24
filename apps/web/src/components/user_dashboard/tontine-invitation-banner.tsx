@@ -18,7 +18,7 @@ export function TontineInvitationBanner({ count }: TontineInvitationBannerProps)
         <span className={tontineBannerStyle.iconWrapper}>
           <UserPlus className={`w-4 h-4 ${tontineBannerStyle.iconColor}`} />
         </span>
-        <p className={`text-sm font-medium ${tontineBannerStyle.textColor}`}>
+        <p className={`text-sm font-medium dark:text-white${tontineBannerStyle.textColor}`}>
           Vous avez {count} invitation{count > 1 ? 's' : ''} à rejoindre une tontine
         </p>
       </div>
