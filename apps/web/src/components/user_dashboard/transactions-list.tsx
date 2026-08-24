@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, Loader2, XCircle } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
+import { LoadingSpinner } from '@/components/common/loading-spinner';
+import { formatAmount, formatDateShort } from '@/lib/utils';
 
 interface TransactionsListProps {
   transactions: WalletTransaction[];
@@ -10,59 +13,61 @@ interface TransactionsListProps {
 
 export function TransactionsList({ transactions, onSelect, isLoading }: TransactionsListProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#082B37]" >Dernières transactions</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
           <a
             href="/dashboard/transactions"
-            className="text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
+            className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
           >
-            Voir tout
+            {t('tontines.viewAll')}
           </a>
         </div>
         <div className="flex items-center justify-center py-10">
-          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
+          <LoadingSpinner size="md" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-5 bg-white">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#082B37] dark:text-white/90">Dernières transactions</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
         <a
           href="/dashboard/transactions"
-          className="text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
+          className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
         >
-          Voir tout
+          {t('tontines.viewAll')}
         </a>
       </div>
 
       <ul className="space-y-1">
-        {transactions.map((t) => {
-          const credit = transactionService.isCredit(t.type);
-          const isFailed = t.status === 'failed';
-          const isCompleted = t.status === 'completed';
+        {transactions.map((tx) => {
+          const credit = transactionService.isCredit(tx.type);
+          const isFailed = tx.status === 'failed';
+          const isCompleted = tx.status === 'completed';
           return (
-            <li key={t.id}>
+            <li key={tx.id}>
               <button
                 type="button"
                 onClick={() => {
                   if (onSelect) {
-                    onSelect(t);
+                    onSelect(tx);
                   } else {
                     navigate('/dashboard/transactions');
                   }
                 }}
-                className="w-full flex items-center justify-between py-3 px-2 -mx-2 rounded-xl text-left transition-colors hover:bg-[#082B37]/[0.04] active:bg-[#082B37]/[0.07] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D28E2F]/50"
+                className="w-full flex items-center justify-between py-3 px-2 -mx-2 rounded-xl text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-allness-orange/50"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      isFailed ? 'bg-red-50' : credit ? 'bg-allness-green/10' : 'bg-red-50'
+                      isFailed ? 'bg-red-50 dark:bg-red-500/10' : credit ? 'bg-allness-green/10' : 'bg-red-50 dark:bg-red-500/10'
                     }`}
                   >
                     {isFailed ? (
@@ -74,19 +79,15 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-[#082B37] dark:text-white/90font-medium truncate">
-                      {transactionService.getTypeLabel(t.type)}
+                    <p className="text-sm text-gray-900 dark:text-white font-medium truncate">
+                      {transactionService.getTypeLabel(tx.type)}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] dark:text-white/90font-medium bg-[#082B37]/10 text-[#082B37] px-1.5 py-0.5 rounded">
-                        {t.reference || '—'}
+                      <span className="text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded">
+                        {tx.reference || '—'}
                       </span>
-                      <p className="text-xs text-[#D28E2F]">
-                        {new Date(t.createdAt).toLocaleDateString('fr-FR', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
+                      <p className="text-xs text-allness-orange">
+                        {formatDateShort(tx.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -99,12 +100,11 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     }`}
                   >
                     {isCompleted ? (credit ? '+' : '-') : ''}
-                    {new Intl.NumberFormat('fr-FR').format(t.amount)}{' '}
-                    <span className="hidden sm:inline">XAF</span>
+                    {formatAmount(tx.amount)}
                   </span>
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      isFailed ? 'bg-red-50' : 'bg-allness-green/10'
+                      isFailed ? 'bg-red-50 dark:bg-red-500/10' : 'bg-allness-green/10'
                     }`}
                   >
                     <ChevronRight
@@ -117,7 +117,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
           );
         })}
         {transactions.length === 0 && (
-          <li className="py-10 text-center text-sm text-gray-400">Aucune transaction</li>
+          <li className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">{t('tontines.noTransactions')}</li>
         )}
       </ul>
     </div>

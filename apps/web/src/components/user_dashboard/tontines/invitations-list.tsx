@@ -1,5 +1,6 @@
 import { Check, XIcon, Calendar, UserPlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import type { TontineInvitation } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
 import { tontineService } from '@/lib/api/tontine.service';
@@ -36,6 +37,7 @@ function InvitationTontine({ tontineId }: { tontineId: string }) {
 }
 
 export function InvitationsList({ invitations, onInvitationClick }: InvitationsListProps) {
+  const { t } = useTranslation();
   if (invitations.length === 0) return null;
 
   const pending = invitations.filter((inv) => inv.status === 'PENDING');
@@ -50,7 +52,7 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
               <UserPlus className="w-3.5 h-3.5 text-allness-orange" />
             </span>
             <h3 className="text-sm font-semibold text-allness-dark">
-              Invitations en attente
+              {t('tontines.pendingInvitations')}
             </h3>
             <span className="ml-auto text-[11px] font-medium bg-allness-orange/10 text-allness-orange px-2 py-0.5 rounded-full">
               {pending.length}
@@ -77,14 +79,14 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                     <div className="flex items-center gap-1 mt-1">
                       <Calendar className="w-3 h-3 text-gray-300" />
                       <p className="text-[11px] text-gray-400">
-                        Expire le {new Date(inv.expiresAt).toLocaleDateString('fr-FR')}
+                        {t('tontines.expiresAt', { date: new Date(inv.expiresAt).toLocaleDateString('fr-FR') })}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-1">
                   <span className="text-[10px] font-medium text-allness-orange opacity-0 group-hover:opacity-100 transition-opacity">
-                    Voir
+                    {t('tontines.view')}
                   </span>
                   <Check className="w-4 h-4 text-allness-orange" />
                 </div>
@@ -96,7 +98,7 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
 
       {processed.length > 0 && (
         <div>
-          <h3 className="text-xs font-medium text-gray-400 mb-2">Traitées</h3>
+          <h3 className="text-xs font-medium text-gray-400 mb-2">{t('tontines.processed')}</h3>
           <div className="space-y-2">
             {processed.map((inv) => (
               <div
@@ -116,16 +118,16 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                 {inv.status === 'ACCEPTED' ? (
                   <span className="shrink-0 text-[10px] font-medium bg-green-50 text-green-600 px-2.5 py-1 rounded-full flex items-center gap-1">
                     <Check className="w-3 h-3" />
-                    Acceptée
+                    {t('tontines.accepted')}
                   </span>
                 ) : inv.status === 'DECLINED' ? (
                   <span className="shrink-0 text-[10px] font-medium bg-red-50 text-red-500 px-2.5 py-1 rounded-full flex items-center gap-1">
                     <XIcon className="w-3 h-3" />
-                    Refusée
+                    {t('tontines.declined')}
                   </span>
                 ) : (
                   <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-allness-orange px-2.5 py-1 rounded-full">
-                    Expirée
+                    {t('tontines.expired')}
                   </span>
                 )}
               </div>

@@ -94,8 +94,8 @@ export function WalletBalanceCard({
           <defs>
             <linearGradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="white" stopOpacity="0.35" />
-              <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+              <stop offset="50%" stopColor="var(--brand-orange, #D28E2F)" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="var(--brand-orange, #D28E2F)" stopOpacity="0.05" />
             </linearGradient>
           </defs>
           <circle cx="100" cy="100" r="90" stroke="url(#globeGradient)" strokeWidth="1.5" />

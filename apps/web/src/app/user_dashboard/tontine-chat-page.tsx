@@ -22,6 +22,7 @@ import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { Button } from "@/components/ui/button";
 import { tontineService, type Tontine, type TontineMember } from "@/lib/api/tontine.service";
+import { useTranslation } from 'react-i18next';
 
 interface Conversation {
   id: string;
@@ -314,7 +315,7 @@ function InfoRow({
     <div className="flex items-center justify-between py-2.5 text-sm">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-gray-400" />
-        <span className="text-gray-500">{label}</span>
+        <span className="text-gray-600">{label}</span>
       </div>
       <span className="font-medium text-gray-900">{value}</span>
     </div>
@@ -322,6 +323,7 @@ function InfoRow({
 }
 
 function MemberRow({ member }: { member: Member }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center gap-2.5">
@@ -333,13 +335,13 @@ function MemberRow({ member }: { member: Member }) {
         <span className="text-sm font-medium text-gray-900">{member.name}</span>
       </div>
       {member.role === 'Admin' ? (
-        <span className="text-xs text-gray-400">Admin</span>
+        <span className="text-xs text-gray-500">{t('tontines.adminRole')}</span>
       ) : member.role === 'Prochain tour' ? (
         <span className="rounded-full bg-allness-green/10 px-2.5 py-1 text-[11px] font-semibold text-allness-green">
-          Prochain tour
+          {t('tontines.nextTurnRole')}
         </span>
       ) : (
-        <span className="text-xs text-gray-400">Membre</span>
+        <span className="text-xs text-gray-500">{t('tontines.memberRole')}</span>
       )}
     </div>
   );
@@ -356,6 +358,7 @@ function ChatArea({
 }) {
   const [pinnedVisible, setPinnedVisible] = useState(true);
   const [draft, setDraft] = useState('');
+  const { t } = useTranslation();
 
   const handleSend = () => {
     if (!draft.trim()) return;
@@ -393,14 +396,14 @@ function ChatArea({
                 {tontine?.name ?? conversation.name}
               </p>
               <span className="rounded-full bg-allness-green/10 px-2 py-0.5 text-[11px] font-semibold text-allness-green">
-                {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
+                {tontine?.status === 'ACTIVE' ? t('tontines.activeLabel') : (tontine?.status ?? t('tontines.activeLabel'))}
               </span>
             </div>
             <p className="text-xs text-gray-500">
-              {tontine?.members?.length ?? 12} membres
+              {tontine?.members?.length ?? 12} {t('tontines.membersCount')}
               {tontine?.nextContributionAt
-                ? ` · Prochain tour : ${new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')}`
-                : ' · Prochain tour : Awa · 25 Mai 2024'}
+                ? ` · ${t('tontines.nextTurn')} : ${new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')}`
+                : ` · ${t('tontines.nextTurn')} : Awa · 25 Mai 2024`}
             </p>
           </div>
         </div>
@@ -428,14 +431,14 @@ function ChatArea({
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
               <Pin className="h-3.5 w-3.5" />
-              Message épinglé
+              {t('tontines.pinnedMessage')}
             </p>
             <p className="mt-0.5 truncate text-xs text-gray-500">
               Rappel : Versement du mois de Mai avant le 25/05 à 18h.
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
-            <button className="text-xs font-medium text-allness-green">Voir</button>
+            <button className="text-xs font-medium text-allness-green">{t('tontines.see')}</button>
             <button
               onClick={() => setPinnedVisible(false)}
               className="text-gray-400 hover:text-gray-600"
@@ -455,7 +458,7 @@ function ChatArea({
 
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-allness-green/20" />
-          <span className="text-xs font-medium text-allness-green">Nouveaux messages</span>
+          <span className="text-xs font-medium text-allness-green">{t('tontines.newMessages')}</span>
           <div className="h-px flex-1 bg-allness-green/20" />
         </div>
 
@@ -470,7 +473,7 @@ function ChatArea({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Écrire un message..."
+          placeholder={t('tontines.writeMessage')}
           className="flex-1 rounded-full bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
         />
         <button className="text-gray-400 hover:text-gray-600" aria-label="Émoji">
@@ -495,9 +498,10 @@ function TontineAboutPanel({
   tontine?: Tontine | null;
   members?: TontineMember[];
 }) {
+  const { t } = useTranslation();
   return (
     <aside className="hidden min-w-0 flex-col overflow-y-auto rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm xl:flex xl:w-full xl:max-w-[280px] xl:min-h-0 xl:border-none">
-      <p className="text-sm font-semibold text-gray-900">À propos de la tontine</p>
+      <p className="text-sm font-semibold text-gray-900">{t('tontines.aboutTontine')}</p>
 
       <div className="mt-4 flex flex-col items-center text-center">
         <img
@@ -509,14 +513,14 @@ function TontineAboutPanel({
           {tontine?.name ?? 'Tontine Famille Unie'}
         </p>
         <span className="mt-1 rounded-full bg-allness-green/10 px-2.5 py-0.5 text-[11px] font-semibold text-allness-green">
-          {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
+          {tontine?.status === 'ACTIVE' ? t('tontines.activeLabel') : (tontine?.status ?? t('tontines.activeLabel'))}
         </span>
       </div>
 
       <div className="mt-5 divide-y divide-gray-100 border-y border-gray-100">
         <InfoRow
           icon={Users}
-          label="Créée par"
+          label={t('tontines.createdBy')}
           value={
             tontine?.creator
               ? `${tontine.creator.prenom ?? ''} ${tontine.creator.nom ?? ''}`.trim() || 'Inconnu'
@@ -525,7 +529,7 @@ function TontineAboutPanel({
         />
         <InfoRow
           icon={Users}
-          label="Date de création"
+          label={t('tontines.creationDate')}
           value={
             tontine?.createdAt
               ? new Date(tontine.createdAt).toLocaleDateString('fr-FR', {
@@ -538,22 +542,22 @@ function TontineAboutPanel({
         />
         <InfoRow
           icon={Users}
-          label="Nombre de membres"
+          label={t('tontines.memberCount')}
           value={String(tontine?.members?.length ?? 12)}
         />
         <InfoRow
           icon={Users}
-          label="Montant de cotisation"
+          label={t('tontines.contributionLabel')}
           value={
             tontine?.contributionAmount
               ? `${Number(tontine.contributionAmount).toLocaleString('fr-FR')} ${tontine.currency ?? 'FCFA'}`
               : '25 000 FCFA'
           }
         />
-        <InfoRow icon={Users} label="Fréquence" value={tontine?.frequency ?? 'Mensuelle'} />
+        <InfoRow icon={Users} label={t('tontines.frequency')} value={tontine?.frequency ?? 'Mensuelle'} />
         <InfoRow
           icon={Users}
-          label="Prochain tour"
+          label={t('tontines.nextTurn')}
           value={
             tontine?.nextContributionAt
               ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')
@@ -565,9 +569,9 @@ function TontineAboutPanel({
       <div className="mt-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-gray-900">
-            Membres ({tontine?.members?.length ?? 12})
+            {t('tontines.members')} ({tontine?.members?.length ?? 12})
           </p>
-          <button className="text-xs font-medium text-allness-green">Voir tout</button>
+          <button className="text-xs font-medium text-allness-green">{t('tontines.viewAll')}</button>
         </div>
         <div className="mt-1 divide-y divide-gray-50">
           {(members ?? MEMBERS).map((m) => {
@@ -593,8 +597,8 @@ function TontineAboutPanel({
 
       <div className="mt-5">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-900">Fichiers partagés</p>
-          <button className="text-xs font-medium text-allness-green">Voir tout</button>
+          <p className="text-sm font-semibold text-gray-900">{t('tontines.sharedFiles')}</p>
+          <button className="text-xs font-medium text-allness-green">{t('tontines.viewAll')}</button>
         </div>
         <div className="mt-2 flex items-center justify-between rounded-2xl bg-gray-50 p-3">
           <div className="flex items-center gap-2.5">
@@ -613,6 +617,7 @@ function TontineAboutPanel({
 }
 
 export default function TontineChatPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isSingleTontine = !!id;
@@ -697,7 +702,7 @@ export default function TontineChatPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
-            <h2 className="text-sm font-semibold text-gray-900 flex-1">Messagerie</h2>
+            <h2 className="text-sm font-semibold text-gray-900 flex-1">{t('tontines.chatTitle')}</h2>
             <div className="flex items-center gap-1">
               <button
                 className="rounded-full p-1.5 text-gray-400 hover:bg-gray-50"

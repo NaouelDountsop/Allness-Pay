@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Users, Crown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Tontine } from '@/lib/api/tontine.service';
 import { authStorage } from '@/lib/auth-storage';
 
@@ -28,6 +29,7 @@ const avatarColors = [
 ];
 
 export function TontineCard({ tontine }: TontineCardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const members = tontine.members ?? [];
   const extraMembers = tontine.memberLimit - 3;
@@ -44,9 +46,9 @@ export function TontineCard({ tontine }: TontineCardProps) {
         <div className="flex items-center gap-1.5 min-w-0 pr-2">
           <p className="text-sm font-semibold text-gray-900 truncate">{tontine.name}</p>
           {isAdmin && (
-            <span className="inline-flex items-center gap-0.5 shrink-0 text-[10px] font-medium bg-allness-orange/10 text-allness-orange px-1.5 py-0.5 rounded-full" title="Admin">
+            <span className="inline-flex items-center gap-0.5 shrink-0 text-[10px] font-medium bg-allness-orange/10 text-allness-orange px-1.5 py-0.5 rounded-full" title={t('tontines.admin')}>
               <Crown className="w-3 h-3" />
-              <span>Admin</span>
+              <span>{t('tontines.admin')}</span>
             </span>
           )}
         </div>
@@ -66,8 +68,8 @@ export function TontineCard({ tontine }: TontineCardProps) {
           <defs>
             <linearGradient id="globeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="white" stopOpacity="0.35" />
-              <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+              <stop offset="50%" stopColor="var(--brand-orange, #D28E2F)" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="var(--brand-orange, #D28E2F)" stopOpacity="0.05" />
             </linearGradient>
           </defs>
           <circle cx="100" cy="100" r="90" stroke="url(#globeGradient)" strokeWidth="1.5" />
@@ -97,7 +99,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
         <div className="flex items-center justify-between mb-3 relative z-10">
           <div className="flex items-center gap-2">
             <img src="/allnesspay_logo1.png" alt="" className="w-7 h-7 object-contain" />
-            <p className="text-xs text-white/60 tracking-wide">CAGNOTTE</p>
+            <p className="text-xs text-white/60 tracking-wide">{t('tontines.pot')}</p>
           </div>
           <span className="text-[10px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">
             {tontine.frequency}
@@ -114,9 +116,9 @@ export function TontineCard({ tontine }: TontineCardProps) {
 
       {/* Participants */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <Users className="w-3.5 h-3.5 text-gray-400" />
-          <span>{tontine.memberLimit} membres</span>
+        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+          <Users className="w-3.5 h-3.5 text-gray-500" />
+          <span>{tontine.memberLimit} {t('tontines.membersCount')}</span>
         </div>
         <div className="flex -space-x-2">
           {members.slice(0, 3).map((m, i) => (
@@ -129,7 +131,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
             </span>
           ))}
           {extraMembers > 0 && (
-            <span className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-[9px] font-medium text-gray-500">
+            <span className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-[9px] font-medium text-gray-600">
               +{extraMembers}
             </span>
           )}
@@ -141,8 +143,8 @@ export function TontineCard({ tontine }: TontineCardProps) {
 
       {/* Progression */}
       <div className="mb-2 flex items-center justify-between text-[11px]">
-        <span className="text-gray-400">
-          Tour <span className="font-medium text-gray-600">{tontine.currentCycle}</span> /{' '}
+        <span className="text-gray-500">
+          {t('tontines.tour')} <span className="font-medium text-gray-700">{tontine.currentCycle}</span> /{' '}
           {tontine.memberLimit}
         </span>
         <span className="text-allness-green font-semibold">{progressPercent}%</span>
@@ -158,7 +160,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
         onClick={() => navigate(`/dashboard/tontines/${tontine.id}`)}
         className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors"
       >
-        Voir les détails
+        {t('tontines.viewDetails')}
       </button>
     </div>
   );

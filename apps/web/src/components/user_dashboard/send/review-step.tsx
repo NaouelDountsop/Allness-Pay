@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
+import { useTranslation } from 'react-i18next';
 import { getCountryByCode, getFlagUrl } from '@/data/countries';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
+import { formatAmount } from '@/lib/utils';
 import { Info, ArrowLeft, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 const COUNTRY_TO_CURRENCY: Record<string, string> = {
@@ -49,6 +50,7 @@ export function ReviewStep({
   sender,
   beneficiaryName,
 }: ReviewStepProps) {
+  const { t } = useTranslation();
   const senderCurrency = sender?.currency ?? 'CAD';
   const receiverCurrency = COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF';
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
@@ -77,15 +79,13 @@ export function ReviewStep({
         className="flex items-center gap-2 text-sm font-semibold text-allness-dark hover:text-allness-orange transition-colors mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
-        Retour
+        {t('tontines.back')}
       </button>
 
       <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
         <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-500" />
         <p>
-          <span className="font-semibold">L'expéditeur doit vérifier</span> l'exactitude des
-          informations du bénéficiaire (nom, numéro) avant de valider l'opération. Aucun
-          remboursement ne sera effectué si les fonds sont envoyés à un tiers par erreur.
+          <span className="font-semibold">{t('tontines.senderMustVerify')}</span> {t('tontines.verifyInfoDescription')}
         </p>
       </div>
 
@@ -103,7 +103,7 @@ export function ReviewStep({
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
-                Expéditeur
+                {t('tontines.sender')}
               </p>
               <p className="text-sm font-medium text-gray-700">{senderCountryName}</p>
             </div>
@@ -128,7 +128,7 @@ export function ReviewStep({
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
-                Bénéficiaire
+                {t('tontines.beneficiary')}
               </p>
               <p className="text-sm font-medium text-gray-700">{countryName}</p>
             </div>
@@ -146,7 +146,7 @@ export function ReviewStep({
       {/* Mode de réception */}
       <div className="mb-5 rounded-xl border-2 border-allness-green/20 bg-allness-green/[0.03] p-4">
         <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1">
-          Mode de réception
+          {t('tontines.receptionMode')}
         </p>
         <p className="text-base font-semibold text-allness-dark">
           {RECEPTION_LABELS[receptionMode] ?? 'Wallet AllnessPay'}
@@ -155,45 +155,45 @@ export function ReviewStep({
 
       {/* Vous envoyez */}
       <div className="mb-4">
-        <p className="text-sm text-gray-500 mb-1">Vous envoyez</p>
+        <p className="text-sm text-gray-500 mb-1">{t('tontines.youSend')}</p>
         <p className="text-2xl md:text-3xl font-bold text-gray-800">
-          {new Intl.NumberFormat('fr-FR').format(amount)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+          {formatAmount(amount, senderCurrency)}
         </p>
       </div>
 
       {/* Taux + Frais + Total */}
-      <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 mb-4 space-y-3">
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <span className="font-medium">Taux de change</span>
-          <span className="text-allness-dark font-semibold">
+      <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 mb-4 space-y-3">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <span className="font-medium">{t('tontines.exchangeRate')}</span>
+          <span className="text-allness-dark dark:text-white font-semibold">
             {exchangeRate
               ? `1 ${senderCurrency} = ${exchangeRate.toFixed(4)} ${receiverCurrency}`
-              : 'Non disponible'}
+              : t('tontines.notAvailable')}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <span className="font-medium">Frais de transfert (1%)</span>
-          <span className="text-allness-dark font-semibold">
-            {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <span className="font-medium">{t('tontines.transferFees')}</span>
+          <span className="text-allness-dark dark:text-white font-semibold">
+            {formatAmount(fees, senderCurrency)}
           </span>
         </div>
-        <div className="border-t border-gray-200 pt-3">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-            <span className="text-xl font-bold text-allness-dark">
-              {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+            <span className="text-sm font-semibold text-allness-dark dark:text-white">{t('tontines.totalDebited')}</span>
+            <span className="text-xl font-bold text-allness-dark dark:text-white">
+              {formatAmount(totalDebit, senderCurrency)}
             </span>
           </div>
         </div>
       </div>
 
       {/* Le bénéficiaire reçoit — design cohérent avec les autres pages */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-[#082B37] text-white px-5 py-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-gray-900 dark:bg-gray-800 text-white px-5 py-4 mb-6">
         <span className="text-sm sm:text-base font-medium text-white/80">
-          Le bénéficiaire reçoit
+          {t('tontines.beneficiaryReceives')}
         </span>
-        <span className="text-xl sm:text-2xl font-bold text-[#D28E2F]">
-          {new Intl.NumberFormat('fr-FR').format(received)} {receiverCurrency}
+        <span className="text-xl sm:text-2xl font-bold text-allness-orange">
+          {formatAmount(received, receiverCurrency)}
         </span>
       </div>
 
@@ -201,13 +201,13 @@ export function ReviewStep({
         onClick={onSend}
         className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors mb-6"
       >
-        Envoyer
+        {t('tontines.send')}
       </button>
 
       {/* Transferts récents — données réelles */}
       {lastFive.length > 0 && (
-        <div className="rounded-xl border border-gray-100 p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-3">Transferts récents</p>
+        <div className="rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+          <p className="text-sm font-semibold text-gray-800 dark:text-white mb-3">{t('tontines.recentTransfers')}</p>
           <ul className="space-y-2">
             {lastFive.map((t: WalletTransaction) => {
               const credit = transactionService.isCredit(t.type);

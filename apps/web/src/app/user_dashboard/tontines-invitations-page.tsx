@@ -19,6 +19,7 @@ import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { tontineService, type TontineInvitation } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
+import { useTranslation } from 'react-i18next';
 
 type FilterTab = 'all' | 'pending' | 'expired' | 'declined';
 
@@ -53,6 +54,7 @@ function InvitationCard({
   isDeclining: boolean;
 }) {
   //const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: tontine } = useQuery({
     queryKey: ['tontine', invitation.tontineId],
     queryFn: () => tontineService.getById(invitation.tontineId),
@@ -64,9 +66,9 @@ function InvitationCard({
   const isExpired = invitation.status === 'EXPIRED';
 
   const frequencyMap: Record<string, string> = {
-    WEEKLY: 'Hebdomadaire',
-    BIWEEKLY: 'Bimensuelle',
-    MONTHLY: 'Mensuelle',
+    WEEKLY: t('tontines.weekly'),
+    BIWEEKLY: t('tontines.biweekly'),
+    MONTHLY: t('tontines.monthly'),
   };
 
   return (
@@ -80,40 +82,38 @@ function InvitationCard({
             <h3 className="text-lg font-bold text-gray-900 mb-1.5">{tontine?.name}</h3>
             {isPending && (
               <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
-                EN ATTENTE
+                {t('tontines.pendingStatus')}
               </span>
             )}
             {isAccepted && (
               <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
-                ACCEPTÉE
+                {t('tontines.acceptedStatus')}
               </span>
             )}
             {isDeclined && (
               <span className="inline-flex items-center text-[10px] font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full mb-1.5">
-                REFUSÉE
+                {t('tontines.declinedStatus')}
               </span>
             )}
             {isExpired && (
               <span className="inline-flex items-center text-[10px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full mb-1.5">
-                EXPIRÉE
+                {t('tontines.expiredStatus')}
               </span>
             )}
             <p className="text-xs text-allness-dark mt-0.5">
-              Invité par : <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
+              {t('tontines.invitedBy')} <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
             {tontine && (
               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />
-                  {tontine.memberLimit} membres
+                  {tontine.memberLimit} {t('tontines.membersCount')}
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5" />
                   {frequencyMap[tontine.frequency] ?? tontine.frequency}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Coins className="w-3.5 h-3.5" />
-                  <span className="font-medium text-gray-700">
                   <Coins className="w-3.5 h-3.5" />
                   <span className="font-medium text-allness-dark">
                     {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
@@ -125,7 +125,7 @@ function InvitationCard({
             <div className="flex items-center gap-1 mt-2">
               <Clock className="w-3 h-3 text-gray-300" />
               <p className="text-[11px] text-gray-400">
-                Prochaine échéance :{' '}
+                {t('tontines.nextDueDate')}{' '}
                 <span className="font-medium text-allness-green">
                   {tontine?.nextContributionAt
                     ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
@@ -138,7 +138,7 @@ function InvitationCard({
               </p>
             </div>
             <p className="text-[11px] text-gray-400 mt-1">
-              Reçue le {new Date(invitation.createdAt).toLocaleDateString('fr-FR')}
+              {t('tontines.receivedOn')} {new Date(invitation.createdAt).toLocaleDateString('fr-FR')}
             </p>
           </div>
         </div>
@@ -158,7 +158,7 @@ function InvitationCard({
                 disabled={isAccepting}
                 className="h-9 w-full rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                {isAccepting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Accepter'}
+                {isAccepting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('tontines.accept')}
               </button>
 
               <button
@@ -166,7 +166,7 @@ function InvitationCard({
                 disabled={isDeclining}
                 className="h-9 w-full rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                {isDeclining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Refuser'}
+                {isDeclining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('tontines.decline')}
               </button>
             </>
           )}
@@ -179,6 +179,7 @@ function InvitationCard({
 export default function TontinesInvitationsPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
   const { data: invitations = [], isLoading } = useQuery({
@@ -219,10 +220,10 @@ export default function TontinesInvitationsPage() {
   })();
 
   const tabs: { key: FilterTab; label: string; count: number }[] = [
-    { key: 'all', label: 'Toutes', count: invitations.length },
-    { key: 'pending', label: 'En attente', count: pending.length },
-    { key: 'expired', label: 'Expirées', count: expired.length },
-    { key: 'declined', label: 'Refusées', count: declined.length },
+    { key: 'all', label: t('tontines.all'), count: invitations.length },
+    { key: 'pending', label: t('tontines.pendingInvitation'), count: pending.length },
+    { key: 'expired', label: t('tontines.expired'), count: expired.length },
+    { key: 'declined', label: t('tontines.declined'), count: declined.length },
   ];
 
   if (isLoading) {
@@ -276,13 +277,11 @@ export default function TontinesInvitationsPage() {
               {filteredInvitations.length === 0 ? (
                 <div className="text-center py-16">
                   <Mail className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-gray-500">Aucune invitation</p>
+                  <p className="text-sm font-medium text-gray-500">{t('tontines.noInvitation')}</p>
                   <p className="text-xs text-gray-400 mt-1">
                     {activeTab === 'all'
-                      ? "Vous n'avez pas encore reçu d'invitation."
-                      : `Aucune invitation ${
-                          activeTab === 'pending' ? 'en attente' : activeTab === 'expired' ? 'expirée' : 'refusée'
-                        }.`}
+                      ? t('tontines.noInvitationAll')
+                      : t('tontines.noInvitationFiltered', { filter: activeTab === 'pending' ? t('tontines.pendingInvitation').toLowerCase() : activeTab === 'expired' ? t('tontines.expired').toLowerCase() : t('tontines.declined').toLowerCase() })}
                   </p>
                 </div>
               ) : (
@@ -323,10 +322,10 @@ export default function TontinesInvitationsPage() {
               </svg>
 
               <div className="relative z-10">
-                <p className="text-sm text-white/70">Vous avez</p>
+                <p className="text-sm text-white/70">{t('tontines.youHave')}</p>
                 <p className="text-4xl font-bold text-allness-orange mt-1">{pending.length}</p>
                 <p className="text-sm font-medium text-white/80 mt-0.5">
-                  invitation{pending.length > 1 ? 's' : ''} en attente
+                  {pending.length > 1 ? t('tontines.invitationsPending') : t('tontines.invitationPending')}
                 </p>
               </div>
 
@@ -334,7 +333,7 @@ export default function TontinesInvitationsPage() {
                 onClick={() => setActiveTab('pending')}
                 className="mt-5 w-full h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors inline-flex items-center justify-center gap-2"
               >
-                Voir toutes les invitations
+                {t('tontines.viewAllInvitations')}
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -344,20 +343,20 @@ export default function TontinesInvitationsPage() {
                 <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-allness-green" />
                 </span>
-                <h3 className="text-sm font-semibold text-allness-dark">Conseils</h3>
+                <h3 className="text-sm font-semibold text-allness-dark">{t('tontines.tips')}</h3>
               </div>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-xs text-gray-600">
                   <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
-                  Vérifiez les informations de la tontine avant d'accepter.
+                  {t('tontines.tipVerify')}
                 </li>
                 <li className="flex items-start gap-2 text-xs text-gray-600">
                   <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
-                  Assurez-vous de connaître l'organisateur.
+                  {t('tontines.tipKnowOrganizer')}
                 </li>
                 <li className="flex items-start gap-2 text-xs text-gray-600">
                   <Lock className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
-                  Ne partagez jamais votre code PIN ou mot de passe.
+                  {t('tontines.tipPinSecurity')}
                 </li>
               </ul>
             </div>
@@ -368,8 +367,8 @@ export default function TontinesInvitationsPage() {
                   <HelpCircle className="w-4 h-4 text-blue-500" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-allness-dark">Besoin d'aide ?</p>
-                  <p className="text-xs text-gray-500">Contactez notre support</p>
+                  <p className="text-sm font-semibold text-allness-dark">{t('tontines.needHelpTitle')}</p>
+                  <p className="text-xs text-gray-500">{t('tontines.contactSupport')}</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400" />
