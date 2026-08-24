@@ -33,14 +33,14 @@ function SettingCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[2rem] border border-brand-border dark:border-brand-border bg-brand-card dark:bg-brand-card p-6 shadow-sm">
+    <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between gap-3 mb-5">
         <div>
-          <p className="text-sm font-semibold text-brand-text dark:text-brand-text">{title}</p>
-          <p className="mt-1 text-xs text-brand-text-secondary dark:text-brand-text-secondary">{description}</p>
+          <p className="text-sm font-semibold text-gray-900">{title}</p>
+          <p className="mt-1 text-xs text-gray-500">{description}</p>
         </div>
         {badge ? (
-          <span className="rounded-full bg-brand-green/10 px-3 py-1 text-[11px] font-semibold text-brand-green">
+          <span className="rounded-full bg-allness-green/10 px-3 py-1 text-[11px] font-semibold text-allness-green">
             {badge}
           </span>
         ) : null}
@@ -63,13 +63,13 @@ function ToggleRow({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-brand-hover dark:bg-brand-hover p-4">
+    <div className="flex items-center justify-between rounded-2xl bg-gray-50 p-4">
       <div>
-        <p className="text-sm font-medium text-brand-text dark:text-brand-text">{label}</p>
-        <p className="text-xs text-brand-text-secondary dark:text-brand-text-secondary">{hint}</p>
+        <p className="text-sm font-medium text-gray-900">{label}</p>
+        <p className="text-xs text-gray-500">{hint}</p>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-brand-text-secondary dark:text-brand-text-secondary">{checked ? t('settings.activated') : t('settings.deactivated')}</span>
+        <span className="text-xs text-gray-500">{checked ? t('settings.activated') : t('settings.deactivated')}</span>
         <Toggle checked={checked} onChange={onCheckedChange} />
       </div>
     </div>
@@ -155,9 +155,9 @@ export default function SettingsPage() {
       <div>
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
           <aside className="space-y-6 xl:w-1/3">
-            <div className="rounded-[2rem] border border-brand-border dark:border-brand-border bg-brand-card dark:bg-brand-card p-6 shadow-sm">
+            <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-brand-sidebar dark:bg-brand-sidebar text-3xl font-semibold text-white">
+                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-allness-dark text-3xl font-semibold text-white">
                   {fullName
                     .split(' ')
                     .map((part) => part[0])
@@ -165,43 +165,43 @@ export default function SettingsPage() {
                     .join('')}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-brand-orange">
+                  <p className="text-xs uppercase tracking-[0.24em] text-allness-orange">
                     {t('settings.title')}
                   </p>
-                  <h1 className="mt-3 text-2xl font-semibold text-brand-text dark:text-brand-text">
+                  <h1 className="mt-3 text-2xl font-semibold text-gray-900">
                     {t('settings.accountTitle')}
                   </h1>
                 </div>
               </div>
 
               <div className="mt-6 space-y-5">
-                <div className="rounded-3xl bg-brand-bg-gold-light dark:bg-brand-bg-gold-light p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-brand-text-secondary dark:text-brand-text-secondary">
+                <div className="rounded-3xl bg-allness-orange/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
                     {t('settings.emailPrincipal')}
                   </p>
-                  <p className="mt-3 text-sm font-medium text-brand-text dark:text-brand-text">{profile?.email ?? '-'}</p>
+                  <p className="mt-3 text-sm font-medium text-gray-900">{profile?.email ?? '-'}</p>
                 </div>
-                <div className="rounded-3xl bg-brand-bg-green-light dark:bg-brand-bg-green-light p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-brand-text-secondary dark:text-brand-text-secondary">{t('settings.twoFA')}</p>
-                  <p className="mt-3 text-sm font-medium text-brand-text dark:text-brand-text">
+                <div className="rounded-3xl bg-allness-green/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">{t('settings.twoFA')}</p>
+                  <p className="mt-3 text-sm font-medium text-gray-900">
                     {twoFaEnabled ? t('settings.enabled') : t('settings.disabled')}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-[2rem] border border-brand-border dark:border-brand-border bg-brand-card dark:bg-brand-card p-6 shadow-sm">
+              <div className="mt-6 rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-4 h-4 text-brand-orange" />
-                  <p className="text-sm font-semibold text-brand-text dark:text-brand-text">{t('settings.quickPrefs')}</p>
+                  <Sparkles className="w-4 h-4 text-allness-orange" />
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.quickPrefs')}</p>
                 </div>
                 <div className="space-y-3">
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.language')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.language')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.currency')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">{currency}</p>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.currency')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
                   </div>
                 </div>
               </div>
@@ -216,27 +216,27 @@ export default function SettingsPage() {
                 badge={twoFaEnabled ? t('settings.enabled') : t('settings.disabled')}
               >
                 <div className="space-y-3">
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                       {t('settings.authentication')}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-brand-green">
+                    <p className="mt-2 text-sm font-medium text-allness-green">
                       {twoFaEnabled ? t('settings.twoFAEnabled') : t('settings.twoFADisabled')}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                       {t('settings.pinTransactionnel')}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                    <p className="mt-2 text-sm font-medium text-gray-900">
                       {pinEnabled ? t('settings.configured') : t('settings.notConfigured')}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                       {t('settings.loginHistory')}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                    <p className="mt-2 text-sm font-medium text-gray-900">
                       {t('settings.lastLogin')}
                     </p>
                   </div>
@@ -258,21 +258,21 @@ export default function SettingsPage() {
                 description={t('settings.notificationsDescription')}
               >
                 <div className="space-y-3">
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.email')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.email')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
                       {emailNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.sms')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.sms')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
                       {smsNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.push')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.push')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
                       {pushNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
@@ -292,17 +292,17 @@ export default function SettingsPage() {
                 description={t('settings.accountPrefsDescription')}
               >
                 <div className="space-y-3">
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.currency')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">{currency}</p>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.currency')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.language')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.language')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
                   </div>
-                  <div className="rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.theme')}</p>
-                    <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">{theme === 'light' ? t('settings.light') : t('settings.dark')}</p>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.theme')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{theme === 'light' ? t('settings.light') : t('settings.dark')}</p>
                   </div>
                   <Button
                     variant="outline"
@@ -322,13 +322,13 @@ export default function SettingsPage() {
                 description={t('settings.paymentMethodsDescription')}
               >
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <CreditCard className="w-4 h-4 text-brand-orange shrink-0" />
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <CreditCard className="w-4 h-4 text-allness-orange shrink-0" />
                     <div>
-                      <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                         {t('settings.linkedMethods')}
                       </p>
-                      <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                      <p className="mt-2 text-sm font-medium text-gray-900">
                         {paymentMethods.length} {paymentMethods.length > 1 ? 'moyens' : 'moyen'} de paiement
                       </p>
                     </div>
@@ -349,13 +349,13 @@ export default function SettingsPage() {
                 description={t('settings.tontinePrefsDescription')}
               >
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <Users className="w-4 h-4 text-brand-green shrink-0" />
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <Users className="w-4 h-4 text-allness-green shrink-0" />
                     <div>
-                      <p className="text-xs uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                         {t('settings.reminderBeforeTurn')}
                       </p>
-                      <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                      <p className="mt-2 text-sm font-medium text-gray-900">
                         {reminderDays} {t('settings.daysBefore')}
                       </p>
                     </div>
@@ -378,9 +378,9 @@ export default function SettingsPage() {
                 description={t('settings.supportDescription')}
               >
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 rounded-3xl bg-brand-hover dark:bg-brand-hover p-4">
-                    <LifeBuoy className="w-4 h-4 text-brand-orange shrink-0" />
-                    <p className="text-sm font-medium text-brand-text dark:text-brand-text">{t('settings.needHelp')}</p>
+                  <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
+                    <LifeBuoy className="w-4 h-4 text-allness-orange shrink-0" />
+                    <p className="text-sm font-medium text-gray-900">{t('settings.needHelp')}</p>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Button variant="outline" size="sm" className="rounded-full w-full">
@@ -404,7 +404,7 @@ export default function SettingsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-full w-full border-brand-red/20 text-brand-red hover:bg-brand-bg-red-light dark:hover:bg-brand-bg-red-light"
+                    className="rounded-full w-full border-red-200 text-red-500 hover:bg-red-50"
                     onClick={() => setDeleteAccountOpen(true)}
                   >
                     <ShieldAlert className="mr-2 h-4 w-4" />
@@ -460,7 +460,7 @@ export default function SettingsPage() {
                 placeholder="••••"
                 onChange={() => setPinEnabled(true)}
               />
-              <p className="text-xs text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.pinHint')}</p>
+              <p className="text-xs text-gray-400">{t('settings.pinHint')}</p>
             </div>
           </div>
 
@@ -491,7 +491,7 @@ export default function SettingsPage() {
           </DialogHeader>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
               {t('settings.channels')}
             </p>
             <ToggleRow
@@ -513,7 +513,7 @@ export default function SettingsPage() {
               onCheckedChange={setPushNotifs}
             />
 
-            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
               {t('settings.eventTypes')}
             </p>
             <ToggleRow
@@ -575,7 +575,7 @@ export default function SettingsPage() {
                 id="currency"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
               >
                 <option value="CFA">CFA</option>
                 <option value="EUR">EUR</option>
@@ -588,7 +588,7 @@ export default function SettingsPage() {
                 id="language"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as 'fr' | 'en')}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
               >
                 <option value="fr">{t('settings.french')}</option>
                 <option value="en">{t('settings.english')}</option>
@@ -600,7 +600,7 @@ export default function SettingsPage() {
                 id="theme"
                 value={theme}
                 onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
               >
                 <option value="light">{t('settings.light')}</option>
                 <option value="dark">{t('settings.dark')}</option>
@@ -612,7 +612,7 @@ export default function SettingsPage() {
                 id="timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
               >
                 <option value="Afrique/Douala (GMT+1)">Afrique/Douala (GMT+1)</option>
                 <option value="Europe/Paris (GMT+1/+2)">Europe/Paris (GMT+1/+2)</option>
@@ -649,21 +649,21 @@ export default function SettingsPage() {
 
           <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1">
             {paymentMethods.length === 0 ? (
-              <p className="text-sm text-brand-text-disabled dark:text-brand-text-disabled">{t('settings.noPaymentMethods')}</p>
+              <p className="text-sm text-gray-400">{t('settings.noPaymentMethods')}</p>
             ) : (
               paymentMethods.map((method) => (
                 <div
                   key={method.id}
-                  className="flex items-center justify-between rounded-2xl bg-brand-hover dark:bg-brand-hover p-4"
+                  className="flex items-center justify-between rounded-2xl bg-gray-50 p-4"
                 >
                   <div>
-                    <p className="text-sm font-medium text-brand-text dark:text-brand-text">{method.type}</p>
-                    <p className="text-xs text-brand-text-secondary dark:text-brand-text-secondary">{method.identifier}</p>
+                    <p className="text-sm font-medium text-gray-900">{method.type}</p>
+                    <p className="text-xs text-gray-500">{method.identifier}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => removePaymentMethod(method.id)}
-                    className="rounded-full p-2 text-brand-red hover:bg-brand-bg-red-light dark:hover:bg-brand-bg-red-light"
+                    className="rounded-full p-2 text-red-500 hover:bg-red-50"
                     aria-label="Supprimer"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -673,8 +673,8 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="mt-4 space-y-3 rounded-2xl border border-dashed border-brand-border dark:border-brand-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-text-disabled dark:text-brand-text-disabled">
+          <div className="mt-4 space-y-3 rounded-2xl border border-dashed border-gray-100 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
               {t('settings.addPaymentMethod')}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -684,7 +684,7 @@ export default function SettingsPage() {
                   id="method-type"
                   value={newMethodType}
                   onChange={(e) => setNewMethodType(e.target.value)}
-                  className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                  className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
                 >
                   <option value="Orange Money">Orange Money</option>
                   <option value="MTN MoMo">MTN MoMo</option>
@@ -732,7 +732,7 @@ export default function SettingsPage() {
                 id="reminder-days"
                 value={reminderDays}
                 onChange={(e) => setReminderDays(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-900"
               >
                 <option value="1">{t('settings.reminder1')}</option>
                 <option value="2">{t('settings.reminder2')}</option>
@@ -792,7 +792,7 @@ export default function SettingsPage() {
               {t('settings.cancel')}
             </Button>
             <Button
-              className="bg-brand-red text-white hover:bg-brand-red/90"
+              className="bg-red-500 text-white hover:bg-red-600"
               disabled={deleteConfirmText !== 'SUPPRIMER'}
               onClick={() => {
                 setDeleteAccountOpen(false);

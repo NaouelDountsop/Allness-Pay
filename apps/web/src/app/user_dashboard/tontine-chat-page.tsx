@@ -156,7 +156,7 @@ function InfoRow({
     <div className="flex items-center justify-between py-2.5 text-sm">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-gray-400" />
-        <span className="text-gray-500">{label}</span>
+        <span className="text-gray-600">{label}</span>
       </div>
       <span className="font-medium text-gray-900">{value}</span>
     </div>
@@ -177,7 +177,7 @@ function MemberRow({
       {member.role === 'ADMIN' ? (
         <span className="text-xs text-gray-400">Admin</span>
       ) : (
-        <span className="text-xs text-gray-400">Membre</span>
+        <span className="text-xs text-gray-500">Membre</span>
       )}
     </div>
   );
@@ -416,7 +416,7 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
         />
         <InfoRow
           icon={Users}
-          label="Montant de cotisation"
+          label="Cotisation"
           value={
             tontine?.contributionAmount
               ? `${Number(tontine.contributionAmount).toLocaleString('fr-FR')} ${tontine.currency ?? 'FCFA'}`
