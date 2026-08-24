@@ -327,6 +327,16 @@
 .dark .text-gray-900,
 .dark [class*="text-gray-900"] { color: var(--gray-900) !important; }
 .dark .text-black { color: var(--brand-text) !important; }
+.dark .text-allness-dark,
+.dark [class*="text-allness-dark"] { color: var(--brand-text) !important; }
+.dark .bg-allness-dark,
+.dark [class*="bg-allness-dark"] { background-color: var(--brand-card) !important; }
+.dark .border-allness-dark,
+.dark [class*="border-allness-dark"] { border-color: var(--brand-border) !important; }
+.dark .text-brand-orange,
+.dark [class*="text-brand-orange"] { color: var(--brand-orange) !important; }
+.dark .bg-brand-green,
+.dark [class*="bg-brand-green"] { background-color: var(--brand-green) !important; }
 .dark .text-white\/50 { color: rgba(255, 255, 255, 0.7) !important; }
 .dark .text-white\/60 { color: rgba(255, 255, 255, 0.75) !important; }
 .dark .text-white\/40 { color: rgba(255, 255, 255, 0.6) !important; }

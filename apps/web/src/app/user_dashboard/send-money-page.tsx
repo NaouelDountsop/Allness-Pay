@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { UserProfile } from '@afrilinkpay/shared';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -16,12 +17,12 @@ import { currencyService } from '@/lib/api/currency.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { getCountryByCode } from '@/data/countries';
 
-const steps = [
-  { label: 'Bénéficiaire' },
-  { label: 'Montant' },
-  { label: 'Confirmation' },
-  { label: 'Révision' },
-  { label: 'Envoi' },
+const getSteps = (t: (key: string) => string) => [
+  { label: t('send.stepBeneficiary') },
+  { label: t('send.stepAmount') },
+  { label: t('send.stepConfirmation') },
+  { label: t('send.stepReview') },
+  { label: t('send.stepSending') },
 ];
 
 const NETWORK_TO_MODE: Record<string, string> = {
@@ -34,7 +35,9 @@ const NETWORK_TO_MODE: Record<string, string> = {
 };
 
 export default function SendMoneyPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const steps = useMemo(() => getSteps(t), [t]);
 
   const { data: wallets = [] } = useQuery({
     queryKey: ['wallets'],
@@ -91,7 +94,7 @@ export default function SendMoneyPage() {
     : undefined;
 
   const destCountry = useMemo(() => getCountryByCode(form.country), [form.country]);
-  const destCountryName = destCountry?.name ?? 'l\'étranger';
+  const destCountryName = destCountry?.name ?? t('send.abroad');
 
   const [completedSteps, setCompletedSteps] = useState([false, false, false, false, false]);
   const [phase, setPhase] = useState<'form' | 'review' | 'success'>('form');
@@ -191,7 +194,7 @@ export default function SendMoneyPage() {
 
     const amountNum = parseFloat(form.amount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      setPreValidationError('Le montant doit être supérieur à 0.');
+      setPreValidationError(t('send.amountGreaterThanZero'));
       return;
     }
 
@@ -201,7 +204,11 @@ export default function SendMoneyPage() {
 
     if (walletBalance < totalDebit) {
       setPreValidationError(
-        `Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'} mais le total débité est de ${new Intl.NumberFormat('fr-FR').format(totalDebit)} ${primaryWallet?.currency ?? 'XAF'}.`,
+        t('send.insufficientBalance', {
+          balance: new Intl.NumberFormat('fr-FR').format(walletBalance),
+          currency: primaryWallet?.currency ?? 'XAF',
+          total: new Intl.NumberFormat('fr-FR').format(totalDebit),
+        }),
       );
       return;
     }
@@ -218,13 +225,13 @@ export default function SendMoneyPage() {
     setPreValidationError(null);
 
     if (!primaryWallet?.id || !form.beneficiaryContact || !form.amount) {
-      setPreValidationError('Wallet ou bénéficiaire non configuré.');
+      setPreValidationError(t('send.walletOrBeneficiaryNotConfigured'));
       return;
     }
 
     const amountNum = parseFloat(form.amount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      setPreValidationError('Le montant doit être supérieur à 0.');
+      setPreValidationError(t('send.amountGreaterThanZero'));
       return;
     }
 
@@ -234,7 +241,11 @@ export default function SendMoneyPage() {
 
     if (walletBalance < totalDebit) {
       setPreValidationError(
-        `Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet.currency ?? 'XAF'} mais le total débité est de ${new Intl.NumberFormat('fr-FR').format(totalDebit)} ${primaryWallet.currency ?? 'XAF'}.`,
+        t('send.insufficientBalance', {
+          balance: new Intl.NumberFormat('fr-FR').format(walletBalance),
+          currency: primaryWallet.currency ?? 'XAF',
+          total: new Intl.NumberFormat('fr-FR').format(totalDebit),
+        }),
       );
       return;
     }
@@ -243,11 +254,11 @@ export default function SendMoneyPage() {
       try {
         const validation = await walletService.validateByNumber(form.beneficiaryContact);
         if (!validation.valid) {
-          setPreValidationError(validation.message ?? 'Wallet bénéficiaire invalide.');
+          setPreValidationError(validation.message ?? t('send.invalidBeneficiaryWallet'));
           return;
         }
       } catch {
-        setPreValidationError('Impossible de vérifier le wallet bénéficiaire. Réessayez.');
+        setPreValidationError(t('send.cannotVerifyBeneficiary'));
         return;
       }
     }
@@ -262,7 +273,7 @@ export default function SendMoneyPage() {
 
   const handlePinConfirm = async (pin: string): Promise<string | null> => {
     if (!primaryWallet?.id || !form.beneficiaryContact || !form.amount) {
-      return 'Wallet ou bénéficiaire non configuré.';
+      return t('send.walletOrBeneficiaryNotConfigured');
     }
 
     try {
@@ -302,7 +313,7 @@ export default function SendMoneyPage() {
       const msg = axiosData?.message;
       if (typeof msg === 'string' && msg.length > 0) return msg;
       if (Array.isArray(msg) && msg.length > 0) return msg[0];
-      return 'Une erreur est survenue. Réessayez.';
+      return t('send.errorOccurred');
     }
   };
 
@@ -321,10 +332,10 @@ export default function SendMoneyPage() {
 
       <div>
         <h1 className="text-2xl sm:text-2xl md:text-2xl font-bold text-allness-dark mb-2 sm:mb-3 leading-tight">
-          Transfert vers {destCountryName}
+          {t('send.transferTo')} {destCountryName}
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8">
-          Vérifiez les détails de votre transaction avant de confirmer.
+          {t('send.verifyDetails')}
         </p>
 
         <div
@@ -364,14 +375,14 @@ export default function SendMoneyPage() {
                         onClick={() => setPreValidationError(null)}
                         className="text-xs text-red-600 mt-1 hover:underline"
                       >
-                        Réessayer
+                        {t('send.retry')}
                       </button>
                     </div>
                   </div>
                 )}
                 {primaryWallet && (
                   <div className="mb-6 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <p className="text-sm font-semibold text-gray-700 mb-3">Wallet expéditeur</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-3">{t('send.senderWallet')}</p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center overflow-hidden">
                         <img src="/allnesspay_logo2.png" alt="AllnessPay" className="w-7 h-7 object-contain" />
@@ -386,7 +397,7 @@ export default function SendMoneyPage() {
                 )}
                 {form.receptionMode === 'wallet' && form.beneficiaryContact && beneficiaryInfo && (
                   <div className="mb-6 p-4 rounded-xl border border-allness-green/20 bg-allness-green/5">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Bénéficiaire</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">{t('send.beneficiary')}</p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center">
                         <span className="text-sm font-bold text-allness-green">
@@ -395,7 +406,7 @@ export default function SendMoneyPage() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-allness-dark">
-                          {beneficiaryInfo.ownerName ?? 'Utilisateur inconnu'}
+                          {beneficiaryInfo.ownerName ?? t('send.unknownUser')}
                         </p>
                         <p className="text-xs text-gray-500">
                           {form.beneficiaryContact} · {beneficiaryInfo.currency ?? '—'}
@@ -412,7 +423,7 @@ export default function SendMoneyPage() {
                   exchangeRate={exchangeRate?.rate != null ? Number(exchangeRate.rate) : null}
                   exchangeRateLoading={exchangeRateLoading}
                   disabled={isInsufficientBalance}
-                  insufficientBalance={isInsufficientBalance ? `Solde : ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'}` : undefined}
+                  insufficientBalance={isInsufficientBalance ? `${t('send.balance')}: ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'}` : undefined}
                   walletError={walletValidationError ?? undefined}
                 />
               </>
@@ -429,7 +440,7 @@ export default function SendMoneyPage() {
                         onClick={() => setPreValidationError(null)}
                         className="text-xs text-red-600 mt-1 hover:underline"
                       >
-                        Réessayer
+                        {t('send.retry')}
                       </button>
                     </div>
                   </div>
@@ -453,14 +464,14 @@ export default function SendMoneyPage() {
               <div className="text-center py-8 sm:py-10 px-2">
                 <img
                   src="/thank you.svg"
-                  alt="Merci"
+                  alt={t('send.thankYou')}
                   className="mx-auto mb-4 h-56 w-auto"
                 />
                 <h2 className="text-base sm:text-lg font-bold text-allness-green mb-2">
-                  Transfert envoyé avec succès !
+                  {t('send.transferSentSuccess')}
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Le bénéficiaire recevra les fonds sous quelques minutes.
+                  {t('send.beneficiaryReceivesInMinutes')}
                 </p>
                 <button
                   onClick={() => {
@@ -474,7 +485,7 @@ export default function SendMoneyPage() {
                   }}
                   className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white bg-allness-dark hover:bg-allness-darker transition-colors"
                 >
-                  Nouveau transfert
+                  {t('send.newTransfer')}
                 </button>
               </div>
             )}

@@ -1,19 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import { CalendarDays, Check, Clock } from 'lucide-react';
 
 export function ScheduledPaymentsBanner() {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5 flex items-start justify-between gap-4">
       <div className="min-w-0 flex-1">
-        <h3 className="text-sm font-semibold text-gray-800 mb-1">Paiements programmés</h3>
+        <h3 className="text-sm font-semibold text-gray-800 mb-1">{t('payments.scheduled.title')}</h3>
         <p className="text-xs text-gray-500 leading-relaxed mb-3">
-          Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre
-          wallet AfriLinkPay.
+          {t('payments.scheduled.description')}
         </p>
         <a
           href="#"
           className="text-xs text-allness-green font-medium inline-flex items-center gap-1"
         >
-          En savoir plus
+          {t('payments.scheduled.learnMore')}
           <span className="text-allness-green">→</span>
         </a>
       </div>

@@ -180,7 +180,7 @@ export default function TontineDetailPage() {
           contributionAmount={Number(tontine.contributionAmount)}
           currency={tontine.currency ?? 'XAF'}
           currentCycle={tontine.currentCycle}
-          onAddMember={() => setInviteOpen(true)}
+          onAddMember={isCreator ? () => setInviteOpen(true) : undefined}
         />
 
         <InviteMemberModal

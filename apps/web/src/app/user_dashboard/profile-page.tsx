@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import type { UserProfile } from '@afrilinkpay/shared';
 import {
   CheckCircle2,
@@ -31,10 +32,11 @@ import {
 import { userService } from '@/lib/api/user.service';
 
 function ProfileField({ label, value }: { label: string; value: string }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-3xl border border-gray-100 bg-gray-50 p-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{label}</p>
-      <p className="mt-2 text-sm font-medium text-gray-900">{value || 'Non renseigné'}</p>
+      <p className="mt-2 text-sm font-medium text-gray-900">{value || t('profile.notSpecified')}</p>
     </div>
   );
 }
@@ -42,14 +44,16 @@ function ProfileField({ label, value }: { label: string; value: string }) {
 const MAX_AVATAR_SIZE_MB = 5;
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
+
   const { data: profile } = useQuery<UserProfile>({
     queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Allness'),
-    [profile],
+    () => (profile ? `${profile.prenom} ${profile.nom}` : t('profile.defaultName')),
+    [profile, t],
   );
 
   const initials = useMemo(() => {
@@ -86,11 +90,11 @@ export default function ProfilePage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setAvatarError('Veuillez sélectionner un fichier image.');
+      setAvatarError(t('profile.imageFileError'));
       return;
     }
     if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
-      setAvatarError(`L'image doit faire moins de ${MAX_AVATAR_SIZE_MB} Mo.`);
+      setAvatarError(t('profile.imageSizeError', { size: MAX_AVATAR_SIZE_MB }));
       return;
     }
 
@@ -128,7 +132,7 @@ export default function ProfilePage() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-allness-orange text-white shadow-sm hover:bg-allness-orange/90"
-                    aria-label="Changer la photo de profil"
+                    aria-label={t('profile.changePhotoAria')}
                   >
                     <Camera className="h-4 w-4" />
                   </button>
@@ -142,13 +146,13 @@ export default function ProfilePage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-allness-orange">
-                    Mon profil
+                    {t('profile.title')}
                   </p>
                   <h1 className="mt-3 text-2xl font-semibold text-allness-dark truncate">
                     {fullName}
                   </h1>
                   <p className="mt-2 text-sm text-gray-500">
-                    {profile?.profession ?? 'Client Allness'}
+                    {profile?.profession ?? t('profile.defaultProfession')}
                   </p>
                 </div>
               </div>
@@ -161,7 +165,7 @@ export default function ProfilePage() {
                   className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Supprimer la photo
+                  {t('profile.deletePhoto')}
                 </button>
               ) : null}
 
@@ -169,13 +173,13 @@ export default function ProfilePage() {
                 <div className="rounded-3xl border border-allness-green/10 bg-allness-green/5 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Statut</p>
+                      <p className="text-xs uppercase tracking-[0.18em] text-gray-500">{t('profile.status')}</p>
                       <p className="mt-2 text-lg font-semibold text-allness-dark">
-                        {profile?.statut || 'Actif'}
+                        {profile?.statut || t('profile.active')}
                       </p>
                     </div>
                     <span className="inline-flex items-center gap-2 rounded-full bg-allness-green/10 px-3 py-1 text-xs font-semibold text-allness-green">
-                      <CheckCircle2 className="w-4 h-4" /> Vérifié
+                      <CheckCircle2 className="w-4 h-4" /> {t('profile.verified')}
                     </span>
                   </div>
                 </div>
@@ -187,10 +191,10 @@ export default function ProfilePage() {
                     size="sm"
                     onClick={() => setEditProfileOpen(true)}
                   >
-                    Modifier le profil
+                    {t('profile.editProfile')}
                   </Button>
                   <Button className="w-full rounded-full" variant="outline" size="sm">
-                    Voir les détails
+                    {t('profile.viewDetails')}
                   </Button>
                 </div>
               </div>
@@ -199,14 +203,14 @@ export default function ProfilePage() {
             <div className="grid gap-4">
               <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3 mb-5">
-                  <p className="text-sm font-semibold text-gray-800">Coordonnées</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('profile.contactInfo')}</p>
                   <Button
                     variant="outline"
                     size="sm"
                     className="rounded-full"
                     onClick={() => setEditContactOpen(true)}
                   >
-                    Modifier
+                    {t('profile.modify')}
                   </Button>
                 </div>
                 <div className="space-y-4">
@@ -229,19 +233,19 @@ export default function ProfilePage() {
 
               <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3 mb-5">
-                  <p className="text-sm font-semibold text-gray-800">Activité</p>
-                  <span className="text-xs text-gray-400">Mise à jour récente</span>
+                  <p className="text-sm font-semibold text-gray-800">{t('profile.activity')}</p>
+                  <span className="text-xs text-gray-400">{t('profile.recentUpdate')}</span>
                 </div>
                 <div className="grid gap-4">
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Inscription</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('profile.registration')}</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
                       {profile?.dateinscription ?? '-'}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                      Dernière modification
+                      {t('profile.lastModified')}
                     </p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
                       {profile?.datemodification ?? '-'}
@@ -257,35 +261,35 @@ export default function ProfilePage() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
-                    Données utilisateur
+                    {t('profile.userData')}
                   </p>
                   <h2 className="mt-3 text-2xl font-semibold text-allness-dark">
-                    Informations personnelles
+                    {t('profile.personalInfo')}
                   </h2>
                 </div>
                 <Button variant="secondary" size="sm" className="rounded-full px-4">
-                  Exporter le PDF
+                  {t('profile.exportPdf')}
                 </Button>
               </div>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <ProfileField label="Nom complet" value={fullName} />
-                <ProfileField label="Date de naissance" value={profile?.datenaissance ?? '-'} />
-                <ProfileField label="Sexe" value={profile?.sexe ?? '-'} />
-                <ProfileField label="Profession" value={profile?.profession ?? '-'} />
-                <ProfileField label="Adresse" value={profile?.adresse ?? '-'} />
-                <ProfileField label="Statut compte" value={profile?.statut ?? '-'} />
+                <ProfileField label={t('profile.fullName')} value={fullName} />
+                <ProfileField label={t('profile.dateOfBirth')} value={profile?.datenaissance ?? '-'} />
+                <ProfileField label={t('profile.gender')} value={profile?.sexe ?? '-'} />
+                <ProfileField label={t('profile.profession')} value={profile?.profession ?? '-'} />
+                <ProfileField label={t('profile.address')} value={profile?.adresse ?? '-'} />
+                <ProfileField label={t('profile.accountStatus')} value={profile?.statut ?? '-'} />
               </div>
             </div>
 
             <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Mes options</p>
-                  <p className="text-xs text-gray-500">Gestion des accès et des préférences</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('profile.myOptions')}</p>
+                  <p className="text-xs text-gray-500">{t('profile.optionsDescription')}</p>
                 </div>
                 <Button variant="outline" size="sm" className="rounded-full">
-                  Voir l'activité
+                  {t('profile.viewActivity')}
                 </Button>
               </div>
 
@@ -293,37 +297,37 @@ export default function ProfilePage() {
                 <div className="rounded-3xl bg-allness-orange/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <User className="w-4 h-4 text-allness-orange" />
-                    <p className="text-sm font-semibold text-allness-dark">Profil</p>
+                    <p className="text-sm font-semibold text-allness-dark">{t('profile.profileCardTitle')}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Modifiez vos informations personnelles et votre avatar.
+                    {t('profile.profileCardDescription')}
                   </p>
                 </div>
                 <div className="rounded-3xl bg-allness-green/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <ShieldCheck className="w-4 h-4 text-allness-green" />
-                    <p className="text-sm font-semibold text-allness-dark">Sécurité</p>
+                    <p className="text-sm font-semibold text-allness-dark">{t('profile.security')}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Activez l’authentification à deux facteurs et gérez vos accès.
+                    {t('profile.securityDescription')}
                   </p>
                 </div>
                 <div className="rounded-3xl bg-allness-dark/5 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <CalendarDays className="w-4 h-4 text-allness-dark" />
-                    <p className="text-sm font-semibold text-allness-dark">Notifications</p>
+                    <p className="text-sm font-semibold text-allness-dark">{t('profile.notifications')}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Recevez les alertes de transactions et les rappels.
+                    {t('profile.notificationsDescription')}
                   </p>
                 </div>
                 <div className="rounded-3xl bg-gray-50 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <Briefcase className="w-4 h-4 text-allness-orange" />
-                    <p className="text-sm font-semibold text-allness-dark">Préférences</p>
+                    <p className="text-sm font-semibold text-allness-dark">{t('profile.preferences')}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Choisissez votre devise et vos options d’interface.
+                    {t('profile.preferencesDescription')}
                   </p>
                 </div>
               </div>
@@ -337,9 +341,9 @@ export default function ProfilePage() {
         <DialogContent>
           <DialogClose onOpenChange={setEditProfileOpen} />
           <DialogHeader>
-            <DialogTitle>Modifier le profil</DialogTitle>
+            <DialogTitle>{t('profile.editProfileTitle')}</DialogTitle>
             <DialogDescription>
-              Mettez à jour vos informations personnelles et votre photo.
+              {t('profile.editProfileDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -354,7 +358,7 @@ export default function ProfilePage() {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Camera className="mr-2 h-4 w-4" />
-                Changer la photo
+                {t('profile.changePhoto')}
               </Button>
               {avatarError ? <p className="text-xs text-red-500">{avatarError}</p> : null}
             </div>
@@ -362,15 +366,15 @@ export default function ProfilePage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="prenom">Prénom</Label>
+              <Label htmlFor="prenom">{t('profile.firstName')}</Label>
               <Input id="prenom" value={prenom} onChange={(e) => setPrenom(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nom">Nom</Label>
+              <Label htmlFor="nom">{t('profile.lastName')}</Label>
               <Input id="nom" value={nom} onChange={(e) => setNom(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="date-naissance">Date de naissance</Label>
+              <Label htmlFor="date-naissance">{t('profile.dateOfBirth')}</Label>
               <Input
                 id="date-naissance"
                 type="date"
@@ -379,21 +383,21 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sexe">Sexe</Label>
+              <Label htmlFor="sexe">{t('profile.gender')}</Label>
               <select
                 id="sexe"
                 value={sexe}
                 onChange={(e) => setSexe(e.target.value)}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
               >
-                <option value="">Non renseigné</option>
-                <option value="Femme">Femme</option>
-                <option value="Homme">Homme</option>
-                <option value="Autre">Autre</option>
+                <option value="">{t('profile.genderNotSpecified')}</option>
+                <option value="Femme">{t('profile.female')}</option>
+                <option value="Homme">{t('profile.male')}</option>
+                <option value="Autre">{t('profile.other')}</option>
               </select>
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="profession">Profession</Label>
+              <Label htmlFor="profession">{t('profile.profession')}</Label>
               <Input
                 id="profession"
                 value={profession}
@@ -401,14 +405,14 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="adresse">Adresse</Label>
+              <Label htmlFor="adresse">{t('profile.address')}</Label>
               <Input id="adresse" value={adresse} onChange={(e) => setAdresse(e.target.value)} />
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
-              Annuler
+              {t('profile.cancel')}
             </Button>
             <Button
               onClick={() => {
@@ -417,7 +421,7 @@ export default function ProfilePage() {
                 setEditProfileOpen(false);
               }}
             >
-              Enregistrer
+              {t('profile.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -428,15 +432,15 @@ export default function ProfilePage() {
         <DialogContent>
           <DialogClose onOpenChange={setEditContactOpen} />
           <DialogHeader>
-            <DialogTitle>Modifier mes coordonnées</DialogTitle>
+            <DialogTitle>{t('profile.editContactTitle')}</DialogTitle>
             <DialogDescription>
-              Mettez à jour votre email, téléphone et localisation.
+              {t('profile.editContactDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('profile.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -445,7 +449,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="telephone">Téléphone</Label>
+              <Label htmlFor="telephone">{t('profile.phone')}</Label>
               <Input
                 id="telephone"
                 value={telephone}
@@ -454,11 +458,11 @@ export default function ProfilePage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="ville">Ville</Label>
+                <Label htmlFor="ville">{t('profile.city')}</Label>
                 <Input id="ville" value={ville} onChange={(e) => setVille(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="pays">Pays</Label>
+                <Label htmlFor="pays">{t('profile.country')}</Label>
                 <Input id="pays" value={pays} onChange={(e) => setPays(e.target.value)} />
               </div>
             </div>
@@ -466,7 +470,7 @@ export default function ProfilePage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditContactOpen(false)}>
-              Annuler
+              {t('profile.cancel')}
             </Button>
             <Button
               onClick={() => {
@@ -474,7 +478,7 @@ export default function ProfilePage() {
                 setEditContactOpen(false);
               }}
             >
-              Enregistrer
+              {t('profile.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

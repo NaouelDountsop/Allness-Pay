@@ -1,25 +1,29 @@
-const steps = [
-  {
-    number: 1,
-    title: 'Scanner le QR Code du marchand',
-    description: 'Utilisez la caméra pour scanner le code QR affiché par le marchand.',
-  },
-  {
-    number: 2,
-    title: 'Vérifier les informations',
-    description: 'Vérifiez les détails du marchand et le montant à payer.',
-  },
-  {
-    number: 3,
-    title: 'Confirmer le paiement',
-    description: 'Entrez votre PIN et confirmez la transaction en toute sécurité.',
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export function HowToPay() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      number: 1,
+      title: t('payments.howToPay.step1Title'),
+      description: t('payments.howToPay.step1Description'),
+    },
+    {
+      number: 2,
+      title: t('payments.howToPay.step2Title'),
+      description: t('payments.howToPay.step2Description'),
+    },
+    {
+      number: 3,
+      title: t('payments.howToPay.step3Title'),
+      description: t('payments.howToPay.step3Description'),
+    },
+  ];
+
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-800 mb-4">Comment payer ?</h3>
+      <h3 className="text-sm font-semibold text-gray-800 mb-4">{t('payments.howToPay.title')}</h3>
       <div className="relative">
         <div className="absolute left-3.5 top-2 bottom-2 w-px bg-gray-200" />
         <ul className="space-y-5">

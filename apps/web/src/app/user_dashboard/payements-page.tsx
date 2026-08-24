@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Star, History } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -12,6 +13,7 @@ import { serviceCategories, mockRecentPayments } from '@/lib/mock/payments-data'
 
 export default function PaymentsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <DashboardLayout>
@@ -20,20 +22,22 @@ export default function PaymentsPage() {
       <div>
         <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-allness-dark mb-1">Paiements & Services</h1>
+            <h1 className="text-2xl font-bold text-allness-dark mb-1">{t('payments.title')}</h1>
             <p className="text-sm text-gray-500 line-clamp-2">
-              Réglez vos factures, achetez du crédit et accédez à une multitude de services en
-              quelques clics, en toute sécurité.
+              {t('payments.subtitle')}
             </p>
           </div>
           <div className="flex gap-2 shrink-0">
             <button className="h-9 px-3 sm:px-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-600 flex items-center gap-1.5 sm:gap-2">
               <Star className="w-4 h-4" />
-              <span className="hidden sm:inline">Favoris</span>
+              <span className="hidden sm:inline">{t('payments.favorites')}</span>
             </button>
-            <button className="h-9 px-3 sm:px-4 rounded-lg border border-allness-orange text-allness-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2">
+            <button
+              onClick={() => navigate('/dashboard/payments/history')}
+              className="h-9 px-3 sm:px-4 rounded-lg border border-allness-orange text-allness-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2"
+            >
               <History className="w-4 h-4" />
-              <span className="hidden sm:inline">Historique</span>
+              <span className="hidden sm:inline">{t('payments.history')}</span>
             </button>
           </div>
         </div>

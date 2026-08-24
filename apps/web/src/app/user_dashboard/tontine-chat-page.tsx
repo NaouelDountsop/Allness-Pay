@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Image,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { Button } from '@/components/ui/button';
@@ -168,6 +169,7 @@ function MemberRow({
 }: {
   member: { id: string; name: string; role: string };
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center gap-2.5">
@@ -194,6 +196,7 @@ function ChatArea({
   currentUserId?: number;
   onBack?: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -372,6 +375,7 @@ function ChatArea({
 }
 
 function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
+  const { t } = useTranslation();
   return (
     <aside className="hidden min-w-0 flex-col overflow-y-auto rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm xl:flex xl:w-full xl:max-w-[280px] xl:min-h-0 xl:border-none">
       <p className="text-sm font-semibold text-gray-900">{t('tontines.aboutTontine')}</p>
@@ -466,7 +470,6 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
 }
 
 export default function TontineChatPage() {
-  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isSingleTontine = !!id;

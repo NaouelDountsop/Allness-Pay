@@ -1,24 +1,27 @@
+import { useTranslation } from 'react-i18next';
 import { Receipt, ChevronRight } from 'lucide-react';
 import type { RecentPayment } from '@/lib/mock/payments-data';
-
-const statusStyles: Record<string, { label: string; className: string }> = {
-  paid: { label: 'Payé', className: 'bg-green-50 text-green-600' },
-  pending: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
-};
-
-const defaultStatus = statusStyles.pending;
 
 interface RecentPaymentsListProps {
   payments: RecentPayment[];
 }
 
 export function RecentPaymentsList({ payments }: RecentPaymentsListProps) {
+  const { t } = useTranslation();
+
+  const statusStyles: Record<string, { label: string; className: string }> = {
+    paid: { label: t('payments.recent.paid'), className: 'bg-green-50 text-green-600' },
+    pending: { label: t('payments.recent.pending'), className: 'bg-orange-50 text-allness-orange' },
+  };
+
+  const defaultStatus = statusStyles.pending;
+
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-800">Paiements récents</h3>
+        <h3 className="text-sm font-semibold text-gray-800">{t('payments.recent.title')}</h3>
         <a href="#" className="text-xs text-allness-green font-medium">
-          Voir tout
+          {t('payments.recent.viewAll')}
         </a>
       </div>
       <ul className="divide-y divide-gray-100">

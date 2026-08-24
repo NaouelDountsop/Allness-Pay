@@ -25,6 +25,7 @@ import TontineChatPage from "@/app/user_dashboard/tontine-chat-page";
 import TontinesInvitationsPage from "@/app/user_dashboard/tontines-invitations-page";
 import ProfilePage from "@/app/user_dashboard/profile-page";
 import SettingsPage from "@/app/user_dashboard/settings-page";
+import PaymentHistoryPage from "@/app/user_dashboard/payment-history-page";
 import AdminLoginPage from "@/app/admin-dashboard/admin-login-page";
 import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
 import UsersListPage from "@/app/admin-dashboard/users-list-page";
@@ -42,6 +43,7 @@ import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settin
 import TransactionsPage from "@/app/user_dashboard/transaction-page";
 import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
 import PartnersPage from "@/app/admin-dashboard/partners-page";
+import AdminSettingsPage from "@/app/admin-dashboard/admin-settings-page";
 
 import { DepositFlowProvider } from './context/deposit-flow-context';
 import InitiateDepositPage from '@/app/user_dashboard/initiate-deposit-page';
@@ -67,6 +69,7 @@ export function App() {
         <Route path="/dashboard/wallet" element={<UserProtectedRoute><WalletPage /></UserProtectedRoute>} />
         <Route path="/dashboard/send" element={<UserProtectedRoute><SendMoneyPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments" element={<UserProtectedRoute><PaymentsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/history" element={<UserProtectedRoute><PaymentHistoryPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/scan" element={<UserProtectedRoute><QrScanPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/qr-result" element={<UserProtectedRoute><QrPaymentPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/:category" element={<UserProtectedRoute><BillPaymentPage /></UserProtectedRoute>} />
@@ -203,6 +206,14 @@ export function App() {
           element={
             <AdminProtectedRoute>
               <PartnersPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/parametres"
+          element={
+            <AdminProtectedRoute>
+              <AdminSettingsPage />
             </AdminProtectedRoute>
           }
         />

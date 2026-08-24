@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, ScanLine } from 'lucide-react';
 
 interface QrScannerModalProps {
@@ -7,6 +8,7 @@ interface QrScannerModalProps {
 }
 
 export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState('');
   const [scanning, setScanning] = useState(true);
@@ -21,7 +23,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
         });
         if (videoRef.current) videoRef.current.srcObject = stream;
       } catch {
-        setError("Impossible d'accéder à la caméra. Vérifiez les autorisations.");
+        setError(t('payments.qrScanner.cameraError'));
       }
     };
 
@@ -30,7 +32,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
     return () => {
       stream?.getTracks().forEach((track) => track.stop());
     };
-  }, []);
+  }, [t]);
 
   const handleSimulateScan = () => {
     setScanning(false);
@@ -49,7 +51,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
       <button
         onClick={onClose}
         className="absolute top-5 right-5 text-white/80 hover:text-white"
-        aria-label="Fermer"
+        aria-label={t('payments.qrScanner.close')}
       >
         <X className="w-6 h-6" />
       </button>
@@ -64,7 +66,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
       )}
 
       <p className="text-white/70 text-sm mt-6 text-center">
-        Placez le QR code du marchand dans le cadre
+        {t('payments.qrScanner.instruction')}
       </p>
 
       {scanning && !error && (
@@ -73,7 +75,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
           className="mt-6 h-11 px-6 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2"
         >
           <ScanLine className="w-4 h-4" />
-          Simuler la lecture (démo)
+          {t('payments.qrScanner.simulate')}
         </button>
       )}
     </div>

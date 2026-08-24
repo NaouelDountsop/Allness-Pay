@@ -29,7 +29,7 @@ export function BottomNav() {
                   <>
                     <span
                       className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center border-4 border-brand-sidebar dark:border-brand-sidebar transition-colors ${
-                        isActive ? 'bg-brand-green' : 'bg-brand-green/80'
+                        'bg-allness-green'
                       }`}
                     >
                       <Icon className="w-6 h-6 text-white" />
