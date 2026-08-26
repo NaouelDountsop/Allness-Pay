@@ -14,13 +14,13 @@ interface ContributionRow {
 }
 
 const statusStyles: Record<string, { label: string; className: string }> = {
-  valide: { label: 'Validé', className: 'bg-green-50 text-allness-green' },
-  paid: { label: 'Validé', className: 'bg-green-50 text-allness-green' },
-  en_attente: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
-  PENDING: { label: 'En attente', className: 'bg-orange-50 text-allness-orange' },
-  echoue: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
-  FAILED: { label: 'Échoué', className: 'bg-red-50 text-red-600' },
-  LATE: { label: 'En retard', className: 'bg-yellow-50 text-yellow-600' },
+  valide: { label: 'Validé', className: 'bg-green-50 text-allness-green dark:bg-brand-bg-green-light dark:text-brand-green' },
+  paid: { label: 'Validé', className: 'bg-green-50 text-allness-green dark:bg-brand-bg-green-light dark:text-brand-green' },
+  en_attente: { label: 'En attente', className: 'bg-orange-50 text-allness-orange dark:bg-brand-bg-gold-light dark:text-brand-orange' },
+  PENDING: { label: 'En attente', className: 'bg-orange-50 text-allness-orange dark:bg-brand-bg-gold-light dark:text-brand-orange' },
+  echoue: { label: 'Échoué', className: 'bg-red-50 text-red-600 dark:bg-brand-bg-red-light dark:text-brand-red' },
+  FAILED: { label: 'Échoué', className: 'bg-red-50 text-red-600 dark:bg-brand-bg-red-light dark:text-brand-red' },
+  LATE: { label: 'En retard', className: 'bg-yellow-50 text-yellow-600 dark:bg-brand-bg-gold-light dark:text-brand-orange' },
 };
 
 const PAGE_SIZE = 10;
@@ -49,22 +49,22 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+    <div className="rounded-xl border border-gray-100 bg-white dark:border-brand-border dark:bg-brand-card overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-3 p-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Filtrer par nom de membre..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
+            className="w-full h-10 rounded-lg border border-gray-200 pl-9 pr-3 text-sm bg-white text-gray-900 dark:border-brand-input-border dark:bg-brand-input dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white dark:border-brand-input-border dark:bg-brand-input dark:text-brand-text-secondary focus:outline-none focus:ring-1 focus:ring-allness-orange"
         >
           <option value="all">Tous les statuts</option>
           <option value="valide">Validé</option>
@@ -75,7 +75,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+          className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 bg-white dark:border-brand-input-border dark:bg-brand-input dark:text-brand-text-secondary focus:outline-none focus:ring-1 focus:ring-allness-orange"
         />
         <button
           onClick={() => {
@@ -83,7 +83,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
             setStatusFilter('all');
             setDateFilter('');
           }}
-          className="h-10 px-3 rounded-lg border border-gray-200 text-gray-500 flex items-center gap-2 text-sm hover:bg-gray-50 transition-colors"
+          className="h-10 px-3 rounded-lg border border-gray-200 text-gray-500 dark:border-brand-border dark:text-brand-text-secondary flex items-center gap-2 text-sm hover:bg-gray-50 dark:hover:bg-brand-hover transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
           Réinitialiser
@@ -93,7 +93,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
       <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[500px]">
           <thead>
-            <tr className="bg-green-50/60 text-gray-500 text-xs">
+            <tr className="bg-green-50/60 text-gray-500 text-xs dark:bg-brand-bg-green-light dark:text-brand-text-secondary">
               <th className="text-left font-medium px-4 py-2.5">Date du Versement</th>
               <th className="text-left font-medium px-4 py-2.5">Nom du Membre</th>
               <th className="text-left font-medium px-4 py-2.5">Montant</th>
@@ -101,28 +101,28 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
               <th className="text-right font-medium px-4 py-2.5">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-brand-border">
             {paginated.map((c) => {
               const normalizedStatus = c.status === 'paid' ? 'valide' : c.status === 'PENDING' ? 'en_attente' : c.status === 'FAILED' ? 'echoue' : c.status;
-              const status = statusStyles[normalizedStatus] ?? { label: normalizedStatus, className: 'bg-gray-50 text-gray-600' };
+              const status = statusStyles[normalizedStatus] ?? { label: normalizedStatus, className: 'bg-gray-50 text-gray-600 dark:bg-brand-hover dark:text-brand-text-secondary' };
               return (
                 <tr key={c.id}>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-brand-text-secondary">
                     {c.date}
-                    {c.time && <span className="block text-[11px] text-gray-400">{c.time}</span>}
+                    {c.time && <span className="block text-[11px] text-gray-400 dark:text-brand-text-disabled">{c.time}</span>}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[9px] font-medium text-gray-500">
+                      <span className="w-6 h-6 rounded-full bg-gray-100 dark:bg-brand-hover flex items-center justify-center text-[9px] font-medium text-gray-500 dark:text-brand-text-secondary">
                         {c.memberName
                           .split(' ')
                           .map((n) => n[0])
                           .join('')}
                       </span>
-                      <span className="text-gray-800">{c.memberName}</span>
+                      <span className="text-gray-800 dark:text-brand-text">{c.memberName}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">
+                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-brand-text">
                     {new Intl.NumberFormat('fr-FR').format(c.amount)} {c.currency ?? currency}
                   </td>
                   <td className="px-4 py-3">
@@ -147,7 +147,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-8 text-sm text-gray-400">
+        <div className="text-center py-8 text-sm text-gray-400 dark:text-brand-text-disabled">
           Aucun versement trouvé.
         </div>
       )}

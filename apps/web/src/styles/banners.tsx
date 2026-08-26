@@ -207,13 +207,13 @@ export const kycNotificationBannerMessages: Record<KycBannerStatus, string> = {
 
 export const tontineBannerStyle = {
   wrapper:
-    'mb-4 sm:mb-6 rounded-xl bg-allness-orange/10 border border-allness-orange/30 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4',
+    'mb-4 sm:mb-6 rounded-xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:via-yellow-900/20 dark:to-yellow-950/30 border border-amber-300/50 dark:border-yellow-700/30 px-4 py-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4',
   iconWrapper:
-    'w-9 h-9 rounded-lg bg-allness-orange/20 flex items-center justify-center shrink-0',
-  iconColor: 'text-allness-orange',
-  textColor: 'text-allness-dark',
+    'w-9 h-9 rounded-lg bg-amber-100 dark:bg-yellow-900/40 flex items-center justify-center shrink-0',
+  iconColor: 'text-amber-600 dark:text-yellow-400',
+  textColor: 'text-amber-900 dark:text-yellow-200',
   button:
-    'group w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-allness-orange text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 active:scale-[0.98] transition-all',
+    'group w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-amber-500 dark:bg-yellow-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-amber-600 dark:hover:bg-yellow-500 active:scale-[0.98] transition-all',
 };
 
 export const scheduledPaymentsBannerStyle = {

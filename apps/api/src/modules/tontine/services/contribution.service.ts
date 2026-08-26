@@ -22,6 +22,8 @@ export class ContributionService {
   constructor(
     @InjectRepository(TontineContribution)
     private readonly contributionRepo: Repository<TontineContribution>,
+    @InjectRepository(TontineMember)
+    private readonly memberRepo: Repository<TontineMember>,
     private readonly walletsService: WalletsService,
     private readonly pinService: PinService,
     @InjectDataSource()
@@ -155,4 +157,45 @@ export class ContributionService {
     return this.contributionRepo.save(contribution);
   }
 
+  async findAllByUserId(userId: number): Promise<TontineContribution[]> {
+    const memberIds = (
+      await this.memberRepo.find({ where: { userId }, select: ['id'] })
+    ).map((m) => m.id);
+
+    if (memberIds.length === 0) {
+      return [];
+    }
+
+    return this.contributionRepo.find({
+      where: memberIds.map((memberId) => ({ memberId })),
+      relations: ['cycle', 'cycle.tontine'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findAllByTontineForUser(
+    tontineId: string,
+    userId: number,
+  ): Promise<TontineContribution[]> {
+    const member = await this.memberRepo.findOne({
+      where: { tontineId, userId },
+    });
+
+    if (!member) {
+      return [];
+    }
+
+    return this.contributionRepo.find({
+      where: { memberId: member.id },
+      relations: ['cycle'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findMemberByTontineAndUser(
+    tontineId: string,
+    userId: number,
+  ): Promise<TontineMember | null> {
+    return this.memberRepo.findOne({ where: { tontineId, userId } });
+  }
 }

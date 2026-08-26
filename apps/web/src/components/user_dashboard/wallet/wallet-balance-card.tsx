@@ -84,7 +84,7 @@ export function WalletBalanceCard({
 
   return (
     <>
-      <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-4 sm:p-6 relative overflow-hidden">
+      <div className="rounded-2xl bg-allness-dark text-white p-4 sm:p-6 relative overflow-hidden">
         <svg
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-6 -right-2 w-52 h-52 opacity-60"
@@ -109,7 +109,7 @@ export function WalletBalanceCard({
 
       <div
         aria-hidden="true"
-        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-allness-orange/35 to-allness-orange/10"
+        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br  from-amber-300/40 via-allness-orange/35 to-allness-orange/10"
         style={{
           WebkitMaskImage: 'url(/allnesspay_logo1.png)',
           WebkitMaskSize: 'contain',
