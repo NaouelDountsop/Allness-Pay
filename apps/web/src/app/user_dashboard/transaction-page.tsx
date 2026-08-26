@@ -90,7 +90,31 @@ export default function TransactionsPage() {
             <p className="text-sm text-gray-400">{t('transactions.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="group relative h-9 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center justify-center sm:px-4 px-0 w-9 sm:w-auto hover:opacity-90 transition-opacity">
+            <button
+              onClick={() => {
+                if (!filtered || filtered.length === 0) return;
+                const rows = [['Date', 'Type', 'Montant', 'Statut', 'Référence', 'Contrepartie']];
+                filtered.forEach((t) => {
+                  rows.push([
+                    new Date(t.createdAt).toLocaleDateString('fr-FR'),
+                    transactionService.getTypeLabel(t.type),
+                    `${Number(t.amount)} XAF`,
+                    t.status,
+                    t.reference ?? '—',
+                    t.counterpartyName ?? t.phoneNumber ?? '—',
+                  ]);
+                });
+                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="group relative h-9 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center justify-center sm:px-4 px-0 w-9 sm:w-auto hover:opacity-90 transition-opacity"
+            >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline ml-2">{t('transactions.export')}</span>
               <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">

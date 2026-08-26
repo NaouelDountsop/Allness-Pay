@@ -29,7 +29,7 @@ export function AdminBottomNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 bg-allness-dark rounded-2xl shadow-lg px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 bg-[#0D343A] dark:bg-[#061216] rounded-2xl shadow-lg px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
       <div className="relative">
         <div className="grid grid-cols-6 items-center">
           {tabs.map(({ to, label, icon: Icon, end }) => (

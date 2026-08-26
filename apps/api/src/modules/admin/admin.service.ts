@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as ExcelJS from 'exceljs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -145,7 +146,7 @@ export class AdminService {
       .leftJoinAndSelect('tx.wallet', 'wallet');
 
     if (filters?.status) {
-      qb.andWhere('tx.status = :status', { status: filters.status });
+      qb.andWhere('tx.status = :status', { status: filters.status.toLowerCase() });
     }
     if (filters?.type) {
       qb.andWhere('tx.type = :type', { type: filters.type });
@@ -256,64 +257,193 @@ export class AdminService {
     }));
   }
 
-  async exportTransactionsCsv(): Promise<string> {
-    const transactions = await this.transactionsRepository
-      .createQueryBuilder('tx')
-      .leftJoinAndSelect('tx.wallet', 'wallet')
-      .leftJoin('wallet.user', 'user')
-      .addSelect(['user.nom', 'user.prenom', 'user.email'])
-      .orderBy('tx.createdAt', 'DESC')
-      .getMany();
+  async exportTransactionsXlsx(): Promise<Buffer> {
+  const transactions = await this.transactionsRepository
+    .createQueryBuilder('tx')
+    .leftJoinAndSelect('tx.wallet', 'wallet')
+    .leftJoin('wallet.user', 'user')
+    .addSelect(['user.nom', 'user.prenom', 'user.email'])
+    .orderBy('tx.createdAt', 'DESC')
+    .getMany();
 
-    const headers = ['Référence', 'Utilisateur', 'Email', 'Type', 'Montant', 'Statut', 'Date'];
-    const rows = transactions.map((tx) => {
-      const userName = tx.wallet?.user
-        ? `${tx.wallet.user.prenom} ${tx.wallet.user.nom}`
-        : '';
-      return [
-        tx.reference ?? tx.id,
-        userName,
-        tx.wallet?.user?.email ?? '',
-        tx.type,
-        String(tx.amount),
-        tx.status,
-        tx.createdAt.toISOString(),
-      ];
-    });
-    return [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
-  }
+  const rows = transactions.map((tx) => ({
+    reference: tx.reference ?? tx.id,
+    user: tx.wallet?.user ? `${tx.wallet.user.prenom} ${tx.wallet.user.nom}` : '',
+    email: tx.wallet?.user?.email ?? '',
+    type: tx.type,
+    amount: Number(tx.amount),
+    status: tx.status,
+    createdAt: tx.createdAt,
+  }));
 
-  async exportUsersCsv(): Promise<string> {
-    const users = await this.usersRepository.find({ order: { dateinscription: 'DESC' } });
-    const headers = ['ID', 'Nom', 'Prénom', 'Email', 'Téléphone', 'Pays', 'Ville', 'Date inscription', 'Statut'];
-    const rows = users.map((u) => [
-      String(u.idutilisateur),
-      u.nom,
-      u.prenom,
-      u.email,
-      u.telephone,
-      u.pays,
-      u.ville,
-      u.dateinscription.toISOString(),
-      u.statut,
-    ]);
-    return [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
-  }
-
-  async exportTontinesCsv(): Promise<string> {
-    const tontines = await this.findAllTontines();
-    const headers = ['ID', 'Nom', 'Description', 'Montant cotisation', 'Fréquence', 'Membres max', 'Statut', 'Cycle actuel', 'Date création'];
-    const rows = tontines.map((t) => [
-      t.id,
-      t.name,
-      t.description ?? '',
-      t.contributionAmount,
-      t.frequency,
-      String(t.memberLimit),
-      t.status,
-      String(t.currentCycle),
-      t.createdAt.toISOString(),
-    ]);
-    return [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
-  }
+  return this.buildStyledWorkbook({
+    sheetName: 'Transactions',
+    columns: [
+      { header: 'Référence', key: 'reference', width: 26 },
+      { header: 'Utilisateur', key: 'user', width: 22 },
+      { header: 'Email', key: 'email', width: 26 },
+      { header: 'Type', key: 'type', width: 16 },
+      { header: 'Montant', key: 'amount', width: 16, format: 'currency' },
+      { header: 'Statut', key: 'status', width: 14, format: 'status' },
+      { header: 'Date', key: 'createdAt', width: 20, format: 'date' },
+    ],
+    rows,
+  });
 }
+
+async exportUsersXlsx(): Promise<Buffer> {
+  const users = await this.usersRepository.find({ order: { dateinscription: 'DESC' } });
+
+  const rows = users.map((u) => ({
+    id: u.idutilisateur,
+    nom: u.nom,
+    prenom: u.prenom,
+    email: u.email,
+    telephone: u.telephone,
+    pays: u.pays,
+    ville: u.ville,
+    dateinscription: u.dateinscription,
+    statut: u.statut,
+  }));
+
+  return this.buildStyledWorkbook({
+    sheetName: 'Utilisateurs',
+    columns: [
+      { header: 'ID', key: 'id', width: 8 },
+      { header: 'Nom', key: 'nom', width: 18 },
+      { header: 'Prénom', key: 'prenom', width: 18 },
+      { header: 'Email', key: 'email', width: 26 },
+      { header: 'Téléphone', key: 'telephone', width: 18 },
+      { header: 'Pays', key: 'pays', width: 14 },
+      { header: 'Ville', key: 'ville', width: 14 },
+      { header: 'Date inscription', key: 'dateinscription', width: 20, format: 'date' },
+      { header: 'Statut', key: 'statut', width: 14, format: 'status' },
+    ],
+    rows,
+  });
+}
+
+async exportTontinesXlsx(): Promise<Buffer> {
+  const tontines = await this.findAllTontines();
+
+  const rows = tontines.map((t) => ({
+    id: t.id,
+    name: t.name,
+    description: t.description ?? '',
+    contributionAmount: Number(t.contributionAmount),
+    frequency: t.frequency,
+    memberLimit: t.memberLimit,
+    status: t.status,
+    currentCycle: t.currentCycle,
+    createdAt: t.createdAt,
+  }));
+
+  return this.buildStyledWorkbook({
+    sheetName: 'Tontines',
+    columns: [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'Nom', key: 'name', width: 22 },
+      { header: 'Description', key: 'description', width: 30 },
+      { header: 'Cotisation', key: 'contributionAmount', width: 16, format: 'currency' },
+      { header: 'Fréquence', key: 'frequency', width: 14 },
+      { header: 'Membres max', key: 'memberLimit', width: 14 },
+      { header: 'Statut', key: 'status', width: 14, format: 'status' },
+      { header: 'Cycle actuel', key: 'currentCycle', width: 14 },
+      { header: 'Date création', key: 'createdAt', width: 20, format: 'date' },
+    ],
+    rows,
+  });
+}
+
+  //style excel
+  private readonly STATUS_COLORS: Record<string, string> = {
+  completed: 'FF10B981', // vert
+  approved: 'FF10B981',
+  active: 'FF10B981',
+  pending: 'FFF59E0B', // ambre
+  failed: 'FFEF4444', // rouge
+  rejected: 'FFEF4444',
+  cancelled: 'FF9CA3AF', // gris
+};
+
+private async buildStyledWorkbook<T extends Record<string, unknown>>(config: {
+  sheetName: string;
+  columns: {
+    header: string;
+    key: keyof T & string;
+    width?: number;
+    format?: 'text' | 'currency' | 'date' | 'status';
+  }[];
+  rows: T[];
+}): Promise<Buffer> {
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'AllnessPay';
+  workbook.created = new Date();
+
+  const sheet = workbook.addWorksheet(config.sheetName, {
+    views: [{ state: 'frozen', ySplit: 1 }],
+  });
+
+  sheet.columns = config.columns.map((c) => ({
+    header: c.header,
+    key: c.key,
+    width: c.width ?? 20,
+  }));
+
+  // En-tête stylé (fond allness-dark, texte blanc gras)
+  const headerRow = sheet.getRow(1);
+  headerRow.eachCell((cell) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF0F2A2E' },
+    };
+    cell.font = { color: { argb: 'FFFFFFFF' }, bold: true, size: 11 };
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    cell.border = {
+      bottom: { style: 'thin', color: { argb: 'FF0F2A2E' } },
+    };
+  });
+  headerRow.height = 24;
+  sheet.autoFilter = { from: 'A1', to: `${String.fromCharCode(64 + config.columns.length)}1` };
+
+  // Lignes de données
+  config.rows.forEach((row, i) => {
+    const excelRow = sheet.addRow(row);
+    const isEven = i % 2 === 0;
+
+    excelRow.eachCell((cell, colNumber) => {
+      const colConfig = config.columns[colNumber - 1];
+
+      cell.border = {
+        bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+      };
+      cell.alignment = { vertical: 'middle' };
+
+      if (!isEven) {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } };
+      }
+
+      if (colConfig?.format === 'currency') {
+        cell.numFmt = '#,##0" XAF"';
+        cell.alignment = { vertical: 'middle', horizontal: 'right' };
+      }
+      if (colConfig?.format === 'date') {
+        cell.numFmt = 'dd/mm/yyyy hh:mm';
+      }
+      if (colConfig?.format === 'status') {
+        const value = String(cell.value ?? '').toLowerCase();
+        const color = this.STATUS_COLORS[value];
+        if (color) {
+          cell.font = { color: { argb: color }, bold: true };
+        }
+      }
+    });
+    excelRow.height = 20;
+  });
+
+  const arrayBuffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(arrayBuffer as ArrayBuffer);
+}
+}
+

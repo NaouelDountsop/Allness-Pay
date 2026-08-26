@@ -71,21 +71,21 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   return (
     <header
       className="sticky top-0 left-0 md:left-72 right-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 py-3 sm:py-4
-      bg-white border-b border-gray-100 shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
+      bg-white dark:bg-[#08191E] border-b border-gray-100 dark:border-[#18353B] shadow-sm shrink-0 rounded-b-[1.5rem] sm:rounded-b-[2rem]"
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onMenuToggle}
-          className="md:hidden text-allness-dark hover:text-allness-orange flex items-center justify-center w-8 h-8"
+          className="md:hidden text-[#082B37] dark:text-[#F1F5F5] hover:text-[#D28E2F] flex items-center justify-center w-8 h-8"
           aria-label="Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="text-sm sm:text-lg font-semibold text-allness-dark flex items-center gap-2 truncate">
+        <h1 className="text-sm sm:text-lg font-semibold text-[#082B37] dark:text-[#F1F5F5] flex items-center gap-2 truncate">
           Bonjour, {firstName}
         </h1>
         {admin?.role && (
-          <span className="hidden sm:inline-flex items-center rounded-full bg-allness-dark/10 px-2 py-0.5 text-[10px] font-semibold text-allness-dark">
+          <span className="hidden sm:inline-flex items-center rounded-full bg-allness-dark/10 px-2 py-0.5 text-[10px] font-semibold text-[#082B37] dark:text-[#F1F5F5]">
             {admin.role === 'super-admin' ? 'Super Admin' : 'Admin'}
           </span>
         )}
@@ -108,7 +108,7 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-allness-orange hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-allness-orange hover:bg-[#F1F5F5] dark:hover:bg-[#18353B] transition-colors"
             title={langLabel === 'FR' ? 'English' : 'Français'}
           >
             <Globe className="w-5 h-5" />
@@ -116,7 +116,7 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           </button>
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-allness-orange hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-allness-orange hover:bg-[#F1F5F5] dark:hover:bg-[#18353B] transition-colors"
             title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
           >
             {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-4 h-4" />}
@@ -124,14 +124,14 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
             <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
           <HelpCircle className="w-5 h-5" />
         </button>
-          <div className="w-8 h-8 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+          <div className="w-8 h-8 rounded-full bg-[#0D343A] dark:bg-[#0D343A] overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {initials}
           </div>
           <div className="text-right">
             <div className="flex items-center gap-1.5 justify-end">
-              <p className="text-sm font-medium text-allness-dark leading-tight">{displayName}</p>
+              <p className="text-sm font-medium text-[#082B37] dark:text-[#F1F5F5] leading-tight">{displayName}</p>
             </div>
-            <p className="text-xs text-gray-500 leading-tight">{admin?.profession || 'Administrateur'}</p>
+            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-tight">{admin?.profession || 'Administrateur'}</p>
           </div>
         </div>
 
@@ -139,9 +139,9 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         <div className="relative md:hidden" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 hover:bg-gray-50 rounded-xl p-1 transition-colors"
+            className="flex items-center gap-2 hover:bg-[#F1F5F5] dark:hover:bg-[#18353B] rounded-xl p-1 transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-allness-dark overflow-hidden flex items-center justify-center text-xs font-medium text-white">
+            <div className="w-7 h-7 rounded-full bg-[#0D343A] dark:bg-[#0D343A] overflow-hidden flex items-center justify-center text-xs font-medium text-white">
               {initials}
             </div>
             <ChevronDown
@@ -150,10 +150,10 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 py-2 z-50">
-              <div className="px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-semibold text-allness-dark">{displayName}</p>
-                <p className="text-xs text-gray-500">{admin?.email}</p>
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#08191E] rounded-2xl shadow-lg border border-gray-100 dark:border-[#18353B] py-2 z-50">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-[#18353B]">
+                <p className="text-sm font-semibold text-[#082B37] dark:text-[#F1F5F5]">{displayName}</p>
+                <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">{admin?.email}</p>
               </div>
               <div className="border-t border-gray-100 mt-1 pt-1">
                 <button

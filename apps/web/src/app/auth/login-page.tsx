@@ -58,8 +58,8 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <h1 className="text-xl font-semibold mb-1">Connexion</h1>
-      <p className="text-sm text-allness-gray mb-6">
+      <h1 className="text-xl font-semibold mb-1 dark:text-white">Connexion</h1>
+      <p className="text-sm text-allness-gray dark:text-gray-400 mb-6">
         Ravi de vous revoir sur l'écosystème financier de nouvelle génération
       </p>
 
@@ -76,12 +76,12 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full space-y-1">
-          <label className="text-sm font-medium text-gray-700">Mot de passe</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Mot de passe</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
             <input
               type={showPassword ? 'text' : 'password'}
-              className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
+              className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               {...register('password')}
             />
             <button
@@ -110,7 +110,7 @@ export default function LoginPage() {
           Se connecter →
         </AppButton>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
           Pas encore inscrit ?{' '}
           <a href="/signup" className="text-allness-green font-medium">
             S'inscrire

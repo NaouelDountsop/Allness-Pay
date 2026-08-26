@@ -1,13 +1,13 @@
 import type { BadgeTone } from '../../types';
 
 const TONE_STYLES: Record<BadgeTone, string> = {
-  green: 'bg-green-50 text-green-700',
-  orange: 'bg-orange-50 text-orange-600',
-  red: 'bg-red-50 text-red-600',
-  blue: 'bg-blue-50 text-blue-600',
-  gray: 'bg-gray-100 text-gray-500',
-  purple: 'bg-purple-50 text-purple-600',
-  amber: 'bg-amber-50 text-amber-600',
+  green: 'bg-allness-green/10 text-allness-green',
+  orange: 'bg-allness-orange/10 text-allness-orange',
+  red: 'bg-red-500/10 text-red-500',
+  blue: 'bg-blue-500/10 text-blue-500',
+  gray: 'bg-gray-200/60 text-gray-500',
+  purple: 'bg-purple-500/10 text-purple-500',
+  amber: 'bg-amber-500/10 text-amber-500',
 };
 
 const DOT_STYLES: Record<BadgeTone, string> = {

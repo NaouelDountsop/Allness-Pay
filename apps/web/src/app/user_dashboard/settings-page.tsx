@@ -398,7 +398,37 @@ export default function SettingsPage() {
                 description={t('settings.privacyDescription')}
               >
                 <div className="space-y-3">
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => {
+                      const rows = [
+                        ['Paramètre', 'Valeur'],
+                        ['Nom complet', fullName],
+                        ['Email', profile?.email ?? '—'],
+                        ['Téléphone', profile?.telephone ?? '—'],
+                        ['Ville', profile?.ville ?? '—'],
+                        ['Pays', profile?.pays ?? '—'],
+                        ['Langue', language],
+                        ['Thème', theme],
+                        ['Notifications email', emailNotifs ? 'Oui' : 'Non'],
+                        ['Notifications SMS', smsNotifs ? 'Oui' : 'Non'],
+                        ['Notifications push', pushNotifs ? 'Oui' : 'Non'],
+                        ['2FA', twoFaEnabled ? 'Activé' : 'Désactivé'],
+                        ['PIN', pinEnabled ? 'Activé' : 'Désactivé'],
+                        ['Biométrie', biometricEnabled ? 'Activé' : 'Désactivé'],
+                      ];
+                      const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `parametres_${fullName.replace(/\s+/g, '_')}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
                     {t('settings.exportData')}
                   </Button>
                   <Button

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Lock, Info, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Lock, Info, Loader2, CheckCircle, CircleCheck } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -51,6 +51,12 @@ export default function MakeContributionPage() {
     queryFn: walletService.getPrimary,
   });
 
+  const { data: contributionStatus, isLoading: statusLoading } = useQuery({
+    queryKey: ['contribution-status', id],
+    queryFn: () => tontineService.checkMyContributionStatus(id!),
+    enabled: !!id,
+  });
+
   const suggestedAmount = tontine ? String(tontine.contributionAmount) : '500';
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<PaymentMethod>('wallet');
@@ -97,6 +103,8 @@ export default function MakeContributionPage() {
       queryClient.invalidateQueries({ queryKey: ['wallet-primary'] });
       queryClient.invalidateQueries({ queryKey: ['wallets'] });
       queryClient.invalidateQueries({ queryKey: ['transactions', wallet?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tontine-contributions', id] });
+      queryClient.invalidateQueries({ queryKey: ['contribution-status', id] });
       setSuccess(true);
     },
   });
@@ -168,6 +176,49 @@ export default function MakeContributionPage() {
                 {new Intl.NumberFormat('fr-FR').format(Number(effectiveAmount))} {displayCurrency}
               </span>{' '}
               a été débitée de votre portefeuille.
+            </p>
+            <button
+              onClick={() => navigate(`/dashboard/tontines/${id}`)}
+              className="h-11 px-6 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Retour à la tontine
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (statusLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (contributionStatus?.hasPaid) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="px-4 sm:px-8 pb-10">
+          <div className="max-w-md mx-auto text-center py-16">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-500/10">
+              <CircleCheck className="w-10 h-10 text-allness-green" />
+            </div>
+            <h2 className="text-xl font-bold text-allness-dark dark:text-[#F1F5F5] mb-2">Déjà cotisé</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              Vous avez déjà cotisé pour le tour {contributionStatus.cycleNumber}.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+              Montant :{' '}
+              <span className="font-semibold text-allness-dark dark:text-[#F1F5F5]">
+                {new Intl.NumberFormat('fr-FR').format(Number(contributionStatus.amount))}{' '}
+                {contributionStatus.currency ?? 'XAF'}
+              </span>
             </p>
             <button
               onClick={() => navigate(`/dashboard/tontines/${id}`)}

@@ -1,6 +1,30 @@
 import { QrCode, Download, RefreshCcw, Plus } from 'lucide-react';
 import { SectionCard } from '../../ui/section-card';
 
+function downloadQr(label: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="white"/>
+    <rect x="20" y="20" width="60" height="60" rx="4" fill="#0D343A"/>
+    <rect x="30" y="30" width="40" height="40" rx="2" fill="white"/>
+    <rect x="38" y="38" width="24" height="24" rx="1" fill="#0D343A"/>
+    <rect x="120" y="20" width="60" height="60" rx="4" fill="#0D343A"/>
+    <rect x="130" y="30" width="40" height="40" rx="2" fill="white"/>
+    <rect x="138" y="38" width="24" height="24" rx="1" fill="#0D343A"/>
+    <rect x="20" y="120" width="60" height="60" rx="4" fill="#0D343A"/>
+    <rect x="30" y="130" width="40" height="40" rx="2" fill="white"/>
+    <rect x="38" y="138" width="24" height="24" rx="1" fill="#0D343A"/>
+    <rect x="90" y="90" width="20" height="20" fill="#D28E2F"/>
+    <text x="100" y="175" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#666">${label}</text>
+  </svg>`;
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `qr-${label.toLowerCase().replace(/\s+/g, '-')}.svg`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function MerchantQrCodesTab() {
   return (
     <div className="flex flex-col gap-5">
@@ -16,7 +40,10 @@ export function MerchantQrCodesTab() {
               </span>
               <p className="text-xs font-semibold text-allness-dark mb-3">{label}</p>
               <div className="flex items-center gap-2">
-                <button className="h-8 px-3 rounded-lg border border-gray-200 text-[11px] text-gray-600 flex items-center gap-1.5">
+                <button
+                  onClick={() => downloadQr(label)}
+                  className="h-8 px-3 rounded-lg border border-gray-200 text-[11px] text-gray-600 flex items-center gap-1.5"
+                >
                   <Download className="w-3.5 h-3.5" />
                   Télécharger
                 </button>

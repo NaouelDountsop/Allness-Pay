@@ -57,7 +57,23 @@ export function MerchantTransactionsTab() {
                 className="h-8 pl-8 pr-3 rounded-lg bg-gray-50 border border-gray-100 text-xs focus:outline-none"
               />
             </div>
-            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                const rows = [['Date', 'Client', 'Montant', 'Statut']];
+                filtered.forEach((t) => {
+                  rows.push([t.date, t.client, t.amount, t.status]);
+                });
+                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `transactions_marchand_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5"
+            >
               <Download className="w-3.5 h-3.5" />
               Exporter
             </button>

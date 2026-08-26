@@ -66,7 +66,7 @@ export function AdminSidebar({
     <aside
       className={`${
         mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'
-      } shrink-0 w-72 max-w-full bg-allness-dark text-white flex-col`}
+      } shrink-0 w-72 max-w-full bg-[#0D343A] dark:bg-[#061216] text-white flex-col border-r border-white/10 shadow-lg`}
     >
       <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
         <div className="flex items-center gap-2">

@@ -48,7 +48,9 @@
   },
   "dependencies": {
     "@nestjs/mapped-types": "*",
+    "exceljs": "^4.4.0",
     "ioredis": "^5.11.1",
+    "jspdf": "^4.2.1",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
     "passport-local": "^1.0.0",

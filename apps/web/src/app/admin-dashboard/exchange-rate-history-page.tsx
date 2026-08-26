@@ -71,7 +71,23 @@ export default function ExchangeRateHistoryPage() {
           </button>
           <p className="text-[11px] text-gray-400 mt-1 ml-6">Taux de change &gt; Historique</p>
         </div>
-        <button className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
+        <button
+          onClick={() => {
+            const rows = [['Date / Heure', 'Ancien Taux', 'Nouveau Taux', 'Variation', 'Ajouté par', 'Utilisateur']];
+            HISTORY.forEach((h) => {
+              rows.push([h.date, h.old, h.next, h.change, h.by, h.user]);
+            });
+            const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `historique_taux_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
           <Download className="w-3.5 h-3.5" />
           Exporter
         </button>

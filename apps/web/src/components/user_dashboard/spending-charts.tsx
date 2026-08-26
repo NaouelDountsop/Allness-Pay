@@ -19,10 +19,10 @@ interface MonthlySummaryProps {
 }
 
 const SERIES_COLORS: Record<string, string> = {
-  revenus: '#111827',
+  revenus: '#22C55E',
   depenses: '#F97316',
-  epargne: '#22C55E',
-  solde: '#3B82F6',
+  epargne: '#3B82F6',
+  solde: '#A855F7',
 };
 
 const VIEW_W = 340;
@@ -107,15 +107,15 @@ export function MonthlySummary({
   }, [data, SERIES]);
 
   return (
-    <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="rounded-2xl border border-gray-100 dark:border-[#18353B] shadow-sm p-5 bg-white dark:bg-[#08191E]">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-allness-orange to-allness-dark flex items-center justify-center shrink-0">
             <LineChart className="w-3.5 h-3.5 text-white" />
           </span>
-          <h3 className="text-sm font-semibold text-gray-800">{t('wallet.monthlySummary')}</h3>
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-[#F1F5F5]">{t('wallet.monthlySummary')}</h3>
         </div>
-        <span className="text-xs text-gray-400">{month}</span>
+        <span className="text-xs text-gray-400 dark:text-[#94A3B8]">{month}</span>
       </div>
 
       <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full h-44" preserveAspectRatio="none">
@@ -129,7 +129,7 @@ export function MonthlySummary({
             markerHeight="7"
             orient="auto-start-reverse"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#111827" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280" />
           </marker>
           <marker
             id={`${arrowId}-y`}
@@ -140,7 +140,7 @@ export function MonthlySummary({
             markerHeight="7"
             orient="auto-start-reverse"
           >
-            <path d="M 0 10 L 5 0 L 10 10 z" fill="#111827" />
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#6B7280" />
           </marker>
         </defs>
 
@@ -152,9 +152,10 @@ export function MonthlySummary({
             x2={xEnd}
             y1={y}
             y2={y}
-            stroke="#E5E7EB"
+            stroke="#D1D5DB"
             strokeWidth={1}
             strokeDasharray="3 3"
+            className="dark:stroke-[#1E3A3F] dark:stroke-opacity-50"
           />
         ))}
 
@@ -180,9 +181,10 @@ export function MonthlySummary({
             x2={x}
             y1={PAD_TOP}
             y2={axisY}
-            stroke="#E5E7EB"
+            stroke="#D1D5DB"
             strokeWidth={1}
             strokeDasharray="3 3"
+            className="dark:stroke-[#1E3A3F] dark:stroke-opacity-50"
           />
         ))}
 
@@ -192,7 +194,7 @@ export function MonthlySummary({
           y1={axisY}
           x2={xEnd}
           y2={axisY}
-          stroke="#111827"
+          stroke="#6B7280"
           strokeWidth={1.5}
           markerEnd={`url(#${arrowId}-x)`}
         />
@@ -203,7 +205,7 @@ export function MonthlySummary({
           y1={axisY}
           x2={axisX}
           y2={yEnd}
-          stroke="#111827"
+          stroke="#6B7280"
           strokeWidth={1.5}
           markerEnd={`url(#${arrowId}-y)`}
         />
@@ -239,7 +241,7 @@ export function MonthlySummary({
       {/* Légende */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-[11px]">
         {SERIES.map((s) => (
-          <span key={s.key} className="flex items-center gap-1.5 font-medium text-gray-600">
+          <span key={s.key} className="flex items-center gap-1.5 font-medium text-gray-600 dark:text-gray-400">
             <span
               className="inline-block w-2 h-2 rounded-full"
               style={{ backgroundColor: s.color }}
@@ -254,7 +256,7 @@ export function MonthlySummary({
         <span className="text-gray-400 font-semibold">-{expensePercent}%</span>
       </div>
 
-      <p className="text-sm font-semibold text-gray-800 mt-3 mb-4">
+      <p className="text-sm font-semibold text-gray-800 dark:text-[#F1F5F5] mt-3 mb-4">
         {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
       </p>
 
@@ -263,7 +265,7 @@ export function MonthlySummary({
         <div className="overflow-x-auto">
           <table className="w-full text-[11px]">
             <thead>
-              <tr className="border-b border-gray-100">
+              <tr className="border-b border-gray-100 dark:border-[#18353B]">
                 <th className="text-left py-1.5 font-medium text-gray-400">{t('wallet.month')}</th>
                 {SERIES.map((s) => (
                   <th key={s.key} className="text-right py-1.5 font-medium text-gray-400">
@@ -274,10 +276,10 @@ export function MonthlySummary({
             </thead>
             <tbody>
               {data.map((d, i) => (
-                <tr key={i} className="border-b border-gray-50">
-                  <td className="py-1.5 font-medium text-gray-600">{d.label}</td>
+                <tr key={i} className="border-b border-gray-50 dark:border-[#18353B]">
+                  <td className="py-1.5 font-medium text-gray-600 dark:text-gray-400">{d.label}</td>
                   {SERIES.map((s) => (
-                    <td key={s.key} className="text-right py-1.5 text-gray-700">
+                    <td key={s.key} className="text-right py-1.5 text-gray-700 dark:text-gray-300">
                       {new Intl.NumberFormat('fr-FR').format(d[s.key])}
                     </td>
                   ))}

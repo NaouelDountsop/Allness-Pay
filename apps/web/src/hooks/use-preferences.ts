@@ -9,6 +9,7 @@ const LANG_LABELS: Record<Language, string> = { fr: 'FR', en: 'EN' };
 interface PreferencesState {
   language: Language;
   theme: Theme;
+  themeAuto: boolean;
 }
 
 const STORAGE_KEY = 'afrilinkpay-preferences';
@@ -25,20 +26,18 @@ function loadPreferences(): PreferencesState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed.language === 'fr' || parsed.language === 'en') {
-        if (parsed.theme === 'light' || parsed.theme === 'dark') {
-          return { language: parsed.language, theme: parsed.theme };
-        }
-        return { language: parsed.language, theme: getSystemTheme() };
-      }
+      const language = parsed.language === 'en' ? 'en' : 'fr';
+      const themeAuto = parsed.themeAuto !== false;
+
       if (parsed.theme === 'light' || parsed.theme === 'dark') {
-        return { language: 'fr', theme: parsed.theme };
+        return { language, theme: parsed.theme, themeAuto };
       }
+      return { language, theme: getSystemTheme(), themeAuto: true };
     }
   } catch {
     // ignore
   }
-  return { language: 'fr', theme: getSystemTheme() };
+  return { language: 'fr', theme: getSystemTheme(), themeAuto: true };
 }
 
 function savePreferences(state: PreferencesState) {
@@ -55,27 +54,26 @@ export function usePreferences() {
   useEffect(() => {
     savePreferences(prefs);
 
-    // Sync theme
     if (prefs.theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
 
-    // Sync language with i18n
     if (i18n.language !== prefs.language) {
       i18n.changeLanguage(prefs.language);
     }
   }, [prefs]);
 
-  // Listen for system theme changes (only applies if user has no saved preference)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = (e: MediaQueryListEvent) => {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        setPrefs((prev) => ({ ...prev, theme: e.matches ? 'dark' : 'light' }));
-      }
+      setPrefs((prev) => {
+        if (prev.themeAuto) {
+          return { ...prev, theme: e.matches ? 'dark' : 'light' };
+        }
+        return prev;
+      });
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -92,6 +90,7 @@ export function usePreferences() {
     setPrefs((prev) => ({
       ...prev,
       theme: prev.theme === 'light' ? 'dark' : 'light',
+      themeAuto: false,
     }));
   }, []);
 
@@ -100,12 +99,13 @@ export function usePreferences() {
   }, []);
 
   const setTheme = useCallback((theme: Theme) => {
-    setPrefs((prev) => ({ ...prev, theme }));
+    setPrefs((prev) => ({ ...prev, theme, themeAuto: false }));
   }, []);
 
   return {
     language: prefs.language,
     theme: prefs.theme,
+    themeAuto: prefs.themeAuto,
     langLabel: LANG_LABELS[prefs.language],
     toggleLanguage,
     toggleTheme,

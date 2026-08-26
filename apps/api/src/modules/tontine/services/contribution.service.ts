@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, In } from 'typeorm';
 import { TontineContribution } from '../entities/tontine-contribution.entity';
 import { TontineCycle } from '../entities/tontine-cycle.entity';
 import { TontineMember } from '../entities/tontine-member.entity';
@@ -13,6 +13,7 @@ import {
 import { WalletsService } from '../../wallet/wallet.service';
 import { PinService } from '../../pin/pin.service';
 import { ContributeDto } from '../dto/contribute.dto';
+import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
 import { TontineCycleStatus } from '../enums/tontine-cycle-status.enum';
 import { recalculateBalance } from '../utils/balance.util';
@@ -22,6 +23,10 @@ export class ContributionService {
   constructor(
     @InjectRepository(TontineContribution)
     private readonly contributionRepo: Repository<TontineContribution>,
+    @InjectRepository(TontineCycle)
+    private readonly cycleRepo: Repository<TontineCycle>,
+    @InjectRepository(TontineMember)
+    private readonly memberRepo: Repository<TontineMember>,
     private readonly walletsService: WalletsService,
     private readonly pinService: PinService,
     @InjectDataSource()
@@ -155,4 +160,80 @@ export class ContributionService {
     return this.contributionRepo.save(contribution);
   }
 
+  async findAllCycles(tontineId: string, userId: number): Promise<TontineCycle[]> {
+    const member = await this.memberRepo.findOne({
+      where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+    });
+    if (!member) {
+      throw new NotFoundException("Vous n'êtes pas membre de cette tontine");
+    }
+
+    return this.cycleRepo.find({
+      where: { tontineId },
+      order: { cycleNumber: 'DESC' },
+      relations: ['contributions'],
+    });
+  }
+
+  async checkMyContributionStatus(
+    tontineId: string,
+    userId: number,
+  ): Promise<{ hasPaid: boolean; cycleNumber: number; amount: string; currency: string }> {
+    const member = await this.memberRepo.findOne({
+      where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+    });
+    if (!member) {
+      throw new NotFoundException("Vous n'êtes pas membre de cette tontine");
+    }
+
+    const activeCycle = await this.cycleRepo.findOne({
+      where: { tontineId, status: TontineCycleStatus.ACTIVE },
+      relations: ['contributions'],
+    });
+    if (!activeCycle) {
+      return { hasPaid: false, cycleNumber: 0, amount: '0', currency: 'XAF' };
+    }
+
+    const contribution = activeCycle.contributions.find((c) => c.memberId === member.id);
+    const tontine = await this.dataSource.getRepository(Tontine).findOne({
+      where: { id: tontineId },
+      select: ['currency'],
+    });
+
+    return {
+      hasPaid: contribution?.status === TontineContributionStatus.PAID,
+      cycleNumber: activeCycle.cycleNumber,
+      amount: contribution?.amount ?? '0',
+      currency: tontine?.currency ?? 'XAF',
+    };
+  }
+
+  async findAllByTontine(
+    tontineId: string,
+    userId: number,
+    cycleId?: string,
+  ): Promise<TontineContribution[]> {
+    const member = await this.memberRepo.findOne({
+      where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+    });
+    if (!member) {
+      return [];
+    }
+
+    const cycles = await this.cycleRepo.find({
+      where: { tontineId },
+      select: ['id'],
+    });
+    const cycleIds = cycles.map((c) => c.id);
+
+    if (cycleIds.length === 0) return [];
+
+    return this.contributionRepo.find({
+      where: {
+        cycleId: cycleId ? cycleId : In(cycleIds),
+      },
+      relations: ['member', 'member.user', 'cycle'],
+      order: { dueDate: 'ASC' },
+    });
+  }
 }

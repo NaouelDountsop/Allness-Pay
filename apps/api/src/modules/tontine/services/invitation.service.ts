@@ -16,6 +16,7 @@ import { TontineMemberRole } from '../enums/tontine-member-role.enum';
 import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
 import { MailService } from '../../mail/mail.service';
 import { User } from '../../users/entities/user.entity';
+import { Kyc, KycStatus } from '../../kyc/entities/kyc.entity';
 
 @Injectable()
 export class InvitationService {
@@ -28,8 +29,19 @@ export class InvitationService {
     private readonly tontineRepo: Repository<Tontine>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Kyc)
+    private readonly kycRepo: Repository<Kyc>,
     private readonly mailService: MailService,
   ) {}
+
+  private async assertKycApproved(userId: number): Promise<void> {
+    const kyc = await this.kycRepo.findOne({ where: { userId } });
+    if (!kyc || kyc.status !== KycStatus.APPROVED) {
+      throw new BadRequestException(
+        'Votre KYC doit être approuvé pour rejoindre une tontine. Veuillez compléter votre vérification d\'identité.',
+      );
+    }
+  }
 
   async create(
     tontineId: string,
@@ -137,6 +149,8 @@ export class InvitationService {
       await this.invitationRepo.save(invitation);
       return null;
     }
+
+    await this.assertKycApproved(userId);
 
     invitation.status = 'ACCEPTED';
     await this.invitationRepo.save(invitation);
@@ -286,6 +300,8 @@ export class InvitationService {
     if (invitation.inviteeUserId && invitation.inviteeUserId !== userId) {
       throw new ForbiddenException('Cette invitation ne vous est pas destinée');
     }
+
+    await this.assertKycApproved(userId);
 
     const tontine = await this.tontineRepo.findOne({
       where: { id: invitation.tontineId },

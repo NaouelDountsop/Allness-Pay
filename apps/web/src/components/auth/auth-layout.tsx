@@ -22,8 +22,8 @@ const features: Feature[] = [
 
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
-      <div className="w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden bg-white flex flex-col md:flex-row">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-[#071418] p-4 sm:p-6">
+      <div className="w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden bg-white dark:bg-[#0B2026] flex flex-col md:flex-row">
         {/* Panneau gauche */}
         <div className="hidden md:flex md:w-[42%] bg-gradient-to-b from-allness-dark to-allness-darker flex-col p-8 lg:p-10 text-white">
           <div>

@@ -136,17 +136,33 @@ export default function ContributionHistoryPage() {
           <div>
             <button
               onClick={() => navigate(id ? `/dashboard/tontines/${id}` : '/dashboard/tontines')}
-              className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
+              className="flex items-center gap-2 text-lg font-semibold text-allness-dark dark:text-[#F1F5F5]"
             >
               <ArrowLeft className="w-5 h-5" />
               Historique des Versements
             </button>
             {tontine && (
-              <p className="text-sm text-gray-500 mt-1">{tontine.name}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{tontine.name}</p>
             )}
           </div>
           <div className="flex gap-2">
-            <button className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2">
+            <button
+              onClick={() => {
+                const rows = [['Date', 'Membre', 'Montant', 'Statut', 'Devise']];
+                contributions.forEach((c) => {
+                  rows.push([c.date, c.memberName, String(c.amount), c.status, c.currency]);
+                });
+                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `versements_${tontine?.name ?? 'tontine'}_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2"
+            >
               <Download className="w-4 h-4" />
               Exporter CSV
             </button>
@@ -237,12 +253,12 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
               <button
                 key={t.id}
                 onClick={() => onSelect(t)}
-                className="w-full text-left rounded-xl border border-gray-200 p-4 hover:border-allness-green hover:bg-allness-green/[0.02] transition-all"
+                className="w-full text-left rounded-xl border border-gray-200 dark:border-[#18353B] p-4 hover:border-allness-green hover:bg-allness-green/[0.02] dark:hover:bg-allness-green/[0.05] transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-[#F1F5F5]">{t.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {t.frequency} · {t.memberLimit} membres · Tour {t.currentCycle}/{t.memberLimit}
                     </p>
                   </div>
@@ -258,7 +274,7 @@ function TontineSelector({ onSelect }: { onSelect: (t: Tontine) => void }) {
           })}
         </div>
       ) : (
-        <p className="text-sm text-gray-500 text-center py-6">
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
           Aucune tontine trouvée.
         </p>
       )}

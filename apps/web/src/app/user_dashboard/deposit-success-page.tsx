@@ -121,7 +121,31 @@ export default function DepositSuccessPage() {
               {t('depositSuccess.backToWallet')}
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button className="h-11 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => {
+                const rows = [
+                  ['Champ', 'Valeur'],
+                  ['Montant', `${new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA`],
+                  ['Référence', deposit.transactionId || '—'],
+                  ['Date', formatDate(deposit.createdAt)],
+                  ['Statut', 'Succès'],
+                  ['Méthode', isBank ? `Virement bancaire` : (MOBILE_OPERATOR_LABEL[deposit.operator] || deposit.operator)],
+                ];
+                if (isBank) {
+                  rows.push(['Banque', BANK_LABELS[deposit.bankName] || deposit.bankName]);
+                  rows.push(['Titulaire', deposit.accountHolder]);
+                }
+                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `recu-depot-${deposit.transactionId || 'recu'}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="h-11 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+            >
               <Download className="w-4 h-4" />
               {t('depositSuccess.downloadReceipt')}
             </button>

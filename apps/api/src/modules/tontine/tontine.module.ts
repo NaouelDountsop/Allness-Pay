@@ -23,6 +23,7 @@ import { Wallet } from '../wallet/entities/wallet.entity';
 import { PinModule } from '../pin/pin.module';
 import { MailModule } from '../mail/mail.module';
 import { User } from '../users/entities/user.entity';
+import { Kyc } from '../kyc/entities/kyc.entity';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { User } from '../users/entities/user.entity';
       TontineInvitation,
       Wallet,
       User,
+      Kyc,
     ]),
     WalletsModule,
     PinModule,
