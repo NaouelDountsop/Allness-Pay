@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle, Loader2 } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle } from 'lucide-react';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
+import {LoadingSpinner} from '@/components/common/loading-spinner';
 import { formatAmount, formatDateShort } from '@/lib/utils';
 
 interface TransactionsListProps {
@@ -16,7 +17,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
     return (
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{('tontines.latestTransactions')}</h3>
           <a
             href="/dashboard/transactions"
             className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"

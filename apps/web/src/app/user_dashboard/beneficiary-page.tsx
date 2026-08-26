@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   UserPlus,
@@ -64,6 +65,7 @@ function BeneficiaryActionsMenu({
   const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -89,7 +91,7 @@ function BeneficiaryActionsMenu({
         ref={buttonRef}
         onClick={handleToggle}
         className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
-        aria-label="Plus d'options"
+        aria-label={t('beneficiaries.moreOptions')}
       >
         <MoreVertical className="w-3.5 h-3.5" />
       </button>
@@ -107,7 +109,7 @@ function BeneficiaryActionsMenu({
             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <Pencil className="w-3.5 h-3.5" />
-            Modifier
+            {t('beneficiaries.edit')}
           </button>
           <button
             onClick={() => {
@@ -117,7 +119,7 @@ function BeneficiaryActionsMenu({
             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            Supprimer
+            {t('beneficiaries.delete')}
           </button>
           <button
             onClick={() => {
@@ -127,7 +129,7 @@ function BeneficiaryActionsMenu({
             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <Star className={`w-3.5 h-3.5 ${beneficiary.isFavorite ? 'text-yellow-400 fill-yellow-400' : ''}`} />
-            {beneficiary.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            {beneficiary.isFavorite ? t('beneficiaries.removeFavorite') : t('beneficiaries.addFavorite')}
           </button>
         </div>
       )}
@@ -164,6 +166,7 @@ function NetworkBadge({ network }: { network: string }) {
 
 export default function BeneficiariesPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -235,10 +238,10 @@ export default function BeneficiariesPage() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-allness-dark mb-1">
-              Gestion des Bénéficiaires
+              {t('beneficiaries.pageTitle')}
             </h1>
             <p className="text-sm text-gray-400">
-              Ajoutez, gérez et transférez de l'argent à vos bénéficiaires en toute simplicité.
+              {t('beneficiaries.pageDescription')}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -247,16 +250,16 @@ export default function BeneficiariesPage() {
               className="group relative h-10 rounded-lg bg-allness-green text-white text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">Ajouter un bénéficiaire</span>
+              <span className="hidden sm:inline ml-2">{t('beneficiaries.addBeneficiary')}</span>
               <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                Ajouter
+                {t('beneficiaries.add')}
               </span>
             </button>
             <button className="group relative h-10 rounded-lg border border-allness-green bg-white text-gray-600 text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:bg-gray-50 transition-colors">
               <UserPlus className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">Importer depuis les contacts</span>
+              <span className="hidden sm:inline ml-2">{t('beneficiaries.importFromContacts')}</span>
               <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                Importer
+                {t('beneficiaries.import')}
               </span>
             </button>
           </div>
@@ -268,7 +271,7 @@ export default function BeneficiariesPage() {
               <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <Users className="w-5 h-5 text-blue-400" />
               </span>
-              <span className="text-sm text-gray-300">Total bénéficiaires</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.totalBeneficiaries')}</span>
             </div>
             <p className="text-2xl font-bold text-white mb-2">{stats.total}</p>
           </div>
@@ -278,11 +281,11 @@ export default function BeneficiariesPage() {
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-green-400" />
               </span>
-              <span className="text-sm text-gray-300">Bénéficiaires vérifiés</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.verifiedBeneficiaries')}</span>
             </div>
             <p className="text-2xl font-bold text-white mb-2">{stats.verified}</p>
             <p className="text-xs text-orange-400">
-              {stats.total > 0 ? Math.round((stats.verified / stats.total) * 100) : 0}% du total
+              {t('beneficiaries.percentOfTotal', { percent: stats.total > 0 ? Math.round((stats.verified / stats.total) * 100) : 0 })}
             </p>
           </div>
 
@@ -291,7 +294,7 @@ export default function BeneficiariesPage() {
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <Send className="w-5 h-5 text-green-400" />
               </span>
-              <span className="text-sm text-gray-300">Transferts ce mois</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.transfersThisMonth')}</span>
             </div>
             <p className="text-2xl font-bold text-white mb-2">—</p>
           </div>
@@ -301,7 +304,7 @@ export default function BeneficiariesPage() {
               <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
                 <Star className="w-5 h-5 text-amber-400" />
               </span>
-              <span className="text-sm text-gray-300">Bénéficiaires favoris</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.favoriteBeneficiaries')}</span>
             </div>
             <p className="text-2xl font-bold text-white mb-2">{stats.favorites}</p>
           </div>
@@ -311,13 +314,13 @@ export default function BeneficiariesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3 items-end">
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">
-                Rechercher
+                {t('beneficiaries.search')}
               </label>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Nom, numéro..."
+                  placeholder={t('beneficiaries.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
@@ -325,9 +328,9 @@ export default function BeneficiariesPage() {
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Statut</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">{t('beneficiaries.status')}</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
+                {t('beneficiaries.all')}
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
             </div>
@@ -353,9 +356,9 @@ export default function BeneficiariesPage() {
               </button>
             </div> */}
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Pays</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">{t('beneficiaries.country')}</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
+                {t('beneficiaries.all')}
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
             </div>
@@ -364,10 +367,10 @@ export default function BeneficiariesPage() {
           <div className="flex items-center justify-end gap-2 mb-5">
             <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" />
-              Réinitialiser
+              {t('beneficiaries.reset')}
             </button>
             <button className="h-9 px-5 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
-              Filtrer
+              {t('beneficiaries.filter')}
             </button>
           </div>
 
@@ -375,13 +378,13 @@ export default function BeneficiariesPage() {
             <table className="w-full text-sm min-w-[580px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                  <th className="font-medium pb-3">Bénéficiaire</th>
-                  <th className="font-medium pb-3 hidden sm:table-cell">Numéro</th>
-                  <th className="font-medium pb-3 hidden md:table-cell">Réseau</th>
-                  <th className="font-medium pb-3 hidden lg:table-cell">Pays</th>
+                  <th className="font-medium pb-3">{t('beneficiaries.beneficiary')}</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">{t('beneficiaries.number')}</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">{t('beneficiaries.network')}</th>
+                  <th className="font-medium pb-3 hidden lg:table-cell">{t('beneficiaries.country')}</th>
                   {/* <th className="font-medium pb-3">Statut</th> */}
-                  <th className="font-medium pb-3 hidden xl:table-cell">Ajouté le</th>
-                  <th className="font-medium pb-3 text-right">Actions</th>
+                  <th className="font-medium pb-3 hidden xl:table-cell">{t('beneficiaries.addedOn')}</th>
+                  <th className="font-medium pb-3 text-right">{t('beneficiaries.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -457,7 +460,7 @@ export default function BeneficiariesPage() {
                           <button
                             onClick={() => handleSend(b)}
                             className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-allness-green hover:bg-allness-green/10 transition-colors"
-                            aria-label="Envoyer de l'argent"
+                            aria-label={t('beneficiaries.sendMoney')}
                           >
                             <Send className="w-3.5 h-3.5" />
                           </button>
@@ -475,7 +478,7 @@ export default function BeneficiariesPage() {
                 {filtered.length === 0 && (
                   <tr>
                     <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
-                      Aucun bénéficiaire trouvé
+                      {t('beneficiaries.noResult')}
                     </td>
                   </tr>
                 )}
@@ -485,7 +488,7 @@ export default function BeneficiariesPage() {
 
           <div className="flex items-center justify-between mt-5">
             <p className="text-xs text-gray-400">
-              Affichage de {filtered.length} bénéficiaire{filtered.length > 1 ? 's' : ''}
+              {t('beneficiaries.showingCount', { count: filtered.length })}
             </p>
             <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
@@ -497,9 +500,9 @@ export default function BeneficiariesPage() {
               <ShieldCheck className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-allness-dark mb-1">Transferts sécurisés</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">{t('beneficiaries.securedTransfers')}</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Vos transferts sont protégés par un chiffrement de bout en bout.
+                {t('beneficiaries.securedTransfersDesc')}
               </p>
             </div>
           </div>
@@ -509,10 +512,10 @@ export default function BeneficiariesPage() {
             </span>
             <div>
               <p className="text-xs font-semibold text-allness-dark mb-1">
-                Vérification des bénéficiaires
+                {t('beneficiaries.beneficiaryVerification')}
               </p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Assurez-vous que les informations sont correctes avant d'effectuer un transfert.
+                {t('beneficiaries.beneficiaryVerificationDesc')}
               </p>
             </div>
           </div>
@@ -521,9 +524,9 @@ export default function BeneficiariesPage() {
               <Link2 className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-allness-dark mb-1">Gestion simplifiée</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">{t('beneficiaries.simplifiedManagement')}</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Ajoutez, modifiez ou supprimez vos bénéficiaires à tout moment.
+                {t('beneficiaries.simplifiedManagementDesc')}
               </p>
             </div>
           </div>

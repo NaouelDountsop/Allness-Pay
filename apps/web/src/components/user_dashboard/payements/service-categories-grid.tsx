@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Zap, Droplet, Phone, Tv, GraduationCap, Bus, Star, ChevronRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/mock/payments-data';
 
@@ -26,15 +27,16 @@ interface ServiceCategoriesGridProps {
 
 export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-allness-dark">Catégories de services</h3>
+        <h3 className="text-base font-semibold text-allness-dark">{t('payments.categories.title')}</h3>
         <button
           onClick={() => {}}
           className="text-xs text-allness-green font-medium inline-flex items-center gap-1"
         >
-          Voir toutes les catégories
+          {t('payments.categories.viewAll')}
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>

@@ -13,6 +13,7 @@ export async function recalculateBalance(manager: EntityManager, walletId: strin
       'balance',
     )
     .where('wt.walletId = :walletId', { walletId })
+    .andWhere('wt.status = :status', { status: 'completed' })
     .getRawOne<{ balance: string }>();
 
   return BigInt(result?.balance ?? '0');

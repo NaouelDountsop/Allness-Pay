@@ -97,7 +97,7 @@ export default function WalletPage() {
       <DashboardLayout>
         <DashboardHeader />
         <div className="flex justify-center items-center h-64">
-          <div className="text-gray-400 text-sm">Chargement des portefeuilles...</div>
+          <div className="text-gray-400 text-sm">{t('wallet.loading')}</div>
         </div>
       </DashboardLayout>
     );
@@ -173,7 +173,7 @@ export default function WalletPage() {
         )}
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-allness-dark">Portefeuille</h1>
+          <h1 className="text-2xl font-semibold text-allness-dark">{t('wallet.title')}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -184,7 +184,7 @@ export default function WalletPage() {
                 walletInternalId={displayWallet?.id ?? ''}
                 balance={selectedWalletId ? Number(displayWallet?.balance ?? 0) : totalBalance}
                 currency={displayWallet?.currency ?? 'FCFA'}
-                status={displayWallet?.status === 'active' ? 'Actif' : 'En attente'}
+                status={displayWallet?.status === 'active' ? t('wallet.statusActive') : t('wallet.statusPending')}
                 kycApproved={kyc?.status === 'APPROVED'}
               />
               <WalletActions />

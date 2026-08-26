@@ -90,8 +90,8 @@ export default function SettingsPage() {
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Allness'),
-    [profile],
+    () => (profile ? `${profile.prenom} ${profile.nom}` : t('settings.defaultUser')),
+    [profile, t],
   );
 
   // --- État des pop-ups ---
@@ -328,8 +328,8 @@ export default function SettingsPage() {
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                         {t('settings.linkedMethods')}
                       </p>
-                      <p className="mt-2 text-sm font-medium text-gray-900">
-                        {paymentMethods.length} {paymentMethods.length > 1 ? 'moyens' : 'moyen'} de paiement
+                      <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                        {paymentMethods.length} {paymentMethods.length > 1 ? t('settings.paymentMethodsPlural') : t('settings.paymentMethodsSingular')}
                       </p>
                     </div>
                   </div>
@@ -663,8 +663,8 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => removePaymentMethod(method.id)}
-                    className="rounded-full p-2 text-red-500 hover:bg-red-50"
-                    aria-label="Supprimer"
+                    className="rounded-full p-2 text-brand-red hover:bg-brand-bg-red-light dark:hover:bg-brand-bg-red-light"
+                    aria-label={t('settings.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -688,8 +688,8 @@ export default function SettingsPage() {
                 >
                   <option value="Orange Money">Orange Money</option>
                   <option value="MTN MoMo">MTN MoMo</option>
-                  <option value="Carte bancaire">Carte bancaire</option>
-                  <option value="Compte bancaire">Compte bancaire</option>
+                  <option value="Carte bancaire">{t('settings.creditCard')}</option>
+                  <option value="Compte bancaire">{t('settings.bankAccount')}</option>
                 </select>
               </div>
               <div className="space-y-2">

@@ -32,6 +32,7 @@ export class CampayService {
     private readonly walletTransactionRepo: Repository<WalletTransaction>,
     @InjectRepository(Wallet)
     private readonly walletRepo: Repository<Wallet>,
+    
   ) {
     const campayConfig =
       this.configService.getOrThrow<ProvidersConfig['campay']>('providers.campay');
@@ -256,25 +257,42 @@ export class CampayService {
     };
   }
 
+  // async handleCallback(reference: string, status: string) {
+  //   this.logger.log(`Callback Campay reçu: reference=${reference}, status=${status}`);
+
+  //   const verifiedStatus = await this.verifyPaymentStatus(reference);
+  //   this.logger.log(`Callback verified status for ${reference}: ${verifiedStatus}`);
+
+  //   const campayStatus =
+  //     verifiedStatus === 'SUCCESSFUL'
+  //       ? WalletTransactionStatus.COMPLETED
+  //       : WalletTransactionStatus.FAILED;
+
+  //   return this.transactionsService.confirmExternalPayment(
+  //     'CAMPAY',
+  //     reference,
+  //     campayStatus,
+  //     true,
+  //   );
+  // }
+
   async handleCallback(reference: string, status: string) {
-    this.logger.log(`Callback Campay reçu: reference=${reference}, status=${status}`);
+  this.logger.log(
+    `Callback Campay reçu: reference=${reference}, status=${status}`,
+  );
 
-    const verifiedStatus = await this.verifyPaymentStatus(reference);
-    this.logger.log(`Callback verified status for ${reference}: ${verifiedStatus}`);
+  const campayStatus =
+    status === 'SUCCESSFUL'
+      ? WalletTransactionStatus.COMPLETED
+      : WalletTransactionStatus.FAILED;
 
-    const campayStatus =
-      verifiedStatus === 'SUCCESSFUL'
-        ? WalletTransactionStatus.COMPLETED
-        : WalletTransactionStatus.FAILED;
-
-    return this.transactionsService.confirmExternalPayment(
-      'CAMPAY',
-      reference,
-      campayStatus,
-      true,
-    );
-  }
-
+  return this.transactionsService.confirmExternalPayment(
+    'CAMPAY',
+    reference,
+    campayStatus,
+    true,
+  );
+}
   async getPaymentStatus(
     transactionId: string,
     userId: number,

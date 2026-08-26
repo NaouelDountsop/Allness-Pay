@@ -1,4 +1,5 @@
 import { useMemo, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LineChart } from 'lucide-react';
 
 interface TrendPoint {
@@ -17,12 +18,12 @@ interface MonthlySummaryProps {
   data: TrendPoint[];
 }
 
-const SERIES = [
-  { key: 'revenus', label: 'Revenus', color: '#111827' },
-  { key: 'depenses', label: 'Dépenses', color: '#F97316' },
-  { key: 'epargne', label: 'Épargne', color: '#22C55E' },
-  { key: 'solde', label: 'Solde', color: '#3B82F6' },
-] as const;
+const SERIES_COLORS: Record<string, string> = {
+  revenus: '#111827',
+  depenses: '#F97316',
+  epargne: '#22C55E',
+  solde: '#3B82F6',
+};
 
 const VIEW_W = 340;
 const VIEW_H = 190;
@@ -51,7 +52,15 @@ export function MonthlySummary({
   netAmount,
   data,
 }: MonthlySummaryProps) {
+  const { t } = useTranslation();
   const arrowId = useId();
+
+  const SERIES = useMemo(() => [
+    { key: 'revenus', label: t('wallet.revenus'), color: SERIES_COLORS.revenus },
+    { key: 'depenses', label: t('wallet.depenses'), color: SERIES_COLORS.depenses },
+    { key: 'epargne', label: t('wallet.epargne'), color: SERIES_COLORS.epargne },
+    { key: 'solde', label: t('wallet.solde'), color: SERIES_COLORS.solde },
+  ] as const, [t]);
 
   const { seriesPaths, gridY, gridX, axisX, axisY, xEnd, yEnd, tickLabels, yTickLabels } = useMemo(() => {
     if (data.length === 0) {
@@ -95,7 +104,7 @@ export function MonthlySummary({
       tickLabels,
       yTickLabels,
     };
-  }, [data]);
+  }, [data, SERIES]);
 
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -104,7 +113,7 @@ export function MonthlySummary({
           <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-allness-orange to-allness-dark flex items-center justify-center shrink-0">
             <LineChart className="w-3.5 h-3.5 text-white" />
           </span>
-          <h3 className="text-sm font-semibold text-gray-800">Résumé mensuel</h3>
+          <h3 className="text-sm font-semibold text-gray-800">{t('wallet.monthlySummary')}</h3>
         </div>
         <span className="text-xs text-gray-400">{month}</span>
       </div>
@@ -255,7 +264,7 @@ export function MonthlySummary({
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left py-1.5 font-medium text-gray-400">Mois</th>
+                <th className="text-left py-1.5 font-medium text-gray-400">{t('wallet.month')}</th>
                 {SERIES.map((s) => (
                   <th key={s.key} className="text-right py-1.5 font-medium text-gray-400">
                     {s.label}
