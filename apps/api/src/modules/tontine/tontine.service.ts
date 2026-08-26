@@ -10,6 +10,7 @@ import { CreateTontineDto } from './dto/create-tontine.dto';
 import { UpdateTontineDto } from './dto/update-tontine.dto';
 import { WalletsService } from '../wallet/wallet.service';
 import { MessageService } from '../messaging/message.service';
+import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 
 @Injectable()
 export class TontineService {
@@ -20,6 +21,8 @@ export class TontineService {
     private readonly memberRepo: Repository<TontineMember>,
     @InjectRepository(TontineCycle)
     private readonly cycleRepo: Repository<TontineCycle>,
+    @InjectRepository(Kyc)
+    private readonly kycRepo: Repository<Kyc>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly walletsService: WalletsService,
@@ -220,6 +223,13 @@ export class TontineService {
   }
 
   async join(id: string, userId: number): Promise<TontineMember> {
+    const kyc = await this.kycRepo.findOne({ where: { userId } });
+    if (!kyc || kyc.status !== KycStatus.APPROVED) {
+      throw new BadRequestException(
+        'Votre KYC doit être approuvé pour rejoindre une tontine. Veuillez compléter votre vérification d\'identité.',
+      );
+    }
+
     const tontine = await this.findOne(id);
     const existing = tontine.members.find((m) => m.userId === userId);
     if (existing) {

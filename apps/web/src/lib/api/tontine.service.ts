@@ -221,6 +221,15 @@ export const tontineService = {
     return res.data;
   },
 
+  checkMyContributionStatus: async (
+    tontineId: string,
+  ): Promise<{ hasPaid: boolean; cycleNumber: number; amount: string; currency: string }> => {
+    const res = await apiClient.get<{ hasPaid: boolean; cycleNumber: number; amount: string; currency: string }>(
+      `${basePath}/${tontineId}/contribution-status`,
+    );
+    return res.data;
+  },
+
   getMessages: async (tontineId: string): Promise<TontineMessage[]> => {
     const res = await apiClient.get<TontineMessage[]>(`${basePath}/${tontineId}/messages`);
     return res.data;

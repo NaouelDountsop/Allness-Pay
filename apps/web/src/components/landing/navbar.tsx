@@ -26,7 +26,9 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-          scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+          scrolled
+            ? 'bg-white/95 dark:bg-[#0B2026]/95 backdrop-blur-md shadow-lg'
+            : 'bg-transparent'
         }`}
       >
         <nav className="mx-auto max-w-7xl px-5 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
@@ -47,7 +49,7 @@ export default function Navbar() {
             <p
               className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
                 scrolled
-                  ? 'text-allness-dark/70 hover:text-allness-orange'
+                  ? 'text-allness-dark/70 dark:text-white/70 hover:text-allness-orange'
                   : 'text-white/85 hover:text-allness-orange'
               }`}
             >
@@ -62,7 +64,7 @@ export default function Navbar() {
                 href={link.href}
                 className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
                   scrolled
-                    ? 'text-allness-dark/70 hover:text-allness-orange'
+                    ? 'text-allness-dark/70 dark:text-white/70 hover:text-allness-orange'
                     : 'text-white/85 hover:text-allness-orange'
                 }`}
               >
@@ -76,7 +78,7 @@ export default function Navbar() {
               href="/login"
               className={`text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 ${
                 scrolled
-                  ? 'bg-allness-dark text-white hover:bg-allness-darker'
+                  ? 'bg-allness-dark dark:bg-allness-orange text-white dark:text-allness-dark hover:bg-allness-darker dark:hover:bg-allness-orange/90'
                   : 'bg-allness-orange text-allness-dark hover:bg-allness-orange/90'
               }`}
             >
@@ -87,7 +89,7 @@ export default function Navbar() {
           <button
             onClick={() => setMenuOpen(true)}
             className={`md:hidden p-2 -mr-2 transition-colors duration-500 ${
-              scrolled ? 'text-allness-dark' : 'text-white'
+              scrolled ? 'text-allness-dark dark:text-white' : 'text-white'
             }`}
             aria-label="Ouvrir le menu"
           >

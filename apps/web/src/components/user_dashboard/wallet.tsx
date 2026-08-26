@@ -34,8 +34,9 @@ export function WalletBalanceCard({
 
       {/* Watermark logo en dégradé blanc/orange (masque CSS sur le SVG) */}
       <div
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-allness-orange/35 to-allness-orange/10"
+        aria-hidden="true" 
+        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-allness-orange  to-allness-orange"
+
         style={{
           WebkitMaskImage: 'url(/allnesspay_logo1.png)',
           WebkitMaskSize: 'contain',

@@ -111,31 +111,31 @@ export class AdminController {
 
   @Get('transactions/export')
   @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Exporter les transactions en CSV' })
+  @ApiOperation({ summary: 'Exporter les transactions en Excel' })
   async exportTransactions(@Res() res: Response) {
-    const csv = await this.adminService.exportTransactionsCsv();
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="transactions.csv"');
-    res.send('\uFEFF' + csv);
+    const buffer = await this.adminService.exportTransactionsXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="transactions.xlsx"');
+    res.send(buffer);
   }
 
   @Get('users/export')
   @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Exporter les utilisateurs en CSV' })
+  @ApiOperation({ summary: 'Exporter les utilisateurs en Excel' })
   async exportUsers(@Res() res: Response) {
-    const csv = await this.adminService.exportUsersCsv();
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="utilisateurs.csv"');
-    res.send('\uFEFF' + csv);
+    const buffer = await this.adminService.exportUsersXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="utilisateurs.xlsx"');
+    res.send(buffer);
   }
 
   @Get('tontines/export')
   @RequirePermissions('kyc:review')
-  @ApiOperation({ summary: 'Exporter les tontines en CSV' })
+  @ApiOperation({ summary: 'Exporter les tontines en Excel' })
   async exportTontines(@Res() res: Response) {
-    const csv = await this.adminService.exportTontinesCsv();
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="tontines.csv"');
-    res.send('\uFEFF' + csv);
+    const buffer = await this.adminService.exportTontinesXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="tontines.xlsx"');
+    res.send(buffer);
   }
 }

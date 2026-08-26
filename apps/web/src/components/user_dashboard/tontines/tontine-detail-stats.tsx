@@ -7,13 +7,26 @@ function getTimeAgo(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "À l'instant";
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return "À l'instant";
+  const diffMin = Math.floor(diffSec / 60);
   if (diffMin < 60) return `Il y a ${diffMin} min`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `Il y a ${diffH} h`;
+  const remainingMin = diffMin % 60;
+  if (diffH < 24) {
+    return remainingMin > 0
+      ? `Il y a ${diffH}h ${remainingMin}min`
+      : `Il y a ${diffH}h`;
+  }
   const diffD = Math.floor(diffH / 24);
-  return `Il y a ${diffD} j`;
+  const remainingH = diffH % 24;
+  if (diffD < 30) {
+    return remainingH > 0
+      ? `Il y a ${diffD}j ${remainingH}h`
+      : `Il y a ${diffD}j`;
+  }
+  const diffMonth = Math.floor(diffD / 30);
+  return `Il y a ${diffMonth} mois`;
 }
 
 interface TontineDetailStatsProps {
@@ -112,7 +125,8 @@ function DonutChart({
 export function TontineDetailStats({ tontine, contributions = [] }: TontineDetailStatsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const totalMembers = tontine.memberLimit;
+  const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE') ?? [];
+  const totalMembers = activeMembers.length || tontine.memberLimit;
 
   const paid = contributions.filter((c) => c.status === 'PAID').length;
   const pending = contributions.filter((c) => c.status === 'PENDING').length;
@@ -133,28 +147,40 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
     : null;
 
   const recentActivities = contributions
-    .filter((c) => c.status === 'PAID' || c.status === 'PENDING')
     .sort((a, b) => {
       const dateA = a.paidAt ?? a.dueDate;
       const dateB = b.paidAt ?? b.dueDate;
       return new Date(dateB).getTime() - new Date(dateA).getTime();
     })
-    .slice(0, 3)
+    .slice(0, 4)
     .map((c) => {
       const memberName = c.member?.user
         ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim()
         : 'Membre';
       const isPaid = c.status === 'PAID';
+      const isLate = c.status === 'LATE';
       const dateStr = c.paidAt ?? c.dueDate;
       const timeAgo = getTimeAgo(dateStr);
       const amount = new Intl.NumberFormat('fr-FR').format(Number(c.amount));
 
+      let action: string;
+      let type: 'paid' | 'pending' | 'late';
+      if (isPaid) {
+        action = `a cotisé ${amount} ${tontine.currency ?? 'XAF'}`;
+        type = 'paid';
+      } else if (isLate) {
+        action = `n'a pas encore cotisé (en retard)`;
+        type = 'late';
+      } else {
+        action = `en attente de cotisation`;
+        type = 'pending';
+      }
+
       return {
         name: memberName,
-        action: isPaid ? t('tontines.madePayment') : t('tontines.hasNotPaid'),
-        amount: isPaid ? `${amount} ${tontine.currency ?? 'XAF'}` : '',
+        action,
         time: isPaid ? timeAgo : `Échéance : ${new Date(c.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
-        type: isPaid ? ('paid' as const) : ('pending' as const),
+        type,
       };
     });
 
@@ -241,6 +267,8 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
             <div key={idx} className="flex items-start gap-3">
               {activity.type === 'paid' ? (
                 <ArrowUpCircle className="w-6 h-6 text-allness-green shrink-0" />
+              ) : activity.type === 'late' ? (
+                <Clock className="w-6 h-6 text-red-500 shrink-0" />
               ) : (
                 <Clock className="w-6 h-6 text-allness-orange shrink-0" />
               )}
@@ -248,9 +276,6 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
                 <p className="text-[13px] text-gray-800">
                   <span className="font-medium">{activity.name}</span>{' '}
                   <span className="text-gray-600">{activity.action}</span>
-                  {activity.amount && (
-                    <span className="font-medium text-gray-800"> {activity.amount}</span>
-                  )}
                 </p>
                 <p className="text-[11px] text-gray-500">{activity.time}</p>
               </div>

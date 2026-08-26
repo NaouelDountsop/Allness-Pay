@@ -245,7 +245,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
       <button
         onClick={handleSend}
         disabled={!selectedContact || !amount}
-        className="w-full h-11 rounded-lg bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] text-white dark:text-gray-900 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full h-11 rounded-lg bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] text-allness-orange dark:text-gray-900 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Send className="w-4 h-4" />
         {t('tontines.sendNow')}

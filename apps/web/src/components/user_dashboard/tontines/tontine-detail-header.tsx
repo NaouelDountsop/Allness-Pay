@@ -11,15 +11,17 @@ interface TontineDetailHeaderProps {
 export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDetailHeaderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE') ?? [];
+  const memberCount = activeMembers.length || tontine.memberLimit;
   const totalPot =
-    Number(tontine.contributionAmount) * tontine.memberLimit;
+    Number(tontine.contributionAmount) * memberCount;
   const formatAmount = (val: number) => new Intl.NumberFormat('fr-FR').format(val);
 
   const currentMember = tontine.members?.find(
     (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle,
   );
   const nextMember = tontine.members?.find(
-    (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle + 1,
+    (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle ,
   );
 
   const beneficiaryName = nextMember?.user
@@ -35,7 +37,7 @@ export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDet
       : '?';
 
   const beneficiaryTurn = nextMember?.beneficiaryOrder ?? currentMember?.beneficiaryOrder ?? tontine.currentCycle;
-  const beneficiaryAmount = Number(tontine.contributionAmount) * tontine.memberLimit;
+  const beneficiaryAmount = Number(tontine.contributionAmount) * memberCount;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">

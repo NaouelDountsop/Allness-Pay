@@ -193,7 +193,7 @@ export default function SignupPage() {
     return (
       <AuthLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-sm text-gray-500">Chargement des informations Google...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Chargement des informations Google...</p>
         </div>
       </AuthLayout>
     );
@@ -327,8 +327,8 @@ export default function SignupPage() {
 
   return (
     <AuthLayout>
-      <h1 className="text-xl font-semibold mb-1">Créer un compte</h1>
-      <p className="text-sm text-allness-gray mb-4">
+      <h1 className="text-xl font-semibold mb-1 dark:text-white">Créer un compte</h1>
+      <p className="text-sm text-allness-gray dark:text-gray-400 mb-4">
         {isFromGoogle
           ? 'Finalisez votre inscription avec Google'
           : "Rejoignez l'écosystème financier de nouvelle génération"}
@@ -340,7 +340,7 @@ export default function SignupPage() {
           type="button"
           onClick={() => setStep(1)}
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 1 ? 'text-allness-green' : 'text-allness-gray hover:text-gray-900'
+            step === 1 ? 'text-allness-green' : 'text-allness-gray dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           {step === 2 && <ArrowLeft className="w-3.5 h-3.5" />}
@@ -356,18 +356,18 @@ export default function SignupPage() {
 
         <div
           className={`flex-1 h-0.5 rounded-full ${
-            step === 2 ? 'bg-allness-green' : 'bg-gray-200'
+            step === 2 ? 'bg-allness-green' : 'bg-gray-200 dark:bg-[#18353B]'
           }`}
         />
 
         <span
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 2 ? 'text-allness-green' : 'text-allness-gray'
+            step === 2 ? 'text-allness-green' : 'text-allness-gray dark:text-gray-400'
           }`}
         >
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
-              step === 2 ? 'bg-allness-green text-white' : 'bg-gray-200 text-gray-500'
+              step === 2 ? 'bg-allness-green text-white' : 'bg-gray-200 dark:bg-[#18353B] text-gray-500 dark:text-gray-400'
             }`}
           >
             2
@@ -426,10 +426,10 @@ export default function SignupPage() {
           </div>
 
           <div className="w-full space-y-1">
-            <label className="text-sm font-medium text-gray-700">Sexe</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexe</label>
             <div className="relative">
               <select
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-allness-green"
+                className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] px-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] appearance-none focus:outline-none focus:ring-1 focus:ring-allness-green"
                 value={form.gender}
                 onChange={(e) => update('gender', e.target.value)}
               >
@@ -482,15 +482,15 @@ export default function SignupPage() {
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+            <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-3 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
           <AppButton type="submit">Continuer →</AppButton>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Déjà inscrit ?{' '}
             <a href="/login" className="text-allness-green font-medium">
               Se connecter
@@ -559,15 +559,15 @@ export default function SignupPage() {
             //!isFromGoogle && (
             <>
               <div className="w-full space-y-1">
-                <label className="text-sm font-medium text-gray-700">Créer un mot de passe</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Créer un mot de passe</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    className={`w-full h-11 rounded-lg border pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 ${
+                    className={`w-full h-11 rounded-lg border pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:ring-1 ${
                       fieldErrors.password
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                        : 'border-gray-200 focus:border-allness-orange focus:ring-allness-orange'
+                        ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-200 dark:border-[#18353B] focus:border-allness-orange focus:ring-allness-orange'
                     }`}
                     value={form.password}
                     onChange={(e) => update('password', e.target.value)}
@@ -580,7 +580,7 @@ export default function SignupPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   Minimum 8 caractères, incluant un chiffre et un symbole.
                 </p>
                 {fieldErrors.password && (
@@ -592,14 +592,14 @@ export default function SignupPage() {
               </div>
 
               <div className="w-full space-y-1">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Confirmer le mot de passe
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
-                    className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
+                    className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                     value={form.confirmPassword}
                     onChange={(e) => update('confirmPassword', e.target.value)}
                   />
@@ -616,16 +616,16 @@ export default function SignupPage() {
           }
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+            <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-3 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
-          <label className="flex items-start gap-2 text-xs text-gray-500 mt-2">
+          <label className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400 mt-2">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border border-gray-300 bg-white accent-allness-green"
+              className="mt-0.5 h-4 w-4 rounded border border-gray-300 dark:border-[#18353B] bg-white dark:bg-[#071418] accent-allness-green"
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
             />
@@ -648,7 +648,7 @@ export default function SignupPage() {
 
           {!isFromGoogle && (
             <>
-              <p className="text-center text-sm text-gray-500 mt-4">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
                 Déjà inscrit ?{' '}
                 <a href="/login" className="text-allness-green font-medium">
                   Se connecter

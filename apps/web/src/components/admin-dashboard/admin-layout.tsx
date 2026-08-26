@@ -16,7 +16,7 @@ export function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFB] dark:bg-[#071418]">
       {/* Desktop sidebar */}
       <AdminSidebar role={role} />
 

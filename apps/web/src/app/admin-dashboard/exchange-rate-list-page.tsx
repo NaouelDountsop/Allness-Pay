@@ -335,9 +335,9 @@ export default function ExchangeRatesPage() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-allness-dark rounded-xl p-4">
+            <div key={stat.label} className="bg-allness-dark rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                <span className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <Icon className={`w-4 h-4 ${stat.color}`} />
                 </span>
                 <span className="text-xs text-gray-300">{stat.label}</span>

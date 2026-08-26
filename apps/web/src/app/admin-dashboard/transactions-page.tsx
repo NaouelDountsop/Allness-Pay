@@ -124,7 +124,7 @@ export default function AdminTransactionsPage() {
           {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           Exporter CSV
         </button>
-      </div>
+      </div>  
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">

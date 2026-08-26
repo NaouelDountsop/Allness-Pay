@@ -1,19 +1,23 @@
 const FLAGS = [
-  {code: 'cm', name: 'Cameroun' },
-  { code: 'ca', name: 'Canada' },
+  { code: 'cm', name: 'Cameroun' },
   { code: 'sn', name: 'Sénégal' },
-  { code: 'gh', name: 'Ghana' },
   { code: 'ci', name: "Côte d'Ivoire" },
+  { code: 'ne', name: 'Niger' },
+  { code: 'ml', name: 'Mali' },
+  { code: 'bf', name: 'Burkina Faso' },
+  { code: 'tg', name: 'Togo' },
+  { code: 'bj', name: 'Bénin' },
+  { code: 'ga', name: 'Gabon' },
+  { code: 'cg', name: 'Congo' },
   { code: 'fr', name: 'France' },
-  { code: 'it', name: 'Italie' },
-  { code: 'us', name: 'USA' },
+  { code: 'ca', name: 'Canada' },
 ];
 
 export default function Trust() {
   return (
-    <section className="bg-muted py-16 lg:py-20">
+    <section className="bg-muted dark:bg-[#0B2026] py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center">
-        <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-allness-dark">
+        <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-allness-dark dark:text-white">
           Ils nous font confiance
         </h2>
 
@@ -34,7 +38,7 @@ export default function Trust() {
               </div>
 
               {/* Nom du pays */}
-              <span className="text-xs lg:text-sm font-medium text-foreground/50 transition-colors duration-300 group-hover:text-allness-dark">
+              <span className="text-xs lg:text-sm font-medium text-foreground/50 transition-colors duration-300 group-hover:text-allness-dark dark:group-hover:text-white">
                 {f.name}
               </span>
             </div>

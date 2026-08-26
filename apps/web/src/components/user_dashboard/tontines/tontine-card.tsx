@@ -53,7 +53,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
           )}
         </div>
         <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-allness-green px-2 py-0.5 rounded-full whitespace-nowrap">
-          {tontine.frequency}
+          {tontine.status}
         </span>
       </div>
 

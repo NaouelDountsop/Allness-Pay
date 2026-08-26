@@ -53,9 +53,8 @@ function InvitationCard({
   isAccepting: boolean;
   isDeclining: boolean;
 }) {
-  //const navigate = useNavigate();
   const { t } = useTranslation();
-  const { data: tontine } = useQuery({
+  const { data: tontine, isLoading: tontineLoading } = useQuery({
     queryKey: ['tontine', invitation.tontineId],
     queryFn: () => tontineService.getById(invitation.tontineId),
   });
@@ -71,40 +70,41 @@ function InvitationCard({
     MONTHLY: t('tontines.monthly'),
   };
 
+  const statusBadge = (() => {
+    if (isPending) return <span className="inline-flex items-center text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.pendingStatus')}</span>;
+    if (isAccepted) return <span className="inline-flex items-center text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.acceptedStatus')}</span>;
+    if (isDeclined) return <span className="inline-flex items-center text-[10px] font-semibold bg-red-50 dark:bg-red-500/15 text-red-600 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.declinedStatus')}</span>;
+    if (isExpired) return <span className="inline-flex items-center text-[10px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.expiredStatus')}</span>;
+    return null;
+  })();
+
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow">
+    <div className="rounded-xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4 min-w-0 flex-1">
           <div className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-allness-orange" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold text-gray-900 mb-1.5">{tontine?.name}</h3>
-            {isPending && (
-              <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
-                {t('tontines.pendingStatus')}
-              </span>
-            )}
-            {isAccepted && (
-              <span className="inline-flex items-center text-[10px] font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full mb-1.5">
-                {t('tontines.acceptedStatus')}
-              </span>
-            )}
-            {isDeclined && (
-              <span className="inline-flex items-center text-[10px] font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full mb-1.5">
-                {t('tontines.declinedStatus')}
-              </span>
-            )}
-            {isExpired && (
-              <span className="inline-flex items-center text-[10px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full mb-1.5">
-                {t('tontines.expiredStatus')}
-              </span>
-            )}
-            <p className="text-xs text-allness-dark mt-0.5">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F5] mb-1.5">
+              {tontineLoading ? (
+                <span className="inline-block h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              ) : (
+                tontine?.name ?? '—'
+              )}
+            </h3>
+            {statusBadge}
+            <p className="text-xs text-allness-dark dark:text-gray-400 mt-0.5">
               {t('tontines.invitedBy')} <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
-            {tontine && (
+            {tontineLoading ? (
               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
+                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
+                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
+                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
+              </div>
+            ) : tontine ? (
+              <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />
                   {tontine.memberLimit} {t('tontines.membersCount')}
@@ -115,16 +115,16 @@ function InvitationCard({
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Coins className="w-3.5 h-3.5" />
-                  <span className="font-medium text-allness-dark">
+                  <span className="font-medium text-allness-dark dark:text-[#F1F5F5]">
                     {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
                     {tontine.currency ?? 'XAF'}
                   </span>
                 </span>
               </div>
-            )}
+            ) : null}
             <div className="flex items-center gap-1 mt-2">
-              <Clock className="w-3 h-3 text-gray-300" />
-              <p className="text-[11px] text-gray-400">
+              <Clock className="w-3 h-3 text-gray-300 dark:text-gray-600" />
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">
                 {t('tontines.nextDueDate')}{' '}
                 <span className="font-medium text-allness-green">
                   {tontine?.nextContributionAt
@@ -137,7 +137,7 @@ function InvitationCard({
                 </span>
               </p>
             </div>
-            <p className="text-[11px] text-gray-400 mt-1">
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
               {t('tontines.receivedOn')} {new Date(invitation.createdAt).toLocaleDateString('fr-FR')}
             </p>
           </div>
@@ -162,7 +162,7 @@ function InvitationCard({
               <button
                 onClick={() => onDecline(invitation.id)}
                 disabled={isDeclining}
-                className="h-9 w-full rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors flex items-center justify-center disabled:opacity-50"
+                className="h-9 w-full rounded-lg border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center disabled:opacity-50"
               >
                 {isDeclining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('tontines.decline')}
               </button>
@@ -243,10 +243,10 @@ export default function TontinesInvitationsPage() {
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1 min-w-0">
             <div className="mb-6">
-              <h1 className="text-2xl font-semibold text-allness-dark">
+              <h1 className="text-2xl font-semibold text-allness-dark dark:text-[#F1F5F5]">
                 <button
                   onClick={() => navigate('/dashboard/tontines')}
-                  className="flex items-center gap-2 text-lg font-semibold text-allness-dark"
+                  className="flex items-center gap-2 text-lg font-semibold text-allness-dark dark:text-[#F1F5F5]"
                 >
                   <ArrowLeft className="w-7 h-7" />
                   Invitations aux tontines
@@ -262,8 +262,8 @@ export default function TontinesInvitationsPage() {
                   onClick={() => setActiveTab(tab.key)}
                   className={`h-9 px-4 rounded-full text-sm font-medium transition-colors ${
                     activeTab === tab.key
-                      ? 'bg-allness-dark text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-allness-dark dark:bg-allness-orange text-white'
+                      : 'bg-gray-100 dark:bg-[#18353B] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#1E3A3F]'
                   }`}
                 >
                   {tab.label} ({tab.count})
@@ -336,37 +336,37 @@ export default function TontinesInvitationsPage() {
               </button>
             </div>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-5">
+            <div className="rounded-2xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-allness-green" />
                 </span>
-                <h3 className="text-sm font-semibold text-allness-dark">{t('tontines.tips')}</h3>
+                <h3 className="text-sm font-semibold text-allness-dark dark:text-[#F1F5F5]">{t('tontines.tips')}</h3>
               </div>
               <ul className="space-y-3">
-                <li className="flex items-start gap-2 text-xs text-gray-600">
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
                   <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
                   {t('tontines.tipVerify')}
                 </li>
-                <li className="flex items-start gap-2 text-xs text-gray-600">
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
                   <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
                   {t('tontines.tipKnowOrganizer')}
                 </li>
-                <li className="flex items-start gap-2 text-xs text-gray-600">
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
                   <Lock className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
                   {t('tontines.tipPinSecurity')}
                 </li>
               </ul>
             </div>
 
-            <button className="w-full rounded-2xl border border-gray-100 bg-white p-5 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+            <button className="w-full rounded-2xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#0D2228] transition-colors text-left">
               <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                <span className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
                   <HelpCircle className="w-4 h-4 text-blue-500" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-allness-dark">{t('tontines.needHelpTitle')}</p>
-                  <p className="text-xs text-gray-500">{t('tontines.contactSupport')}</p>
+                  <p className="text-sm font-semibold text-allness-dark dark:text-[#F1F5F5]">{t('tontines.needHelpTitle')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tontines.contactSupport')}</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400" />

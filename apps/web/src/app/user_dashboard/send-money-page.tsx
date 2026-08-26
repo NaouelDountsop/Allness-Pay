@@ -11,6 +11,7 @@ import { ReviewStep } from '@/components/user_dashboard/send/review-step';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
 import { usePin } from '@/hooks/use-pin';
+import { usePreferences } from '@/hooks/use-preferences';
 import { userService } from '@/lib/api/user.service';
 import { walletService } from '@/lib/api/wallet.service';
 import { currencyService } from '@/lib/api/currency.service';
@@ -38,6 +39,7 @@ export default function SendMoneyPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const steps = useMemo(() => getSteps(t), [t]);
+  const { theme } = usePreferences();
 
   const { data: wallets = [] } = useQuery({
     queryKey: ['wallets'],
@@ -385,7 +387,7 @@ export default function SendMoneyPage() {
                     <p className="text-sm font-semibold text-gray-700 mb-3">{t('send.senderWallet')}</p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center overflow-hidden">
-                        <img src="/allnesspay_logo2.png" alt="AllnessPay" className="w-7 h-7 object-contain" />
+                        <img src={theme === 'dark' ? '/allnesspay_logo1.png' : '/allnesspay_logo2.png'} alt="AllnessPay" className="w-7 h-7 object-contain" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-allness-dark">

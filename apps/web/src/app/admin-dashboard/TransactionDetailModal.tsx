@@ -13,6 +13,17 @@ import {
 import { Badge } from '../../components/ui';
 import type { AdminTransaction } from '../../lib/api/admin.service';
 
+function downloadCsv(filename: string, rows: string[][]) {
+  const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 const TYPE_LABELS: Record<string, string> = {
   deposit: 'Dépôt',
   withdrawal: 'Retrait',
@@ -103,7 +114,24 @@ export function TransactionDetailModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => {
+                downloadCsv(`recu-${transaction.reference ?? transaction.id.slice(0, 12)}.csv`, [
+                  ['Référence', transaction.reference ?? transaction.id.slice(0, 12)],
+                  ['Date', fmtDateTime(transaction.createdAt)],
+                  ['Statut', status.label],
+                  ['Type', typeLabel],
+                  ['Expéditeur', transaction.user ?? '—'],
+                  ['Email', transaction.email ?? '—'],
+                  ['Montant', `${fmt(transaction.amount)} XAF`],
+                  ['Frais', `${fmt(fees)} XAF`],
+                  ['Frais plateforme', `${fmt(platformFees)} XAF`],
+                  ['Total débité', `${fmt(totalDebit)} XAF`],
+                  ['Description', transaction.description ?? ''],
+                ]);
+              }}
+              className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+            >
               <Download className="w-3.5 h-3.5" />
               Exporter le reçu
             </button>

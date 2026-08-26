@@ -35,7 +35,7 @@ export function CycleTimeline({
       <h3 className="text-sm font-semibold text-gray-900 mb-5">{t('tontines.cycleTitle')}</h3>
 
       <div className="overflow-x-auto pb-2">
-        <div className="flex items-start min-w-max">
+        <div className="flex items-start w-full">
           {visibleTurns.map((turn, idx) => {
             const member = getMemberForTurn(turn);
             const isCompleted = turn < currentCycle;
@@ -49,7 +49,7 @@ export function CycleTimeline({
             return (
               <div key={turn} className="flex items-start">
                 {/* Node column */}
-                <div className="flex flex-col items-center" style={{ width: 110 }}>
+                <div className="flex flex-col items-center min-w-[80px] shrink-0">
                   {/* Circle */}
                   {isCompleted ? (
                     <div className="w-10 h-10 rounded-full bg-allness-green border-[2.5px] border-allness-orange flex items-center justify-center shrink-0">
@@ -99,13 +99,13 @@ export function CycleTimeline({
 
                 {/* Connector */}
                 {idx < visibleTurns.length - 1 && (
-                  <div className="flex items-start pt-[19px]">
+                  <div className="flex items-start pt-[19px] flex-1 min-w-[40px]">
                     {turn < currentCycle ? (
-                      <div className="w-10 sm:w-16 h-[2px] bg-allness-green/50" />
+                      <div className="w-full h-[2px] bg-allness-green/50" />
                     ) : turn === currentCycle ? (
-                      <div className="w-10 sm:w-16 h-[2px] border-t-2 border-dashed border-gray-300" />
+                      <div className="w-full h-[2px] border-t-2 border-dashed border-gray-300" />
                     ) : (
-                      <div className="w-10 sm:w-16 flex items-center justify-center">
+                      <div className="w-full flex items-center justify-center">
                         <div className="flex gap-[3px]">
                           {[0, 1, 2, 3, 4].map((i) => (
                             <span key={i} className="w-[3px] h-[3px] rounded-full bg-gray-300" />
@@ -122,8 +122,8 @@ export function CycleTimeline({
           {hasMore && (
             <>
               {/* Dots separator */}
-              <div className="flex items-start pt-[19px]">
-                <div className="w-10 sm:w-16 flex items-center justify-center">
+              <div className="flex items-start pt-[19px] flex-1 min-w-[40px]">
+                <div className="w-full flex items-center justify-center">
                   <div className="flex gap-[3px]">
                     {[0, 1, 2, 3, 4].map((i) => (
                       <span key={i} className="w-[3px] h-[3px] rounded-full bg-gray-300" />

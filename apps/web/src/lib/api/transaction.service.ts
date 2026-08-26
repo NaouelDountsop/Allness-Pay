@@ -37,10 +37,10 @@ const TYPE_LABELS: Record<string, string> = {
 const OPERATOR_LABELS: Record<string, string> = {
   MTN_MOMO: 'MTN Mobile Money',
   ORANGE_MONEY: 'Orange Money',
-  WAVE: 'Wave',
-  FREE_MONEY: 'Free Money',
-  MOOV_MONEY: 'Moov Money',
-  AIRTEL_MONEY: 'Airtel Money',
+  // WAVE: 'Wave',
+  // FREE_MONEY: 'Free Money',
+  // MOOV_MONEY: 'Moov Money',
+  // AIRTEL_MONEY: 'Airtel Money',
   BANK_APP: 'Application Bancaire',
   OTHER: 'Autre',
 };

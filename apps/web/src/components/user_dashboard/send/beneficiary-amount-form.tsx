@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { CountrySelect } from '@/components/common/country-select';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
+import { usePreferences } from '@/hooks/use-preferences';
 import {
   CURRENCY_SYMBOLS,
 } from '@/lib/mock/send-money-data';
@@ -55,7 +56,7 @@ const RECEPTION_OPTIONS: {
   {
     id: 'wallet',
     label: 'Wallet AllnessPay',
-    image: '/allnesspay_logo2.png',
+    image: '/allnesspay_logo1.png',
     icon: Wallet,
     color: 'text-allness-green',
   },
@@ -124,6 +125,7 @@ function detectNetwork(digits: string, country: string): string | null {
 }
 
 export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError }: BeneficiaryAmountFormProps) {
+  const { theme } = usePreferences();
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'XAF';
 
@@ -222,7 +224,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
                   }`}
                 >
                   {option.image ? (
-                    <img src={option.image} alt={option.label} className="w-6 h-6 object-contain" />
+                    <img src={option.image === '/allnesspay_logo1.png' ? (theme === 'dark' ? '/allnesspay_logo1.png' : '/allnesspay_logo2.png') : option.image} alt={option.label} className="w-6 h-6 object-contain" />
                   ) : (
                     <Icon className={`w-5 h-5 ${isSelected ? option.color : 'text-gray-400'}`} />
                   )}

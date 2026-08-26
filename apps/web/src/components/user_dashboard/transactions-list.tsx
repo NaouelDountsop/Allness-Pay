@@ -65,13 +65,17 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      isFailed ? 'bg-red-50 dark:bg-red-500/10' : credit ? 'bg-allness-green/10' : 'bg-red-50 dark:bg-red-500/10'
+                      isFailed
+                        ? 'bg-red-50 dark:bg-red-500/15'
+                        : credit
+                          ? 'bg-emerald-50 dark:bg-emerald-500/15'
+                          : 'bg-red-50 dark:bg-red-500/15'
                     }`}
                   >
                     {isFailed ? (
                       <XCircle className="w-4 h-4 text-red-500" />
                     ) : credit ? (
-                      <ArrowDownLeft className="w-4 h-4 text-allness-green" />
+                      <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
                     ) : (
                       <ArrowUpRight className="w-4 h-4 text-red-500" />
                     )}
@@ -94,7 +98,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-2 shrink-0 pl-2">
                   <span
                     className={`text-xs sm:text-sm font-semibold text-right whitespace-nowrap ${
-                      isFailed ? 'text-red-500' : credit ? 'text-allness-green' : 'text-red-500'
+                      isFailed ? 'text-red-500' : credit ? 'text-emerald-500' : 'text-red-500'
                     }`}
                   >
                     {isCompleted ? (credit ? '+' : '-') : ''}
@@ -102,11 +106,15 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                   </span>
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      isFailed ? 'bg-red-50 dark:bg-red-500/10' : 'bg-allness-green/10'
+                      isFailed
+                        ? 'bg-red-50 dark:bg-red-500/15'
+                        : credit
+                          ? 'bg-emerald-50 dark:bg-emerald-500/15'
+                          : 'bg-red-50 dark:bg-red-500/15'
                     }`}
                   >
                     <ChevronRight
-                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : 'text-allness-green'}`}
+                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : credit ? 'text-emerald-500' : 'text-red-500'}`}
                     />
                   </div>
                 </div>

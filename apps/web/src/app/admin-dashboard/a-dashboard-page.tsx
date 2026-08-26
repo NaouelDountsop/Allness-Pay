@@ -88,171 +88,179 @@ export default function DashboardPage() {
 
   return (
     <AdminLayout active="dashboard">
-      <h1 className="text-lg sm:text-xl font-bold text-allness-dark mb-1">Tableau de bord</h1>
-      <p className="text-sm text-gray-400 mb-6">
-        Surveillez les comptes et gérez les limites financières.
-      </p>
+      <div>
+        <h1 className="text-lg sm:text-xl font-bold text-allness-dark mb-1">Tableau de bord</h1>
+        <p className="text-sm text-gray-400 mb-6">
+          Surveillez les comptes et gérez les limites financières.
+        </p>
 
-      {/* Stats cards - independent */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-allness-dark rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-400" />
-            </span>
-            <span className="text-sm text-gray-300">Utilisateurs Totaux</span>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-allness-dark rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <Users className="w-5 h-5 text-blue-400" />
+              </span>
+              <span className="text-sm text-gray-300">Utilisateurs Totaux</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalUsers ?? 0)}</p>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.totalUsers ?? 0)}</p>
-        </div>
 
-        <div className="bg-allness-dark rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-              <ShieldAlert className="w-5 h-5 text-red-400" />
-            </span>
-            <span className="text-sm text-gray-300">KYC en Attente</span>
+          <div className="bg-allness-dark rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                <ShieldAlert className="w-5 h-5 text-red-400" />
+              </span>
+              <span className="text-sm text-gray-300">KYC en Attente</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{formatNumber(stats?.kyc.pending ?? 0)}</p>
+            <p className="text-xs text-red-400 mt-1">Urgent</p>
           </div>
-          <p className="text-2xl font-bold text-white">{formatNumber(stats?.kyc.pending ?? 0)}</p>
-          <p className="text-xs text-red-400 mt-1">Urgent</p>
-        </div>
 
-        <div className="bg-allness-dark rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-green-400" />
-            </span>
-            <span className="text-sm text-gray-300">Volume Mensuel</span>
+          <div className="bg-allness-dark rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-green-400" />
+              </span>
+              <span className="text-sm text-gray-300">Volume Mensuel</span>
+            </div>
+            <p className="text-2xl font-bold text-white">
+              {formatNumber(stats?.monthlyVolume ?? 0)} <span className="text-sm font-medium text-[#D28E2F]">XAF</span>
+            </p>
           </div>
-          <p className="text-2xl font-bold text-white">
-            {formatNumber(stats?.monthlyVolume ?? 0)} XAF
-          </p>
-        </div>
 
-        <div className="bg-allness-dark rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-amber-400" />
-            </span>
-            <span className="text-sm text-gray-300">Liquidité Système</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {formatNumber(stats?.totalLiquidity ?? 0)} XAF
-          </p>
-          <p className="text-xs text-green-400 mt-1">Seuil: Optimal</p>
-        </div>
-      </div>
-
-      {/* Chart + Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-sm font-semibold text-allness-dark">Croissance des Transactions</p>
-          </div>
-          <div className="h-48">
-            {chartData && chartData.some((d) => d.value > 0) ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fontSize: 10, fill: '#9ca3af' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fill: '#9ca3af' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e5e7eb' }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#006C49"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: '#006C49' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-sm text-gray-400">Aucune transaction cette semaine</p>
-              </div>
-            )}
+          <div className="bg-allness-dark rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-amber-400" />
+              </span>
+              <span className="text-sm text-gray-300">Liquidité Système</span>
+            </div>
+            <p className="text-2xl font-bold text-white">
+              {formatNumber(stats?.totalLiquidity ?? 0)} <span className="text-sm font-medium text-[#D28E2F]">XAF</span>
+            </p>
+            <p className="text-xs text-green-400 mt-1">Seuil: Optimal</p>
           </div>
         </div>
 
-        {/* Recent Activities from backend */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col">
-          <p className="text-sm font-semibold text-allness-dark mb-4">Activités Récentes</p>
-          <div className="flex flex-col gap-4 flex-1">
-            {activities?.map((a, i) => {
-              const Icon = ACTIVITY_ICONS[a.type] ?? RefreshCcw;
-              const tone = ACTIVITY_TONES[a.type] ?? 'gray';
-              const tag = ACTIVITY_TAGS[a.type] ?? { label: 'Autre', tone: 'gray' as const };
-              return (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-gray-500" />
-                  </span>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Activité & Analyse</span>
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <div className="lg:col-span-2 rounded-2xl border border-gray-100 bg-white shadow-sm p-5">
+            <p className="text-sm font-semibold text-allness-dark mb-4">Croissance des Transactions</p>
+            <div className="h-48">
+              {chartData && chartData.some((d) => d.value > 0) ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fontSize: 10, fill: '#9ca3af' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: '#9ca3af' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e5e7eb' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#006C49"
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, fill: '#006C49' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-sm text-gray-400">Aucune transaction cette semaine</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5 flex flex-col">
+            <p className="text-sm font-semibold text-allness-dark mb-4">Activités Récentes</p>
+            <div className="flex flex-col gap-4 flex-1">
+              {activities?.map((a, i) => {
+                const Icon = ACTIVITY_ICONS[a.type] ?? RefreshCcw;
+                const tone = ACTIVITY_TONES[a.type] ?? 'gray';
+                const tag = ACTIVITY_TAGS[a.type] ?? { label: 'Autre', tone: 'gray' as const };
+                return (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-gray-500" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-allness-dark truncate">{a.title}</p>
+                      <p className="text-[11px] text-gray-400">
+                        {a.meta} · {getTimeAgo(a.createdAt)}
+                      </p>
+                    </div>
+                    <Badge tone={tone}>{tag.label}</Badge>
+                  </div>
+                );
+              })}
+              {activities?.length === 0 && (
+                <p className="text-xs text-gray-400 text-center py-4">Aucune activité récente.</p>
+              )}
+            </div>
+            <a
+              href="/admin/transactions"
+              className="mt-4 h-9 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity flex items-center justify-center"
+            >
+              Voir tout l'historique
+            </a>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Validation</span>
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-semibold text-allness-dark">Approbations KYC Urgentes</p>
+            <a href="/admin/kyc" className="text-xs text-allness-green font-medium hover:underline">
+              Voir les {stats?.kyc.pending ?? 0} dossiers
+            </a>
+          </div>
+          {kycPending && kycPending.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {kycPending.map((kyc) => (
+                <div key={kyc.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="w-9 h-9 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                    <ShieldAlert className="w-4 h-4 text-amber-500" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-allness-dark truncate">{a.title}</p>
+                    <p className="text-xs font-medium text-allness-dark truncate">{kyc.userName}</p>
                     <p className="text-[11px] text-gray-400">
-                      {a.meta} · {getTimeAgo(a.createdAt)}
+                      {kyc.documentType ?? 'KYC'} · {getTimeAgo(kyc.createdAt)}
                     </p>
                   </div>
-                  <Badge tone={tone}>{tag.label}</Badge>
+                  <a
+                    href="/admin/kyc"
+                    className="text-[11px] text-allness-green font-medium hover:underline shrink-0"
+                  >
+                    Vérifier
+                  </a>
                 </div>
-              );
-            })}
-            {activities?.length === 0 && (
-              <p className="text-xs text-gray-400 text-center py-4">Aucune activité récente.</p>
-            )}
-          </div>
-          <a
-            href="/admin/transactions"
-            className="mt-4 h-9 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity flex items-center justify-center"
-          >
-            Voir tout l'historique
-          </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400">Aucune demande KYC en attente.</p>
+          )}
         </div>
-      </div>
-
-      {/* KYC section */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-semibold text-allness-dark">Approbations KYC Urgentes</p>
-          <a href="/admin/kyc" className="text-xs text-allness-green font-medium hover:underline">
-            Voir les {stats?.kyc.pending ?? 0} dossiers
-          </a>
-        </div>
-        {kycPending && kycPending.length > 0 ? (
-          <div className="flex flex-col gap-3">
-            {kycPending.map((kyc) => (
-              <div key={kyc.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <div className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                  <ShieldAlert className="w-4 h-4 text-amber-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-allness-dark truncate">{kyc.userName}</p>
-                  <p className="text-[11px] text-gray-400">
-                    {kyc.documentType ?? 'KYC'} · {getTimeAgo(kyc.createdAt)}
-                  </p>
-                </div>
-                <a
-                  href="/admin/kyc"
-                  className="text-[11px] text-allness-green font-medium hover:underline shrink-0"
-                >
-                  Vérifier
-                </a>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-gray-400">Aucune demande KYC en attente.</p>
-        )}
       </div>
     </AdminLayout>
   );

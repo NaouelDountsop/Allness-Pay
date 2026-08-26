@@ -267,7 +267,34 @@ export default function ProfilePage() {
                     {t('profile.personalInfo')}
                   </h2>
                 </div>
-                <Button variant="secondary" size="sm" className="rounded-full px-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="rounded-full px-4"
+                  onClick={() => {
+                    const rows = [
+                      ['Champ', 'Valeur'],
+                      ['Nom complet', fullName],
+                      ['Date de naissance', profile?.datenaissance ?? '—'],
+                      ['Sexe', profile?.sexe ?? '—'],
+                      ['Profession', profile?.profession ?? '—'],
+                      ['Adresse', profile?.adresse ?? '—'],
+                      ['Email', profile?.email ?? '—'],
+                      ['Téléphone', profile?.telephone ?? '—'],
+                      ['Ville', profile?.ville ?? '—'],
+                      ['Pays', profile?.pays ?? '—'],
+                      ['Statut', profile?.statut ?? '—'],
+                    ];
+                    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `profil_${fullName.replace(/\s+/g, '_')}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
                   {t('profile.exportPdf')}
                 </Button>
               </div>

@@ -4,12 +4,14 @@ export function SectionCard({
   title,
   icon: Icon,
   tone = 'default',
+  action,
   children,
   className = '',
 }: {
   title?: string;
   icon?: LucideIcon;
   tone?: 'default' | 'orange' | 'green';
+  action?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -22,9 +24,12 @@ export function SectionCard({
   return (
     <div className={`rounded-xl border ${toneStyles[tone]} p-5 ${className}`}>
       {title && (
-        <div className="flex items-center gap-2 mb-4">
-          {Icon && <Icon className="w-4 h-4 text-allness-orange" />}
-          <p className="text-xs font-bold uppercase tracking-wide text-allness-dark">{title}</p>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            {Icon && <Icon className="w-4 h-4 text-allness-orange" />}
+            <p className="text-xs font-bold uppercase tracking-wide text-allness-dark">{title}</p>
+          </div>
+          {action}
         </div>
       )}
       {children}

@@ -39,7 +39,7 @@ export default function TontinesSupervisionPage() {
   const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
   const totalTontines = tontines?.length ?? 0;
-  const activeTontines = tontines?.filter((t) => t.status === 'active').length ?? 0;
+  const activeTontines = tontines?.filter((t) => t.status === 'ACTIVE').length ?? 0;
   const totalVolume = tontines?.reduce((sum, t) => sum + Number(t.contributionAmount) * t.currentCycle, 0) ?? 0;
 
   const isLoading = loadingTontines;
@@ -156,7 +156,7 @@ export default function TontinesSupervisionPage() {
               const progressPercent =
                 t.memberLimit > 0 ? Math.round((t.currentCycle / t.memberLimit) * 100) : 0;
               const statusTone =
-                t.status === 'active' ? 'green' : t.status === 'pending' ? 'orange' : 'red';
+                t.status === 'ACTIVE' ? 'green' : t.status === 'DRAFT' ? 'orange' : 'red';
               return (
                 <tr key={t.id} className="border-b border-gray-50 last:border-0">
                   <td className="py-3.5">
@@ -180,9 +180,9 @@ export default function TontinesSupervisionPage() {
                   </td>
                   <td>
                     <Badge tone={statusTone} dot>
-                      {t.status === 'active'
+                      {t.status === 'ACTIVE'
                         ? 'Actif'
-                        : t.status === 'pending'
+                        : t.status === 'DRAFT'
                           ? 'En attente'
                           : 'Fermé'}
                     </Badge>

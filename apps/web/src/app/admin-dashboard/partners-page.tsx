@@ -243,9 +243,9 @@ const STATUS_STYLES: Record<Partner['status'], string> = {
 function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
   const Icon = stat.icon;
   return (
-    <div className="bg-allness-dark rounded-2xl p-3">
+    <div className="bg-allness-dark rounded-2xl p-5">
       <div className="flex items-center gap-2 mb-2">
-        <span className={`w-8 h-8 rounded-full flex items-center justify-center ${stat.iconBg}`}>
+        <span className={`w-10 h-10 rounded-full flex items-center justify-center ${stat.iconBg}`}>
           <Icon className={`w-4 h-4 ${stat.iconColor}`} />
         </span>
         <span className="text-[11px] text-gray-300">{stat.label}</span>
@@ -487,7 +487,7 @@ export default function PartnersPage() {
         {/* En-tête de page */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Gestion des Partenaires</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-allness-dark">Gestion des Partenaires</h2>
             <p className="text-xs text-gray-500">
               Ajoutez, configurez et suivez vos partenaires.
             </p>
@@ -565,6 +565,20 @@ export default function PartnersPage() {
                   Réinitialiser
                 </button>
                 <button
+                  onClick={() => {
+                    const rows = [['Nom', 'Type', 'Pays', 'Services', 'Statut', 'Volume', 'Transactions']];
+                    filtered.forEach((p) => {
+                      rows.push([p.name, p.type, p.country, p.services.join('; '), p.status, p.volume, p.transactions]);
+                    });
+                    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `partenaires_${new Date().toISOString().slice(0, 10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
                   className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
                   aria-label="Exporter"
                 >
