@@ -387,7 +387,8 @@
     "beneficiaryReceivesInMinutes": "Le bénéficiaire recevra les fonds sous quelques minutes.",
     "newTransfer": "Nouveau transfert",
     "thankYou": "Merci",
-    "abroad": "l'étranger"
+    "abroad": "l'étranger",
+    "freePromo": "Gratuit (Promo)"
   },
   "transactions": {
     "title": "Transactions",
@@ -540,6 +541,7 @@
     "cyclePercent": "% du cycle",
     "viewFullCalendar": "Voir le calendrier complet",
     "nextBeneficiary": "Prochain bénéficiaire",
+    "currentBeneficiary": "Bénéficiaire actuel",
     "turnLabel": "Tour",
     "amountToReceive": "Montant à recevoir",
     "paymentStatus": "État des versements",

@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ArrowRight,
   UserRound,
+  Eye,
 } from "lucide-react";
 
 /* ============================================================
@@ -552,6 +553,9 @@ export default function Features() {
                     rounded-[3rem]
                     bg-allness-dark
                     p-2
+                    border
+                    border-gray-200
+                    dark:border-gray-700
                     shadow-[0_30px_70px_rgba(8,43,55,0.30)]
                   "
                 >
@@ -615,48 +619,51 @@ export default function Features() {
                       </div>
 
 
-                      {/* SOLDE */}
+                      {/* SOLDE — style WalletBalanceCard dashboard */}
 
-                      <div
-                        className="
-                          mt-5
-                          rounded-2xl
-                          bg-white
-                          p-4
-                          shadow-lg
-                        "
-                      >
+                      <div className="mt-5 rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-4 relative overflow-hidden">
 
-                        <div className="flex items-center justify-between">
+                        {/* Globe wireframe */}
+                        <svg aria-hidden="true" className="pointer-events-none select-none absolute -top-4 -right-2 w-32 h-32 opacity-60" viewBox="0 0 200 200" fill="none">
+                          <defs>
+                            <linearGradient id="globeGradMock" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+                              <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
+                              <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+                            </linearGradient>
+                          </defs>
+                          <circle cx="100" cy="100" r="90" stroke="url(#globeGradMock)" strokeWidth="1.5" />
+                          <ellipse cx="100" cy="100" rx="35" ry="90" stroke="url(#globeGradMock)" strokeWidth="1" />
+                          <ellipse cx="100" cy="100" rx="65" ry="90" stroke="url(#globeGradMock)" strokeWidth="1" />
+                          <ellipse cx="100" cy="100" rx="90" ry="90" stroke="url(#globeGradMock)" strokeWidth="1" />
+                          <ellipse cx="100" cy="55" rx="90" ry="25" stroke="url(#globeGradMock)" strokeWidth="1" />
+                          <ellipse cx="100" cy="100" rx="90" ry="8" stroke="url(#globeGradMock)" strokeWidth="1" />
+                          <ellipse cx="100" cy="145" rx="90" ry="25" stroke="url(#globeGradMock)" strokeWidth="1" />
+                        </svg>
 
-                          <span className="text-[8px] text-foreground/50">
-                            Solde disponible
-                          </span>
+                        {/* Logo watermark mask */}
+                        <div aria-hidden="true" className="pointer-events-none select-none absolute -top-6 -right-6 w-36 h-36 bg-gradient-to-br from-amber-300/40 via-allness-orange/35 to-allness-orange/10" style={{ WebkitMaskImage: 'url(/allnesspay_logo1.png)', WebkitMaskSize: 'contain', WebkitMaskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskImage: 'url(/allnesspay_logo1.png)', maskSize: 'contain', maskRepeat: 'no-repeat', maskPosition: 'center' }} />
 
-                          <span className="text-xs text-foreground/30">
-                            ◉
-                          </span>
-
+                        {/* Header: logo + wallet number + status */}
+                        <div className="flex items-center justify-between mb-3 relative z-10">
+                          <div className="flex items-center gap-2">
+                            <img src="/allnesspay_logo1.png" alt="" className="w-7 h-7 object-contain" />
+                            <div>
+                              <p className="text-[8px] text-white/60 tracking-wide">ALLNESS WALLET</p>
+                              <p className="text-[10px] font-medium">WLT ••••••••</p>
+                            </div>
+                          </div>
+                          <span className="text-[8px] font-medium bg-white/10 text-green-300 px-2 py-0.5 rounded-full">Actif</span>
                         </div>
 
-                        <p
-                          className="
-                            mt-1
-                            font-heading
-                            text-[22px]
-                            font-extrabold
-                            text-allness-dark
-                          "
-                        >
-                          245 750{" "}
-                          <span className="text-[11px]">
-                            XAF
-                          </span>
-                        </p>
-
-                        <p className="text-[8px] text-foreground/40">
-                          ≈ 374,24 EUR
-                        </p>
+                        {/* Balance */}
+                        <p className="text-[8px] text-white/60 mb-1 relative z-10">Solde Total</p>
+                        <div className="flex items-center gap-2 relative z-10">
+                          <p className="text-xl font-bold truncate">
+                            245 750 <span className="text-[11px] font-medium text-allness-orange">XAF</span>
+                          </p>
+                          <Eye className="w-4 h-4 text-white/60 shrink-0" />
+                        </div>
 
                       </div>
 

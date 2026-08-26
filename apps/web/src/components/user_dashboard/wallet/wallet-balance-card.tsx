@@ -21,7 +21,7 @@ export function WalletBalanceCard({
   status = 'Actif',
   kycApproved = false,
 }: WalletBalanceCardProps) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [pinModal, setPinModal] = useState<'setup' | 'verify' | null>(null);
   const [checkingPin, setCheckingPin] = useState(false);
 
@@ -109,7 +109,7 @@ export function WalletBalanceCard({
 
       <div
         aria-hidden="true"
-          className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-allness-orange/35 to-allness-orange/10"
+          className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-amber-300/40 to-allness-orange/10"
         style={{
           WebkitMaskImage: 'url(/allnesspay_logo1.png)',
           WebkitMaskSize: 'contain',
@@ -150,9 +150,9 @@ export function WalletBalanceCard({
             {checkingPin ? (
               <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white/60 animate-spin" />
             ) : visible ? (
-              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
-            ) : (
               <EyeOff className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
+            ) : (
+              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white/60" />
             )}
           </button>
         </div>

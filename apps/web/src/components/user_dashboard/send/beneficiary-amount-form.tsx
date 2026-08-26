@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ShieldCheck,
   Lock,
@@ -125,6 +126,7 @@ function detectNetwork(digits: string, country: string): string | null {
 }
 
 export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError }: BeneficiaryAmountFormProps) {
+  const { t } = useTranslation();
   const { theme } = usePreferences();
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'XAF';
@@ -133,7 +135,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
 
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amountNumber * 0.01;
-  const totalDebit = amountNumber + fees;
+  const totalDebit = amountNumber;
   const received = exchangeRate ? amountNumber * exchangeRate : 0;
 
   const selectedCountry = useMemo(
@@ -370,9 +372,14 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Frais de transfert (1%)</span>
-          <span className="text-allness-dark font-semibold">
-            {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400 line-through font-semibold">
+              {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+            </span>
+            <span className="text-allness-green font-semibold">
+              {t('send.freePromo')}
+            </span>
+          </div>
         </div>
         <div className="border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between">

@@ -24,7 +24,7 @@ export function WalletBalanceCard({
         aria-hidden="true"
         className="pointer-events-none select-none absolute inset-0 opacity-20"
         style={{
-          backgroundImage: 'url(/word.png)',
+          backgroundImage: 'url(/world.png)',
           backgroundSize: '130%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
