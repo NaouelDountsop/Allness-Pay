@@ -19,7 +19,7 @@ export function NewInitiativeCard() {
         </p>
         <span className="inline-flex items-center h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 leading-8 gap-2">
           <Plus className="w-3 h-3 text-gray-600" />
-          <span className="hidden md:inline">Lancer une Tontine</span>
+          Lancer une Tontine
         </span>
       </div>
     </button>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, QrCode } from 'lucide-react';
 import { pinService } from '@/lib/api/pin.service';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
@@ -11,6 +11,8 @@ interface WalletBalanceCardProps {
   currency: string;
   status?: string;
   kycApproved?: boolean;
+  visible: boolean;
+  onVisibleChange: (v: boolean) => void;
 }
 
 export function WalletBalanceCard({
@@ -20,8 +22,9 @@ export function WalletBalanceCard({
   currency,
   status = 'Actif',
   kycApproved = false,
+  visible,
+  onVisibleChange,
 }: WalletBalanceCardProps) {
-  const [visible, setVisible] = useState(false);
   const [pinModal, setPinModal] = useState<'setup' | 'verify' | null>(null);
   const [checkingPin, setCheckingPin] = useState(false);
 
@@ -30,12 +33,12 @@ export function WalletBalanceCard({
 
   const handleEyeClick = async () => {
     if (visible) {
-      setVisible(false);
+      onVisibleChange(false);
       return;
     }
 
     if (!kycApproved) {
-      setVisible(true);
+      onVisibleChange(true);
       return;
     }
 
@@ -48,7 +51,7 @@ export function WalletBalanceCard({
         setPinModal('setup');
       }
     } catch {
-      setVisible(true);
+      onVisibleChange(true);
     } finally {
       setCheckingPin(false);
     }
@@ -58,7 +61,7 @@ export function WalletBalanceCard({
     try {
       await pinService.create(walletInternalId, pin);
       setPinModal(null);
-      setVisible(true);
+      onVisibleChange(true);
     } catch {
       // keep modal open on error
     }
@@ -69,7 +72,7 @@ export function WalletBalanceCard({
       const ok = await pinService.verify(walletInternalId, pin);
       if (ok) {
         setPinModal(null);
-        setVisible(true);
+        onVisibleChange(true);
         return null;
       }
       return 'Code PIN incorrect.';
@@ -127,7 +130,22 @@ export function WalletBalanceCard({
           <img src="/allnesspay_logo1.png" alt="" className="w-9 h-9 object-contain" />
           <div>
             <p className="text-xs text-white/60 tracking-wide">ALLNESS WALLET</p>
-            <p className="text-sm font-medium">{visible ? walletNumber : maskedWalletId}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium">{visible ? walletNumber : maskedWalletId}</p>
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="p-1 rounded-md border border-white/20 hover:border-allness-orange/50 transition-colors"
+                  aria-label="Voir mon QR code"
+                >
+                  <QrCode className="w-4 h-4 text-allness-orange" />
+                </button>
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg bg-allness-dark text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                  Voir mon QR code
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-allness-dark" />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <span className="text-[11px] font-medium bg-white/10 text-green-300 px-2.5 py-1 rounded-full">

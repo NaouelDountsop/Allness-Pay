@@ -57,4 +57,10 @@ export const beneficiaryService = {
     const res = await apiClient.patch<Beneficiary>(`/beneficiaires/${id}/favori`);
     return res.data;
   },
+  searchUser: async (query: string): Promise<{ name: string; walletId: string; phone?: string }[]> => {
+    const res = await apiClient.get<{ name: string; walletId: string; phone?: string }[]>('/beneficiaires/search', {
+      params: { q: query },
+    });
+    return res.data;
+  },
 };

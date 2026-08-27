@@ -605,7 +605,7 @@ export default function SettingsPage() {
                 id="currency"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="CFA">CFA</option>
                 <option value="EUR">EUR</option>
@@ -618,7 +618,7 @@ export default function SettingsPage() {
                 id="language"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as 'fr' | 'en')}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="fr">{t('settings.french')}</option>
                 <option value="en">{t('settings.english')}</option>
@@ -630,7 +630,7 @@ export default function SettingsPage() {
                 id="theme"
                 value={theme}
                 onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="light">{t('settings.light')}</option>
                 <option value="dark">{t('settings.dark')}</option>
@@ -642,7 +642,7 @@ export default function SettingsPage() {
                 id="timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="Afrique/Douala (GMT+1)">Afrique/Douala (GMT+1)</option>
                 <option value="Europe/Paris (GMT+1/+2)">Europe/Paris (GMT+1/+2)</option>
@@ -714,10 +714,10 @@ export default function SettingsPage() {
                   id="method-type"
                   value={newMethodType}
                   onChange={(e) => setNewMethodType(e.target.value)}
-                  className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
-                >
-                  <option value="Orange Money">Orange Money</option>
-                  <option value="MTN MoMo">MTN MoMo</option>
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
+              >
+                <option value="Orange Money">Orange Money</option>
+                <option value="MTN MoMo">MTN MoMo</option>
                   <option value="Carte bancaire">{t('settings.creditCard')}</option>
                   <option value="Compte bancaire">{t('settings.bankAccount')}</option>
                 </select>
@@ -762,7 +762,7 @@ export default function SettingsPage() {
                 id="reminder-days"
                 value={reminderDays}
                 onChange={(e) => setReminderDays(e.target.value)}
-                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="1">{t('settings.reminder1')}</option>
                 <option value="2">{t('settings.reminder2')}</option>

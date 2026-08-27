@@ -184,7 +184,7 @@ export function CreateTontineForm() {
               <label className="text-xs font-medium text-gray-500">{t('tontines.currencyLabel')}</label>
               <select
                 {...register('currency')}
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="XAF">{t('tontines.currencyXAF')}</option>
                 <option value="USD">{t('tontines.currencyUSD')}</option>
@@ -229,7 +229,7 @@ export function CreateTontineForm() {
                 <input
                   type="number"
                   {...register('contribution')}
-                  className="flex-1 text-sm bg-transparent focus:outline-none text-gray-900"
+                  className="flex-1 text-sm bg-transparent focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange text-gray-900"
                 />
               </div>
               {errors.contribution && (
@@ -241,7 +241,7 @@ export function CreateTontineForm() {
               <select
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900"
+                className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="MONTHLY">{t('tontines.frequencyMonthly')}</option>
                 <option value="WEEKLY">{t('tontines.frequencyWeekly')}</option>

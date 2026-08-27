@@ -1,5 +1,4 @@
 import { useState, useMemo, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   ShieldCheck,
   Lock,
@@ -7,18 +6,18 @@ import {
   ArrowRight,
   AlertCircle,
   Wallet,
-  Building2,
-  Smartphone,
   Loader2,
+  QrCode,
 } from 'lucide-react';
 import { CountrySelect } from '@/components/common/country-select';
+import { WalletQrScanner } from '@/components/user_dashboard/send/wallet-qr-scanner';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 import { usePreferences } from '@/hooks/use-preferences';
 import {
   CURRENCY_SYMBOLS,
 } from '@/lib/mock/send-money-data';
 
-export type ReceptionMode = 'wallet' | 'mtn' | 'orange' | 'bank';
+export type ReceptionMode = 'wallet' ;
 
 interface FormState {
   beneficiaryContact: string;
@@ -61,21 +60,6 @@ const RECEPTION_OPTIONS: {
     icon: Wallet,
     color: 'text-allness-green',
   },
-  {
-    id: 'mtn',
-    label: 'MTN Mobile Money',
-    image: '/mtn-momo.png',
-    icon: Smartphone,
-    color: 'text-yellow-500',
-  },
-  {
-    id: 'orange',
-    label: 'Orange Money',
-    image: '/orange-money.png',
-    icon: Smartphone,
-    color: 'text-orange-50',
-  },
-  { id: 'bank', label: 'Compte bancaire', icon: Building2, color: 'text-blue-600' },
 ];
 
 const COUNTRY_TO_CURRENCY: Record<string, string> = {
@@ -126,7 +110,6 @@ function detectNetwork(digits: string, country: string): string | null {
 }
 
 export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError }: BeneficiaryAmountFormProps) {
-  const { t } = useTranslation();
   const { theme } = usePreferences();
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'XAF';
@@ -134,8 +117,6 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
   const receiverCurrency = COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
 
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
-  const fees = amountNumber * 0.01;
-  const totalDebit = amountNumber;
   const received = exchangeRate ? amountNumber * exchangeRate : 0;
 
   const selectedCountry = useMemo(
@@ -144,6 +125,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
   );
   const [touched, setTouched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showQrScanner, setShowQrScanner] = useState(false);
 
   const isPhoneMode = PHONE_MODES.includes(form.receptionMode);
 
@@ -201,7 +183,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
       {/* Mode de réception */}
       <div className="mb-6">
         <p className="text-sm font-semibold text-gray-700 mb-3">Mode de réception</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {RECEPTION_OPTIONS.map((option) => {
             const Icon = option.icon;
             const isSelected = form.receptionMode === option.id;
@@ -271,8 +253,8 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
                   showPhoneError || walletError
                     ? 'border-red-300 focus-within:border-red-400 focus-within:ring-red-200'
                     : isComplete
-                      ? 'border-allness-green focus-within:ring-allness-green/30'
-                      : 'border-gray-200 focus-within:border-allness-green focus-within:ring-allness-green/30'
+                      ? 'border-allness-orange focus-within:ring-allness-orange/30'
+                      : 'border-gray-200 focus-within:border-allness-orange focus-within:ring-allness-orange/30'
                 }`}
               >
                 {isPhoneMode && (
@@ -300,6 +282,16 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
                   onBlur={() => setTouched(true)}
                   className="flex-1 min-w-0 h-full px-3 text-sm sm:text-base bg-white text-allness-dark placeholder:text-gray-400 focus:outline-none"
                 />
+                {!isPhoneMode && (
+                  <button
+                    type="button"
+                    onClick={() => setShowQrScanner(true)}
+                    className="shrink-0 h-full px-3 flex items-center border-l border-gray-100 hover:bg-gray-50 transition-colors"
+                    aria-label="Scanner le QR code du wallet"
+                  >
+                    <QrCode className="w-4 h-4 text-allness-orange" />
+                  </button>
+                )}
               </div>
               {showPhoneError && (
                 <div className="flex items-start gap-1.5 mt-1.5 text-xs text-red-600">
@@ -329,7 +321,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
         <div className={`flex items-center rounded-2xl border-2 bg-white overflow-hidden transition-colors ${
           insufficientBalance
             ? 'border-red-300 focus-within:border-red-400'
-            : 'border-gray-200 focus-within:border-allness-green'
+            : 'border-gray-200 focus-within:border-allness-orange'
         }`}>
           <Banknote className={`w-5 h-5 ml-4 shrink-0 ${insufficientBalance ? 'text-red-400' : 'text-allness-orange'}`} />
           <input
@@ -370,7 +362,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
             <span className="text-gray-400">Non disponible</span>
           )}
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        {/* <div className="flex items-center justify-between text-sm text-gray-600">
           <span className="font-medium">Frais de transfert (1%)</span>
           <div className="flex items-center gap-2">
             <span className="text-gray-400 line-through font-semibold">
@@ -380,15 +372,15 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
               {t('send.freePromo')}
             </span>
           </div>
-        </div>
-        <div className="border-t border-gray-200 pt-3">
+        </div> */}
+        {/* <div className="border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-allness-dark">Total débité</span>
             <span className="text-xl font-bold text-allness-dark">
               {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Bénéficiaire reçoit */}
@@ -437,6 +429,16 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
           </div>
         </div>
       </div>
+
+      {showQrScanner && (
+        <WalletQrScanner
+          onClose={() => setShowQrScanner(false)}
+          onScan={(walletId) => {
+            onChange('beneficiaryContact', walletId);
+            setShowQrScanner(false);
+          }}
+        />
+      )}
     </div>
   );
 }

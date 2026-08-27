@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 import { LoadingSpinner } from '@/components/common/loading-spinner';
@@ -50,6 +50,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
         {transactions.map((tx) => {
           const credit = transactionService.isCredit(tx.type);
           const isFailed = tx.status === 'failed';
+          const isPending = tx.status === 'pending';
           const isCompleted = tx.status === 'completed';
           return (
             <li key={tx.id}>
@@ -69,13 +70,17 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                       isFailed
                         ? 'bg-red-50 dark:bg-red-500/15'
-                        : credit
-                          ? 'bg-emerald-50 dark:bg-emerald-500/15'
-                          : 'bg-red-50 dark:bg-red-500/15'
+                        : isPending
+                          ? 'bg-orange-50 dark:bg-orange-500/15'
+                          : credit
+                            ? 'bg-emerald-50 dark:bg-emerald-500/15'
+                            : 'bg-red-50 dark:bg-red-500/15'
                     }`}
                   >
                     {isFailed ? (
                       <XCircle className="w-4 h-4 text-red-500" />
+                    ) : isPending ? (
+                      <Clock className="w-4 h-4 text-allness-orange" />
                     ) : credit ? (
                       <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
                     ) : (
@@ -100,7 +105,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                 <div className="flex items-center gap-2 shrink-0 pl-2">
                   <span
                     className={`text-xs sm:text-sm font-semibold text-right whitespace-nowrap ${
-                      isFailed ? 'text-red-500' : credit ? 'text-emerald-500' : 'text-red-500'
+                      isFailed ? 'text-red-500' : isPending ? 'text-allness-orange' : credit ? 'text-emerald-500' : 'text-red-500'
                     }`}
                   >
                     {isCompleted ? (credit ? '+' : '-') : ''}
@@ -110,13 +115,15 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     className={`w-6 h-6 rounded-full flex items-center justify-center ${
                       isFailed
                         ? 'bg-red-50 dark:bg-red-500/15'
-                        : credit
-                          ? 'bg-emerald-50 dark:bg-emerald-500/15'
-                          : 'bg-red-50 dark:bg-red-500/15'
+                        : isPending
+                          ? 'bg-orange-50 dark:bg-orange-500/15'
+                          : credit
+                            ? 'bg-emerald-50 dark:bg-emerald-500/15'
+                            : 'bg-red-50 dark:bg-red-500/15'
                     }`}
                   >
                     <ChevronRight
-                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : credit ? 'text-emerald-500' : 'text-red-500'}`}
+                      className={`w-3.5 h-3.5 ${isFailed ? 'text-red-500' : isPending ? 'text-allness-orange' : credit ? 'text-emerald-500' : 'text-red-500'}`}
                     />
                   </div>
                 </div>
