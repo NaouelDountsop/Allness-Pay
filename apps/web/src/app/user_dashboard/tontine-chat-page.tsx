@@ -348,8 +348,8 @@ function ChatArea({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Écrire un message..."
-          className="flex-1 rounded-full bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+          placeholder={t('tontines.writeMessage')}
+          className="flex-1 rounded-full bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
         />
         <button className="text-gray-400 hover:text-gray-600" aria-label="Émoji">
           <Smile className="h-5 w-5" />

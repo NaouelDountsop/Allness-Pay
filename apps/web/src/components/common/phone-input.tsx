@@ -26,7 +26,7 @@ export function PhoneInput({ country, value, onChange, error }: PhoneInputProps)
         )}
         <input
           type="tel"
-          className={`flex-1 h-11 rounded-r-lg border text-sm text-gray-900 bg-white px-3 focus:outline-none focus:ring-1 focus:ring-allness-green ${
+          className={`flex-1 h-11 rounded-r-lg border text-sm text-gray-900 bg-white px-3 focus:outline-none focus:ring-1 focus:ring-allness-orange ${
             error ? '!border-destructive' : 'border-gray-200'
           }`}
           placeholder={country?.phonePlaceholder || 'Numéro de téléphone'}

@@ -41,6 +41,13 @@ export default function TontineDetailPage() {
 
   const isCreator = profile && tontine && profile.idutilisateur === tontine.creatorId;
 
+  const activeMembers = tontine?.members?.filter((m) => m.status === 'ACTIVE') ?? [];
+  const effectiveMemberCount = tontine
+    ? tontine.status === 'DRAFT'
+      ? tontine.memberLimit
+      : activeMembers.length || tontine.memberLimit
+    : 0;
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -75,8 +82,8 @@ export default function TontineDetailPage() {
   }
 
   const progressPercent =
-    tontine.memberLimit > 0
-      ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100)
+    effectiveMemberCount > 0
+      ? Math.round((tontine.currentCycle / effectiveMemberCount) * 100)
       : 0;
 
   const statusLabelKey: Record<string, string> = {
@@ -157,12 +164,16 @@ export default function TontineDetailPage() {
         </div>
 
         {/* 3 summary cards */}
-        <TontineDetailHeader tontine={tontine} progressPercent={progressPercent} />
+        <TontineDetailHeader
+          tontine={tontine}
+          progressPercent={progressPercent}
+          effectiveMemberCount={effectiveMemberCount}
+        />
 
         {/* Cycle timeline */}
         <CycleTimeline
           currentCycle={tontine.currentCycle}
-          totalTurns={tontine.memberLimit}
+          totalTurns={effectiveMemberCount}
           members={tontine.members ?? []}
           currency={tontine.currency}
           contributionAmount={Number(tontine.contributionAmount)}

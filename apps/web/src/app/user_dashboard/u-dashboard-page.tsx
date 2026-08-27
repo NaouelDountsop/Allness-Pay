@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -17,6 +18,7 @@ import { tontineService } from '@/lib/api/tontine.service';
 const formatNumber = (value: number) => new Intl.NumberFormat('fr-FR').format(value);
 
 export default function DashboardPage() {
+  const [visible, setVisible] = useState(false);
   const {
     data: wallet,
     isLoading: walletLoading,
@@ -128,6 +130,8 @@ export default function DashboardPage() {
                 currency={currency}
                 status={walletStatus}
                 kycApproved={kyc?.status === 'APPROVED'}
+                visible={visible}
+                onVisibleChange={setVisible}
               />
 
               <div className="flex gap-3">

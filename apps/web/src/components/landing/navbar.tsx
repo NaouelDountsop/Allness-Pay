@@ -11,6 +11,23 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mq.matches || document.documentElement.classList.contains('dark'));
+    const onChange = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -33,19 +50,11 @@ export default function Navbar() {
       >
         <nav className="mx-auto max-w-7xl px-5 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
           <a href="#accueil" className="flex items-center gap-0 group shrink-0">
-            {!scrolled ? (
-              <img
-                src="/allnesspay_logo1.png"
-                alt="Allness Pay"
-                className="h-10 lg:h-12 w-auto transition-all duration-500"
-              />
-            ) : (
-              <img
-                src="/allnesspay_logo2.png"
-                alt="Allness Pay"
-                className="h-10 lg:h-12 w-auto transition-all duration-500"
-              />
-            )}
+            <img
+              src={isDark || !scrolled ? '/allnesspay_logo1.png' : '/allnesspay_logo2.png'}
+              alt="Allness Pay"
+              className="h-10 lg:h-12 w-auto transition-all duration-500"
+            />
             <p
               className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
                 scrolled

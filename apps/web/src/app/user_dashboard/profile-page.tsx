@@ -415,7 +415,7 @@ export default function ProfilePage() {
                 id="sexe"
                 value={sexe}
                 onChange={(e) => setSexe(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="">{t('profile.genderNotSpecified')}</option>
                 <option value="Femme">{t('profile.female')}</option>

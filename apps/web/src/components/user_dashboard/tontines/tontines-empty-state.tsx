@@ -49,7 +49,7 @@ export function TontinesEmptyState({ onCreate }: TontinesEmptyStateProps) {
             className="flex-1 h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden md:inline">{t('tontines.createTontine')}</span>
+            {t('tontines.createTontine')}
           </button>
           <button
             onClick={() => navigate('/dashboard/tontines/invitations')}

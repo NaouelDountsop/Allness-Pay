@@ -25,6 +25,7 @@ export default function WalletPage() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [depositStatus, setDepositStatus] = useState<'pending' | 'success' | 'failed'>('pending');
   const [pendingDeposit, setPendingDeposit] = useState<DepositState | null>(null);
+  const [visible, setVisible] = useState(false);
   const attemptsRef = useRef(0);
 
   useEffect(() => {
@@ -186,6 +187,8 @@ export default function WalletPage() {
                 currency={displayWallet?.currency ?? 'FCFA'}
                 status={displayWallet?.status === 'active' ? t('wallet.statusActive') : t('wallet.statusPending')}
                 kycApproved={kyc?.status === 'APPROVED'}
+                visible={visible}
+                onVisibleChange={setVisible}
               />
               <WalletActions />
             </div>
@@ -194,6 +197,7 @@ export default function WalletPage() {
               onAddAccount={() => setAddAccountOpen(true)}
               onSelectWallet={(w) => setSelectedWalletId(w.id)}
               selectedWalletId={selectedWalletId}
+              visible={visible}
             />
             <AddLinkedAccountModal
               open={addAccountOpen}

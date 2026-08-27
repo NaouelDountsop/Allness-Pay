@@ -32,10 +32,14 @@ export function TontineCard({ tontine }: TontineCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const members = tontine.members ?? [];
-  const extraMembers = tontine.memberLimit - 3;
+  const activeMembers = members.filter((m) => m.status === 'ACTIVE');
+  const effectiveMemberCount =
+    tontine.status === 'DRAFT'
+      ? tontine.memberLimit
+      : activeMembers.length || tontine.memberLimit;
+  const extraMembers = effectiveMemberCount - 3;
   const progressPercent =
-    tontine.memberLimit > 0 ? Math.round((tontine.currentCycle / tontine.memberLimit) * 100) : 0;
-
+    effectiveMemberCount > 0 ? Math.round((tontine.currentCycle / effectiveMemberCount) * 100) : 0;
   const currentUserId = getCurrentUserId();
   const isAdmin = currentUserId === tontine.creatorId;
 
@@ -52,7 +56,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
             </span>
           )}
         </div>
-        <span className="flex-shrink-0 text-[10px] font-medium bg-green-50 text-allness-green px-2 py-0.5 rounded-full whitespace-nowrap">
+        <span className={`flex-shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${tontine.status === 'DRAFT' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-green-50 dark:bg-green-900/30 text-allness-green'}`}>
           {tontine.status}
         </span>
       </div>
@@ -107,7 +111,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
         </div>
 
         <p className="text-2xl font-bold relative z-10">
-          {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * tontine.memberLimit)}{' '}
+          {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount) * effectiveMemberCount)}{' '}
           <span className="text-sm font-medium text-allness-orange">
             {tontine.currency ?? 'CFA'}
           </span>
@@ -118,20 +122,20 @@ export function TontineCard({ tontine }: TontineCardProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-1.5 text-xs text-gray-600">
           <Users className="w-3.5 h-3.5 text-gray-500" />
-          <span>{tontine.memberLimit} {t('tontines.membersCount')}</span>
+          <span>{effectiveMemberCount} {t('tontines.membersCount')}</span>
         </div>
         <div className="flex -space-x-2">
           {members.slice(0, 3).map((m, i) => (
             <span
               key={m.id}
-              className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-semibold ${avatarColors[i % avatarColors.length]}`}
+              className={`w-6 h-6 rounded-full border-2 border-gray-100 dark:border-gray-800 flex items-center justify-center text-[9px] font-semibold ${avatarColors[i % avatarColors.length]}`}
               title={m.user?.prenom}
             >
               {m.user?.prenom?.charAt(0)?.toUpperCase() ?? '?'}
             </span>
           ))}
           {extraMembers > 0 && (
-            <span className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-[9px] font-medium text-gray-600">
+            <span className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-800 flex items-center justify-center text-[9px] font-medium text-gray-600 dark:text-gray-300">
               +{extraMembers}
             </span>
           )}
@@ -145,7 +149,7 @@ export function TontineCard({ tontine }: TontineCardProps) {
       <div className="mb-2 flex items-center justify-between text-[11px]">
         <span className="text-gray-500">
           {t('tontines.tour')} <span className="font-medium text-gray-700">{tontine.currentCycle}</span> /{' '}
-          {tontine.memberLimit}
+          {effectiveMemberCount}
         </span>
         <span className="text-allness-green font-semibold">{progressPercent}%</span>
       </div>

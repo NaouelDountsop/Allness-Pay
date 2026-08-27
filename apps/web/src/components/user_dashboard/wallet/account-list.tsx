@@ -1,4 +1,4 @@
-import { Wallet, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Wallet, Sparkles, ArrowRight, CheckCircle2, EyeOff } from 'lucide-react';
 import type { Wallet as ApiWallet } from '@afrilinkpay/shared';
 
 interface AccountListProps {
@@ -6,9 +6,10 @@ interface AccountListProps {
   onAddAccount: () => void;
   onSelectWallet?: (wallet: ApiWallet) => void;
   selectedWalletId?: string | null;
+  visible: boolean;
 }
 
-export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWalletId }: AccountListProps) {
+export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWalletId, visible }: AccountListProps) {
   return (
     <div className="space-y-3">
       <div className="rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -16,6 +17,9 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
         <ul className="divide-y divide-gray-100">
           {wallets.map((w) => {
             const isSelected = selectedWalletId === w.id;
+            const maskedNumber = w.walletNumber.length > 3
+              ? w.walletNumber.slice(0, 3) + ' ••••••••'
+              : '••••••••';
             return (
               <li
                 key={w.id}
@@ -33,17 +37,23 @@ export function AccountList({ wallets, onAddAccount, onSelectWallet, selectedWal
                     <Wallet className="w-4 h-4" />
                   </span>
                   <div>
-                    <p className="text-sm text-gray-800">{w.label ?? w.walletNumber}</p>
-                    {w.label && <p className="text-[11px] text-gray-400">{w.walletNumber}</p>}
+                    <p className="text-sm text-gray-800">{w.label ?? (visible ? w.walletNumber : maskedNumber)}</p>
+                    {w.label && <p className="text-[11px] text-gray-400">{visible ? w.walletNumber : maskedNumber}</p>}
                     {w.isPrimary && (
                       <span className="text-[10px] text-allness-green font-medium">Principal</span>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-gray-800">
-                    {new Intl.NumberFormat('fr-FR').format(Number(w.balance))} {w.currency}
-                  </span>
+                  {visible ? (
+                    <span className="text-sm font-semibold text-gray-800">
+                      {new Intl.NumberFormat('fr-FR').format(Number(w.balance))} {w.currency}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-800 flex items-center gap-1">
+                      ••••••• <EyeOff className="w-3 h-3 text-gray-400" />
+                    </span>
+                  )}
                   {isSelected && (
                     <CheckCircle2 className="w-4 h-4 text-allness-green shrink-0" />
                   )}

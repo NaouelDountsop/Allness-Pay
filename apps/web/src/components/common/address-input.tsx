@@ -89,7 +89,7 @@ export function AddressInput({ countryCode, city, value, onChange, error }: Addr
         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray z-10" />
         <input
           type="text"
-          className={`w-full h-11 rounded-lg border pl-9 pr-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-allness-green ${
+          className={`w-full h-11 rounded-lg border pl-9 pr-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange ${
             error ? '!border-destructive' : 'border-gray-200'
           }`}
           placeholder={

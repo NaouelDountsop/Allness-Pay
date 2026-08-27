@@ -10,6 +10,7 @@ import DashboardPage from "@/app/user_dashboard/u-dashboard-page";
 import KycPage from "@/app/user_dashboard/kyc-page";
 import WalletPage from "@/app/user_dashboard/wallet-page";
 import SendMoneyPage from "@/app/user_dashboard/send-money-page";
+import WithdrawPage from "@/app/user_dashboard/withdraw-page";
 import PaymentsPage from "@/app/user_dashboard/payements-page";
 import BillPaymentPage from "@/app/user_dashboard/bill-payement-page";
 import QrPaymentPage from "@/app/user_dashboard/qr-payement-page";
@@ -69,6 +70,7 @@ export function App() {
         <Route path="/dashboard/wallet" element={<UserProtectedRoute><WalletPage /></UserProtectedRoute>} />
         <Route path="/dashboard/wallets/:id/qr-code" element={<UserProtectedRoute><WalletQrCodePage /></UserProtectedRoute>} />
         <Route path="/dashboard/send" element={<UserProtectedRoute><SendMoneyPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/withdraw" element={<UserProtectedRoute><WithdrawPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments" element={<UserProtectedRoute><PaymentsPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/history" element={<UserProtectedRoute><PaymentHistoryPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/scan" element={<UserProtectedRoute><QrScanPage /></UserProtectedRoute>} />

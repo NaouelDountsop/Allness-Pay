@@ -48,7 +48,7 @@ export function CountrySelect({
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full h-11 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-allness-green"
+          className="w-full h-11 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-allness-orange"
         >
           {selected ? (
             <>
@@ -79,7 +79,7 @@ export function CountrySelect({
                   placeholder="Rechercher..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-8 rounded-md border border-gray-200 pl-8 pr-2 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-allness-green"
+                  className="w-full h-8 rounded-md border border-gray-200 pl-8 pr-2 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
             </div>

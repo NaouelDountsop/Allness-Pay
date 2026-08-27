@@ -429,7 +429,7 @@ export default function SignupPage() {
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexe</label>
             <div className="relative">
               <select
-                className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] px-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] appearance-none focus:outline-none focus:ring-1 focus:ring-allness-green"
+                className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] px-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] appearance-none focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 value={form.gender}
                 onChange={(e) => update('gender', e.target.value)}
               >

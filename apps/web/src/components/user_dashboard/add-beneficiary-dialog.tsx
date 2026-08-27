@@ -281,7 +281,7 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                   placeholder="Ajouter une note..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-300 focus:outline-none"
+                  className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-allness-orange focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 />
                 <span className="pointer-events-none absolute bottom-2.5 right-3 text-xs text-gray-400">
                   {notes.length}/{NOTES_MAX_LENGTH}
@@ -323,7 +323,7 @@ export function AddBeneficiaryDialog({ open, onOpenChange, onSubmit }: AddBenefi
                     else setPhoneError('');
                   }}
                   maxLength={country.phoneDigits}
-                  className="w-full rounded-r-xl border-0 bg-transparent px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                  className="w-full rounded-r-xl border-0 bg-transparent px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
               <div className="flex items-center justify-between">

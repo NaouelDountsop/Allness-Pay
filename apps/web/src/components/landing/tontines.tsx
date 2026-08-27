@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 
-const PIGGY_IMG = "../../public/piggy-tontine.png";
+const PIGGY_IMG = "/piggy-tontine.png";
 
 const STATS = [
   {

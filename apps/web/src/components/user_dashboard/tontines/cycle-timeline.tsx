@@ -29,6 +29,7 @@ export function CycleTimeline({
 
   const visibleTurns = Array.from({ length: Math.min(totalTurns, 5) }, (_, i) => i + 1);
   const hasMore = totalTurns > 5;
+  const expandNodes = totalTurns <= 5;
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-5 mb-4">
@@ -49,7 +50,7 @@ export function CycleTimeline({
             return (
               <div key={turn} className="flex items-start">
                 {/* Node column */}
-                <div className="flex flex-col items-center min-w-[80px] shrink-0">
+                <div className={`flex flex-col items-center min-w-[80px] ${expandNodes ? 'flex-1' : 'shrink-0'}`}>
                   {/* Circle */}
                   {isCompleted ? (
                     <div className="w-10 h-10 rounded-full bg-allness-green border-[2.5px] border-allness-orange flex items-center justify-center shrink-0">
@@ -132,7 +133,7 @@ export function CycleTimeline({
                 </div>
               </div>
 
-              {/* Last turn */}
+              Last turn
               <div className="flex flex-col items-center" style={{ width: 110 }}>
                 <div className="w-10 h-10 rounded-full border-2 border-gray-300 bg-white shrink-0" />
                 <div className="text-center mt-2">

@@ -57,7 +57,7 @@ export function ReviewStep({
   const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF');
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amount * 0.01;
-  const totalDebit = amount + fees;
+  const totalDebit = amount;
   const received = exchangeRate ? amount * exchangeRate : 0;
 
   const senderCountry = getCountryByCode(senderCountryCode);
@@ -174,10 +174,13 @@ export function ReviewStep({
           </span>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-          <span className="font-medium">{t('tontines.transferFees')}</span>
-          <span className="text-allness-dark dark:text-white font-semibold">
-            {formatAmount(fees, senderCurrency)}
-          </span>
+          <span className="font-medium">{t('tontines.transferFees')} (1%)</span>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400 dark:text-gray-500 line-through font-semibold">
+              {formatAmount(fees, senderCurrency)}
+            </span>
+            <span className="text-allness-green font-semibold">{t('send.freePromo')}</span>
+          </div>
         </div>
         <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
           <div className="flex items-center justify-between">

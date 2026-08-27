@@ -6,13 +6,18 @@ import type { Tontine } from '@/lib/api/tontine.service';
 interface TontineDetailHeaderProps {
   tontine: Tontine;
   progressPercent?: number;
+  effectiveMemberCount?: number;
 }
 
-export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDetailHeaderProps) {
+export function TontineDetailHeader({
+  tontine,
+  progressPercent = 0,
+  effectiveMemberCount,
+}: TontineDetailHeaderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE') ?? [];
-  const memberCount = activeMembers.length || tontine.memberLimit;
+  const memberCount = effectiveMemberCount ?? (activeMembers.length || tontine.memberLimit);
   const totalPot =
     Number(tontine.contributionAmount) * memberCount;
   const formatAmount = (val: number) => new Intl.NumberFormat('fr-FR').format(val);
@@ -20,23 +25,16 @@ export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDet
   const currentMember = tontine.members?.find(
     (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle,
   );
-  const nextMember = tontine.members?.find(
-    (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle ,
-  );
 
-  const beneficiaryName = nextMember?.user
-    ? `${nextMember.user.prenom ?? ''} ${nextMember.user.nom ?? ''}`.trim()
-    : currentMember?.user
-      ? `${currentMember.user.prenom ?? ''} ${currentMember.user.nom ?? ''}`.trim()
-      : '—';
+  const beneficiaryName = currentMember?.user
+    ? `${currentMember.user.prenom ?? ''} ${currentMember.user.nom ?? ''}`.trim()
+    : '—';
 
-  const beneficiaryInitials = nextMember?.user
-    ? `${nextMember.user.prenom?.charAt(0) ?? ''}${nextMember.user.nom?.charAt(0) ?? ''}`.toUpperCase()
-    : currentMember?.user
-      ? `${currentMember.user.prenom?.charAt(0) ?? ''}${currentMember.user.nom?.charAt(0) ?? ''}`.toUpperCase()
-      : '?';
+  const beneficiaryInitials = currentMember?.user
+    ? `${currentMember.user.prenom?.charAt(0) ?? ''}${currentMember.user.nom?.charAt(0) ?? ''}`.toUpperCase()
+    : '?';
 
-  const beneficiaryTurn = nextMember?.beneficiaryOrder ?? currentMember?.beneficiaryOrder ?? tontine.currentCycle;
+  const beneficiaryTurn = currentMember?.beneficiaryOrder ?? tontine.currentCycle;
   const beneficiaryAmount = Number(tontine.contributionAmount) * memberCount;
 
   return (
@@ -148,7 +146,7 @@ export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDet
 
         <div className="flex-1 flex flex-col justify-center">
           <p className="text-3xl font-bold text-gray-900">
-            {tontine.currentCycle} <span className="text-base text-gray-600">/ {tontine.memberLimit}</span>
+            {tontine.currentCycle} <span className="text-base text-gray-600">/ {memberCount}</span>
           </p>
           <p className="text-sm text-gray-600 mt-1">{t('tontines.completedTurns')}</p>
         </div>
@@ -178,7 +176,7 @@ export function TontineDetailHeader({ tontine, progressPercent = 0 }: TontineDet
             <span className="w-8 h-8 rounded-full bg-orange-50 dark:bg-[#302515] flex items-center justify-center">
               <Trophy className="w-4 h-4 text-allness-orange dark:text-[#E0A23B]" />
             </span>
-            <p className="text-sm font-semibold text-gray-900">{t('tontines.nextBeneficiary')}</p>
+            <p className="text-sm font-semibold text-gray-900">{t('tontines.currentBeneficiary')}</p>
           </div>
         </div>
 

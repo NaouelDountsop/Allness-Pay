@@ -110,7 +110,7 @@ export default function TontinesPage() {
                   className="h-10 px-4 rounded-lg border border-allness-dark text-allness-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50 relative"
                 >
                   <Mail className="w-4 h-4" />
-                  <span className="hidden md:inline">{t('tontines.invitations')}</span>
+                  {t('tontines.invitations')}
                   {pendingInvitations.length > 0 && (
                     <span className="absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
                       {pendingInvitations.length}
@@ -122,7 +122,7 @@ export default function TontinesPage() {
                   className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  <span className="hidden md:inline">{t('tontines.newTontine')}</span>
+                  {t('tontines.newTontine')}
                 </button>
               </div>
             </div>

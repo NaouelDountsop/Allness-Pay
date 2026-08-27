@@ -385,7 +385,7 @@ export default function ExchangeRatesPage() {
                       setSearchQuery(e.target.value);
                       setPage(1);
                     }}
-                    className="w-full bg-transparent text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                    className="w-full bg-transparent text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                   />
                 </div>
               </div>

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2, ChevronDown } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
-import { AlertBanner } from '@/components/common/alert-banner';
 import {
   type DepositMethod,
   type Currency,
@@ -110,174 +109,177 @@ export default function InitiateDepositPage() {
       <DashboardHeader />
 
       <div>
-        {/* Header de page */}
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-allness-orange/10 dark:bg-allness-orange/20 flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-allness-orange" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark">{t('deposit.pageTitle')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-allness-dark dark:text-white">{t('deposit.pageTitle')}</h1>
         </div>
-        <p className="text-sm text-gray-500 mb-4 ml-[52px]">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 ml-[52px]">
           {t('deposit.pageDescription')}
         </p>
 
-        {/* Banner d'erreur en haut */}
         {deposit.error && !errorDismissed && (
-          <AlertBanner
-            variant="error"
-            title={t('deposit.errorTitle')}
-            message={deposit.error}
-            onDismiss={() => setErrorDismissed(true)}
-          />
-        )}
-
-        {/* Encart sécurité */}
-        <div className="flex items-start gap-3 rounded-xl bg-green-50 border border-green-100 p-4 mb-6">
-          <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-4 h-4 text-allness-green" />
-          </div>
-          <p className="text-xs text-green-700 leading-relaxed">
-            {t('deposit.securityNotice')}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:p-8">
-          {/* Sélecteur de méthode de dépôt */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              {t('deposit.method')}
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {DEPOSIT_METHODS.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => setMethod(m.key)}
-                  className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
-                    deposit.method === m.key
-                      ? 'border-allness-green bg-green-50/50 shadow-sm'
-                      : 'border-gray-100 hover:border-gray-200'
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      deposit.method === m.key
-                        ? 'bg-allness-green/10 text-allness-green'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}
-                  >
-                    {m.icon}
-                  </div>
-                  <span className="text-xs font-semibold text-allness-dark">{t(m.labelKey)}</span>
-                  {deposit.method === m.key && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
-                  )}
-                </button>
-              ))}
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 p-4 flex items-start gap-3">
+            <span className="text-red-500 text-lg shrink-0">⚠</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">{deposit.error}</p>
+              <button
+                onClick={() => setErrorDismissed(true)}
+                className="text-xs text-red-600 dark:text-red-400 mt-1 hover:underline"
+              >
+                {t('deposit.dismiss')}
+              </button>
             </div>
           </div>
+        )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
-            {/* Colonne gauche : Formulaire selon la méthode */}
-            <div className="space-y-6">
-              {isMobileMoney ? (
-                <>
-                  {/* Section Opérateur */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      {t('deposit.operator')}
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {MOBILE_OPERATORS.map((op) => (
-                        <button
-                          key={op.key}
-                          onClick={() => setOperator(op.key)}
-                          className={`relative flex items-center gap-2.5 rounded-xl border-2 px-4 py-3.5 text-left transition-all ${
-                            deposit.operator === op.key
-                              ? 'border-allness-green bg-green-50/50 shadow-sm'
-                              : 'border-gray-100 hover:border-gray-200'
-                          }`}
-                        >
-                          <img src={op.image} alt={op.label} className="w-7 h-7 object-contain" />
-                          <span className="text-xs font-semibold text-allness-dark">
-                            {op.label}
-                          </span>
-                          {deposit.operator === op.key && (
-                            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+        <div className="relative rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-allness-dark">
+          <div className="p-4 sm:p-6 md:p-8">
+            <div className="flex items-center gap-2 mb-5 sm:mb-6">
+              <span className="inline-block h-2 w-2 rounded-full bg-allness-orange" />
+              <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                {t('deposit.method')}
+              </span>
+            </div>
 
-                  {/* Numéro de téléphone */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      {t('deposit.phoneNumber')}
-                    </label>
+            {/* Sélecteur de méthode */}
+            <div className="mb-6">
+              <div className="grid grid-cols-2 gap-3">
+                {DEPOSIT_METHODS.map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => setMethod(m.key)}
+                    className={`relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                      deposit.method === m.key
+                        ? 'border-allness-green bg-allness-green/5 shadow-sm'
+                        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                    }`}
+                  >
                     <div
-                      className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
-                        phoneTouched && !phoneValid
-                          ? 'border-red-400 focus-within:ring-2 focus-within:ring-red-200'
-                          : phoneTouched && phoneValid
-                            ? 'border-allness-green focus-within:ring-2 focus-within:ring-green-200'
-                            : 'border-gray-200 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange'
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        deposit.method === m.key
+                          ? 'bg-allness-green/10 text-allness-green'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                       }`}
                     >
-                      <span className="flex items-center gap-1.5 px-3.5 h-full bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-600 shrink-0">
-                        🇨🇲 +237
-                      </span>
-                      <Phone className="w-4 h-4 text-gray-300 ml-3 shrink-0" />
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={deposit.phoneNumber}
-                        onChange={(e) => {
-                          const digitsOnly = e.target.value.replace(/\D/g, '');
-                          if (digitsOnly.length > 9) return;
-                          setPhoneNumber(digitsOnly);
-                        }}
-                        placeholder={deposit.operator === 'mtn' ? '670000000' : '690000000'}
-                        maxLength={9}
-                        className="flex-1 h-full px-2.5 text-sm text-allness-dark focus:outline-none tracking-widest"
-                      />
-                      {phoneTouched && (
-                        <div className="pr-3 shrink-0">
-                          {phoneValid ? (
-                            <span className="text-allness-green text-xs font-medium">✓ Valide</span>
-                          ) : phoneDigits.length === 9 ? (
-                            <span className="text-red-500 text-xs font-medium">✗ Invalide</span>
-                          ) : null}
-                        </div>
-                      )}
+                      {m.icon}
                     </div>
-                    <p
-                      className={`text-[11px] mt-1.5 ml-1 ${
-                        phoneTouched && !phoneValid ? 'text-red-500' : 'text-gray-400'
-                      }`}
-                    >
-                      {phoneTouched && !phoneValid
-                        ? phoneDigits.length < 9
-                          ? `Entrez 9 chiffres (${phoneDigits.length}/9)`
-                          : t('deposit.phoneError')
-                        : getPhoneHint(deposit.operator, t)}
-                    </p>
+                    <span className="text-sm font-medium text-allness-dark dark:text-white">{t(m.labelKey)}</span>
+                    {deposit.method === m.key && (
+                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sécurité */}
+            <div className="flex items-start gap-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 p-4 mb-6">
+              <div className="w-7 h-7 rounded-full bg-white dark:bg-green-900/50 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-allness-green" />
+              </div>
+              <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed">
+                {t('deposit.securityNotice')}
+              </p>
+            </div>
+
+            {/* Champs selon la méthode */}
+            {isMobileMoney ? (
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                    {t('deposit.operator')}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {MOBILE_OPERATORS.map((op) => (
+                      <button
+                        key={op.key}
+                        onClick={() => setOperator(op.key)}
+                        className={`relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                          deposit.operator === op.key
+                            ? 'border-allness-green bg-allness-green/5 shadow-sm'
+                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                        }`}
+                      >
+                        <img src={op.image} alt={op.label} className="w-7 h-7 object-contain" />
+                        <span className="text-sm font-medium text-allness-dark dark:text-white">{op.label}</span>
+                        {deposit.operator === op.key && (
+                          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
+                        )}
+                      </button>
+                    ))}
                   </div>
-                </>
-              ) : (
-                <>
-                  {/* Banque */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      {t('deposit.bank')}
-                    </label>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                    {t('deposit.phoneNumber')}
+                  </label>
+                  <div
+                    className={`flex items-center h-12 rounded-lg border overflow-hidden transition-all ${
+                      phoneTouched && !phoneValid
+                        ? 'border-red-400 focus-within:ring-2 focus-within:ring-red-200'
+                        : phoneTouched && phoneValid
+                          ? 'border-allness-green focus-within:ring-2 focus-within:ring-green-200'
+                          : 'border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange'
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5 px-3.5 h-full bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-400 shrink-0">
+                      🇨🇲 +237
+                    </span>
+                    <Phone className="w-4 h-4 text-gray-300 ml-3 shrink-0" />
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={deposit.phoneNumber}
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, '');
+                        if (digitsOnly.length > 9) return;
+                        setPhoneNumber(digitsOnly);
+                      }}
+                      placeholder={deposit.operator === 'mtn' ? '670000000' : '690000000'}
+                      maxLength={9}
+                      className="flex-1 h-full px-2.5 text-sm text-allness-dark dark:text-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange tracking-widest"
+                    />
+                    {phoneTouched && (
+                      <div className="pr-3 shrink-0">
+                        {phoneValid ? (
+                          <span className="text-allness-green text-xs font-medium">✓ Valide</span>
+                        ) : phoneDigits.length === 9 ? (
+                          <span className="text-red-500 text-xs font-medium">✗ Invalide</span>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  <p
+                    className={`text-[11px] mt-1.5 ml-1 ${
+                      phoneTouched && !phoneValid ? 'text-red-500' : 'text-gray-400'
+                    }`}
+                  >
+                    {phoneTouched && !phoneValid
+                      ? phoneDigits.length < 9
+                        ? `Entrez 9 chiffres (${phoneDigits.length}/9)`
+                        : t('deposit.phoneError')
+                      : getPhoneHint(deposit.operator, t)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                    {t('deposit.bank')}
+                  </label>
+                  <div className="relative">
                     <select
                       value={deposit.bankName}
                       onChange={(e) => setBankName(e.target.value)}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white"
+                      className="w-full h-12 px-4 pr-10 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white dark:bg-gray-800 appearance-none"
                     >
                       <option value="">{t('deposit.selectBank')}</option>
                       <option value="sgbc">SGBC (Société Générale Cameroun)</option>
@@ -289,147 +291,138 @@ export default function InitiateDepositPage() {
                       <option value="btc">BTCI (Banque Camerounaise des Travailleurs)</option>
                       <option value="autres">Autres</option>
                     </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
+                </div>
 
-                  {/* IBAN / Numéro de compte */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      {t('deposit.iban')}
-                    </label>
-                    <input
-                      type="text"
-                      value={deposit.iban}
-                      onChange={(e) => setIban(e.target.value)}
-                      placeholder={t('deposit.ibanPlaceholder')}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all uppercase"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                    {t('deposit.iban')}
+                  </label>
+                  <input
+                    type="text"
+                    value={deposit.iban}
+                    onChange={(e) => setIban(e.target.value)}
+                    placeholder={t('deposit.ibanPlaceholder')}
+                    className="w-full h-12 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all uppercase bg-white dark:bg-gray-800"
+                  />
+                </div>
 
-                  {/* Titulaire du compte */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      {t('deposit.accountHolder')}
-                    </label>
-                    <input
-                      type="text"
-                      value={deposit.accountHolder}
-                      onChange={(e) => setAccountHolder(e.target.value)}
-                      placeholder={t('deposit.accountHolderPlaceholder')}
-                      className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                    {t('deposit.accountHolder')}
+                  </label>
+                  <input
+                    type="text"
+                    value={deposit.accountHolder}
+                    onChange={(e) => setAccountHolder(e.target.value)}
+                    placeholder={t('deposit.accountHolderPlaceholder')}
+                    className="w-full h-12 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white dark:bg-gray-800"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Montant à déposer */}
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                {t('deposit.amountLabel')}
+              </label>
+              <div className="flex items-center h-12 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-3 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange transition-all">
+                <input
+                  type="number"
+                  value={deposit.amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder={t('deposit.amountPlaceholder')}
+                  className="flex-1 h-full px-4 text-base font-semibold text-allness-dark dark:text-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange bg-white dark:bg-gray-800"
+                />
+                <select
+                  value={deposit.currency}
+                  onChange={(e) => setCurrency(e.target.value as Currency)}
+                  className="h-full px-2 text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange cursor-pointer"
+                >
+                  {currencies.map((c) => (
+                    <option key={c.key} value={c.key}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {QUICK_AMOUNTS.map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setAmount(String(amt))}
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors ${
+                      Number(deposit.amount) === amt
+                        ? 'bg-allness-orange text-white border-allness-orange'
+                        : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    {new Intl.NumberFormat('fr-FR').format(amt)} {currencySymbol}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                {t('deposit.description')} <span className="text-gray-400 dark:text-gray-500 font-normal">{t('deposit.descriptionOptional')}</span>
+              </label>
+              <input
+                type="text"
+                value={deposit.description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t('deposit.descriptionPlaceholder')}
+                className="w-full h-12 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white dark:bg-gray-800"
+              />
+            </div>
+
+            {/* Récapitulatif */}
+            {(isMobileMoney
+              ? deposit.operator && Number(deposit.amount) > 0
+              : deposit.bankName && Number(deposit.amount) > 0) && (
+              <div className="rounded-2xl bg-allness-dark dark:bg-gray-800 text-white px-5 py-4 mb-6">
+                <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wide mb-2">
+                  {t('deposit.summary')}
+                </p>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/60">{t('deposit.summaryAmount')}</span>
+                  <span className="font-bold text-allness-orange">
+                    {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))}{' '}
+                    {currencySymbol}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm mt-1.5">
+                  <span className="text-white/60">{t('deposit.summaryMethod')}</span>
+                  <span className="font-medium text-white">
+                    {isMobileMoney
+                      ? MOBILE_OPERATORS.find((o) => o.key === deposit.operator)?.label
+                      : deposit.bankName}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Bouton vert */}
+            <button
+              onClick={handleSubmit}
+              disabled={!canSubmit || submitting}
+              className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  {t('deposit.submitting')}
+                </>
+              ) : (
+                <>
+                  {t('deposit.submit')}
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  {t('deposit.description')} <span className="text-gray-400 font-normal">{t('deposit.descriptionOptional')}</span>
-                </label>
-                <input
-                  type="text"
-                  value={deposit.description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t('deposit.descriptionPlaceholder')}
-                  className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Colonne droite : Montant + Récapitulatif + CTA */}
-            <div className="space-y-6">
-              {/* Montant */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  {t('deposit.amountLabel')}
-                </label>
-                <div className="flex items-center h-12 rounded-lg border border-gray-200 overflow-hidden mb-3 focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange transition-all">
-                  <input
-                    type="number"
-                    value={deposit.amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder={t('deposit.amountPlaceholder')}
-                    className="flex-1 h-full px-4 text-base font-semibold text-allness-dark focus:outline-none"
-                  />
-                  <select
-                    value={deposit.currency}
-                    onChange={(e) => setCurrency(e.target.value as Currency)}
-                    className="h-full px-2 text-xs font-medium text-gray-500 border-l border-gray-200 bg-gray-50 focus:outline-none cursor-pointer"
-                  >
-                    {currencies.map((c) => (
-                      <option key={c.key} value={c.key}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {QUICK_AMOUNTS.map((amt) => (
-                    <button
-                      key={amt}
-                      onClick={() => setAmount(String(amt))}
-                      className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors ${
-                        Number(deposit.amount) === amt
-                          ? 'bg-allness-orange text-white border-allness-orange'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                      }`}
-                    >
-                      {new Intl.NumberFormat('fr-FR').format(amt)} {currencySymbol}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Récapitulatif */}
-              {(isMobileMoney
-                ? deposit.operator && Number(deposit.amount) > 0
-                : deposit.bankName && Number(deposit.amount) > 0) && (
-                <div className="rounded-xl p-4" style={{ backgroundColor: '#082B37' }}>
-                  <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wide mb-2">
-                    {t('deposit.summary')}
-                  </p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/60">{t('deposit.summaryAmount')}</span>
-                    <span className="font-bold text-white">
-                      {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))}{' '}
-                      {currencySymbol}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm mt-1.5">
-                    <span className="text-white/60">{t('deposit.summaryCurrency')}</span>
-                    <span className="font-medium text-white">{deposit.currency}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm mt-1.5">
-                    <span className="text-white/60">{t('deposit.summaryMethod')}</span>
-                    <span className="font-medium text-white">
-                      {isMobileMoney
-                        ? MOBILE_OPERATORS.find((o) => o.key === deposit.operator)?.label
-                        : deposit.bankName}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <button
-                onClick={handleSubmit}
-                disabled={!canSubmit || submitting}
-                className="w-full h-12 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-opacity
-                  bg-allness-green text-white hover:opacity-90
-                  disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-100"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {t('deposit.submitting')}
-                  </>
-                ) : (
-                  <>
-                    {t('deposit.submit')}
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </div>
+            </button>
           </div>
         </div>
       </div>
