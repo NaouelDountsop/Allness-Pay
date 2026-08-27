@@ -185,7 +185,10 @@ export class TontineService {
       `Un nouveau membre a rejoint la tontine`,
     );
 
-    return saved;
+    return this.memberRepo.findOneOrFail({
+      where: { id: saved.id },
+      relations: ['tontine'],
+    });
   }
 
   async removeMember(tontineId: string, userId: number, memberId: string): Promise<void> {
@@ -248,7 +251,10 @@ export class TontineService {
       `Un nouveau membre a rejoint la tontine`,
     );
 
-    return saved;
+    return this.memberRepo.findOneOrFail({
+      where: { id: saved.id },
+      relations: ['tontine'],
+    });
   }
 
   async leave(id: string, userId: number): Promise<void> {
@@ -286,6 +292,7 @@ export class TontineService {
   async findMember(tontineId: string, userId: number): Promise<TontineMember> {
     const member = await this.memberRepo.findOne({
       where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+      relations: ['tontine'],
     });
     if (!member) {
       throw new NotFoundException("Vous n'êtes pas membre actif de cette tontine");
@@ -311,6 +318,7 @@ export class TontineService {
 
     return this.memberRepo.find({
       where: { tontineId, status: TontineMemberStatus.ACTIVE },
+      relations: ['tontine'],
       order: { beneficiaryOrder: 'ASC' },
     });
   }

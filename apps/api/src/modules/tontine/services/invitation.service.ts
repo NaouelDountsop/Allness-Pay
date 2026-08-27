@@ -182,6 +182,7 @@ export class InvitationService {
   async findByTontine(tontineId: string): Promise<TontineInvitation[]> {
     return this.invitationRepo.find({
       where: { tontineId },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -198,6 +199,7 @@ export class InvitationService {
 
     const byUserId = await this.invitationRepo.find({
       where: { inviteeUserId: userId, status: 'PENDING' },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
 
@@ -205,6 +207,7 @@ export class InvitationService {
 
     const byEmail = await this.invitationRepo.find({
       where: { inviteeEmail: email, status: 'PENDING' },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
 
@@ -220,10 +223,12 @@ export class InvitationService {
   async findPendingForUser(userId: number, email: string): Promise<TontineInvitation[]> {
     const byUserId = await this.invitationRepo.find({
       where: { inviteeUserId: userId, status: 'PENDING' },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
     const byEmail = await this.invitationRepo.find({
       where: { inviteeEmail: email, status: 'PENDING' },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
     const merged = [...byUserId, ...byEmail];
@@ -245,6 +250,7 @@ export class InvitationService {
 
     const byUserId = await this.invitationRepo.find({
       where: { inviteeUserId: userId },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
 
@@ -252,6 +258,7 @@ export class InvitationService {
 
     const byEmail = await this.invitationRepo.find({
       where: { inviteeEmail: email },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
 

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
-import { LoadingSpinner } from '@/components/common/loading-spinner';
+import {LoadingSpinner} from '@/components/common/loading-spinner';
 import { formatAmount, formatDateShort } from '@/lib/utils';
 
 interface TransactionsListProps {
@@ -13,18 +13,17 @@ interface TransactionsListProps {
 
 export function TransactionsList({ transactions, onSelect, isLoading }: TransactionsListProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{('tontines.latestTransactions')}</h3>
           <a
             href="/dashboard/transactions"
             className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
           >
-            {t('tontines.viewAll')}
+            Voir tout
           </a>
         </div>
         <div className="flex items-center justify-center py-10">
@@ -37,12 +36,12 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
   return (
     <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.latestTransactions')}</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Dernières transactions</h3>
         <a
           href="/dashboard/transactions"
           className="text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
         >
-          {t('tontines.viewAll')}
+          Voir tout
         </a>
       </div>
 
@@ -132,7 +131,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
           );
         })}
         {transactions.length === 0 && (
-          <li className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">{t('tontines.noTransactions')}</li>
+          <li className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">Aucune transaction</li>
         )}
       </ul>
     </div>

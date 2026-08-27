@@ -87,7 +87,7 @@ export function WalletBalanceCard({
 
   return (
     <>
-      <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-4 sm:p-6 relative overflow-hidden">
+      <div className="rounded-2xl bg-allness-dark text-white p-4 sm:p-6 relative overflow-hidden">
         <svg
           aria-hidden="true"
           className="pointer-events-none select-none absolute -top-6 -right-2 w-52 h-52 opacity-60"

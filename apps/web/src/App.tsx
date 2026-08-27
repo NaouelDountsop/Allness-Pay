@@ -15,6 +15,7 @@ import PaymentsPage from "@/app/user_dashboard/payements-page";
 import BillPaymentPage from "@/app/user_dashboard/bill-payement-page";
 import QrPaymentPage from "@/app/user_dashboard/qr-payement-page";
 import QrScanPage from "@/app/user_dashboard/qr-scan-page";
+import WalletQrCodePage from "@/app/user_dashboard/wallet-qr-code-page";
 import TontinesPage from "@/app/user_dashboard/tontines-page";
 import CreateTontinePage from "@/app/user_dashboard/create-tontine-page";
 import TontineDetailPage from "@/app/user_dashboard/tontine-detail-page";
@@ -67,6 +68,7 @@ export function App() {
         <Route path="/dashboard" element={<UserProtectedRoute><DashboardPage /></UserProtectedRoute>} />
         <Route path="/dashboard/kyc" element={<UserProtectedRoute><KycPage /></UserProtectedRoute>} />
         <Route path="/dashboard/wallet" element={<UserProtectedRoute><WalletPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/wallets/:id/qr-code" element={<UserProtectedRoute><WalletQrCodePage /></UserProtectedRoute>} />
         <Route path="/dashboard/send" element={<UserProtectedRoute><SendMoneyPage /></UserProtectedRoute>} />
         <Route path="/dashboard/withdraw" element={<UserProtectedRoute><WithdrawPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments" element={<UserProtectedRoute><PaymentsPage /></UserProtectedRoute>} />

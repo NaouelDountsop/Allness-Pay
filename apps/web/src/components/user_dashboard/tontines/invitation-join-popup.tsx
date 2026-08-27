@@ -21,17 +21,6 @@ function InviterName({ userId }: { userId: number }) {
   return <span>{user.prenom} {user.nom}</span>;
 }
 
-function TontineName({ tontineId }: { tontineId: string }) {
-  const { data: tontine } = useQuery({
-    queryKey: ['tontine', tontineId],
-    queryFn: () => tontineService.getById(tontineId),
-    enabled: !!tontineId,
-  });
-
-  if (!tontine) return <span className="animate-pulse">...</span>;
-  return <span>{tontine.name}</span>;
-}
-
 function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -56,7 +45,7 @@ function InvitationCard({ invitation }: { invitation: TontineInvitation }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-allness-dark">
-            <TontineName tontineId={invitation.tontineId} />
+            {invitation.tontine?.name ?? '—'}
           </p>
           <p className="text-xs text-gray-500 mt-1">
             <InviterName userId={invitation.inviterUserId} /> {t('tontines.invitesYouToJoin')}

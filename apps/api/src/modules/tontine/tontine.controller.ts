@@ -17,10 +17,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
 import { ContributionService } from './services/contribution.service';
+import { CycleService } from './services/cycle.service';
 import { InvitationService } from './services/invitation.service';
 import { MessageService } from '../messaging/message.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
@@ -43,6 +44,7 @@ export class TontineController {
   constructor(
     private readonly tontineService: TontineService,
     private readonly contributionService: ContributionService,
+    private readonly cycleService: CycleService,
     private readonly invitationService: InvitationService,
     private readonly messageService: MessageService,
   ) {}
@@ -57,6 +59,16 @@ export class TontineController {
   @ApiOperation({ summary: "Lister les tontines de l'utilisateur" })
   findAll(@Req() req: AuthenticatedRequest) {
     return this.tontineService.findAll(req.user.sub);
+  }
+
+  @Get('my-contributions')
+  @ApiOperation({ summary: "Historique des contributions de l'utilisateur (toutes tontines)" })
+  async getMyContributions(@Req() req: AuthenticatedRequest) {
+    const tontines = await this.tontineService.findAll(req.user.sub);
+    const allContributions = await Promise.all(
+      tontines.map((t) => this.contributionService.findAllByTontine(t.id, req.user.sub)),
+    );
+    return allContributions.flat();
   }
 
   @Get('invitations')
@@ -118,6 +130,38 @@ export class TontineController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.messageService.markAsRead(messageId, req.user.sub);
+  }
+
+  @Get(':id/cycles')
+  @ApiOperation({ summary: "Lister les cycles d'une tontine" })
+  @ApiParam({ name: 'id', type: String })
+  listCycles(@Param('id', ParseUUIDPipe) id: string) {
+    return this.cycleService.findAllByTontine(id);
+  }
+
+  @Get(':id/contributions')
+  @ApiOperation({ summary: "Lister les contributions d'une tontine (filtrable par cycle et par utilisateur)" })
+  @ApiParam({ name: 'id', type: String })
+  @ApiQuery({ name: 'cycleId', required: false, type: String })
+  @ApiQuery({ name: 'userId', required: false, type: Number })
+  async listContributions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('cycleId') cycleId?: string,
+    @Query('userId') userId?: string,
+  ) {
+    if (userId) {
+      return this.contributionService.findAllByTontine(id, Number(userId));
+    }
+
+    if (cycleId) {
+      return this.contributionService.findAllByCycle(cycleId);
+    }
+
+    const cycles = await this.cycleService.findAllByTontine(id);
+    const allContributions = await Promise.all(
+      cycles.map((cycle) => this.contributionService.findAllByCycle(cycle.id)),
+    );
+    return allContributions.flat();
   }
 
  
@@ -197,16 +241,6 @@ findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest
     return this.tontineService.leave(id, req.user.sub);
   }
 
-  @Get(':id/contribution-status')
-  @ApiOperation({ summary: 'Vérifier si le membre a déjà cotisé pour le cycle actif' })
-  @ApiParam({ name: 'id', type: String })
-  checkContributionStatus(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: AuthenticatedRequest,
-  ) {
-    return this.contributionService.checkMyContributionStatus(id, req.user.sub);
-  }
-
   @Post(':id/contribute')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Contribuer à la tontine depuis son portefeuille' })
@@ -255,27 +289,6 @@ findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest
     @Body('memberIds') memberIds: string[],
   ) {
     return this.tontineService.reorderMembers(id, req.user.sub, memberIds);
-  }
-
-  @Get(':id/cycles')
-  @ApiOperation({ summary: 'Lister les cycles d\'une tontine' })
-  @ApiParam({ name: 'id', type: String })
-  listCycles(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: AuthenticatedRequest,
-  ) {
-    return this.contributionService.findAllCycles(id, req.user.sub);
-  }
-
-  @Get(':id/contributions')
-  @ApiOperation({ summary: 'Lister les contributions d\'une tontine (optionnellement filtrées par cycle)' })
-  @ApiParam({ name: 'id', type: String })
-  listContributions(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: AuthenticatedRequest,
-    @Query('cycleId') cycleId?: string,
-  ) {
-    return this.contributionService.findAllByTontine(id, req.user.sub, cycleId);
   }
 
   @Get(':id/invitations')

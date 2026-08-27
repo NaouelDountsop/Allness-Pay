@@ -39,23 +39,23 @@ export function TableActions({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-brand-text-secondary hover:text-gray-600 dark:hover:text-brand-text hover:bg-gray-100 dark:hover:bg-brand-hover transition-colors"
         aria-label="Actions"
       >
         <MoreVertical className="w-4 h-4" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+        <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-brand-card rounded-xl shadow-lg dark:shadow-lg border border-gray-100 dark:border-brand-border py-1 z-50">
           {onView && (
             <button
               onClick={() => {
                 setOpen(false);
                 onView();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-brand-text hover:bg-gray-50 dark:hover:bg-brand-hover transition-colors"
             >
-              <Eye className="w-4 h-4 text-gray-400" />
+              <Eye className="w-4 h-4 text-gray-400 dark:text-brand-text-secondary" />
               {viewLabel}
             </button>
           )}
@@ -65,9 +65,9 @@ export function TableActions({
                 setOpen(false);
                 onEdit();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 dark:text-brand-text hover:bg-gray-50 dark:hover:bg-brand-hover transition-colors"
             >
-              <Pencil className="w-4 h-4 text-gray-400" />
+              <Pencil className="w-4 h-4 text-gray-400 dark:text-brand-text-secondary" />
               {editLabel}
             </button>
           )}
@@ -77,9 +77,9 @@ export function TableActions({
                 setOpen(false);
                 onDelete();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 dark:text-brand-red hover:bg-red-50 dark:hover:bg-brand-bg-red-light transition-colors"
             >
-              <Trash2 className="w-4 h-4 text-red-400" />
+              <Trash2 className="w-4 h-4 text-red-400 dark:text-brand-red" />
               {deleteLabel}
             </button>
           )}

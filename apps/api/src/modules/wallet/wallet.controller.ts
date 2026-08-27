@@ -12,6 +12,7 @@ import {
 import { WalletsService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { ResolveQrDto } from './dto/resolve-qr.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -64,6 +65,16 @@ export class WalletsController {
   @Patch(':id/activate')
   activate(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.walletsService.activate(id, req.user.sub);
+  }
+
+  @Get(':id/qr-code')
+  getQrCode(@Req() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+    return this.walletsService.getQrCodeData(id, req.user.sub);
+  }
+
+  @Post('resolve-qr')
+  resolveQr(@Body() dto: ResolveQrDto) {
+    return this.walletsService.resolveQrCode(dto.qrCodeToken);
   }
 
   @Get('validate/:walletNumber')

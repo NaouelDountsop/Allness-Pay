@@ -46,6 +46,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
+    <div className="rounded-xl border border-gray-100 bg-white dark:border-brand-border dark:bg-brand-card overflow-hidden">
     <div className="rounded-xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-3 p-4">
         <div className="relative flex-1">
@@ -58,6 +59,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
             className="w-full h-10 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-3 text-sm bg-white dark:bg-[#0D2228] text-gray-900 dark:text-[#F1F5F5] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
           />
         </div>
+       
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -146,7 +148,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-8 text-sm text-gray-400 dark:text-gray-500">
+        <div className="text-center py-8 text-sm text-gray-400">
           Aucun versement trouvé.
         </div>
       )}
@@ -156,6 +158,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </div>
       )}
+    </div>
     </div>
   );
 }

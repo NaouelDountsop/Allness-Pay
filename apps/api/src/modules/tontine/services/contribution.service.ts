@@ -71,7 +71,7 @@ export class ContributionService {
       this.walletsService.assertOwnership(memberWallet, member.userId);
       this.walletsService.assertActive(memberWallet);
 
-      if (memberWallet.balance < providedAmount) {
+      if (BigInt(Math.floor(Number(memberWallet.balance))) < providedAmount) {
         throw new BadRequestException('Solde wallet insuffisant');
       }
 

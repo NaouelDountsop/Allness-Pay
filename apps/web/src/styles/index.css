@@ -371,6 +371,7 @@
 
 .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: var(--gray-200) !important; }
 .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--gray-100) !important; }
+.dark .divide-gray-50 > :not([hidden]) ~ :not([hidden]) { border-color: var(--gray-50) !important; }
 
 .dark .placeholder-gray-400::placeholder { color: var(--gray-400) !important; }
 .dark .placeholder-gray-500::placeholder { color: var(--gray-500) !important; }
@@ -403,3 +404,14 @@
 .dark .text-blue-800 { color: #93c5fd !important; }
 .dark .border-blue-200 { border-color: rgba(59, 130, 246, 0.3) !important; }
 .dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3) !important; }
+
+/* Status badge dark overrides */
+.dark .bg-green-50 { background-color: var(--brand-bg-green-light) !important; }
+.dark .bg-orange-50 { background-color: var(--brand-bg-gold-light) !important; }
+.dark .bg-red-50 { background-color: var(--brand-bg-red-light) !important; }
+.dark .bg-yellow-50 { background-color: var(--brand-bg-gold-light) !important; }
+.dark .text-red-600 { color: var(--brand-red) !important; }
+.dark .text-yellow-600 { color: var(--brand-orange) !important; }
+
+/* Table header dark override */
+.dark .bg-green-50\/60 { background-color: rgba(32, 201, 138, 0.1) !important; }

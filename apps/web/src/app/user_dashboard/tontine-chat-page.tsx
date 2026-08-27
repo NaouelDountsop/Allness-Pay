@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Image,
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { Button } from '@/components/ui/button';
@@ -169,7 +168,6 @@ function MemberRow({
 }: {
   member: { id: string; name: string; role: string };
 }) {
-  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center gap-2.5">
@@ -179,7 +177,7 @@ function MemberRow({
       {member.role === 'ADMIN' ? (
         <span className="text-xs text-gray-400">Admin</span>
       ) : (
-        <span className="text-xs text-gray-500">{t('tontines.memberRole')}</span>
+        <span className="text-xs text-gray-500">Membre</span>
       )}
     </div>
   );
@@ -196,7 +194,6 @@ function ChatArea({
   currentUserId?: number;
   onBack?: () => void;
 }) {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -263,7 +260,7 @@ function ChatArea({
             <div className="flex items-center gap-2">
               <p className="text-sm font-semibold text-gray-900">{tontine?.name}</p>
               <span className="rounded-full bg-allness-green/10 px-2 py-0.5 text-[11px] font-semibold text-allness-green">
-                {tontine?.status === 'ACTIVE' ? t('tontines.activeLabel') : (tontine?.status ?? t('tontines.activeLabel'))}
+                {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
               </span>
             </div>
             <p className="text-xs text-gray-500">
@@ -375,10 +372,9 @@ function ChatArea({
 }
 
 function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
-  const { t } = useTranslation();
   return (
     <aside className="hidden min-w-0 flex-col overflow-y-auto rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm xl:flex xl:w-full xl:max-w-[280px] xl:min-h-0 xl:border-none">
-      <p className="text-sm font-semibold text-gray-900">{t('tontines.aboutTontine')}</p>
+      <p className="text-sm font-semibold text-gray-900">À propos de la tontine</p>
 
       <div className="mt-4 flex flex-col items-center text-center">
         <Avatar name={tontine?.name ?? 'Tontine'} size="h-16 w-16" />
@@ -386,14 +382,14 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
           {tontine?.name ?? 'Tontine'}
         </p>
         <span className="mt-1 rounded-full bg-allness-green/10 px-2.5 py-0.5 text-[11px] font-semibold text-allness-green">
-          {tontine?.status === 'ACTIVE' ? t('tontines.activeLabel') : (tontine?.status ?? t('tontines.activeLabel'))}
+          {tontine?.status === 'ACTIVE' ? 'Active' : (tontine?.status ?? 'Active')}
         </span>
       </div>
 
       <div className="mt-5 divide-y divide-gray-100 border-y border-gray-100">
         <InfoRow
           icon={Users}
-          label={t('tontines.createdBy')}
+          label="Créée par"
           value={
             tontine?.creator
               ? `${tontine.creator.prenom ?? ''} ${tontine.creator.nom ?? ''}`.trim() || 'Inconnu'
@@ -402,7 +398,7 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
         />
         <InfoRow
           icon={Users}
-          label={t('tontines.creationDate')}
+          label="Date de création"
           value={
             tontine?.createdAt
               ? new Date(tontine.createdAt).toLocaleDateString('fr-FR', {
@@ -420,7 +416,7 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
         />
         <InfoRow
           icon={Users}
-          label={t('tontines.contributionLabel')}
+          label="Cotisation"
           value={
             tontine?.contributionAmount
               ? `${Number(tontine.contributionAmount).toLocaleString('fr-FR')} ${tontine.currency ?? 'FCFA'}`
@@ -430,7 +426,7 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
         <InfoRow icon={Users} label="Fréquence" value={tontine?.frequency ?? ''} />
         <InfoRow
           icon={Users}
-          label={t('tontines.nextTurn')}
+          label="Prochain tour"
           value={
             tontine?.nextContributionAt
               ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')

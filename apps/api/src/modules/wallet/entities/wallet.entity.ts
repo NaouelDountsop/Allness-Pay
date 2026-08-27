@@ -12,7 +12,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
-import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
+//import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
 
 export enum WalletType {
   PERSONAL = 'PERSONAL',
@@ -34,6 +34,9 @@ export class Wallet {
   @Column({ unique: true })
   walletNumber: string;
 
+  @Column({ unique: true, length: 64 })
+  qrCodeToken: string;
+
   @Exclude()
   @ApiHideProperty()
   @Index()
@@ -43,9 +46,13 @@ export class Wallet {
 
   @Column()
   userId: number;
-
-  @Column({ type: 'bigint', default: 0, transformer: bigintTransformer })
-  balance: bigint;
+@Column({
+  type: 'decimal',
+  precision: 18,
+  scale: 2,
+  default: 0,
+})
+balance: string;
 
   @Column({ default: 'XAF' })
   currency: string;

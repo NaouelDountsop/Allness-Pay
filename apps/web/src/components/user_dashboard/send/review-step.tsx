@@ -29,6 +29,7 @@ interface ReviewStepProps {
     walletId?: string;
   };
   beneficiaryName?: string;
+  beneficiaryCurrency?: string;
 }
 
 const RECEPTION_LABELS: Record<string, string> = {
@@ -49,10 +50,11 @@ export function ReviewStep({
   onBack,
   sender,
   beneficiaryName,
+  beneficiaryCurrency,
 }: ReviewStepProps) {
   const { t } = useTranslation();
   const senderCurrency = sender?.currency ?? 'CAD';
-  const receiverCurrency = COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF';
+  const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF');
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amount * 0.01;
   const totalDebit = amount;
