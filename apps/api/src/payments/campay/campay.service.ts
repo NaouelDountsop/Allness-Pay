@@ -226,7 +226,7 @@ export class CampayService {
       }
 
       const amountBigInt = BigInt(amount);
-      if (wallet.balance < amountBigInt) {
+      if (BigInt(Math.floor(Number(wallet.balance))) < amountBigInt) {
         throw new BadRequestException('Solde insuffisant pour effectuer ce retrait');
       }
 
@@ -244,7 +244,7 @@ export class CampayService {
       });
       await manager.save(entry);
 
-      const newBalance = wallet.balance - amountBigInt;
+      const newBalance = (BigInt(Math.floor(Number(wallet.balance))) - amountBigInt).toString();
       await manager.update(Wallet, { id: wallet.id }, { balance: newBalance });
 
       return entry;

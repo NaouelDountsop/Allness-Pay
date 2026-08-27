@@ -2,7 +2,7 @@ import type { EntityManager } from 'typeorm';
 import { WalletTransaction } from '../../transactions/entities/wallet-transaction.entity';
 
 
-export async function recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
+export async function recalculateBalance(manager: EntityManager, walletId: string): Promise<string> {
   const result = await manager
     .createQueryBuilder(WalletTransaction, 'wt')
     .select(
@@ -17,5 +17,5 @@ export async function recalculateBalance(manager: EntityManager, walletId: strin
     .andWhere('wt.status = :status', { status: 'completed' })
     .getRawOne<{ balance: string }>();
 
-  return BigInt(result?.balance ?? '0');
+  return result?.balance ?? '0';
 }

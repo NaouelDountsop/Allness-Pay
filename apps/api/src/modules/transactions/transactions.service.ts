@@ -139,7 +139,7 @@ export class TransactionsService {
       }
 
       const senderAmount = BigInt(dto.amount);
-      if (fromWallet.balance < senderAmount) {
+      if (BigInt(Math.floor(Number(fromWallet.balance))) < senderAmount) {
         throw new BadRequestException('Solde insuffisant');
       }
 
@@ -292,7 +292,7 @@ export class TransactionsService {
     };
   }
 
-  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<bigint> {
+  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<string> {
     const result = await manager
       .createQueryBuilder(WalletTransaction, 'wt')
       .select(
@@ -320,7 +320,7 @@ export class TransactionsService {
       .where('wt.walletId = :walletId', { walletId })
       .getRawOne<{ balance: string }>();
 
-    return BigInt(result?.balance ?? '0');
+    return result?.balance ?? '0';
   }
 
   private assertNotTontine(wallet: Wallet): void {

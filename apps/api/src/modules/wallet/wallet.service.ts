@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
+import { randomBytes } from 'crypto';
 import { Wallet, WalletStatus, WalletType } from './entities/wallet.entity';
 import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 import { CreateWalletDto } from './dto/create-wallet.dto';
@@ -52,12 +53,13 @@ export class WalletsService {
 
       const wallet = manager.create(Wallet, {
         userId,
-        balance: 0n,
+        balance: '0',
         currency: dto.currency ?? 'XAF',
         status: kycApproved ? WalletStatus.ACTIVE : WalletStatus.INACTIVE,
         failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
+        qrCodeToken: this.generateQrCodeToken(),
         isPrimary: existingWallets.length === 0,
       });
 
@@ -82,12 +84,13 @@ export class WalletsService {
         userId: creatorId,
         tontineId,
         type: WalletType.TONTINE,
-        balance: 0n,
+        balance: '0',
         currency,
         status: WalletStatus.ACTIVE,
         isPrimary: false,
         failedPinAttempts: 0,
         walletNumber: await this.generateUniqueWalletNumber(),
+        qrCodeToken: this.generateQrCodeToken(),
       });
       return em.save(wallet);
     };
@@ -160,7 +163,7 @@ export class WalletsService {
     const wallet = await this.findOne(id, userId);
     this.assertNotTontine(wallet);
 
-    if (wallet.balance !== 0n) {
+    if (Number(wallet.balance) !== 0) {
       throw new BadRequestException("Impossible de fermer un wallet dont le solde n'est pas nul");
     }
     if (wallet.isPrimary) {
@@ -256,6 +259,48 @@ export class WalletsService {
       throw new NotFoundException('Wallet introuvable');
     }
     return wallet;
+  }
+
+  async getQrCodeData(walletId: string, userId: number): Promise<{ walletId: string; qrCodeData: string }> {
+    const wallet = await this.findOne(walletId, userId);
+    this.assertNotTontine(wallet);
+    const qrCodeData = `allnesspay://transfer?t=${wallet.qrCodeToken}`;
+    return { walletId: wallet.id, qrCodeData };
+  }
+
+  async resolveQrCode(qrCodeToken: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> {
+    const wallet = await this.walletRepo.findOne({
+      where: { qrCodeToken },
+      select: ['id', 'walletNumber', 'status', 'type', 'currency'],
+      relations: ['user'],
+    });
+
+    if (!wallet) {
+      throw new NotFoundException('QR Code Allness Pay invalide.');
+    }
+
+    if (wallet.status !== WalletStatus.ACTIVE) {
+      throw new BadRequestException('Ce portefeuille n\'est pas actif.');
+    }
+
+    if (wallet.type === WalletType.TONTINE) {
+      throw new BadRequestException('Les wallets tontine ne peuvent pas recevoir de transferts directs.');
+    }
+
+    const ownerName = wallet.user
+      ? `${wallet.user.prenom ?? ''} ${wallet.user.nom ?? ''}`.trim()
+      : '';
+
+    return {
+      walletId: wallet.id,
+      walletNumber: wallet.walletNumber,
+      currency: wallet.currency,
+      ownerName,
+    };
+  }
+
+  private generateQrCodeToken(): string {
+    return randomBytes(32).toString('hex');
   }
 
   private async generateUniqueWalletNumber(): Promise<string> {

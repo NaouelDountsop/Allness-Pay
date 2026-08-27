@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { TontineInvitation } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
-import { tontineService } from '@/lib/api/tontine.service';
 
 interface InvitationsListProps {
   invitations: TontineInvitation[];
@@ -23,17 +22,6 @@ function InvitationUser({ userId }: { userId?: number }) {
   return (
     <span>{user.prenom} {user.nom}</span>
   );
-}
-
-function InvitationTontine({ tontineId }: { tontineId: string }) {
-  const { data: tontine } = useQuery({
-    queryKey: ['tontine', tontineId],
-    queryFn: () => tontineService.getById(tontineId),
-  });
-
-  if (!tontine) return <span className="animate-pulse">...</span>;
-
-  return <span>{tontine.name}</span>;
 }
 
 export function InvitationsList({ invitations, onInvitationClick }: InvitationsListProps) {
@@ -71,7 +59,7 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-allness-dark truncate">
-                      <InvitationTontine tontineId={inv.tontineId} />
+                      {inv.tontine?.name ?? '—'}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       <InvitationUser userId={inv.inviterUserId} />
@@ -108,7 +96,7 @@ export function InvitationsList({ invitations, onInvitationClick }: InvitationsL
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-gray-600 truncate">
-                      <InvitationTontine tontineId={inv.tontineId} />
+                      {inv.tontine?.name ?? '—'}
                     </p>
                     <p className="text-[11px] text-gray-400 truncate">
                       <InvitationUser userId={inv.inviterUserId} />

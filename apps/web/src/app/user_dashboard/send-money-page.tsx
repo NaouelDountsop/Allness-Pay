@@ -67,7 +67,24 @@ export default function SendMoneyPage() {
     receptionMode: 'wallet' as string,
   });
 
+  const senderCurrency = primaryWallet?.currency ?? 'XAF';
+
+  const destCountry = useMemo(() => getCountryByCode(form.country), [form.country]);
+  const destCountryName = destCountry?.name ?? t('send.abroad');
+
+  const [completedSteps, setCompletedSteps] = useState([false, false, false, false, false]);
+  const [phase, setPhase] = useState<'form' | 'review' | 'success'>('form');
+  const [showPinSetup, setShowPinSetup] = useState(false);
+  const [showPinConfirm, setShowPinConfirm] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'toReview' | 'toSend' | null>(null);
+  const [beneficiaryName, setBeneficiaryName] = useState('');
+  const [preValidationError, setPreValidationError] = useState<string | null>(null);
+  const [beneficiaryInfo, setBeneficiaryInfo] = useState<{ ownerName?: string; currency?: string } | null>(null);
+
   const receiverCurrency = useMemo(() => {
+    if (form.receptionMode === 'wallet' && beneficiaryInfo?.currency) {
+      return beneficiaryInfo.currency;
+    }
     const COUNTRY_TO_CURRENCY: Record<string, string> = {
       CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
       SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
@@ -75,9 +92,7 @@ export default function SendMoneyPage() {
       FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
     };
     return COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
-  }, [form.country]);
-
-  const senderCurrency = primaryWallet?.currency ?? 'XAF';
+  }, [form.country, form.receptionMode, beneficiaryInfo?.currency]);
 
   const { data: exchangeRate, isLoading: exchangeRateLoading } = useQuery({
     queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
@@ -95,17 +110,6 @@ export default function SendMoneyPage() {
       }
     : undefined;
 
-  const destCountry = useMemo(() => getCountryByCode(form.country), [form.country]);
-  const destCountryName = destCountry?.name ?? t('send.abroad');
-
-  const [completedSteps, setCompletedSteps] = useState([false, false, false, false, false]);
-  const [phase, setPhase] = useState<'form' | 'review' | 'success'>('form');
-  const [showPinSetup, setShowPinSetup] = useState(false);
-  const [showPinConfirm, setShowPinConfirm] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'toReview' | 'toSend' | null>(null);
-  const [beneficiaryName, setBeneficiaryName] = useState('');
-  const [preValidationError, setPreValidationError] = useState<string | null>(null);
-  const [beneficiaryInfo, setBeneficiaryInfo] = useState<{ ownerName?: string; currency?: string } | null>(null);
   const [walletValidationError, setWalletValidationError] = useState<string | null>(null);
 
   // Set sender country from profile
@@ -151,20 +155,21 @@ export default function SendMoneyPage() {
   useEffect(() => {
     const name = searchParams.get('name') ?? '';
     const phone = searchParams.get('phone') ?? '';
+    const walletNumber = searchParams.get('walletNumber') ?? '';
     const country = searchParams.get('country') ?? 'CM';
     const network = searchParams.get('network') ?? '';
 
-    if (name || phone) {
+    if (name || phone || walletNumber) {
       setBeneficiaryName(name);
       setForm((prev) => ({
         ...prev,
-        beneficiaryContact: phone,
+        beneficiaryContact: walletNumber || phone,
         country,
-        receptionMode: NETWORK_TO_MODE[network] ?? 'wallet',
+        receptionMode: walletNumber ? 'wallet' : (NETWORK_TO_MODE[network] ?? 'wallet'),
       }));
       setCompletedSteps((s) => {
         const updated = [...s];
-        updated[0] = !!phone;
+        updated[0] = !!(walletNumber || phone);
         return updated;
       });
     }
@@ -427,6 +432,7 @@ export default function SendMoneyPage() {
                   disabled={isInsufficientBalance}
                   insufficientBalance={isInsufficientBalance ? `${t('send.balance')}: ${new Intl.NumberFormat('fr-FR').format(walletBalance)} ${primaryWallet?.currency ?? 'XAF'}` : undefined}
                   walletError={walletValidationError ?? undefined}
+                  beneficiaryCurrency={beneficiaryInfo?.currency}
                 />
               </>
             )}
@@ -458,6 +464,7 @@ export default function SendMoneyPage() {
                   onBack={() => setPhase('form')}
                   sender={senderInfo}
                   beneficiaryName={beneficiaryName}
+                  beneficiaryCurrency={beneficiaryInfo?.currency}
                 />
               </>
             )}

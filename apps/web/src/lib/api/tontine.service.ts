@@ -62,6 +62,7 @@ export interface TontineInvitation {
   expiresAt: string;
   createdAt: string;
   updatedAt: string;
+  tontine?: Tontine;
 }
 
 export interface TontineCycle {

@@ -36,4 +36,20 @@ export const walletService = {
     const res = await apiClient.get<{ valid: boolean; message?: string; ownerName?: string; currency?: string }>(`/wallets/validate/${walletNumber}`);
     return res.data;
   },
+
+  /**
+   * Récupérer les données QR Code d'un wallet.
+   */
+  getQrCode: async (walletId: string): Promise<{ walletId: string; qrCodeData: string }> => {
+    const res = await apiClient.get<{ walletId: string; qrCodeData: string }>(`/wallets/${walletId}/qr-code`);
+    return res.data;
+  },
+
+  /**
+   * Résoudre un token QR Code en informations de wallet.
+   */
+  resolveQr: async (qrCodeToken: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> => {
+    const res = await apiClient.post<{ walletId: string; walletNumber: string; currency: string; ownerName: string }>('/wallets/resolve-qr', { qrCodeToken });
+    return res.data;
+  },
 };

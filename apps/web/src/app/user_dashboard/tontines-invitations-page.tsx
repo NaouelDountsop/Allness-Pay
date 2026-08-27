@@ -54,10 +54,7 @@ function InvitationCard({
   isDeclining: boolean;
 }) {
   const { t } = useTranslation();
-  const { data: tontine, isLoading: tontineLoading } = useQuery({
-    queryKey: ['tontine', invitation.tontineId],
-    queryFn: () => tontineService.getById(invitation.tontineId),
-  });
+  const tontine = invitation.tontine;
 
   const isPending = invitation.status === 'PENDING';
   const isAccepted = invitation.status === 'ACCEPTED';
@@ -87,23 +84,13 @@ function InvitationCard({
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F5] mb-1.5">
-              {tontineLoading ? (
-                <span className="inline-block h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-              ) : (
-                tontine?.name ?? '—'
-              )}
+              {tontine?.name ?? '—'}
             </h3>
             {statusBadge}
             <p className="text-xs text-allness-dark dark:text-gray-400 mt-0.5">
               {t('tontines.invitedBy')} <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
             </p>
-            {tontineLoading ? (
-              <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
-                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
-                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
-                <span className="inline-flex items-center gap-1"><span className="h-3.5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></span>
-              </div>
-            ) : tontine ? (
+            {tontine ? (
               <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />
@@ -143,12 +130,6 @@ function InvitationCard({
           </div>
         </div>
         <div className="flex flex-col gap-2 shrink-0 w-36">
-          {/* <button
-            onClick={() => navigate(`/dashboard/tontines/${invitation.tontineId}`)}
-            className="h-9 w-full rounded-lg border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
-          >
-            Voir les détails
-          </button> */}
           {isPending && (
             <>
               <button

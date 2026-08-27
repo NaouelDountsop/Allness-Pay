@@ -44,6 +44,7 @@ interface BeneficiaryAmountFormProps {
   disabled?: boolean;
   insufficientBalance?: string;
   walletError?: string;
+  beneficiaryCurrency?: string;
 }
 
 const RECEPTION_OPTIONS: {
@@ -124,12 +125,12 @@ function detectNetwork(digits: string, country: string): string | null {
   return null;
 }
 
-export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError }: BeneficiaryAmountFormProps) {
+export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchangeRate: dbRate, exchangeRateLoading, disabled, insufficientBalance, walletError, beneficiaryCurrency }: BeneficiaryAmountFormProps) {
   const { theme } = usePreferences();
   const amountNumber = parseFloat(form.amount) || 0;
   const senderCurrency = sender?.currency ?? 'XAF';
 
-  const receiverCurrency = COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
+  const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[form.country] ?? 'XAF');
 
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
   const fees = amountNumber * 0.01;

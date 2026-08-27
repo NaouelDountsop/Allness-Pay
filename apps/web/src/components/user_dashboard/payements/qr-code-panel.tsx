@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { QrCode, ScanLine } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ScanLine } from 'lucide-react';
+import { walletService } from '@/lib/api/wallet.service';
+import { WalletQrCodeDisplay } from '@/components/user_dashboard/wallet/wallet-qr-code';
 
 interface QrCodePanelProps {
   onScanClick: () => void;
@@ -7,6 +10,12 @@ interface QrCodePanelProps {
 
 export function QrCodePanel({ onScanClick }: QrCodePanelProps) {
   const { t } = useTranslation();
+
+  const { data: primaryWallet } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: walletService.getPrimary,
+  });
+
   return (
     <div className="rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
       <div className="flex-1">
@@ -22,8 +31,18 @@ export function QrCodePanel({ onScanClick }: QrCodePanelProps) {
           {t('payments.qrCode.scanButton')}
         </button>
       </div>
-      <div className="w-28 h-28 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
-        <QrCode className="w-14 h-14 text-white/80" />
+      <div className="shrink-0">
+        {primaryWallet ? (
+          <WalletQrCodeDisplay
+            walletId={primaryWallet.id}
+            walletNumber={primaryWallet.walletNumber}
+            walletLabel={primaryWallet.label}
+          />
+        ) : (
+          <div className="w-48 h-48 rounded-xl bg-gray-100 flex items-center justify-center">
+            <p className="text-xs text-gray-400">Aucun wallet</p>
+          </div>
+        )}
       </div>
     </div>
   );

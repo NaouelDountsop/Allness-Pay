@@ -21,7 +21,7 @@ export function WalletBalanceCard({
   status = 'Actif',
   kycApproved = false,
 }: WalletBalanceCardProps) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [pinModal, setPinModal] = useState<'setup' | 'verify' | null>(null);
   const [checkingPin, setCheckingPin] = useState(false);
 

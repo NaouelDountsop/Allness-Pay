@@ -19,22 +19,21 @@ export function TontinesEmptyState({ onCreate }: TontinesEmptyStateProps) {
 
   return (
     <div className="max-w-2xl mx-auto text-center">
-      <div className="flex items-end justify-center gap-4 mb-8">
-        <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center">
-          <PiggyBank className="w-8 h-8 text-allness-orange" />
-        </div>
-        <div className="w-24 h-24 rounded-full bg-gray-50 flex items-center justify-center">
-          <PiggyBank className="w-12 h-12 text-allness-green" />
-        </div>
+      <div className="flex justify-center mb-4">
+        <img
+          src="/Saving money-pana (2) 1.svg"
+          alt="Épargne collective"
+          className="w-56 h-56 object-contain"
+        />
       </div>
 
-      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8">
+      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-6">
         <h2 className="text-lg font-bold text-allness-dark mb-2">{t('tontines.noActiveTontine')}</h2>
-        <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
+        <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
           {t('tontines.emptyDescription')}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           {benefits.map(({ icon: Icon, title, description }) => (
             <div key={title} className="rounded-xl bg-allness-dark p-4 text-left">
               <Icon className="w-5 h-5 text-allness-orange mb-2" />
@@ -61,7 +60,7 @@ export function TontinesEmptyState({ onCreate }: TontinesEmptyStateProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-xl bg-white border border-gray-100 p-4 mt-4 text-left">
+      <div className="flex items-center justify-between rounded-xl bg-white border border-gray-100 p-3 mt-3 text-left">
         <p className="text-xs text-gray-600">
           {t('tontines.needHelp')}
         </p>
