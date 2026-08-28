@@ -8,8 +8,8 @@ interface QrScannerModalProps {
   onScanSuccess: (data: { walletId: string; walletNumber: string; ownerName: string; currency: string }) => void;
 }
 
-function extractToken(qrData: string): string | null {
-  const match = qrData.match(/allnesspay:\/\/transfer\?t=([a-f0-9]+)/);
+function extractWalletNumber(qrData: string): string | null {
+  const match = qrData.match(/allnesspay:\/\/transfer\?w=(\d+)/);
   return match?.[1] ?? null;
 }
 
@@ -41,10 +41,10 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
     });
 
     if (code?.data) {
-      const token = extractToken(code.data);
-      if (token) {
+      const walletNumber = extractWalletNumber(code.data);
+      if (walletNumber) {
         setResolving(true);
-        walletService.resolveQr(token)
+        walletService.resolveQr(walletNumber)
           .then(onScanSuccess)
           .catch(() => {
             setResolving(false);

@@ -2,8 +2,8 @@ import { IsString, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResolveQrDto {
-  @ApiProperty({ example: 'a83f4d9c2e8b7a1f...' })
+  @ApiProperty({ example: '2371234567890' })
   @IsString()
-  @Matches(/^[a-f0-9]{64}$/, { message: 'Token QR invalide.' })
-  qrCodeToken: string;
+  @Matches(/^\d{10,20}$/, { message: 'Numéro de portefeuille invalide.' })
+  walletNumber: string;
 }

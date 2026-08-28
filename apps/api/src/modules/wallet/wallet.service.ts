@@ -264,13 +264,13 @@ export class WalletsService {
   async getQrCodeData(walletId: string, userId: number): Promise<{ walletId: string; qrCodeData: string }> {
     const wallet = await this.findOne(walletId, userId);
     this.assertNotTontine(wallet);
-    const qrCodeData = `allnesspay://transfer?t=${wallet.qrCodeToken}`;
+    const qrCodeData = `allnesspay://transfer?w=${wallet.walletNumber}`;
     return { walletId: wallet.id, qrCodeData };
   }
 
-  async resolveQrCode(qrCodeToken: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> {
+  async resolveQrCode(walletNumber: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> {
     const wallet = await this.walletRepo.findOne({
-      where: { qrCodeToken },
+      where: { walletNumber },
       select: ['id', 'walletNumber', 'status', 'type', 'currency'],
       relations: ['user'],
     });

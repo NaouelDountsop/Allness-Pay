@@ -74,7 +74,7 @@ export class WalletsController {
 
   @Post('resolve-qr')
   resolveQr(@Body() dto: ResolveQrDto) {
-    return this.walletsService.resolveQrCode(dto.qrCodeToken);
+    return this.walletsService.resolveQrCode(dto.walletNumber);
   }
 
   @Get('validate/:walletNumber')

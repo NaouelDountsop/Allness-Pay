@@ -180,11 +180,7 @@ export default function VerifyEmailPage() {
                 onChange={(e) => handleChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={handlePaste}
-                className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-semibold rounded-lg border bg-white text-gray-900 focus:outline-none focus:ring-2 transition-colors ${
-                  i === 0
-                    ? 'border-blue-400 focus:ring-blue-300'
-                    : 'border-allness-orange/50 focus:ring-allness-orange/40'
-                }`}
+                className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-semibold rounded-lg border bg-white text-gray-900 focus:outline-none focus:ring-2 transition-colors border-allness-orange/50 focus:ring-allness-orange/40`}
               />
             ))}
           </div>
