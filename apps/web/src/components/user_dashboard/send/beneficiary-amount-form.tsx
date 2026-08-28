@@ -10,7 +10,7 @@ import {
   QrCode,
 } from 'lucide-react';
 import { CountrySelect } from '@/components/common/country-select';
-import { WalletQrScanner } from '@/components/user_dashboard/send/wallet-qr-scanner';
+import { QrScannerModal } from '@/components/user_dashboard/payements/qr-scanner-modal';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 import { usePreferences } from '@/hooks/use-preferences';
 import {
@@ -432,10 +432,10 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
       </div>
 
       {showQrScanner && (
-        <WalletQrScanner
+        <QrScannerModal
           onClose={() => setShowQrScanner(false)}
-          onScan={(walletId) => {
-            onChange('beneficiaryContact', walletId);
+          onScanSuccess={(data) => {
+            onChange('beneficiaryContact', data.walletNumber);
             setShowQrScanner(false);
           }}
         />

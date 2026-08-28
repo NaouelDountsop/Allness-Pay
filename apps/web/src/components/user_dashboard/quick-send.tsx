@@ -192,7 +192,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
           placeholder={t('tontines.enterAmount')}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
+          className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
         />
 
         <div className="relative shrink-0" ref={dropdownRef}>
@@ -201,7 +201,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
             onClick={() => setOpen((v) => !v)}
             aria-haspopup="listbox"
             aria-expanded={open}
-            className="h-11 min-w-[92px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center justify-between gap-2 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:border-allness-orange/50 focus:outline-none focus:ring-2 focus:ring-allness-orange/40 transition-colors"
+            className="h-11 min-w-[92px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center justify-between gap-2 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:border-allness-orange/50 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 transition-colors"
           >
             {currency}
             <ChevronDown
