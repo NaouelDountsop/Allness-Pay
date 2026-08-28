@@ -559,7 +559,7 @@ export default function WithdrawPage() {
                     className="flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    Retour
+                    <span className="hidden sm:inline">Retour</span>
                   </button>
                   <button
                     onClick={() => canSubmitStep1 && setCurrentStep(2)}
@@ -625,7 +625,7 @@ export default function WithdrawPage() {
                     className="flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    Retour
+                    <span className="hidden sm:inline">Retour</span>
                   </button>
                   <button
                     onClick={handleConfirm}

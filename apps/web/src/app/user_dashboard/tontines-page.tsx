@@ -104,13 +104,13 @@ export default function TontinesPage() {
                 <h1 className="text-2xl font-semibold text-allness-dark">{t('tontines.pageTitle')}</h1>
                 <p className="text-sm text-gray-600">{t('tontines.pageSubtitle')}</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={() => navigate('/dashboard/tontines/invitations')}
-                  className="h-10 px-4 rounded-lg border border-allness-dark text-allness-dark text-sm font-medium transition-colors inline-flex items-center gap-2 hover:bg-gray-50 relative"
+                  className="h-10 w-10 sm:w-auto px-0 sm:px-4 rounded-lg border border-allness-dark text-allness-dark text-sm font-medium transition-colors inline-flex items-center justify-center gap-2 hover:bg-gray-50 relative"
                 >
                   <Mail className="w-4 h-4" />
-                  {t('tontines.invitations')}
+                  <span className="hidden sm:inline">{t('tontines.invitations')}</span>
                   {pendingInvitations.length > 0 && (
                     <span className="absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
                       {pendingInvitations.length}
@@ -119,10 +119,10 @@ export default function TontinesPage() {
                 </button>
                 <button
                   onClick={() => navigate('/dashboard/tontines/create')}
-                  className="h-10 px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center gap-2"
+                  className="h-10 w-10 sm:w-auto px-0 sm:px-5 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors inline-flex items-center justify-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  {t('tontines.newTontine')}
+                  <span className="hidden sm:inline">{t('tontines.newTontine')}</span>
                 </button>
               </div>
             </div>

@@ -90,7 +90,7 @@ export function ContributionsTable({ contributions, currency = 'CFA', onViewCont
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
         <table className="w-full text-sm min-w-[500px]">
           <thead>
             <tr className="bg-allness-dark text-white text-xs">

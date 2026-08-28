@@ -367,7 +367,7 @@ export default function BeneficiariesPage() {
           <div className="flex items-center justify-end gap-2 mb-5">
             <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" />
-              {t('beneficiaries.reset')}
+              <span className="hidden sm:inline">{t('beneficiaries.reset')}</span>
             </button>
             <button className="h-9 px-5 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
               {t('beneficiaries.filter')}

@@ -164,14 +164,14 @@ export default function ContributionHistoryPage() {
               className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              Exporter CSV
+              <span className="hidden sm:inline">Exporter CSV</span>
             </button>
             <button
               onClick={() => setTontineModalOpen(true)}
               className="h-9 px-4 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Nouveau Versement
+              <span className="hidden sm:inline">Nouveau Versement</span>
             </button>
           </div>
         </div>

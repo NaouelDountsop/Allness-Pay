@@ -204,7 +204,7 @@ export default function TontineSettingsPage() {
               ) : (
                 <Play className="w-4 h-4" />
               )}
-              {t('tontines.startTontine')}
+              <span className="hidden sm:inline">{t('tontines.startTontine')}</span>
             </button>
           )}
         </div>

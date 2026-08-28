@@ -224,7 +224,7 @@ export default function TransactionsPage() {
                 className="h-10 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                {t('transactions.reset')}
+                <span className="hidden sm:inline">{t('transactions.reset')}</span>
               </button>
             </div>
           </div>

@@ -380,7 +380,7 @@ export default function MakeContributionPage() {
               ) : (
                 <Lock className="w-4 h-4" />
               )}
-              {contributionMutation.isPending ? 'Versement en cours...' : 'Confirmer le versement'}
+              <span className="hidden sm:inline">{contributionMutation.isPending ? 'Versement en cours...' : 'Confirmer le versement'}</span>
             </button>
           </div>
 

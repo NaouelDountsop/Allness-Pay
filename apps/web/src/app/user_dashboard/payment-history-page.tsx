@@ -99,7 +99,7 @@ export default function PaymentHistoryPage() {
             className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2"
           >
             <Download className="w-4 h-4" />
-            {t('paymentHistory.exportCsv')}
+            <span className="hidden sm:inline">{t('paymentHistory.exportCsv')}</span>
           </button>
         </div>
 
@@ -171,14 +171,14 @@ export default function PaymentHistoryPage() {
                 className="h-10 px-3 rounded-lg border border-gray-200 text-sm text-gray-600 flex items-center gap-1 hover:bg-gray-50"
               >
                 <X className="w-3.5 h-3.5" />
-                {t('paymentHistory.reset')}
+                <span className="hidden sm:inline">{t('paymentHistory.reset')}</span>
               </button>
             )}
           </div>
         </div>
 
         <div className="rounded-2xl border border-brand-border bg-brand-card shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-brand-border bg-brand-hover">

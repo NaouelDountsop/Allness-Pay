@@ -312,7 +312,7 @@ export default function TontinesInvitationsPage() {
                 onClick={() => setActiveTab('pending')}
                 className="mt-5 w-full h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors inline-flex items-center justify-center gap-2"
               >
-                {t('tontines.viewAllInvitations')}
+                <span className="hidden sm:inline">{t('tontines.viewAllInvitations')}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
