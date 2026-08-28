@@ -74,7 +74,7 @@ export default function TontineMembersPage() {
               <p className="font-semibold text-allness-dark">{tontine.frequency}</p>
             </div>
             <div className="rounded-2xl bg-white border border-gray-100 p-4 text-sm">
-              <p className="text-gray-500">{t('tontines.currentTurn')}</p>
+              <p className="text-gray-500">{t('tontines.currentTurn', { current: tontine.currentCycle, total: tontine.memberLimit })}</p>
               <p className="font-semibold text-allness-dark">
                 {tontine.currentCycle} / {tontine.memberLimit}
               </p>

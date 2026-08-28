@@ -84,8 +84,8 @@ export function ReviewStep({
         {t('tontines.back')}
       </button>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
-        <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-500" />
+      <div className="flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 text-orange-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
+        <Info className="w-5 h-5 shrink-0 mt-0.5 text-allness-orange" />
         <p>
           <span className="font-semibold">{t('tontines.senderMustVerify')}</span> {t('tontines.verifyInfoDescription')}
         </p>
@@ -173,15 +173,7 @@ export function ReviewStep({
               : t('tontines.notAvailable')}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-          <span className="font-medium">{t('tontines.transferFees')} (1%)</span>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400 dark:text-gray-500 line-through font-semibold">
-              {formatAmount(fees, senderCurrency)}
-            </span>
-            <span className="text-allness-green font-semibold">{t('send.freePromo')}</span>
-          </div>
-        </div>
+        
         <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-allness-dark dark:text-white">{t('tontines.totalDebited')}</span>

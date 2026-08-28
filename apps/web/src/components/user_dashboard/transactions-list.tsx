@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle, Clock } from 'lucide-react';
-//import { useTranslation } from 'react-i18next';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 import {LoadingSpinner} from '@/components/common/loading-spinner';
 import { formatAmount, formatDateShort } from '@/lib/utils';
@@ -91,10 +90,13 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                       {transactionService.getTypeLabel(tx.type)}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded hidden sm:inline">
                         {tx.reference || '—'}
                       </span>
-                      <p className="text-xs text-allness-orange">
+                      <p className="text-xs text-allness-orange sm:hidden">
+                        {formatDateShort(tx.createdAt)}
+                      </p>
+                      <p className="text-xs text-allness-orange hidden sm:block">
                         {formatDateShort(tx.createdAt)}
                       </p>
                     </div>

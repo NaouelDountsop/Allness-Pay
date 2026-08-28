@@ -181,9 +181,9 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
         {step === 1 && (
           <div className="space-y-4">
             {/* Info banner */}
-            <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-blue-700">
+            <div className="rounded-lg bg-orange-50 border p-3 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-orange-500">
                 Le bénéficiaire doit être un utilisateur AfriLinkPay.
               </p>
             </div>
@@ -193,9 +193,6 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <h3 className="text-sm font-semibold text-allness-dark mb-1">
                 Rechercher un utilisateur AfriLinkPay
               </h3>
-              <p className="text-xs text-gray-500 mb-3">
-                Saisissez l'identifiant du wallet, l'adresse e-mail ou le numéro de téléphone de l'utilisateur.
-              </p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -207,7 +204,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                       setSearchError('');
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="Identifiant wallet, e-mail ou numéro de téléphone"
+                    placeholder="Identifiant wallet ou  e-mail "
                     className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                   />
                 </div>
@@ -219,9 +216,6 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                   {searching ? 'Recherche...' : 'Rechercher'}
                 </button>
               </div>
-              <p className="text-[11px] text-gray-400 mt-2">
-                Exemples : WLT1234567890 • user@email.com • +237 6XX XXX XXX
-              </p>
               {searchError && (
                 <p className="text-xs text-red-500 flex items-center gap-1 mt-2">
                   <AlertCircle className="w-3 h-3" />
@@ -278,16 +272,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               </div>
             </div>
 
-            {/* Security info */}
-            <div className="rounded-lg bg-green-50 border border-green-200 p-3 flex items-start gap-2">
-              <Check className="w-4 h-4 text-allness-green shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-allness-dark">Transfert interne et sécurisé</p>
-                <p className="text-xs text-gray-500">
-                  Les fonds seront transférés instantanément vers le wallet AfriLinkPay de l'utilisateur.
-                </p>
-              </div>
-            </div>
+            
           </div>
         )}
 
@@ -335,7 +320,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <Button
                 disabled={!foundUser}
                 onClick={() => setStep(2)}
-                className="bg-allness-orange hover:bg-allness-orange/90"
+                className="bg-allness-green  hover:bg-allness-green/90"
               >
                 Suivant
               </Button>

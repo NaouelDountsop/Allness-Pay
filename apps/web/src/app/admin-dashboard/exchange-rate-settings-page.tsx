@@ -113,7 +113,7 @@ export default function ExchangeRateSettingsPage() {
           </div>
         </SectionCard>
 
-        <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4">
+        <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-200 p-4">
           <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
           <p className="text-[11px] text-blue-600 leading-relaxed">
             Les paramètres de configuration affectent l'ensemble des paires de devises configurées

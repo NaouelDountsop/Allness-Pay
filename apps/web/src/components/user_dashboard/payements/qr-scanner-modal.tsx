@@ -23,7 +23,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
   const scanFrame = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA || !video.videoWidth || !video.videoHeight) {
       animFrameRef.current = requestAnimationFrame(scanFrame);
       return;
     }
@@ -37,7 +37,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: 'dontInvert',
+      inversionAttempts: 'attemptBoth',
     });
 
     if (code?.data) {

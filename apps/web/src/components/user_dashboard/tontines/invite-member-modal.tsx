@@ -142,7 +142,7 @@ export function InviteMemberModal({ open, onOpenChange, tontineId, tontineName }
                     ) : (
                       <Send className="w-4 h-4" />
                     )}
-                    Envoyer
+                    <span className="hidden sm:inline">Envoyer</span>
                   </button>
                 </div>
               </form>

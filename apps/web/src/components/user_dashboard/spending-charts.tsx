@@ -262,7 +262,7 @@ export function MonthlySummary({
 
       {/* Tableau vertical des données */}
       {data.length > 0 && (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-b border-gray-100 dark:border-[#18353B]">

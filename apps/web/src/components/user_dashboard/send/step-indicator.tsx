@@ -27,7 +27,7 @@ export function StepIndicator({ steps, currentStep, completedSteps }: StepIndica
                     ? 'bg-allness-orange text-allness-dark'
                     : 'bg-white/10 text-white/40 border-2 border-white/25'
                 } ${isActive ? 'ring-4 ring-allness-orange/25' : ''}`}
-              >
+              >   
                 {isDone ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} /> : i + 1}
               </div>
               <span

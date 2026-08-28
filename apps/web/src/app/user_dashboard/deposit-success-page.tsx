@@ -118,7 +118,7 @@ export default function DepositSuccessPage() {
               onClick={handleBackToWallet}
               className="h-12 rounded-lg bg-allness-green text-white text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             >
-              {t('depositSuccess.backToWallet')}
+              <span className="hidden sm:inline">{t('depositSuccess.backToWallet')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
@@ -147,7 +147,7 @@ export default function DepositSuccessPage() {
               className="h-11 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
             >
               <Download className="w-4 h-4" />
-              {t('depositSuccess.downloadReceipt')}
+              <span className="hidden sm:inline">{t('depositSuccess.downloadReceipt')}</span>
             </button>
           </div>
         </div>

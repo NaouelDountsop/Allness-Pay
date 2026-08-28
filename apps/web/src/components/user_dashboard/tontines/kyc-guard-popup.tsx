@@ -45,7 +45,7 @@ export function KycGuardPopup({ onClose }: KycGuardPopupProps) {
               }}
               className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
             >
-              Compléter mon KYC
+              <span className="hidden sm:inline">Compléter mon KYC</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

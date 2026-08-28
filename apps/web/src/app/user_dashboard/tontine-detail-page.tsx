@@ -142,7 +142,6 @@ export default function TontineDetailPage() {
             >
               <Clock className="w-4 h-4" />
               <span className="hidden sm:inline">{t('tontines.history')}</span>
-              <span className="sm:hidden">{t('tontines.history')}</span>
             </button>
             {isCreator && (
               <button
@@ -175,8 +174,8 @@ export default function TontineDetailPage() {
           currentCycle={tontine.currentCycle}
           totalTurns={effectiveMemberCount}
           members={tontine.members ?? []}
-          currency={tontine.currency}
-          contributionAmount={Number(tontine.contributionAmount)}
+          frequency={tontine.frequency}
+          createdAt={tontine.createdAt}
         />
 
         {/* 3 columns: versements / contribution / activité */}
@@ -203,7 +202,7 @@ export default function TontineDetailPage() {
 
         <button
           aria-label="Support"
-          className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors z-50"
+          className="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 w-12 h-12 rounded-full bg-allness-green text-white flex items-center justify-center shadow-lg hover:bg-allness-greenHover transition-colors z-50"
           onClick={() => navigate(`/dashboard/tontines/${tontine.id}/chat`)}
         >
           <MessageCircle className="w-5 h-5" />

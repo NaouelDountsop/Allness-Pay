@@ -195,7 +195,7 @@ export default function RequestSentPage() {
             </div>
           </div>
 
-          <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4 h-fit">
+          <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-200 p-4 h-fit">
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <p className="text-[11px] text-blue-600 leading-relaxed">
               {isBank

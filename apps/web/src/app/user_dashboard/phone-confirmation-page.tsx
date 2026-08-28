@@ -66,7 +66,7 @@ export default function PhoneConfirmationPage() {
             </p>
           </div>
 
-          <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4 mb-6">
+          <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-200 p-4 mb-6">
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <p className="text-[11px] text-blue-600 leading-relaxed">
               {t('phoneConfirmation.securityInfo')}
@@ -78,14 +78,14 @@ export default function PhoneConfirmationPage() {
               onClick={handleCancel}
               className="h-11 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors flex-1"
             >
-              {t('phoneConfirmation.cancelTransaction')}
+              <span className="hidden sm:inline">{t('phoneConfirmation.cancelTransaction')}</span>
               <X className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleConfirmed}
               className="h-11 px-5 rounded-lg bg-allness-green text-white text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity flex-1"
             >
-              {t('phoneConfirmation.confirmedCheckStatus')}
+              <span className="hidden sm:inline">{t('phoneConfirmation.confirmedCheckStatus')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
