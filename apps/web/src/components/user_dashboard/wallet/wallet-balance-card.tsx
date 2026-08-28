@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2, QrCode } from 'lucide-react';
+import { Eye, EyeOff, Loader2, QrCode, X } from 'lucide-react';
 import { pinService } from '@/lib/api/pin.service';
 import { PinSetupModal } from '@/components/user_dashboard/send/pin-setup-modal';
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
+import { WalletQrCodeDisplay } from '@/components/user_dashboard/wallet/wallet-qr-code';
 
 interface WalletBalanceCardProps {
   walletNumber: string;
@@ -27,6 +28,7 @@ export function WalletBalanceCard({
 }: WalletBalanceCardProps) {
   const [pinModal, setPinModal] = useState<'setup' | 'verify' | null>(null);
   const [checkingPin, setCheckingPin] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   const formatted = new Intl.NumberFormat('fr-FR').format(balance);
   const maskedWalletId = walletNumber.length > 3 ? walletNumber.slice(0, 3) + ' ••••••••' : '••••••••';
@@ -135,6 +137,7 @@ export function WalletBalanceCard({
               <div className="relative group">
                 <button
                   type="button"
+                  onClick={() => setShowQrModal(true)}
                   className="p-1 rounded-md border border-white/20 hover:border-allness-orange/50 transition-colors"
                   aria-label="Voir mon QR code"
                 >
@@ -188,6 +191,36 @@ export function WalletBalanceCard({
           onConfirm={handlePinVerify}
           onClose={() => setPinModal(null)}
         />
+      )}
+      {showQrModal && (
+        <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4" onClick={() => setShowQrModal(false)}>
+          <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-allness-dark px-6 py-5 flex items-center justify-between relative">
+              <div className="flex flex-col items-center w-full">
+                <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
+                <span className="text-white text-sm font-semibold">
+                  Allness<span className="text-allness-orange">Pay</span>
+                </span>
+              </div>
+              <button
+                onClick={() => setShowQrModal(false)}
+                className="absolute right-5 top-5 text-white/70 hover:text-white"
+                aria-label="Fermer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 text-center">
+              <h3 className="text-base font-semibold text-allness-dark mb-1">
+                Mon QR Code
+              </h3>
+              <p className="text-xs text-orange-500 mb-4">
+                Scannez ce code pour recevoir des fonds.
+              </p>
+              <WalletQrCodeDisplay walletId={walletInternalId} walletNumber={walletNumber} />
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

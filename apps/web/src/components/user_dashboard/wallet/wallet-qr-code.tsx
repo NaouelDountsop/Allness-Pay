@@ -9,6 +9,45 @@ interface WalletQrCodeDisplayProps {
   walletLabel?: string;
 }
 
+async function generateQrWithLogo(data: string): Promise<string> {
+  const size = 256;
+  const margin = 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas non supporté');
+
+  await QRCode.toCanvas(canvas, data, {
+    width: size,
+    margin,
+    color: { dark: '#000000', light: '#ffffff' },
+  });
+
+  try {
+    const logo = new Image();
+    logo.crossOrigin = 'anonymous';
+    await new Promise<void>((resolve, reject) => {
+      logo.onload = () => resolve();
+      logo.onerror = reject;
+      logo.src = '/allnesspay_logo2.png';
+    });
+
+    const logoSize = size * 0.22;
+    const x = (size - logoSize) / 2;
+    const y = (size - logoSize) / 2;
+    const padding = 4;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - padding, y - padding, logoSize + padding * 2, logoSize + padding * 2);
+    ctx.drawImage(logo, x, y, logoSize, logoSize);
+  } catch {
+    // Logo introuvable, on garde le QR sans logo
+  }
+
+  return canvas.toDataURL('image/png');
+}
+
 export function WalletQrCodeDisplay({ walletId, walletNumber, walletLabel }: WalletQrCodeDisplayProps) {
   const [qrImage, setQrImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,11 +60,7 @@ export function WalletQrCodeDisplay({ walletId, walletNumber, walletLabel }: Wal
       try {
         setLoading(true);
         const data = await walletService.getQrCode(walletId);
-        const dataUrl = await QRCode.toDataURL(data.qrCodeData, {
-          width: 256,
-          margin: 2,
-          color: { dark: '#000000', light: '#ffffff' },
-        });
+        const dataUrl = await generateQrWithLogo(data.qrCodeData);
         if (!cancelled) {
           setQrImage(dataUrl);
         }
@@ -75,7 +110,7 @@ export function WalletQrCodeDisplay({ walletId, walletNumber, walletLabel }: Wal
         {qrImage && <img src={qrImage} alt="QR Code Wallet" className="w-48 h-48" />}
       </div>
       <p className="text-sm font-semibold text-allness-dark mt-3">{walletLabel ?? walletNumber}</p>
-      <p className="text-xs text-gray-500">{walletNumber}</p>
+      
       <button
         onClick={handleDownload}
         className="mt-3 h-9 px-4 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
