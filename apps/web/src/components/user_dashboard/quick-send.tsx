@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, Plus, ChevronDown, Check, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { Send, Plus, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionService } from '@/lib/api/transaction.service';
@@ -8,50 +8,33 @@ import { PinConfirmModal } from './send/pin-confirm-modal';
 interface QuickSendContact {
   id: string | number;
   name: string;
-  phone: string;
-  network: string;
-  country: string;
+  walletNumber: string;
+  currency: string;
   avatarUrl?: string | null;
 }
 
 interface QuickSendProps {
   contacts: QuickSendContact[];
   walletId?: string;
-  walletNumber?: string;
   isLoading?: boolean;
 }
 
-const CURRENCIES = ['XAF', 'XOF', 'CAD', 'EUR'];
-
-export function QuickSend({ contacts, walletId, walletNumber, isLoading }: QuickSendProps) {
+export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState(CURRENCIES[0]);
-  const [open, setOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<QuickSendContact | null>(null);
   const [showPin, setShowPin] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const transferMutation = useMutation({
-    mutationFn: () =>
-      transactionService.campayWithdraw({
-        walletNumber: walletNumber ?? '',
+    mutationFn: (pin: string) =>
+      transactionService.createTransfer(walletId!, {
+        toWalletId: selectedContact!.walletNumber,
         amount,
-        phone_number: selectedContact!.phone,
         description: `Envoi rapide vers ${selectedContact!.name}`,
+        pin,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
@@ -77,9 +60,9 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
     setShowPin(true);
   };
 
-  const handlePinConfirm = async (_pin: string): Promise<string | null> => {
+  const handlePinConfirm = async (pin: string): Promise<string | null> => {
     try {
-      await transferMutation.mutateAsync();
+      await transferMutation.mutateAsync(pin);
       return null;
     } catch {
       return t('tontines.transferError');
@@ -95,7 +78,7 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
           </span>
           <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t('tontines.transferSent')}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-            {amount} {currency} envoyés à {selectedContact?.name}
+            {amount} {selectedContact?.currency} envoyés à {selectedContact?.name}
           </p>
           <button
             onClick={() => {
@@ -180,13 +163,13 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{selectedContact.name}</p>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500">{selectedContact.phone} · {selectedContact.network}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">{selectedContact.walletNumber}</p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex gap-2 mb-3">
         <input
           type="number"
           placeholder={t('tontines.enterAmount')}
@@ -194,46 +177,11 @@ export function QuickSend({ contacts, walletId, walletNumber, isLoading }: Quick
           onChange={(e) => setAmount(e.target.value)}
           className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
         />
-
-        <div className="relative shrink-0" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            className="h-11 min-w-[92px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center justify-between gap-2 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:border-allness-orange/50 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 transition-colors"
-          >
-            {currency}
-            <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform ${
-                open ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-
-          {open && (
-            <ul
-              role="listbox"
-              className="absolute right-0 mt-1.5 w-28 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg overflow-hidden z-20 animate-in fade-in slide-in-from-top-1 duration-150"
-            >
-              {CURRENCIES.map((cur) => (
-                <li key={cur} role="option" aria-selected={currency === cur}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCurrency(cur);
-                      setOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {cur}
-                    {currency === cur && <Check className="w-3.5 h-3.5 text-allness-orange" />}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {selectedContact && (
+          <div className="h-11 min-w-[72px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+            {selectedContact.currency}
+          </div>
+        )}
       </div>
 
       {error && (

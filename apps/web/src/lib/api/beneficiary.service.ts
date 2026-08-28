@@ -6,6 +6,7 @@ export interface Beneficiary {
   phone: string;
   network: string;
   country: string;
+  currency: string;
   status: 'pending' | 'verified' | 'rejected';
   isFavorite: boolean;
   createdAt: string;
@@ -57,8 +58,8 @@ export const beneficiaryService = {
     const res = await apiClient.patch<Beneficiary>(`/beneficiaires/${id}/favori`);
     return res.data;
   },
-  searchUser: async (query: string): Promise<{ name: string; walletId: string; phone?: string }[]> => {
-    const res = await apiClient.get<{ name: string; walletId: string; phone?: string }[]>('/beneficiaires/search', {
+  searchUser: async (query: string): Promise<{ name: string; walletNumber: string; currency: string }[]> => {
+    const res = await apiClient.get<{ name: string; walletNumber: string; currency: string }[]>('/beneficiaires/search', {
       params: { q: query },
     });
     return res.data;

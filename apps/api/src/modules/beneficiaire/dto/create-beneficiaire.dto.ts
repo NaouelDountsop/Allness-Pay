@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsBoolean,
   Length,
-  Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ReseauMobileMoney } from '../enums/reseau.enum';
@@ -16,11 +15,9 @@ export class CreateBeneficiaireDto {
   @IsNotEmpty({ message: 'Le nom du bénéficiaire est requis' })
   nom: string;
 
-  @ApiProperty({ example: '+237690000000' })
+  @ApiProperty({ example: '12345' })
   @IsString()
-  @Matches(/^\+?[0-9]{8,15}$/, {
-    message: 'Le numéro doit être un numéro de téléphone valide',
-  })
+  @IsNotEmpty({ message: 'Le numéro du bénéficiaire est requis' })
   numero: string;
 
   @ApiProperty({ enum: ReseauMobileMoney, example: ReseauMobileMoney.MTN_MOMO })

@@ -31,6 +31,12 @@ interface AuthenticatedRequest extends Request {
 export class BeneficiairesController {
   constructor(private readonly beneficiairesService: BeneficiairesService) {}
 
+  @Get('search')
+  @ApiOperation({ summary: "Rechercher un utilisateur AllnessPay pour l'ajouter comme bénéficiaire" })
+  search(@Query('q') query: string) {
+    return this.beneficiairesService.searchUser(query);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Ajouter un bénéficiaire' })
   create(

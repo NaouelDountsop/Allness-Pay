@@ -170,13 +170,11 @@ export default function DashboardPage() {
               contacts={beneficiaries.map((b) => ({
                 id: b.id,
                 name: b.name,
-                phone: b.phone,
-                network: b.network,
-                country: b.country,
+                walletNumber: b.phone,
+                currency: b.currency,
                 avatarUrl: null,
               }))}
               walletId={wallet?.id}
-              walletNumber={wallet?.walletNumber}
               isLoading={beneficiariesLoading}
             />
             {!summaryLoading && monthlySummary && (

@@ -23,7 +23,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const [step, setStep] = useState<1 | 2>(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [foundUser, setFoundUser] = useState<{ name: string; walletId: string; phone?: string } | null>(null);
+  const [foundUser, setFoundUser] = useState<{ name: string; walletNumber: string } | null>(null);
   const [searching, setSearching] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
@@ -98,8 +98,8 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     if (!foundUser) return;
     createMutation.mutate({
       nom: foundUser.name,
-      numero: foundUser.walletId,
-      reseau: 'ALLNESS WALLET',
+      numero: foundUser.walletNumber,
+      reseau: 'AFRILINKPAY',
       pays: 'CM',
     });
   };
@@ -291,7 +291,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 {foundUser ? (
                   <div>
                     <p className="text-sm font-medium text-allness-dark">{foundUser.name}</p>
-                    <p className="text-xs text-gray-500">{foundUser.walletId}</p>
+                    <p className="text-xs text-gray-500">{foundUser.walletNumber}</p>
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400">
@@ -312,15 +312,9 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <span className="font-medium">{foundUser?.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Wallet ID</span>
-              <span className="font-medium">{foundUser?.walletId}</span>
+              <span className="text-gray-500">Numéro de wallet</span>
+              <span className="font-medium">{foundUser?.walletNumber}</span>
             </div>
-            {foundUser?.phone && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">Téléphone</span>
-                <span className="font-medium">{foundUser.phone}</span>
-              </div>
-            )}
             <div className="flex justify-between">
               <span className="text-gray-500">Type</span>
               <span className="font-medium">Bénéficiaire interne</span>
