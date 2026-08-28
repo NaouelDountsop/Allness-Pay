@@ -404,7 +404,7 @@ export default function SendMoneyPage() {
                 )}
                 {form.receptionMode === 'wallet' && form.beneficiaryContact && beneficiaryInfo && (
                   <div className="mb-6 p-4 rounded-xl border border-allness-green/20 bg-allness-green/5">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">{t('send.beneficiary')}</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">{t('Beneficiaire')}</p>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center">
                         <span className="text-sm font-bold text-allness-green">

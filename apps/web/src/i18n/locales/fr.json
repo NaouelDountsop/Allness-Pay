@@ -215,7 +215,7 @@
     },
     "scheduled": {
       "title": "Paiements programmés",
-      "description": "Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre wallet AfriLinkPay.",
+      "description": "Ne manquez plus jamais une échéance en activant le prélèvement automatique sur votre wallet AllnessPay.",
       "learnMore": "En savoir plus"
     },
     "qrScanner": {
@@ -273,7 +273,7 @@
     "accountHolderPlaceholder": "Nom complet du titulaire",
     "description": "Description",
     "descriptionOptional": "(optionnelle)",
-    "descriptionPlaceholder": "Dépôt AfriLinkPay",
+    "descriptionPlaceholder": "Dépôt AllnessPay",
     "amountLabel": "Montant à déposer",
     "amountPlaceholder": "5 000",
     "summary": "Récapitulatif",
@@ -450,6 +450,7 @@
     "filter": "Filtrer",
     "beneficiary": "Bénéficiaire",
     "number": "Numéro",
+    "walletNumber": "Numéro de wallet",
     "network": "Réseau",
     "addedOn": "Ajouté le",
     "actions": "Actions",

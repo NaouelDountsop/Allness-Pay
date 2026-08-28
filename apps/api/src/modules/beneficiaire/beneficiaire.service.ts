@@ -6,6 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Beneficiaire } from './entities/beneficiaire.entity';
+import { User } from '../users/entities/user.entity';
+import { Wallet } from '../wallet/entities/wallet.entity';
 import { CreateBeneficiaireDto } from './dto/create-beneficiaire.dto';
 import { UpdateBeneficiaireDto } from './dto/update-beneficiaire.dto';
 import {
@@ -18,6 +20,8 @@ export class BeneficiairesService {
   constructor(
     @InjectRepository(Beneficiaire)
     private readonly beneficiaireRepository: Repository<Beneficiaire>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(
@@ -46,6 +50,7 @@ export class BeneficiairesService {
   async findAll(ownerId: number, filtre: FilterBeneficiaireDto) {
     const query = this.beneficiaireRepository
       .createQueryBuilder('beneficiaire')
+      .leftJoin(Wallet, 'wallet', 'wallet.walletNumber = beneficiaire.numero')
       .where('beneficiaire.owner_id = :ownerId', { ownerId });
 
     if (filtre.recherche) {
@@ -75,6 +80,10 @@ export class BeneficiairesService {
     const limite = filtre.limite ?? 10;
 
     query
+      .select([
+        'beneficiaire',
+        'COALESCE(wallet.currency, \'XAF\') AS currency',
+      ])
       .orderBy('beneficiaire.createdAt', 'DESC')
       .skip((page - 1) * limite)
       .take(limite);
@@ -82,7 +91,7 @@ export class BeneficiairesService {
     const [data, total] = await query.getManyAndCount();
 
     return {
-      data: data.map((b) => b.toApi()),
+      data: data.map((b) => ({ ...b.toApi(), currency: (b as unknown as { currency?: string }).currency ?? 'XAF' })),
       total,
       page,
       limite,
@@ -144,6 +153,30 @@ export class BeneficiairesService {
     beneficiaire.favori = !beneficiaire.favori;
     const saved = await this.beneficiaireRepository.save(beneficiaire);
     return saved.toApi();
+  }
+
+  async searchUser(query: string) {
+    const rows = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin(Wallet, 'wallet', 'wallet.userId = user.idutilisateur AND wallet.status = :status', { status: 'active' })
+      .where(
+        '(user.email ILIKE :q OR user.telephone ILIKE :q OR wallet.walletNumber ILIKE :q)',
+        { q: `%${query}%` },
+      )
+      .select([
+        'user.nom AS nom',
+        'user.prenom AS prenom',
+        'wallet.walletNumber AS "walletNumber"',
+        'wallet.currency AS currency',
+      ])
+      .limit(5)
+      .getRawMany();
+
+    return rows.map((r) => ({
+      name: `${r.prenom} ${r.nom}`,
+      walletNumber: r.walletNumber,
+      currency: r.currency,
+    }));
   }
 
   /**

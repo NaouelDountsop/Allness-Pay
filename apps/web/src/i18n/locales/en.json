@@ -215,7 +215,7 @@
     },
     "scheduled": {
       "title": "Scheduled Payments",
-      "description": "Never miss a due date by enabling automatic debit on your AfriLinkPay wallet.",
+      "description": "Never miss a due date by enabling automatic debit on your AllnessPay wallet.",
       "learnMore": "Learn more"
     },
     "qrScanner": {
@@ -273,7 +273,7 @@
     "accountHolderPlaceholder": "Full name of the account holder",
     "description": "Description",
     "descriptionOptional": "(optional)",
-    "descriptionPlaceholder": "AfriLinkPay Deposit",
+    "descriptionPlaceholder": "AllnessPay Deposit",
     "amountLabel": "Amount to deposit",
     "amountPlaceholder": "5,000",
     "summary": "Summary",
@@ -450,6 +450,7 @@
     "filter": "Filter",
     "beneficiary": "Beneficiary",
     "number": "Number",
+    "walletNumber": "Wallet number",
     "network": "Network",
     "addedOn": "Added on",
     "actions": "Actions",

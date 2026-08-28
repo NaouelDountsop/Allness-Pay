@@ -22,7 +22,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const [step, setStep] = useState<1 | 2>(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [foundUser, setFoundUser] = useState<{ name: string; walletId: string; phone?: string } | null>(null);
+  const [foundUser, setFoundUser] = useState<{ name: string; walletNumber: string } | null>(null);
   const [searching, setSearching] = useState(false);
 
   const queryClient = useQueryClient();
@@ -73,8 +73,8 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     if (!foundUser) return;
     createMutation.mutate({
       nom: foundUser.name,
-      numero: foundUser.walletId,
-      reseau: 'ALLNESS WALLET',
+      numero: foundUser.walletNumber,
+      reseau: 'AFRILINKPAY',
       pays: 'CM',
     });
   };
@@ -105,7 +105,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
           </DialogTitle>
           <DialogDescription>
-            Ajoutez un utilisateur AfriLinkPay pour un transfert instantané.
+            Ajoutez un utilisateur AllnessPay pour un transfert instantané.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,14 +184,14 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             <div className="rounded-lg bg-orange-50 border p-3 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
               <p className="text-sm text-orange-500">
-                Le bénéficiaire doit être un utilisateur AfriLinkPay.
+                Le bénéficiaire doit être un utilisateur AllnessPay.
               </p>
             </div>
 
             {/* Search section */}
             <div>
               <h3 className="text-sm font-semibold text-allness-dark mb-1">
-                Rechercher un utilisateur AfriLinkPay
+                Rechercher un utilisateur AllnessPay
               </h3>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -240,7 +240,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 <div>
                   <p className="text-sm font-medium text-allness-dark">Scanner le QR code</p>
                   <p className="text-[11px] text-gray-500">
-                    Scannez le QR code du wallet AfriLinkPay de l'utilisateur.
+                    Scannez le QR code du wallet AllnessPay de l'utilisateur.
                   </p>
                 </div>
               </div>
@@ -262,7 +262,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 {foundUser ? (
                   <div>
                     <p className="text-sm font-medium text-allness-dark">{foundUser.name}</p>
-                    <p className="text-xs text-gray-500">{foundUser.walletId}</p>
+                    <p className="text-xs text-gray-500">{foundUser.walletNumber}</p>
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400">
@@ -283,15 +283,9 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
               <span className="font-medium">{foundUser?.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Wallet ID</span>
-              <span className="font-medium">{foundUser?.walletId}</span>
+              <span className="text-gray-500">Numéro de wallet</span>
+              <span className="font-medium">{foundUser?.walletNumber}</span>
             </div>
-            {foundUser?.phone && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">Téléphone</span>
-                <span className="font-medium">{foundUser.phone}</span>
-              </div>
-            )}
             <div className="flex justify-between">
               <span className="text-gray-500">Type</span>
               <span className="font-medium">Bénéficiaire interne</span>

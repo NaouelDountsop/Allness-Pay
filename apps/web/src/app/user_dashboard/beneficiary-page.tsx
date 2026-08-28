@@ -25,7 +25,7 @@ import { DashboardHeader } from '../../components/user_dashboard/header';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
 import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
-import { getFlagUrl, countries } from '../../data/countries';
+import { getFlagUrl } from '../../data/countries';
 
 const COUNTRY_MAP: Record<string, string> = {
   CM: 'Cameroun',
@@ -187,28 +187,9 @@ export default function BeneficiariesPage() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSend = (b: Beneficiary) => {
-    const cleaned = b.phone.replace(/\D/g, '');
-
-    const matchedCountry = countries.find((c) => {
-      const dialDigits = c.dialCode.replace('+', '');
-      return cleaned.startsWith(dialDigits);
-    });
-
-    const countryKey = matchedCountry?.code
-      ?? Object.entries(COUNTRY_MAP).find(([, name]) => name === b.country)?.[0]
-      ?? 'CM';
-
-    let localPhone = cleaned;
-    if (matchedCountry) {
-      const dialDigits = matchedCountry.dialCode.replace('+', '');
-      localPhone = cleaned.slice(dialDigits.length);
-    }
-
     const params = new URLSearchParams({
       name: b.name,
-      phone: localPhone,
-      country: countryKey,
-      network: b.network,
+      walletNumber: b.phone,
     });
     navigate(`/dashboard/send?${params.toString()}`);
   };
@@ -379,7 +360,7 @@ export default function BeneficiariesPage() {
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
                   <th className="font-medium pb-3">{t('beneficiaries.beneficiary')}</th>
-                  <th className="font-medium pb-3 hidden sm:table-cell">{t('beneficiaries.number')}</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">{t('beneficiaries.walletNumber')}</th>
                   <th className="font-medium pb-3 hidden md:table-cell">{t('beneficiaries.network')}</th>
                   <th className="font-medium pb-3 hidden lg:table-cell">{t('beneficiaries.country')}</th>
                   {/* <th className="font-medium pb-3">Statut</th> */}

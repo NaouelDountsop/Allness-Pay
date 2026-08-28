@@ -56,7 +56,7 @@ export function ReviewStep({
   const senderCurrency = sender?.currency ?? 'CAD';
   const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF');
   const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
-  const fees = amount * 0.01;
+  //const fees = amount * 0.01;
   const totalDebit = amount;
   const received = exchangeRate ? amount * exchangeRate : 0;
 
