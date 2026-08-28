@@ -317,7 +317,7 @@ export default function TontineSettingsPage() {
                 </div>
 
                 {isDraft && activeMembers.length < 2 && (
-                  <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-blue-50 border border-blue-100">
+                  <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-orange-50 border border-orange-200">
                     <Clock className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                     <p className="text-[11px] text-blue-700">
                       La tontine démarrera une fois au moins <span className="font-semibold">2 membres actifs</span> inscrits.

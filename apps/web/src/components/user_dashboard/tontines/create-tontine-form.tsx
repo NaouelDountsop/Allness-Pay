@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Info, AlertTriangle } from 'lucide-react';
 import { z } from 'zod';
@@ -21,7 +21,15 @@ const COUNTRY_CURRENCY_MAP: Record<string, 'XAF' | 'USD' | 'EUR' | 'GBP' | 'CAD'
   CA: 'CAD',
 };
 
-const generalSchema = (t: (key: string) => string) =>
+const MIN_CONTRIBUTION_BY_CURRENCY: Record<string, number> = {
+  XAF: 500,
+  USD: 1,
+  EUR: 1,
+  GBP: 1,
+  CAD: 1,
+};
+
+const generalSchema = (t: (key: string) => string, currency: string = 'XAF') =>
   z.object({
     name: z
       .string()
@@ -34,7 +42,8 @@ const generalSchema = (t: (key: string) => string) =>
     description: z.string().min(10, t('tontines.validationDescriptionMin')).max(500, t('tontines.validationDescriptionMax')),
     contribution: z.string().refine((val) => {
       const num = Number(val);
-      return !isNaN(num) && num >= 100;
+      const min = MIN_CONTRIBUTION_BY_CURRENCY[currency] ?? 500;
+      return !isNaN(num) && num >= min;
     }, t('tontines.validationContributionMin')),
     memberLimit: z.string().refine((val) => {
       const num = Number(val);
@@ -67,6 +76,7 @@ export function CreateTontineForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [currency, setCurrency] = useState<'XAF' | 'USD' | 'EUR' | 'GBP' | 'CAD'>('XAF');
 
   const tabs: { key: Tab; label: string; icon: string }[] = [
     { key: 'general', label: t('tontines.tabGeneral'), icon: '①' },
@@ -75,14 +85,17 @@ export function CreateTontineForm() {
     { key: 'membres', label: t('tontines.tabMembers'), icon: '👥' },
   ];
 
+  const schema = useMemo(() => generalSchema(t, currency), [t, currency]);
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors, isValid },
   } = useForm<GeneralFormData>({
-    resolver: zodResolver(generalSchema(t)),
+    resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
       name: '',
@@ -95,7 +108,6 @@ export function CreateTontineForm() {
 
   const contribution = watch('contribution');
   const memberLimit = watch('memberLimit');
-  const currency = watch('currency');
   const estimatedPot = (parseFloat(contribution) || 0) * (parseInt(memberLimit) || 0);
   const symbol = CURRENCY_SYMBOLS[currency] || '$';
 
@@ -130,24 +142,27 @@ export function CreateTontineForm() {
     setSelectedCountry(country.code);
     const mapped = COUNTRY_CURRENCY_MAP[country.code];
     if (mapped) {
+      setCurrency(mapped);
       setValue('currency', mapped, { shouldValidate: true });
+      trigger('contribution');
     }
   };
 
   return (
     <div>
-      <div className="flex gap-2 mb-6 border-b border-gray-100">
+      <div className="flex gap-1 sm:gap-2 mb-6 border-b border-gray-100 dark:border-gray-700 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === tab.key
-                ? 'border-allness-green text-allness-dark'
-                : 'border-transparent text-gray-400'
+                ? 'border-allness-green text-allness-dark dark:text-white'
+                : 'border-transparent text-gray-400 dark:text-gray-500'
             }`}
           >
-            {tab.label}
+            <span>{tab.icon}</span>
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>
@@ -158,7 +173,7 @@ export function CreateTontineForm() {
             <span className="w-5 h-5 rounded-full bg-allness-orange text-white text-[10px] font-semibold flex items-center justify-center">
               1
             </span>
-            <p className="text-sm font-semibold text-gray-800">{t('tontines.generalInfo')}</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white">{t('tontines.generalInfo')}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -184,6 +199,11 @@ export function CreateTontineForm() {
               <label className="text-xs font-medium text-gray-500">{t('tontines.currencyLabel')}</label>
               <select
                 {...register('currency')}
+                onChange={(e) => {
+                  register('currency').onChange(e);
+                  setCurrency(e.target.value as 'XAF' | 'USD' | 'EUR' | 'GBP' | 'CAD');
+                  trigger('contribution');
+                }}
                 className="w-full h-11 rounded-lg border border-gray-200 px-3 mt-1 text-sm bg-white text-gray-900 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="XAF">{t('tontines.currencyXAF')}</option>
@@ -213,10 +233,10 @@ export function CreateTontineForm() {
           </div>
 
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-[10px] font-semibold flex items-center justify-center">
-              ?
+            <span className="w-5 h-5 rounded-full bg-allness-orange text-white text-[10px] font-semibold flex items-center justify-center">
+              2
             </span>
-            <p className="text-sm font-semibold text-gray-800">{t('tontines.financialParams')}</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white">{t('tontines.financialParams')}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -235,6 +255,9 @@ export function CreateTontineForm() {
               {errors.contribution && (
                 <p className="text-[11px] text-red-500 mt-1">{errors.contribution.message}</p>
               )}
+              <p className="text-[11px] text-gray-400 mt-1">
+                Min. {new Intl.NumberFormat('fr-FR').format(MIN_CONTRIBUTION_BY_CURRENCY[currency] ?? 500)} {symbol}
+              </p>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-500">{t('tontines.frequency')}</label>
@@ -318,7 +341,7 @@ function FinancesTab({ onNext }: { onNext: () => void }) {
           className="w-full max-w-[360px] object-contain"
         />
       </div>
-      <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-4 mb-6 text-xs text-blue-700">
+      <div className="flex items-start gap-2 rounded-xl bg-orange-50 p-4 mb-6 text-xs text-orange-700">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
           {t('tontines.financesInfo')}

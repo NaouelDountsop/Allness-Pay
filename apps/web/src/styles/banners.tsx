@@ -57,16 +57,16 @@ export const alertVariantStyles: Record<BannerVariant, BannerStyle> = {
     icon: <AlertCircle className="w-5 h-5 text-orange-500 shrink-0" />,
   },
   info: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-300',
-    text: 'text-blue-900',
-    icon: <Info className="w-5 h-5 text-blue-500 shrink-0" />,
+    bg: 'bg-orange-50',
+    border: 'border-orange-300',
+    text: 'text-orange-900',
+    icon: <Info className="w-5 h-5 text-orange-500 shrink-0" />,
   },
 };
 
 export const kycStatusStyles: Record<KycBannerStatus, KycBannerStyle> = {
   PENDING: 'bg-orange-50 border-orange-300 text-orange-900',
-  UNDER_REVIEW: 'bg-blue-50 border-blue-300 text-blue-900',
+  UNDER_REVIEW: 'bg-orange-50 border-orange-300 text-orange-900',
   APPROVED: 'bg-green-50 border-green-300 text-green-900',
   REJECTED: 'bg-red-50 border-red-300 text-red-900',
   REQUIRES_ADDITIONAL_INFO: 'bg-orange-50 border-orange-300 text-orange-900',
@@ -87,10 +87,10 @@ export const kycStatusLabels: Record<KycBannerStatus, string> = {
 export const kycNotificationStyles: Record<KycBannerStatus, KycNotificationStyle> = {
   PENDING: {
     icon: AlertCircle,
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    color: 'text-blue-700',
-    iconBg: 'bg-blue-100',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+    color: 'text-orange-700',
+    iconBg: 'bg-orange-100',
   },
   UNDER_REVIEW: {
     icon: AlertCircle,
@@ -149,12 +149,12 @@ export const kycNotificationBannerStyles: Record<
 > = {
   PENDING: {
     icon: AlertCircle,
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    textColor: 'text-blue-800',
-    iconColor: 'text-blue-500',
-    buttonBg: 'bg-blue-500',
-    buttonHover: 'hover:bg-blue-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+    textColor: 'text-orange-800',
+    iconColor: 'text-orange-500',
+    buttonBg: 'bg-orange-500',
+    buttonHover: 'hover:bg-orange-600',
   },
   UNDER_REVIEW: {
     icon: AlertCircle,

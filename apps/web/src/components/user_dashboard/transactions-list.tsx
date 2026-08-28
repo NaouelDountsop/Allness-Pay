@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ChevronRight, XCircle, Clock } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
 import {LoadingSpinner} from '@/components/common/loading-spinner';
 import { formatAmount, formatDateShort } from '@/lib/utils';

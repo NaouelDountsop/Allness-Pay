@@ -84,7 +84,7 @@ export function ReviewStep({
         {t('tontines.back')}
       </button>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
+      <div className="flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 text-orange-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
         <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-500" />
         <p>
           <span className="font-semibold">{t('tontines.senderMustVerify')}</span> {t('tontines.verifyInfoDescription')}
