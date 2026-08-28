@@ -9,7 +9,7 @@ interface QrScannerModalProps {
 }
 
 function extractWalletNumber(qrData: string): string | null {
-  const match = qrData.match(/allnesspay:\/\/transfer\?w=(\d+)/);
+  const match = qrData.match(/allnesspay:\/\/transfer\?w=([A-Za-z0-9]+)/);
   return match?.[1] ?? null;
 }
 
@@ -58,28 +58,37 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
   }, [onScanSuccess]);
 
   useEffect(() => {
-    let stream: MediaStream | undefined;
+    let cancelled = false;
+    const streamRef: { current: MediaStream | null } = { current: null };
 
     const startCamera = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
+        const s = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' },
         });
+        if (cancelled) {
+          s.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        streamRef.current = s;
         if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+          videoRef.current.srcObject = s;
           videoRef.current.onloadeddata = () => {
             animFrameRef.current = requestAnimationFrame(scanFrame);
           };
         }
       } catch {
-        setError('Caméra non disponible. Autorisez l\'accès à la caméra.');
+        if (!cancelled) {
+          setError('Caméra non disponible. Autorisez l\'accès à la caméra.');
+        }
       }
     };
 
     startCamera();
 
     return () => {
-      stream?.getTracks().forEach((track) => track.stop());
+      cancelled = true;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
       cancelAnimationFrame(animFrameRef.current);
     };
   }, [scanFrame]);
@@ -115,9 +124,9 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
             </div>
           ) : (
             <>
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+              <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
               <canvas ref={canvasRef} className="hidden" />
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-56 h-56 relative">
                   <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-allness-orange rounded-tl-lg" />
                   <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-allness-orange rounded-tr-lg" />
