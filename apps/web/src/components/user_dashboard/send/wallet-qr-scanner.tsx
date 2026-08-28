@@ -69,14 +69,23 @@ export function WalletQrScanner({ onClose, onScan }: WalletQrScannerProps) {
 
     const startCamera = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-        });
+        // Try back camera first, fallback to any camera
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          });
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.onloadeddata = () => {
             animFrameRef.current = requestAnimationFrame(scanFrame);
           };
+          // Force play on iOS
+          await videoRef.current.play();
         }
       } catch {
         setError("Impossible d'accéder à la caméra. Veuillez autoriser l'accès.");
@@ -92,7 +101,7 @@ export function WalletQrScanner({ onClose, onScan }: WalletQrScannerProps) {
   }, [scanFrame]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+    <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -128,6 +137,7 @@ export function WalletQrScanner({ onClose, onScan }: WalletQrScannerProps) {
                 autoPlay
                 playsInline
                 muted
+                webkit-playsinline
                 className="w-full h-full object-cover"
               />
               <canvas ref={canvasRef} className="hidden" />

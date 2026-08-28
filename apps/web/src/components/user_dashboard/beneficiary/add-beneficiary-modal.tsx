@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { WalletQrScanner } from '@/components/user_dashboard/send/wallet-qr-scanner';
 
 interface AddBeneficiaryModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   const [searchError, setSearchError] = useState('');
   const [foundUser, setFoundUser] = useState<{ name: string; walletId: string; phone?: string } | null>(null);
   const [searching, setSearching] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -43,6 +45,29 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
     setSearchError('');
     setFoundUser(null);
     setSearching(false);
+    setShowScanner(false);
+  };
+
+  const handleScanResult = async (walletId: string) => {
+    setShowScanner(false);
+    setSearchQuery(walletId);
+    setSearchError('');
+    setSearching(true);
+    try {
+      const results = await beneficiaryService.searchUser(walletId);
+      const first = results[0];
+      if (first) {
+        setFoundUser(first);
+      } else {
+        setSearchError('Aucun utilisateur trouvé pour ce QR code');
+        setFoundUser(null);
+      }
+    } catch {
+      setSearchError('Erreur lors de la recherche. Réessayez.');
+      setFoundUser(null);
+    } finally {
+      setSearching(false);
+    }
   };
 
   const handleSearch = async () => {
@@ -80,6 +105,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
   };
 
   return (
+    <>
     <Dialog
       open={open}
       onOpenChange={(v) => {
@@ -105,7 +131,7 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             </div>
           </DialogTitle>
           <DialogDescription>
-            Ajoutez un utilisateur AfriLinkPay pour un transfert instantané.
+            Ajoutez un utilisateur AllnessPay pour un transfert instantané.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,14 +210,14 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
             <div className="rounded-lg bg-orange-50 border p-3 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
               <p className="text-sm text-orange-500">
-                Le bénéficiaire doit être un utilisateur AfriLinkPay.
+                Le bénéficiaire doit être un utilisateur AllnessPay.
               </p>
             </div>
 
             {/* Search section */}
             <div>
               <h3 className="text-sm font-semibold text-allness-dark mb-1">
-                Rechercher un utilisateur AfriLinkPay
+                Rechercher un utilisateur AllnessPay
               </h3>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -240,11 +266,14 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
                 <div>
                   <p className="text-sm font-medium text-allness-dark">Scanner le QR code</p>
                   <p className="text-[11px] text-gray-500">
-                    Scannez le QR code du wallet AfriLinkPay de l'utilisateur.
+                    Scannez le QR code du wallet AllnessPay de l'utilisateur.
                   </p>
                 </div>
               </div>
-              <button className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors inline-flex items-center gap-2">
+              <button
+                onClick={() => setShowScanner(true)}
+                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
+              >
                 <QrCode className="w-4 h-4" />
                 Scanner
               </button>
@@ -348,5 +377,13 @@ export function AddBeneficiaryModal({ open, onOpenChange }: AddBeneficiaryModalP
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {showScanner && (
+      <WalletQrScanner
+        onClose={() => setShowScanner(false)}
+        onScan={handleScanResult}
+      />
+    )}
+    </>
   );
 }

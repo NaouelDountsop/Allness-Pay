@@ -62,14 +62,23 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
 
     const startCamera = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-        });
+        // Try back camera first, fallback to any camera
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          });
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.onloadeddata = () => {
             animFrameRef.current = requestAnimationFrame(scanFrame);
           };
+          // Force play on iOS
+          await videoRef.current.play();
         }
       } catch {
         setError('Caméra non disponible. Autorisez l\'accès à la caméra.');
@@ -85,7 +94,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
   }, [scanFrame]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -115,7 +124,7 @@ export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) 
             </div>
           ) : (
             <>
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+              <video ref={videoRef} autoPlay playsInline muted webkit-playsinline className="w-full h-full object-cover" />
               <canvas ref={canvasRef} className="hidden" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-56 h-56 relative">

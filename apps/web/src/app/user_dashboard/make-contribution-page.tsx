@@ -13,6 +13,7 @@ import { TontineSummaryCard } from '@/components/user_dashboard/tontines/tontine
 import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-modal';
 import { tontineService } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
+import { currencyService } from '@/lib/api/currency.service';
 
 const contributionSchema = z.object({
   amount: z.string().refine((val) => {
@@ -51,6 +52,16 @@ export default function MakeContributionPage() {
     queryFn: walletService.getPrimary,
   });
 
+  const tontineCurrency = tontine?.currency ?? 'XAF';
+  const walletCurrency = wallet?.currency ?? 'XAF';
+  const hasDifferentCurrencies = walletCurrency !== tontineCurrency;
+
+  const { data: exchangeRate } = useQuery({
+    queryKey: ['exchange-rate', walletCurrency, tontineCurrency],
+    queryFn: () => currencyService.getExchangeRate(walletCurrency, tontineCurrency),
+    enabled: hasDifferentCurrencies,
+  });
+
   const { data: contributionStatus, isLoading: statusLoading } = useQuery({
     queryKey: ['contribution-status', id],
     queryFn: () => tontineService.checkMyContributionStatus(id!),
@@ -73,7 +84,6 @@ export default function MakeContributionPage() {
   }, [tontine]);
 
   const effectiveAmount = amount || suggestedAmount;
-  const tontineCurrency = tontine?.currency ?? 'XAF';
 
   const currencyLabels: Record<string, string> = {
     XAF: 'FCFA',
@@ -242,7 +252,6 @@ export default function MakeContributionPage() {
 
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;
   const walletBalance = wallet ? Number(wallet.balance) : 0;
-  const walletCurrency = wallet?.currency ?? 'XAF';
   const walletDisplayCurrency = currencyLabels[walletCurrency] ?? walletCurrency;
   const insufficientBalance = method === 'wallet' && Number(effectiveAmount) > walletBalance;
   const totalPaid = Number(tontine.contributionAmount) * tontine.currentCycle;
@@ -346,7 +355,7 @@ export default function MakeContributionPage() {
               </div>
             )}
 
-            <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
+            <div className="flex items-start gap-2 rounded-lg bg-orange-50 border border-orange-200 p-3 text-xs text-orange-700">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
                 <p>
@@ -355,9 +364,27 @@ export default function MakeContributionPage() {
                     {new Intl.NumberFormat('fr-FR').format(walletBalance)} {walletDisplayCurrency}
                   </span>
                 </p>
-                {walletCurrency !== tontineCurrency && (
-                  <p className="mt-1 text-[11px] text-blue-500">
-                    La cotisation sera prélevée en {displayCurrency} depuis votre portefeuille {walletDisplayCurrency}.
+                {hasDifferentCurrencies && exchangeRate && (
+                  <div className="mt-2 pt-2 border-t border-orange-200/60">
+                    <p className="font-medium text-orange-800">Taux de change appliqué</p>
+                    <p className="mt-1">
+                      1 {walletDisplayCurrency} = {exchangeRate.rate} {displayCurrency}
+                    </p>
+                    <p className="mt-1 text-[11px] text-orange-600">
+                      Vous paierez{' '}
+                      <span className="font-semibold">
+                        {new Intl.NumberFormat('fr-FR').format(Math.round(Number(effectiveAmount) / exchangeRate.rate))} {walletDisplayCurrency}
+                      </span>{' '}
+                      pour une cotisation de{' '}
+                      <span className="font-semibold">
+                        {new Intl.NumberFormat('fr-FR').format(Number(effectiveAmount))} {displayCurrency}
+                      </span>
+                    </p>
+                  </div>
+                )}
+                {hasDifferentCurrencies && !exchangeRate && (
+                  <p className="mt-1 text-[11px] text-orange-500">
+                    Aucun taux de change disponible pour {walletDisplayCurrency} → {displayCurrency}
                   </p>
                 )}
               </div>
