@@ -195,7 +195,7 @@ export class TranzakService {
     // Enregistrement dans le ledger interne, statut PENDING par défaut
     const transaction = await this.transactionsService.recordExternalPayment({
       walletId: wallet.id,
-      amount: BigInt(dto.amount),
+      amount: Number(dto.amount),
       operator,
       phoneNumber: dto.phone_number,
       description: dto.description ?? 'Dépôt via Tranzak',

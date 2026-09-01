@@ -357,7 +357,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
             </span>
           ) : exchangeRate ? (
             <span className="text-allness-dark font-semibold">
-              1 {senderCurrency} = {exchangeRate.toFixed(4)} {receiverCurrency}
+              1 {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency} = {exchangeRate.toFixed(4)} {CURRENCY_SYMBOLS[receiverCurrency] ?? receiverCurrency}
             </span>
           ) : (
             <span className="text-gray-400">Non disponible</span>
@@ -391,7 +391,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
         </span>
         <span className="text-xl sm:text-2xl font-bold text-allness-orange">
           {exchangeRate
-            ? `${new Intl.NumberFormat('fr-FR').format(received)} ${receiverCurrency}`
+            ? `${new Intl.NumberFormat('fr-FR').format(received)} ${CURRENCY_SYMBOLS[receiverCurrency] ?? receiverCurrency}`
             : '—'}
         </span>
       </div>

@@ -6,11 +6,12 @@ import { formatAmount, formatDateShort } from '@/lib/utils';
 
 interface TransactionsListProps {
   transactions: WalletTransaction[];
+  currency?: string;
   onSelect?: (transaction: WalletTransaction) => void;
   isLoading?: boolean;
 }
 
-export function TransactionsList({ transactions, onSelect, isLoading }: TransactionsListProps) {
+export function TransactionsList({ transactions, currency, onSelect, isLoading }: TransactionsListProps) {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -110,7 +111,7 @@ export function TransactionsList({ transactions, onSelect, isLoading }: Transact
                     }`}
                   >
                     {isCompleted ? (credit ? '+' : '-') : ''}
-                    {formatAmount(tx.amount)}
+                    {formatAmount(tx.amount, currency)}
                   </span>
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center ${

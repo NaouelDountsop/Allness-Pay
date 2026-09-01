@@ -30,7 +30,7 @@ export class TransactionsService {
   async recordExternalPayment(
     data: {
       walletId: string;
-      amount: bigint;
+      amount: number;
       operator: LinkedAccountOperator | null;
       phoneNumber: string;
       description: string;
@@ -97,7 +97,7 @@ export class TransactionsService {
       await manager.save(transaction);
 
       const newBalance = await this.recalculateBalance(manager, transaction.walletId);
-      await manager.update(Wallet, { id: transaction.walletId }, { balance: newBalance });
+      await manager.update(Wallet, { id: transaction.walletId }, { balance: newBalance.toFixed(2) });
 
       return transaction;
     });
@@ -138,19 +138,19 @@ export class TransactionsService {
         throw new BadRequestException('Vous ne pouvez pas transférer vers votre propre wallet');
       }
 
-      const senderAmount = BigInt(dto.amount);
-      if (BigInt(Math.floor(Number(fromWallet.balance))) < senderAmount) {
+      const senderAmount = Number(dto.amount);
+      if (Number(fromWallet.balance) < senderAmount) {
         throw new BadRequestException('Solde insuffisant');
       }
 
       let receiverAmount = senderAmount;
       if (fromWallet.currency !== toWallet.currency) {
         const conversion = await this.currencyService.convertAmount(
-          Number(senderAmount),
+          senderAmount,
           fromWallet.currency,
           toWallet.currency,
         );
-        receiverAmount = BigInt(Math.round(conversion.amount));
+        receiverAmount = Math.round(conversion.amount * 100) / 100;
       }
 
       const outEntry = manager.create(WalletTransaction, {
@@ -175,8 +175,8 @@ export class TransactionsService {
         this.recalculateBalance(manager, fromId),
         this.recalculateBalance(manager, toId),
       ]);
-      await manager.update(Wallet, { id: fromId }, { balance: newFromBalance });
-      await manager.update(Wallet, { id: toId }, { balance: newToBalance });
+      await manager.update(Wallet, { id: fromId }, { balance: newFromBalance.toFixed(2) });
+      await manager.update(Wallet, { id: toId }, { balance: newToBalance.toFixed(2) });
 
       const [updatedFrom, updatedTo] = await Promise.all([
         manager.findOneOrFail(Wallet, { where: { id: fromWallet.id } }),
@@ -233,15 +233,14 @@ export class TransactionsService {
       .getRepository(WalletTransaction)
       .createQueryBuilder('tx')
       .select(
-        `SUM(CASE WHEN tx.type IN ('deposit', 'transfer_in') THEN tx.amount ELSE 0 END)`,
+        `SUM(CASE WHEN tx.type IN ('deposit', 'transfer_in') AND tx.status = '${WalletTransactionStatus.COMPLETED}' THEN tx.amount ELSE 0 END)`,
         'income',
       )
       .addSelect(
-        `SUM(CASE WHEN tx.type IN ('withdrawal', 'transfer_out') THEN tx.amount ELSE 0 END)`,
+        `SUM(CASE WHEN tx.type IN ('withdrawal', 'transfer_out') AND tx.status IN ('${WalletTransactionStatus.COMPLETED}', '${WalletTransactionStatus.PENDING}') THEN tx.amount ELSE 0 END)`,
         'expense',
       )
       .where('tx.walletId = :walletId', { walletId })
-      .andWhere('tx.status = :status', { status: WalletTransactionStatus.COMPLETED })
       .andWhere('tx.createdAt >= :start', { start: startOfMonth.toISOString() })
       .getRawOne();
 
@@ -292,7 +291,7 @@ export class TransactionsService {
     };
   }
 
-  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<string> {
+  private async recalculateBalance(manager: EntityManager, walletId: string): Promise<number> {
     const result = await manager
       .createQueryBuilder(WalletTransaction, 'wt')
       .select(
@@ -301,7 +300,7 @@ export class TransactionsService {
             CASE
               WHEN wt.type IN ('deposit', 'transfer_in')
                 AND wt.status = '${WalletTransactionStatus.COMPLETED}'
-              THEN wt.amount
+              THEN CAST(wt.amount AS numeric)
               ELSE 0
             END
           )
@@ -309,7 +308,7 @@ export class TransactionsService {
             CASE
               WHEN wt.type IN ('withdrawal', 'transfer_out')
                 AND wt.status IN ('${WalletTransactionStatus.COMPLETED}', '${WalletTransactionStatus.PENDING}')
-              THEN wt.amount
+              THEN CAST(wt.amount AS numeric)
               ELSE 0
             END
           ),
@@ -320,7 +319,7 @@ export class TransactionsService {
       .where('wt.walletId = :walletId', { walletId })
       .getRawOne<{ balance: string }>();
 
-    return result?.balance ?? '0';
+    return Number(result?.balance ?? 0);
   }
 
   private assertNotTontine(wallet: Wallet): void {

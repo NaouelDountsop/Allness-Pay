@@ -214,13 +214,18 @@ export default function WalletPage() {
                 incomePercent={monthlySummary.incomePercent}
                 expensePercent={monthlySummary.expensePercent}
                 netAmount={monthlySummary.net}
-                data={monthlySummary.trend.map((t) => ({
-                  label: t.month,
-                  revenus: t.income,
-                  depenses: t.expense,
-                  epargne: 0,
-                  solde: t.income - t.expense,
-                }))}
+                currency={displayWallet?.currency}
+                data={monthlySummary.trend.map((t, i) => {
+                  const isLast = i === monthlySummary.trend.length - 1;
+                  const currentBalance = selectedWalletId ? Number(displayWallet?.balance ?? 0) : totalBalance;
+                  return {
+                    label: t.month,
+                    revenus: t.income,
+                    depenses: t.expense,
+                    epargne: 0,
+                    solde: isLast ? currentBalance : 0,
+                  };
+                })}
               />
             )}
             <SecurityCard />

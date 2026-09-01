@@ -61,17 +61,17 @@ export class ContributionService {
         throw new BadRequestException('Contribution déjà payée');
       }
 
-      const expectedAmount = BigInt(cycle.totalPot) / BigInt(cycle.contributions.length);
-      const providedAmount = BigInt(dto.amount);
+      const expectedAmount = Number(cycle.totalPot) / cycle.contributions.length;
+      const providedAmount = Number(dto.amount);
       if (providedAmount < expectedAmount) {
-        throw new BadRequestException(`Montant insuffisant. Attendu: ${expectedAmount.toString()}`);
+        throw new BadRequestException(`Montant insuffisant. Attendu: ${expectedAmount}`);
       }
 
       const memberWallet = await this.walletsService.lockWalletForUpdate(manager, dto.walletId);
       this.walletsService.assertOwnership(memberWallet, member.userId);
       this.walletsService.assertActive(memberWallet);
 
-      if (BigInt(Math.floor(Number(memberWallet.balance))) < providedAmount) {
+      if (Number(memberWallet.balance) < providedAmount) {
         throw new BadRequestException('Solde wallet insuffisant');
       }
 
@@ -111,7 +111,7 @@ export class ContributionService {
       contribution.walletTransactionId = debitEntry.id;
       await manager.save(contribution);
 
-      const paidAmount = BigInt(cycle.collectedAmount) + providedAmount;
+      const paidAmount = Number(cycle.collectedAmount) + providedAmount;
       cycle.collectedAmount = paidAmount.toString();
       await manager.save(cycle);
 

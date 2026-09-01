@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { getCountryByCode, getFlagUrl } from '@/data/countries';
 import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
-import { formatAmount } from '@/lib/utils';
+import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { Info, ArrowLeft, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 const COUNTRY_TO_CURRENCY: Record<string, string> = {
@@ -168,7 +168,7 @@ export function ReviewStep({
           <span className="font-medium">{t('tontines.exchangeRate')}</span>
           <span className="text-allness-dark dark:text-white font-semibold">
             {exchangeRate
-              ? `1 ${senderCurrency} = ${exchangeRate.toFixed(4)} ${receiverCurrency}`
+              ? `1 ${getCurrencySymbol(senderCurrency)} = ${exchangeRate.toFixed(4)} ${getCurrencySymbol(receiverCurrency)}`
               : t('tontines.notAvailable')}
           </span>
         </div>

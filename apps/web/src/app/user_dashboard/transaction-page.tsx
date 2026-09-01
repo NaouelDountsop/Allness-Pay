@@ -19,6 +19,7 @@ import { Pagination } from '../../components/ui/pagination';
 import { TransactionDetailModal } from './transaction-detail-modal';
 import { transactionService, type WalletTransaction } from '../../lib/api/transaction.service';
 import { walletService } from '../../lib/api/wallet.service';
+import { formatAmount, getCurrencySymbol } from '../../lib/utils';
 
 const PAGE_SIZE = 10;
 
@@ -98,7 +99,7 @@ export default function TransactionsPage() {
                   rows.push([
                     new Date(t.createdAt).toLocaleDateString('fr-FR'),
                     transactionService.getTypeLabel(t.type),
-                    `${Number(t.amount)} XAF`,
+                    `${Number(t.amount)} ${getCurrencySymbol(wallet?.currency)}`,
                     t.status,
                     t.reference ?? '—',
                     t.counterpartyName ?? t.phoneNumber ?? '—',
@@ -133,7 +134,7 @@ export default function TransactionsPage() {
               <span className="text-sm text-gray-300">{t('transactions.totalVolume')}</span>
             </div>
             <p className="text-2xl font-bold text-white mb-2">
-              {new Intl.NumberFormat('fr-FR').format(totalVolume)} XAF
+              {formatAmount(totalVolume, wallet?.currency)}
             </p>
             <p className="text-xs text-green-400">↗ {t('transactions.netBalance')}</p>
           </div>
@@ -269,7 +270,7 @@ export default function TransactionsPage() {
                           tx.status === 'failed' ? 'text-gray-700' : credit ? 'text-allness-green' : 'text-red-500'
                         }`}
                       >
-                        {isCompleted ? (credit ? '+' : '-') : ''} {new Intl.NumberFormat('fr-FR').format(tx.amount)} XAF
+                        {isCompleted ? (credit ? '+' : '-') : ''} {formatAmount(tx.amount, wallet?.currency)}
                       </td>
                       <td className="hidden lg:table-cell">
                         <Badge
@@ -323,6 +324,7 @@ export default function TransactionsPage() {
       {selected && (
         <TransactionDetailModal
           transaction={selected}
+          currency={wallet?.currency}
           onClose={() => setSelected(null)}
         />
       )}

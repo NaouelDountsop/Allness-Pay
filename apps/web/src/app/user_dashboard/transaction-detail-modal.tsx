@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { WalletTransaction } from '../../lib/api/transaction.service';
 import { transactionService } from '../../lib/api/transaction.service';
+import { formatAmount, getCurrencySymbol } from '../../lib/utils';
 
 // Champs optionnels liés aux tontines / à la source wallet.
 // À terme, ces champs devraient être ajoutés directement à l'interface
@@ -30,8 +31,8 @@ interface TontineTransactionFields {
 
 type ExtendedWalletTransaction = WalletTransaction & TontineTransactionFields;
 
-function fmt(amount: number): string {
-  return new Intl.NumberFormat('fr-FR').format(amount);
+function fmt(amount: number, currency?: string): string {
+  return formatAmount(amount, currency);
 }
 
 function initials(name: string): string {
@@ -56,10 +57,12 @@ const CONFETTI = [
 
 export function TransactionDetailModal({
   transaction,
+  currency,
   onClose,
   onDownloadReceipt,
 }: {
   transaction: ExtendedWalletTransaction;
+  currency?: string;
   onClose: () => void;
   onDownloadReceipt?: () => void;
 }) {
@@ -151,7 +154,7 @@ export function TransactionDetailModal({
     doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
     doc.text(
-      `${ok ? (credit ? '+' : '-') : ''}${fmt(transaction.amount)} XAF`,
+      `${ok ? (credit ? '+' : '-') : ''}${fmt(transaction.amount, currency)} ${getCurrencySymbol(currency)}`,
       centerX,
       32,
       { align: 'center' },
@@ -210,11 +213,11 @@ export function TransactionDetailModal({
     }
 
     addSectionLabel('Détail du paiement');
-    addRow('Montant', `${fmt(transaction.amount)} XAF`);
-    addRow('Frais de transaction', fees ? `${fmt(fees)} XAF` : 'Gratuit', { valueColor: GREEN });
+    addRow('Montant', `${fmt(transaction.amount, currency)} ${getCurrencySymbol(currency)}`);
+    addRow('Frais de transaction', fees ? `${fmt(fees, currency)} ${getCurrencySymbol(currency)}` : 'Gratuit', { valueColor: GREEN });
     addSeparator();
 
-    addRow('Total', `${fmt(total)} XAF`, { bold: true });
+    addRow('Total', `${fmt(total, currency)} ${getCurrencySymbol(currency)}`, { bold: true });
     addSeparator();
 
     addSectionLabel('Référence');
@@ -256,7 +259,7 @@ export function TransactionDetailModal({
 
     doc.setFontSize(7);
     doc.setTextColor(...GRAY);
-    doc.text('Généré par AllnessPay', centerX, 184, { align: 'center' });
+    doc.text('', centerX, 184, { align: 'center' });
 
     return doc;
   };
@@ -328,7 +331,7 @@ export function TransactionDetailModal({
             </p>
             <p className="text-white text-4xl font-bold leading-tight">
               {ok ? (credit ? '+' : '-') : ''}
-              {fmt(transaction.amount)} <span className="text-lg font-medium text-white/50">XAF</span>
+              {fmt(transaction.amount, currency)} <span className="text-lg font-medium text-white/50">{getCurrencySymbol(currency)}</span>
             </p>
             <p className="text-white/70 text-sm mt-1">{typeLabel}</p>
             <p className="text-white/50 text-xs mt-2 flex items-center justify-center gap-1.5">
@@ -370,23 +373,23 @@ export function TransactionDetailModal({
                   <Wallet className="w-4 h-4 text-emerald-500" />
                   Montant
                 </span>
-                <span className="font-medium text-allness-dark">{fmt(transaction.amount)} XAF</span>
+                <span className="font-medium text-allness-dark">{fmt(transaction.amount, currency)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2 text-gray-500">
                   <Tag className="w-4 h-4 text-amber-500" />
                   Frais de transaction
                 </span>
-                <span className="font-medium text-emerald-500">{fees ? `${fmt(fees)} XAF` : 'Gratuit'}</span>
+                <span className="font-medium text-emerald-500">{fees ? `${fmt(fees, currency)} ${getCurrencySymbol(currency)}` : 'Gratuit'}</span>
               </div>
             </div>
           </div>
 
           {/* Total */}
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+          {/* <div className="flex items-center justify-between pb-4 border-b border-gray-100">
             <span className="text-[15px] font-bold text-allness-dark">Total</span>
-            <span className="text-[15px] font-bold text-allness-dark">{fmt(total)} XAF</span>
-          </div>
+            <span className="text-[15px] font-bold text-allness-dark">{fmt(total, currency)} {getCurrencySymbol(currency)}</span>
+          </div> */}
 
           {/* Référence */}
           <div className="pb-4 border-b border-gray-100">

@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional, Length, Matches } from 'class-validator';
 
 const AMOUNT_REGEX = /^(?!0*(\.0+)?$)\d+(\.\d{1,2})?$/;
-const PHONE_REGEX = /^(\d{9}|237\d{9}|\+237\d{9})$/;
+const PHONE_REGEX = /^\d{7,15}$/;
 const WALLET_NUMBER_REGEX = /^WLT\d{10}$/;
 
 export class CampayWithdrawDto {
@@ -29,7 +29,7 @@ export class CampayWithdrawDto {
   @ApiProperty({
     example: '237679587525',
     description:
-      'Numéro mobile money camerounais (MTN ou Orange). 9 chiffres, avec ou sans indicatif 237',
+      'Numéro de téléphone du bénéficiaire (7 à 15 chiffres, avec indicatif pays)',
   })
   @IsString()
   @Matches(PHONE_REGEX, {

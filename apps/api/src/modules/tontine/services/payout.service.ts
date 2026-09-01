@@ -58,9 +58,9 @@ export class PayoutService {
         where: { walletNumber: tontine.walletNumber },
       });
 
-      const amount = BigInt(cycle.collectedAmount);
+      const amount = Number(cycle.collectedAmount);
 
-      if (BigInt(tontineWallet.balance.toString()) < amount) {
+      if (Number(tontineWallet.balance) < amount) {
         throw new BadRequestException('Solde wallet tontine insuffisant');
       }
 

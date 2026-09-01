@@ -17,53 +17,14 @@ import { StepIndicator } from '@/components/user_dashboard/send/step-indicator';
 import { userService } from '@/lib/api/user.service';
 import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
+import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { getFlagUrl, getCountryByCode, type Country } from '@/data/countries';
 import { CountrySelect } from '@/components/common/country-select';
+import { PhoneInput, validatePhone } from '@/components/common/phone-input';
 
 type DestinationType = 'mobile' | 'bank';
 
-const OPERATORS_BY_COUNTRY: Record<string, { value: string; label: string }[]> = {
-  CM: [
-    { value: 'orange', label: 'Orange Money Cameroun' },
-    { value: 'mtn', label: 'MTN Mobile Money' },
-  ],
-  SN: [
-    { value: 'orange', label: 'Orange Money Sénégal' },
-    { value: 'wave', label: 'Wave' },
-  ],
-  CI: [
-    { value: 'orange', label: "Orange Money Côte d'Ivoire" },
-    { value: 'mtn', label: 'MTN Mobile Money' },
-    { value: 'wave', label: 'Wave' },
-  ],
-  GA: [
-    { value: 'airtel', label: 'Airtel Money' },
-    { value: 'moov', label: 'Moov Money' },
-  ],
-  CG: [
-    { value: 'airtel', label: 'Airtel Money' },
-    { value: 'moov', label: 'Moov Money' },
-  ],
-  NE: [
-    { value: 'orange', label: 'Orange Money Niger' },
-    { value: 'mtn', label: 'Moov Money' },
-  ],
-  ML: [
-    { value: 'orange', label: 'Orange Money Mali' },
-    { value: 'moov', label: 'Moov Money' },
-  ],
-  BF: [
-    { value: 'orange', label: 'Orange Money Burkina Faso' },
-    { value: 'moov', label: 'Moov Money' },
-  ],
-  TG: [
-    { value: 'togocel', label: 'Togocel Moov Money' },
-  ],
-  BJ: [
-    { value: 'mtn', label: 'MTN Mobile Money' },
-    { value: 'moov', label: 'Moov Money' },
-  ],
-};
+const MOBILE_SUPPORTED_COUNTRIES = ['CM', 'SN', 'CI', 'GA', 'CG', 'NE', 'ML', 'BF', 'TG', 'BJ'];
 
 const BANKS_BY_COUNTRY: Record<string, { value: string; label: string }[]> = {
   CM: [
@@ -133,7 +94,6 @@ export default function WithdrawPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [destinationType, setDestinationType] = useState<DestinationType>('mobile');
   const [country, setCountry] = useState('CM');
-  const [operator, setOperator] = useState('orange');
   const [bankName, setBankName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [amount, setAmount] = useState('');
@@ -153,23 +113,25 @@ export default function WithdrawPage() {
   });
 
   const selectedCountry: Country = getCountryByCode(country) ?? getCountryByCode('CM')!;
-  const operators = OPERATORS_BY_COUNTRY[country] ?? [];
+  const hasMobile = MOBILE_SUPPORTED_COUNTRIES.includes(country);
   const banks = BANKS_BY_COUNTRY[country] ?? [];
   const currency = CURRENCY_BY_COUNTRY[country] ?? 'XAF';
   const fees = WITHDRAWAL_FEES[country] ?? 500;
 
   const amountNumber = parseFloat(amount) || 0;
-  const totalDebit = amountNumber;
-  const receivedEstimate = Math.max(0, amountNumber - fees);
+  const totalDebit = amountNumber + fees;
+  const receivedEstimate = amountNumber;
+
+  const phoneError = destinationType === 'mobile' ? validatePhone(phoneNumber, selectedCountry) : null;
 
   const canSubmitStep0 = useMemo(() => {
     if (destinationType === 'mobile') {
-      return phoneNumber.length >= selectedCountry.phoneDigits && operator !== '' && amountNumber > 0;
+      return phoneError === null && amountNumber > 0;
     }
     return bankName !== '' && amountNumber > 0;
-  }, [destinationType, phoneNumber, operator, bankName, amountNumber, selectedCountry.phoneDigits]);
+  }, [destinationType, phoneError, bankName, amountNumber]);
 
-  const canSubmitStep1 = amountNumber > 0 && amountNumber >= fees;
+  const canSubmitStep1 = amountNumber > 0;
   const canSubmitStep2 = canSubmitStep1 && wallet?.walletNumber;
 
   const stepsConfig = useMemo(() => STEPS.map((label) => ({ label })), []);
@@ -182,7 +144,7 @@ export default function WithdrawPage() {
     setError(null);
 
     try {
-      const fullPhone = selectedCountry.dialCode.replace('+', '') + phoneNumber;
+      const fullPhone = selectedCountry.dialCode.replace('+', '') + phoneNumber.replace(/\D/g, '');
       const res = await transactionService.campayWithdraw({
         walletNumber: wallet.walletNumber,
         amount: amountNumber.toFixed(2),
@@ -209,7 +171,7 @@ export default function WithdrawPage() {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => currentStep > 0 ? setCurrentStep(0) : navigate(-1)}
             className="w-10 h-10 rounded-xl bg-allness-orange/10 flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-allness-orange" />
@@ -268,9 +230,9 @@ export default function WithdrawPage() {
                       <p className="text-sm font-medium text-allness-dark">
                         {user ? `${user.prenom} ${user.nom}` : '---'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {user?.telephone || '---'}
-                      </p>
+                      {/* <p className="text-xs text-gray-500 mt-1">
+                        {user?.walletNumber || '---'}
+                      </p> */}
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -280,12 +242,11 @@ export default function WithdrawPage() {
                         value={country}
                         onChange={(c: Country) => {
                           setCountry(c.code);
-                          setOperator(OPERATORS_BY_COUNTRY[c.code]?.[0]?.value ?? '');
                           setBankName('');
                           setPhoneNumber('');
-                          const newOps = OPERATORS_BY_COUNTRY[c.code] ?? [];
+                          const countryHasMobile = MOBILE_SUPPORTED_COUNTRIES.includes(c.code);
                           const newBanks = BANKS_BY_COUNTRY[c.code] ?? [];
-                          if (newOps.length === 0) setDestinationType('bank');
+                          if (!countryHasMobile) setDestinationType('bank');
                           else if (newBanks.length === 0) setDestinationType('mobile');
                         }}
                       />
@@ -301,8 +262,8 @@ export default function WithdrawPage() {
                   <p className="text-xs text-gray-500 mb-4">
                     Choisissez où vous souhaitez retirer vos fonds
                   </p>
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    {operators.length > 0 && (
+                  <div className={`grid gap-3 mb-4 ${hasMobile ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    {hasMobile && (
                       <button
                         onClick={() => setDestinationType('mobile')}
                         className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
@@ -336,56 +297,24 @@ export default function WithdrawPage() {
                         </span>
                       </button>
                     )}
-                    {operators.length === 0 && banks.length === 0 && (
+                    {!hasMobile && banks.length === 0 && (
                       <div className="col-span-2 rounded-lg bg-orange-50 border border-orange-200 p-4 text-center">
                         <p className="text-sm text-gray-600">
-                          Aucun opérateur ni banque disponible pour {selectedCountry.name}.
+                          Aucune option de retrait disponible pour {selectedCountry.name}.
                         </p>
                       </div>
                     )}
                   </div>
 
-                  {destinationType === 'mobile' && operators.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {destinationType === 'mobile' && (
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
-                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                          Opérateur
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={operator}
-                            onChange={(e) => setOperator(e.target.value)}
-                            className="w-full h-12 px-4 pr-10 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange appearance-none bg-white"
-                          >
-                            {operators.map((op) => (
-                              <option key={op.value} value={op.value}>
-                                {op.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                          Numéro de téléphone
-                        </label>
-                        <div className="flex items-center h-12 rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-allness-orange/30 focus-within:border-allness-orange transition-all">
-                          <span className="flex items-center gap-1.5 px-3 h-full bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-600 shrink-0">
-                            <img src={getFlagUrl(country)} alt={selectedCountry.name} className="w-5 h-auto rounded-sm object-cover" />
-                            {selectedCountry.dialCode}
-                          </span>
-                          <input
-                            type="tel"
-                            value={phoneNumber}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/\D/g, '');
-                              if (digits.length <= selectedCountry.phoneDigits) setPhoneNumber(digits);
-                            }}
-                            placeholder={selectedCountry.phonePlaceholder}
-                            className="flex-1 h-full px-4 text-sm text-allness-dark focus:outline-none tracking-widest"
-                          />
-                        </div>
+                        <PhoneInput
+                          country={selectedCountry}
+                          value={phoneNumber}
+                          onChange={setPhoneNumber}
+                          error={phoneError ?? undefined}
+                        />
                       </div>
                     </div>
                   )}
@@ -435,12 +364,12 @@ export default function WithdrawPage() {
                     </div>
                   )}
 
-                  <div className="mt-3 flex items-start gap-2 rounded-lg bg-green-50 border border-green-200 p-3">
+                  {/* <div className="mt-3 flex items-start gap-2 rounded-lg bg-green-50 border border-green-200 p-3">
                     <Check className="w-4 h-4 text-allness-green shrink-0 mt-0.5" />
                     <p className="text-xs text-gray-600">
                       Les fonds seront transférés directement sur le compte {destinationType === 'mobile' ? 'mobile' : 'bancaire'} sélectionné.
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="mb-6">
@@ -465,7 +394,7 @@ export default function WithdrawPage() {
                         />
                         <span className="px-3 h-full flex items-center text-sm font-medium text-gray-500 border-l border-gray-200 bg-gray-50 shrink-0 gap-1.5">
                           <img src={getFlagUrl(country)} alt="" className="w-4 h-auto rounded-sm object-cover" />
-                          {currency}
+                          {getCurrencySymbol(currency)}
                         </span>
                       </div>
                     </div>
@@ -474,8 +403,7 @@ export default function WithdrawPage() {
                         Frais de retrait
                       </label>
                       <div className="flex items-center h-12 px-4 rounded-lg border border-gray-200 bg-gray-50">
-                        <span className="text-lg font-semibold text-allness-dark">{fees}</span>
-                        <span className="text-sm text-gray-500 ml-2">{currency}</span>
+                        <span className="text-lg font-semibold text-allness-dark">{formatAmount(fees, currency)}</span>
                         <span className="ml-2 px-2 py-0.5 rounded-full bg-allness-green/10 text-allness-green text-[10px] font-semibold">
                           Fixe
                         </span>
@@ -502,7 +430,7 @@ export default function WithdrawPage() {
                       </span>
                       <span className="text-xl sm:text-2xl font-bold text-allness-orange">
                         {amountNumber > 0
-                          ? `${new Intl.NumberFormat('fr-FR').format(receivedEstimate)} ${currency}`
+                          ? formatAmount(receivedEstimate, currency)
                           : '—'}
                       </span>
                     </div>
@@ -535,21 +463,21 @@ export default function WithdrawPage() {
                   <div className="rounded-xl border border-gray-200 p-6 space-y-4">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous retirez</span>
-                      <span className="text-sm font-semibold">{new Intl.NumberFormat('fr-FR').format(amountNumber)} {currency}</span>
+                      <span className="text-sm font-semibold">{formatAmount(amountNumber, currency)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Frais de retrait</span>
-                      <span className="text-sm font-semibold">{fees} {currency}</span>
+                      <span className="text-sm font-semibold">{formatAmount(fees, currency)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous recevez (estimation)</span>
                       <span className="text-sm font-semibold">
-                        {amountNumber > 0 ? new Intl.NumberFormat('fr-FR').format(receivedEstimate) : '—'} {currency}
+                        {amountNumber > 0 ? formatAmount(receivedEstimate, currency) : '—'}
                       </span>
                     </div>
                     <div className="border-t border-gray-200 pt-4 flex justify-between">
                       <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-                      <span className="text-lg font-bold text-allness-dark">{new Intl.NumberFormat('fr-FR').format(totalDebit)} {currency}</span>
+                      <span className="text-lg font-bold text-allness-dark">{formatAmount(totalDebit, currency)}</span>
                     </div>
                   </div>
                 </div>
@@ -582,11 +510,11 @@ export default function WithdrawPage() {
                       <span className="text-sm text-gray-500">Destination</span>
                       <span className="text-sm font-medium">
                         {destinationType === 'mobile'
-                          ? operators.find((o) => o.value === operator)?.label
+                          ? 'Mobile Money'
                           : banks.find((b) => b.value === bankName)?.label}
                       </span>
                     </div>
-                    {destinationType === 'mobile' && (
+                  {destinationType === 'mobile' && hasMobile && (
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-500">Téléphone</span>
                         <span className="text-sm font-medium">{selectedCountry.dialCode} {phoneNumber}</span>
@@ -601,21 +529,21 @@ export default function WithdrawPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Montant</span>
-                      <span className="text-sm font-semibold">{new Intl.NumberFormat('fr-FR').format(amountNumber)} {currency}</span>
+                      <span className="text-sm font-semibold">{formatAmount(amountNumber, currency)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Frais</span>
-                      <span className="text-sm font-semibold">{fees} {currency}</span>
+                      <span className="text-sm font-semibold">{formatAmount(fees, currency)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous recevez (estimation)</span>
                       <span className="text-sm font-semibold">
-                        {amountNumber > 0 ? new Intl.NumberFormat('fr-FR').format(receivedEstimate) : '—'} {currency}
+                        {amountNumber > 0 ? formatAmount(receivedEstimate, currency) : '—'}
                       </span>
                     </div>
                     <div className="border-t border-gray-200 pt-4 flex justify-between">
                       <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-                      <span className="text-lg font-bold text-allness-dark">{new Intl.NumberFormat('fr-FR').format(totalDebit)} {currency}</span>
+                      <span className="text-lg font-bold text-allness-dark">{formatAmount(totalDebit, currency)}</span>
                     </div>
                   </div>
                 </div>

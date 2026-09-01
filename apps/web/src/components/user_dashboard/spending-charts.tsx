@@ -1,6 +1,7 @@
 import { useMemo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LineChart } from 'lucide-react';
+import { formatAmount } from '../../lib/utils';
 
 interface TrendPoint {
   label: string; // ex: "Avr", "Mai", "Juin", "Juil"
@@ -15,6 +16,7 @@ interface MonthlySummaryProps {
   incomePercent: number;
   expensePercent: number;
   netAmount: number;
+  currency?: string;
   data: TrendPoint[];
 }
 
@@ -50,6 +52,7 @@ export function MonthlySummary({
   incomePercent,
   expensePercent,
   netAmount,
+  currency,
   data,
 }: MonthlySummaryProps) {
   const { t } = useTranslation();
@@ -257,7 +260,7 @@ export function MonthlySummary({
       </div>
 
       <p className="text-sm font-semibold text-gray-800 dark:text-[#F1F5F5] mt-3 mb-4">
-        {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
+        {formatAmount(netAmount, currency)}
       </p>
 
       {/* Tableau vertical des données */}

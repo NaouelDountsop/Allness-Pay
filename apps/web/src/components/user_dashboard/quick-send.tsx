@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Plus, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { transactionService } from '@/lib/api/transaction.service';
+import { walletService } from '@/lib/api/wallet.service';
+import { currencyService } from '@/lib/api/currency.service';
+import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { PinConfirmModal } from './send/pin-confirm-modal';
 
 interface QuickSendContact {
@@ -23,10 +26,43 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
+  const [received, setReceived] = useState('');
+  const editingField = useRef<'sender' | 'receiver'>('sender');
   const [selectedContact, setSelectedContact] = useState<QuickSendContact | null>(null);
   const [showPin, setShowPin] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet-primary'],
+    queryFn: walletService.getPrimary,
+  });
+
+  const senderCurrency = wallet?.currency ?? 'XAF';
+  const receiverCurrency = selectedContact?.currency ?? null;
+  const amountNumber = parseFloat(amount) || 0;
+
+  const hasContact = !!selectedContact;
+  const { data: exchangeRate } = useQuery({
+    queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
+    queryFn: () => currencyService.getExchangeRate(senderCurrency, receiverCurrency!),
+    enabled: hasContact && !!receiverCurrency && senderCurrency !== receiverCurrency,
+  });
+
+  const rate = exchangeRate?.rate ?? (hasContact && senderCurrency === receiverCurrency ? 1 : null);
+  const receivedNumber = parseFloat(received) || 0;
+  const showConversion = hasContact && receiverCurrency !== null && senderCurrency !== receiverCurrency && rate !== null;
+  const receivedAmount = hasContact && rate !== null
+    ? (editingField.current === 'sender' ? amountNumber * rate : receivedNumber)
+    : null;
+
+  useEffect(() => {
+    if (hasContact && rate && editingField.current === 'sender' && amountNumber > 0) {
+      setReceived((amountNumber * rate).toFixed(2));
+    } else if (hasContact && amountNumber === 0) {
+      setReceived('');
+    }
+  }, [rate, hasContact, amountNumber]);
 
   const transferMutation = useMutation({
     mutationFn: (pin: string) =>
@@ -84,6 +120,7 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
             onClick={() => {
               setSuccess(false);
               setAmount('');
+              setReceived('');
               setSelectedContact(null);
             }}
             className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90"
@@ -123,7 +160,11 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
               <button
                 key={c.id}
                 type="button"
-                onClick={() => setSelectedContact(c)}
+                onClick={() => {
+                  setSelectedContact(c);
+                  setReceived('');
+                  editingField.current = 'sender';
+                }}
                 className={`flex flex-col items-center gap-1 group shrink-0 snap-start ${
                   selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
                 }`}
@@ -174,15 +215,49 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
           type="number"
           placeholder={t('tontines.enterAmount')}
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            editingField.current = 'sender';
+            const val = e.target.value;
+            setAmount(val);
+            const num = parseFloat(val) || 0;
+            if (showConversion && rate) {
+              setReceived(num > 0 ? (num * rate).toFixed(2) : '');
+            }
+          }}
           className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
         />
-        {selectedContact && (
-          <div className="h-11 min-w-[72px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
-            {selectedContact.currency}
-          </div>
-        )}
+        <div className="h-11 min-w-[72px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+          {senderCurrency}
+        </div>
       </div>
+
+      {selectedContact && (
+        <div className="rounded-lg bg-allness-orange/5 border border-allness-orange/20 p-2.5 mb-3">
+          {showConversion && (
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+              Taux : 1 {senderCurrency} = {formatAmount(rate!, receiverCurrency!)}
+            </p>
+          )}
+          <div className="flex gap-2 items-center">
+            <input
+              type="number"
+              placeholder="Montant reçu"
+              value={editingField.current === 'sender' ? (receivedAmount ? Number(receivedAmount).toFixed(2) : '') : received}
+              onChange={(e) => {
+                editingField.current = 'receiver';
+                const val = e.target.value;
+                setReceived(val);
+                const num = parseFloat(val) || 0;
+                if (showConversion && rate) {
+                  setAmount(num > 0 ? (num / rate).toFixed(2) : '');
+                }
+              }}
+              className="flex-1 h-9 rounded-lg border border-allness-orange/30 px-3 text-xs bg-white dark:bg-gray-800 text-allness-orange font-semibold focus:outline-none focus:ring-2 focus:ring-allness-orange/30"
+            />
+            <span className="text-xs font-medium text-allness-orange">{getCurrencySymbol(receiverCurrency)}</span>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-2.5 text-xs text-red-700 dark:text-red-400 mb-3">

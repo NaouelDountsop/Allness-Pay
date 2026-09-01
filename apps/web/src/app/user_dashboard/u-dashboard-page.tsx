@@ -61,17 +61,8 @@ export default function DashboardPage() {
 
   const lastFiveTransactions = transactions.slice(0, 5);
 
-  const totalIncome = transactions.reduce((sum, t) => {
-    if (t.status !== 'completed') return sum;
-    const credit = transactionService.isCredit(t.type);
-    return credit ? sum + Number(t.amount) : sum;
-  }, 0);
-
-  const totalExpense = transactions.reduce((sum, t) => {
-    if (t.status !== 'completed') return sum;
-    const credit = transactionService.isCredit(t.type);
-    return credit ? sum : sum + Number(t.amount);
-  }, 0);
+  const currentMonthIncome = monthlySummary?.income ?? 0;
+  const currentMonthExpense = monthlySummary?.expense ?? 0;
 
   if (walletLoading) {
     return (
@@ -142,7 +133,7 @@ export default function DashboardPage() {
                       ENTRÉES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">+{formatNumber(totalIncome)}</span>{' '}
+                      <span className="text-white">+{formatNumber(currentMonthIncome)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -154,7 +145,7 @@ export default function DashboardPage() {
                       SORTIES
                     </p>
                     <p className="text-xs sm:text-sm font-semibold">
-                      <span className="text-white">-{formatNumber(totalExpense)}</span>{' '}
+                      <span className="text-white">-{formatNumber(currentMonthExpense)}</span>{' '}
                       <span className="text-[#D28E2F]">{currency}</span>
                     </p>
                   </div>
@@ -162,7 +153,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <TransactionsList transactions={lastFiveTransactions} isLoading={txLoading} />
+            <TransactionsList transactions={lastFiveTransactions} currency={wallet?.currency} isLoading={txLoading} />
           </div>
 
           <div className="space-y-6">
@@ -183,13 +174,17 @@ export default function DashboardPage() {
                 incomePercent={monthlySummary.incomePercent}
                 expensePercent={monthlySummary.expensePercent}
                 netAmount={monthlySummary.net}
-                data={monthlySummary.trend.map((t) => ({
-                  label: t.month,
-                  revenus: t.income,
-                  depenses: t.expense,
-                  epargne: 0,
-                  solde: t.income - t.expense,
-                }))}
+                currency={wallet?.currency}
+                data={monthlySummary.trend.map((t, i) => {
+                  const isLast = i === monthlySummary.trend.length - 1;
+                  return {
+                    label: t.month,
+                    revenus: t.income,
+                    depenses: t.expense,
+                    epargne: 0,
+                    solde: isLast ? balance : 0,
+                  };
+                })}
               />
             )}
           </div>

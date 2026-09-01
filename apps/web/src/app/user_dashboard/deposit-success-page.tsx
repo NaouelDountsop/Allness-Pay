@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/user_dashboard/dash-layout";
 import { DashboardHeader } from "@/components/user_dashboard/header";
 import { useDepositFlow } from "../../context/deposit-flow-context";
 import { BANK_LABELS } from "../../context/deposit-flow.constants";
+import { formatAmount } from "@/lib/utils";
 
 function formatDate(date: Date | null) {
   if (!date) return '—';
@@ -60,7 +61,7 @@ export default function DepositSuccessPage() {
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400">{t('depositSuccess.amountCredited')}</span>
               <span className="text-lg font-bold text-allness-green">
-                +{new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
+                +{formatAmount(Number(deposit.amount), deposit.currency)}
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
@@ -107,7 +108,7 @@ export default function DepositSuccessPage() {
             <div>
               <p className="text-[11px] text-green-700 mb-1">{t('depositSuccess.amountDeposited')}</p>
               <p className="text-lg font-bold text-allness-dark">
-                {new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA
+                {formatAmount(Number(deposit.amount), deposit.currency)}
               </p>
             </div>
             <Eye className="w-4 h-4 text-green-600" />
@@ -125,7 +126,7 @@ export default function DepositSuccessPage() {
               onClick={() => {
                 const rows = [
                   ['Champ', 'Valeur'],
-                  ['Montant', `${new Intl.NumberFormat('fr-FR').format(Number(deposit.amount))} FCFA`],
+                  ['Montant', formatAmount(Number(deposit.amount), deposit.currency)],
                   ['Référence', deposit.transactionId || '—'],
                   ['Date', formatDate(deposit.createdAt)],
                   ['Statut', 'Succès'],

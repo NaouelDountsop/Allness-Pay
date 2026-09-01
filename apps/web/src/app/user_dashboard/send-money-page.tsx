@@ -94,10 +94,11 @@ export default function SendMoneyPage() {
     return COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
   }, [form.country, form.receptionMode, beneficiaryInfo?.currency]);
 
+  const hasBeneficiary = !!form.beneficiaryContact;
   const { data: exchangeRate, isLoading: exchangeRateLoading } = useQuery({
     queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
     queryFn: () => currencyService.getExchangeRate(senderCurrency, receiverCurrency),
-    enabled: senderCurrency !== receiverCurrency,
+    enabled: hasBeneficiary && senderCurrency !== receiverCurrency,
   });
 
   const senderInfo = profile

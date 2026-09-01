@@ -125,7 +125,7 @@ export class CampayService {
 
       const transaction = await this.transactionsService.recordExternalPayment({
         walletId: wallet.id,
-        amount: BigInt(dto.amount),
+        amount: Number(dto.amount),
         operator,
         phoneNumber: dto.phone_number,
         description: dto.description ?? 'Dépôt via Campay',
@@ -225,15 +225,15 @@ export class CampayService {
         throw new BadRequestException('Ce wallet n\'est pas actif');
       }
 
-      const amountBigInt = BigInt(amount);
-      if (BigInt(Math.floor(Number(wallet.balance))) < amountBigInt) {
+      const withdrawAmount = Number(amount);
+      if (Number(wallet.balance) < withdrawAmount) {
         throw new BadRequestException('Solde insuffisant pour effectuer ce retrait');
       }
 
       const entry = manager.create(WalletTransaction, {
         walletId: wallet.id,
         type: WalletTransactionType.WITHDRAWAL,
-        amount: amountBigInt,
+        amount: withdrawAmount,
         operator,
         phoneNumber: dto.phone_number,
         description: dto.description ?? 'Retrait via Campay',
@@ -244,7 +244,7 @@ export class CampayService {
       });
       await manager.save(entry);
 
-      const newBalance = (BigInt(Math.floor(Number(wallet.balance))) - amountBigInt).toString();
+      const newBalance = (Number(wallet.balance) - withdrawAmount).toFixed(2);
       await manager.update(Wallet, { id: wallet.id }, { balance: newBalance });
 
       return entry;

@@ -22,6 +22,8 @@ export class BeneficiairesService {
     private readonly beneficiaireRepository: Repository<Beneficiaire>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
   ) {}
 
   async create(
@@ -80,18 +82,29 @@ export class BeneficiairesService {
     const limite = filtre.limite ?? 10;
 
     query
-      .select([
-        'beneficiaire',
-        'COALESCE(wallet.currency, \'XAF\') AS currency',
-      ])
+      .select(['beneficiaire'])
       .orderBy('beneficiaire.createdAt', 'DESC')
       .skip((page - 1) * limite)
       .take(limite);
 
     const [data, total] = await query.getManyAndCount();
 
+    const numeros = data.map((b) => b.numero);
+    const wallets = await this.walletRepository
+      .createQueryBuilder('wallet')
+      .select(['wallet.walletNumber', 'wallet.currency'])
+      .where('wallet.walletNumber IN (:...numeros)', { numeros })
+      .getMany();
+
+    const walletCurrencyMap = new Map(wallets.map((w) => [w.walletNumber, w.currency]));
+
     return {
-      data: data.map((b) => ({ ...b.toApi(), currency: (b as unknown as { currency?: string }).currency ?? 'XAF' })),
+      data: data.map((b) => {
+        const api = b.toApi();
+        const walletCurrency = walletCurrencyMap.get(b.numero);
+        if (walletCurrency) api.currency = walletCurrency;
+        return api;
+      }),
       total,
       page,
       limite,

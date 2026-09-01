@@ -50,12 +50,20 @@ export class Beneficiaire {
 
   /** Renvoie une version "API-friendly" avec des clés anglaises pour le frontend. */
   toApi() {
+    const COUNTRY_TO_CURRENCY: Record<string, string> = {
+      CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
+      SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
+      CA: 'CAD',
+      FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
+    };
+
     return {
       id: this.id,
       name: this.nom,
       phone: this.numero,
       network: this.reseau,
       country: this.pays,
+      currency: COUNTRY_TO_CURRENCY[this.pays] ?? 'XAF',
       status: this.verifie ? 'verified' : 'pending',
       isFavorite: this.favori,
       createdAt: this.createdAt,

@@ -7,12 +7,9 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { Pagination } from '@/components/ui/pagination';
 import { mockRecentPayments } from '@/lib/mock/payments-data';
 import type { RecentPayment } from '@/lib/mock/payments-data';
+import { formatAmount } from '@/lib/utils';
 
 const PAGE_SIZE = 10;
-
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat('fr-FR').format(amount);
-}
 
 export default function PaymentHistoryPage() {
   const { t } = useTranslation();
@@ -107,7 +104,7 @@ export default function PaymentHistoryPage() {
           <div className="rounded-2xl bg-allness-dark p-5 text-white">
             <p className="text-xs text-white/60 mb-1">{t('paymentHistory.totalPaid')}</p>
             <p className="text-2xl font-bold">
-              {formatAmount(totalPaid)} <span className="text-sm text-allness-orange">FCFA</span>
+              {formatAmount(totalPaid)}
             </p>
           </div>
           <div className="rounded-2xl border border-brand-border bg-brand-card p-5 shadow-sm">
@@ -209,7 +206,7 @@ export default function PaymentHistoryPage() {
                       </td>
                       <td className="px-5 py-3.5 text-brand-text-secondary">{payment.reference}</td>
                       <td className="px-5 py-3.5 font-semibold text-brand-text">
-                        {formatAmount(payment.amount)} <span className="text-xs text-brand-text-secondary">FCFA</span>
+                        {formatAmount(payment.amount)}
                       </td>
                       <td className="px-5 py-3.5">
                         <span
