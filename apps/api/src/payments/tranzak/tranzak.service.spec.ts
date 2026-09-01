@@ -13,7 +13,10 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('TranzakService', () => {
   let service: TranzakService;
-  let mockTransactionsService: { confirmExternalPayment: jest.Mock; recordExternalPayment: jest.Mock };
+  let mockTransactionsService: {
+    confirmExternalPayment: jest.Mock;
+    recordExternalPayment: jest.Mock;
+  };
   let mockWalletTransactionRepo: { findOne: jest.Mock };
 
   beforeEach(async () => {
