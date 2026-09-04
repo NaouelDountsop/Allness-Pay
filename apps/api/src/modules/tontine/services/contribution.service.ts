@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, In } from 'typeorm';
+import * as ExcelJS from 'exceljs';
 import { TontineContribution } from '../entities/tontine-contribution.entity';
 import { TontineCycle } from '../entities/tontine-cycle.entity';
 import { TontineMember } from '../entities/tontine-member.entity';
@@ -122,7 +123,7 @@ export class ContributionService {
   async findAllByCycle(cycleId: string): Promise<TontineContribution[]> {
     return this.contributionRepo.find({
       where: { cycleId },
-      relations: ['cycle'],
+      relations: ['member', 'member.user', 'cycle'],
     });
   }
 
@@ -132,7 +133,7 @@ export class ContributionService {
         memberId,
         status: TontineContributionStatus.PENDING,
       },
-      relations: ['cycle'],
+      relations: ['member', 'member.user', 'cycle'],
       order: { dueDate: 'ASC' },
     });
   }
@@ -235,5 +236,170 @@ export class ContributionService {
       relations: ['member', 'member.user', 'cycle'],
       order: { dueDate: 'ASC' },
     });
+  }
+
+  async exportByTontine(tontineId: string): Promise<Buffer> {
+    const cycles = await this.cycleRepo.find({
+      where: { tontineId },
+      order: { cycleNumber: 'ASC' },
+    });
+
+    if (cycles.length === 0) {
+      throw new NotFoundException('Aucun cycle trouvé pour cette tontine');
+    }
+
+    const contributions = await this.contributionRepo.find({
+      where: { cycleId: In(cycles.map((c) => c.id)) },
+      relations: ['member', 'member.user', 'cycle'],
+    });
+
+    const STATUS_COLORS: Record<string, string> = {
+      PAID: 'FF10B981',
+      PENDING: 'FFF59E0B',
+      LATE: 'FFEF4444',
+      FAILED: 'FF9CA3AF',
+    };
+
+    const STATUS_LABELS: Record<string, string> = {
+      PAID: 'Validé',
+      PENDING: 'En attente',
+      LATE: 'En retard',
+      FAILED: 'Échoué',
+    };
+
+    const memberMap = new Map<
+      string,
+      { memberName: string; cycles: Record<string, { amount: number; status: string }>; total: number }
+    >();
+
+    for (const c of contributions) {
+      const key = c.memberId;
+      if (!memberMap.has(key)) {
+        const memberName = c.member?.user
+          ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim()
+          : `Membre ${c.memberId}`;
+        memberMap.set(key, { memberName, cycles: {}, total: 0 });
+      }
+      const entry = memberMap.get(key)!;
+      entry.cycles[c.cycleId] = { amount: Number(c.amount), status: c.status };
+      entry.total += Number(c.amount);
+    }
+
+    const sortedMembers = Array.from(memberMap.entries())
+      .sort((a, b) => a[1].memberName.localeCompare(b[1].memberName));
+
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'AfriLinkPay';
+    workbook.created = new Date();
+
+    const sheet = workbook.addWorksheet('Versements', {
+      views: [{ state: 'frozen', ySplit: 2, xSplit: 1 }],
+    });
+
+    const cycleCount = cycles.length;
+
+    const headerRow1 = sheet.getRow(1);
+    const headerRow2 = sheet.getRow(2);
+
+    headerRow1.getCell(1).value = 'Nom et prénom';
+    sheet.mergeCells(1, 1, 2, 1);
+    headerRow1.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+    cycles.forEach((cycle, i) => {
+      const colStart = 2 + i * 2;
+      const colEnd = colStart + 1;
+
+      headerRow1.getCell(colStart).value = `Tour ${cycle.cycleNumber}`;
+      sheet.mergeCells(1, colStart, 1, colEnd);
+      headerRow1.getCell(colStart).alignment = { vertical: 'middle', horizontal: 'center' };
+
+      headerRow2.getCell(colStart).value = 'Montant';
+      headerRow2.getCell(colEnd).value = 'Statut';
+    });
+
+    const totalCol = 1 + cycleCount * 2 + 1;
+    headerRow1.getCell(totalCol).value = 'TOTAL';
+    sheet.mergeCells(1, totalCol, 2, totalCol);
+    headerRow1.getCell(totalCol).alignment = { vertical: 'middle', horizontal: 'center' };
+
+    [headerRow1, headerRow2].forEach((row) => {
+      row.height = 22;
+      row.eachCell((cell) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF0F2A2E' },
+        };
+        cell.font = { color: { argb: 'FFFFFFFF' }, bold: true, size: 10 };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          bottom: { style: 'thin', color: { argb: 'FF0F2A2E' } },
+          right: { style: 'thin', color: { argb: 'FFFFFFFF' } },
+        };
+      });
+    });
+
+    sheet.getColumn(1).width = 28;
+    cycles.forEach((_, i) => {
+      sheet.getColumn(2 + i * 2).width = 14;
+      sheet.getColumn(3 + i * 2).width = 14;
+    });
+    sheet.getColumn(totalCol).width = 16;
+
+    sortedMembers.forEach(([_memberId, memberData], rowIdx) => {
+      const rowNum = rowIdx + 3;
+      const row = sheet.getRow(rowNum);
+
+      row.getCell(1).value = memberData.memberName;
+      row.getCell(1).alignment = { vertical: 'middle' };
+
+      cycles.forEach((cycle, i) => {
+        const contribution = memberData.cycles[cycle.id];
+        const amountCol = 2 + i * 2;
+        const statusCol = 3 + i * 2;
+
+        row.getCell(amountCol).value = contribution?.amount ?? 0;
+        row.getCell(amountCol).numFmt = '#,##0';
+        row.getCell(amountCol).alignment = { vertical: 'middle', horizontal: 'right' };
+
+        const statusValue = contribution?.status ?? '';
+        row.getCell(statusCol).value = STATUS_LABELS[statusValue] ?? 'Non versé';
+        const color = STATUS_COLORS[statusValue];
+        if (color) {
+          row.getCell(statusCol).font = { color: { argb: color }, bold: true };
+        }
+        row.getCell(statusCol).alignment = { vertical: 'middle', horizontal: 'center' };
+      });
+
+      row.getCell(totalCol).value = memberData.total;
+      row.getCell(totalCol).numFmt = '#,##0';
+      row.getCell(totalCol).alignment = { vertical: 'middle', horizontal: 'right' };
+      row.getCell(totalCol).font = { bold: true };
+
+      const isEven = rowIdx % 2 === 0;
+      row.eachCell((cell, colNumber) => {
+        cell.border = {
+          bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+        };
+        if (!isEven) {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } };
+        }
+        if (colNumber > 1) {
+          cell.border = {
+            ...cell.border,
+            left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          };
+        }
+      });
+      row.height = 20;
+    });
+
+    sheet.autoFilter = {
+      from: { row: 2, column: 1 },
+      to: { row: 2, column: totalCol },
+    };
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(arrayBuffer as ArrayBuffer);
   }
 }

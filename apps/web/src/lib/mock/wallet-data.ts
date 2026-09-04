@@ -1,7 +1,7 @@
 export interface WalletAccount {
   id: string;
   label: string;
-  type: 'wallet' | 'mobile_money' | 'bank';
+  type: 'wallet' | 'mobile_money' | 'card';
   provider?: string;
   logoUrl?: string;
   balance: number;
@@ -33,9 +33,9 @@ export const mockWalletAccounts: WalletAccount[] = [
   },
   {
     id: '4',
-    label: 'Compte Bancaire',
-    type: 'bank',
-    logoUrl: '/bank.png',
+    label: 'Carte Bancaire',
+    type: 'card',
+    logoUrl: '/card.png',
     balance: 1500000,
   },
 ];

@@ -15,9 +15,11 @@ import {
   BadRequestException,
   UploadedFile,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
 import { ContributionService } from './services/contribution.service';
@@ -31,6 +33,7 @@ import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { ContributeFromWalletDto } from './dto/contribute-from-wallet.dto';
 import { CreateMessageDto } from '../messaging/dto/create-message.dto';
 import { TontineStatus } from './entities/tontine.entity';
+import { tontineMulterConfig } from '../../common/config/tontine-multer.config';
 
 interface AuthenticatedRequest extends Request {
   user: { sub: number; email: string };
@@ -96,12 +99,7 @@ export class TontineController {
   @Post(':id/messages')
   @ApiOperation({ summary: 'Envoyer un message (texte et/ou fichier)' })
   @ApiParam({ name: 'id', type: String })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      dest: 'uploads/tontines',
-      limits: { fileSize: 10 * 1024 * 1024 },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', tontineMulterConfig))
   createMessage(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
@@ -162,6 +160,19 @@ export class TontineController {
       cycles.map((cycle) => this.contributionService.findAllByCycle(cycle.id)),
     );
     return allContributions.flat();
+  }
+
+  @Get(':id/contributions/export')
+  @ApiOperation({ summary: 'Exporter les contributions en Excel' })
+  @ApiParam({ name: 'id', type: String })
+  async exportContributions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.contributionService.exportByTontine(id);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="versements.xlsx"');
+    res.send(buffer);
   }
 
  

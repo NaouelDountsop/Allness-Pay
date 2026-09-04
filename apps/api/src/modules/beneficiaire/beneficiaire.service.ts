@@ -90,13 +90,17 @@ export class BeneficiairesService {
     const [data, total] = await query.getManyAndCount();
 
     const numeros = data.map((b) => b.numero);
-    const wallets = await this.walletRepository
-      .createQueryBuilder('wallet')
-      .select(['wallet.walletNumber', 'wallet.currency'])
-      .where('wallet.walletNumber IN (:...numeros)', { numeros })
-      .getMany();
+    const walletCurrencyMap = new Map<string, string>();
 
-    const walletCurrencyMap = new Map(wallets.map((w) => [w.walletNumber, w.currency]));
+    if (numeros.length > 0) {
+      const wallets = await this.walletRepository
+        .createQueryBuilder('wallet')
+        .select(['wallet.walletNumber', 'wallet.currency'])
+        .where('wallet.walletNumber IN (:...numeros)', { numeros })
+        .getMany();
+
+      wallets.forEach((w) => walletCurrencyMap.set(w.walletNumber, w.currency));
+    }
 
     return {
       data: data.map((b) => {

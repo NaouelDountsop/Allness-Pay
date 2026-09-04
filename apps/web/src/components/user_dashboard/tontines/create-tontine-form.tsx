@@ -302,12 +302,12 @@ export function CreateTontineForm() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <button
+            {/* <button
               type="button"
               className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600"
             >
               {t('tontines.saveDraft')}
-            </button>
+            </button> */}
             <button
               type="submit"
               disabled={!isValid}
@@ -414,9 +414,9 @@ function MembresTab({
         </div>
       ) : null}
       <div className="flex justify-end gap-3">
-        <button className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
+        {/* <button className="h-10 px-5 rounded-lg border border-gray-200 text-sm text-gray-600">
           {t('tontines.saveDraft')}
-        </button>
+        </button> */}
         <button
           onClick={onSubmit}
           disabled={isSubmitting}

@@ -15,6 +15,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { tontineMulterConfig } from '../../common/config/tontine-multer.config';
 
 interface AuthenticatedRequest extends Request {
   user: { sub: number; email: string };
@@ -40,12 +41,7 @@ export class MessageController {
   @Post()
   @ApiOperation({ summary: 'Envoyer un message (texte et/ou fichier)' })
   @ApiParam({ name: 'tontineId', type: String })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      dest: 'uploads/tontines',
-      limits: { fileSize: 10 * 1024 * 1024 },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', tontineMulterConfig))
   create(
     @Param('tontineId', ParseUUIDPipe) tontineId: string,
     @Req() req: AuthenticatedRequest,

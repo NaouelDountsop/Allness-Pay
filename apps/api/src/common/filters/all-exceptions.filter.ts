@@ -82,7 +82,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           // Parse "field.property" constraint messages to extract field names
           const errors: Array<{ field: string; message: string }> = raw.map((msg) => {
             // class-validator messages typically start with "field must..." or "field should..."
-            const match = msg.match(/^(\w+)\s+(must|should|is|has)/i);
+            const match = msg.match(/^(\w+)\s+(must|should|is|has|est|doit|a|peut)/i);
             return {
               field: match?.[1] ?? 'unknown',
               message: msg,

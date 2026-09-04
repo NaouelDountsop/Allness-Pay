@@ -49,9 +49,9 @@ export function Sidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () =>
     <aside className={`${mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'} shrink-0 w-72 max-w-full bg-[#0D343A] dark:bg-[#061216] text-white flex-col border-r border-white/10 dark:border-white/15`}>
       <div className="flex items-center justify-between gap-2 px-6 py-4">
         <div className="flex items-center gap-3">
-          <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-14 h-20 object-contain" />
+          <img src="/allnesspay_logo1.png" alt="Allness Pay" className="w-14 h-20 object-contain" />
           <span className="font-bold text-lg">
-            Allness<span className="text-brand-orange dark:text-brand-orange">Pay</span>
+            Allness<span className="text-brand-orange dark:text-brand-orange"> Pay</span>
           </span>
         </div>
         {mobile && onClose && (

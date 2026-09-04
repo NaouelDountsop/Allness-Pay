@@ -11,9 +11,9 @@ export default function PhoneConfirmationPage() {
   const { t } = useTranslation();
   const { deposit, reset } = useDepositFlow();
 
-  // Bank deposits skip phone confirmation entirely
+  // Card deposits skip phone confirmation entirely
   useEffect(() => {
-    if (deposit.method === 'bank') {
+    if (deposit.method === 'card') {
       navigate('/deposit/processing', { replace: true });
     }
   }, [deposit.method, navigate]);

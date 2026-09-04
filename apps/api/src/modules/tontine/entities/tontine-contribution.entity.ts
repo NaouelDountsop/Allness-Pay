@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
 import { TontineCycle } from './tontine-cycle.entity';
+import { TontineMember } from './tontine-member.entity';
 
 @Entity('tontine_contributions')
 export class TontineContribution {
@@ -19,6 +21,10 @@ export class TontineContribution {
 
   @ManyToOne(() => TontineCycle, (cycle) => cycle.contributions, { onDelete: 'CASCADE' })
   cycle: TontineCycle;
+
+  @ManyToOne(() => TontineMember, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'memberId' })
+  member: TontineMember;
 
   @Column({ type: 'uuid' })
   memberId: string;

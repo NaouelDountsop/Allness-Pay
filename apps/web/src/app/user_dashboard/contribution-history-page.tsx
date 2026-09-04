@@ -9,6 +9,7 @@ import { CycleSelector } from '@/components/user_dashboard/tontines/cycle-select
 import { ContributionsTable } from '@/components/user_dashboard/tontines/contributions-table';
 import { tontineService, type Tontine } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
+import { apiClient } from '@/lib/api-client';
 import {
   Dialog,
   DialogContent,
@@ -95,6 +96,38 @@ export default function ContributionHistoryPage() {
       }))
     : [];
 
+  const tableCycles = (apiCycles ?? []).map((c) => ({
+    id: c.id,
+    name: `Tour ${c.cycleNumber}`,
+    date: new Date(c.dueDate).toLocaleDateString('fr-FR'),
+  }));
+
+  const memberMap = new Map<
+    string,
+    { memberName: string; cycles: Record<string, { amount: number; status: string }>; total: number }
+  >();
+
+  for (const c of apiContributions ?? []) {
+    const key = c.memberId;
+    if (!memberMap.has(key)) {
+      memberMap.set(key, {
+        memberName: c.member?.user
+          ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim() || `Membre ${c.member.userId}`
+          : `Membre`,
+        cycles: {},
+        total: 0,
+      });
+    }
+    const entry = memberMap.get(key)!;
+    entry.cycles[c.cycleId] = { amount: Number(c.amount), status: c.status };
+    entry.total += Number(c.amount);
+  }
+
+  const tableContributions = Array.from(memberMap.entries()).map(([memberId, data]) => ({
+    id: memberId,
+    ...data,
+  }));
+
   if (tontineLoading) {
     return (
       <DashboardLayout>
@@ -147,24 +180,25 @@ export default function ContributionHistoryPage() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => {
-                const rows = [['Date', 'Membre', 'Montant', 'Statut', 'Devise']];
-                contributions.forEach((c) => {
-                  rows.push([c.date, c.memberName, String(c.amount), c.status, c.currency]);
+              onClick={async () => {
+                if (!id || !tontine) return;
+                const response = await apiClient.get(`/tontines/${id}/contributions/export`, {
+                  responseType: 'blob',
                 });
-                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
-                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const blob = new Blob([response.data], {
+                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `versements_${tontine?.name ?? 'tontine'}_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.download = `versements_${tontine.name}_${new Date().toISOString().slice(0, 10)}.xlsx`;
                 a.click();
                 URL.revokeObjectURL(url);
               }}
               className="h-9 px-4 rounded-lg border border-allness-green text-allness-green text-sm flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Exporter CSV</span>
+              <span className="hidden sm:inline">Exporter Excel</span>
             </button>
             <button
               onClick={() => setTontineModalOpen(true)}
@@ -195,7 +229,9 @@ export default function ContributionHistoryPage() {
         )}
 
         <ContributionsTable
-          contributions={contributions}
+          tontineName={tontine?.name ?? ''}
+          cycles={tableCycles}
+          contributions={tableContributions}
           currency={displayCurrency}
         />
       </div>
