@@ -793,6 +793,47 @@ AllnessPay
   }
 
   // ============================================================
+  // DÉPÔT - NOTIFICATION
+  // ============================================================
+
+  async sendDepositNotification(
+    email: string,
+    firstName: string | undefined,
+    options: { amount: number; currency: string; reference: string; walletNumber: string; newBalance?: string },
+  ): Promise<void> {
+    const safeName = firstName ? this.escapeHtml(firstName) : 'Client';
+    const safeAmount = this.escapeHtml(String(options.amount));
+    const safeCurrency = this.escapeHtml(options.currency);
+    const safeReference = this.escapeHtml(options.reference);
+    const safeWallet = this.escapeHtml(options.walletNumber);
+
+    const html = this.buildTemplate(
+      `
+        ${this.heading('Dépôt crédité sur votre portefeuille')}
+
+        ${this.paragraph(`Bonjour <strong>${safeName}</strong>,`)}
+
+        ${this.paragraph(
+          `Nous avons crédité ${safeAmount} ${safeCurrency} sur votre portefeuille ${safeWallet}.`,
+        )}
+
+        ${this.infoCard('Référence', safeReference)}
+
+        ${this.paragraph('Si vous n’avez pas réalisé cette opération, contactez notre support immédiatement.')}
+      `,
+      { preheader: 'Votre dépôt a été crédité' },
+    );
+
+    const text = `AllnessPay\n\nBonjour ${firstName || 'client'},\n\nNous avons crédité ${options.amount} ${options.currency} sur votre portefeuille ${options.walletNumber}.\n\nRéférence: ${options.reference}\n\nSi vous n'avez pas réalisé cette opération, contactez notre support.`;
+
+    await this.sendMail({
+      to: email,
+      subject: 'Dépôt crédité — AllnessPay',
+      html,
+      text,
+    });
+  }
+  // ============================================================
   // KYC - REFUSÉ
   // ============================================================
 

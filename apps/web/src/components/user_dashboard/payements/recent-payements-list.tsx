@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Receipt, ChevronRight } from 'lucide-react';
 import type { RecentPayment } from '@/lib/mock/payments-data';
+import { CURRENCY_SYMBOLS, type Currency } from '../../../context/deposit-flow.constants';
 
 interface RecentPaymentsListProps {
   payments: RecentPayment[];
@@ -43,7 +44,7 @@ export function RecentPaymentsList({ payments }: RecentPaymentsListProps) {
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs sm:text-sm font-semibold text-gray-800 text-right whitespace-nowrap">
                   {new Intl.NumberFormat('fr-FR').format(p.amount)}{' '}
-                  <span className="hidden sm:inline">FCFA</span>
+                  <span className="hidden sm:inline">{CURRENCY_SYMBOLS[p.currency as Currency] || p.currency || 'FCFA'}</span>
                 </span>
                 <span
                   className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${status.className}`}

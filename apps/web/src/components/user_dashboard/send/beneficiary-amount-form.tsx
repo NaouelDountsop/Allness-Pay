@@ -13,9 +13,8 @@ import { CountrySelect } from '@/components/common/country-select';
 import { QrScannerModal } from '@/components/user_dashboard/payements/qr-scanner-modal';
 import { getCountryByCode, getFlagUrl, type Country } from '@/data/countries';
 import { usePreferences } from '@/hooks/use-preferences';
-import {
-  CURRENCY_SYMBOLS,
-} from '@/lib/mock/send-money-data';
+import { CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
+import useManagedCurrencies from '@/lib/hooks/use-managed-currencies';
 
 export type ReceptionMode = 'wallet' ;
 
@@ -116,8 +115,13 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
   const senderCurrency = sender?.currency ?? 'XAF';
 
   const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[form.country] ?? 'XAF');
+  const { set: managedSet, isLoading: managedLoading } = useManagedCurrencies();
 
-  const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
+  const isReceiverManaged = managedLoading ? true : managedSet.has(receiverCurrency);
+
+  const effectiveReceiverCurrency = isReceiverManaged ? receiverCurrency : senderCurrency;
+
+  const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === effectiveReceiverCurrency ? 1 : null);
   const received = exchangeRate ? amountNumber * exchangeRate : 0;
 
   const selectedCountry = useMemo(
@@ -224,6 +228,8 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
           })}
         </div>
       </div>
+
+    
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {/* Expéditeur */}
@@ -335,7 +341,7 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
           <span className={`px-4 sm:px-5 h-full flex items-center text-sm sm:text-base font-semibold border-l border-gray-100 bg-gray-50 shrink-0 ${
             insufficientBalance ? 'text-red-400' : 'text-gray-500'
           }`}>
-            {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
+            {/* {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency} */}
           </span>
         </div>
         {insufficientBalance && (
@@ -355,33 +361,15 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Chargement...
             </span>
-          ) : exchangeRate ? (
+            ) : exchangeRate ? (
             <span className="text-allness-dark font-semibold">
-              1 {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency} = {exchangeRate.toFixed(4)} {CURRENCY_SYMBOLS[receiverCurrency] ?? receiverCurrency}
+              1 {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency} = {exchangeRate.toFixed(4)} {CURRENCY_SYMBOLS[effectiveReceiverCurrency] ?? effectiveReceiverCurrency}
             </span>
           ) : (
             <span className="text-gray-400">Non disponible</span>
           )}
         </div>
-        {/* <div className="flex items-center justify-between text-sm text-gray-600">
-          <span className="font-medium">Frais de transfert (1%)</span>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400 line-through font-semibold">
-              {new Intl.NumberFormat('fr-FR').format(fees)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
-            </span>
-            <span className="text-allness-green font-semibold">
-              {t('send.freePromo')}
-            </span>
-          </div>
-        </div> */}
-        {/* <div className="border-t border-gray-200 pt-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-            <span className="text-xl font-bold text-allness-dark">
-              {new Intl.NumberFormat('fr-FR').format(totalDebit)} {CURRENCY_SYMBOLS[senderCurrency] ?? senderCurrency}
-            </span>
-          </div>
-        </div> */}
+       
       </div>
 
       {/* Bénéficiaire reçoit */}
@@ -391,10 +379,16 @@ export function BeneficiaryAmountForm({ form, onChange, onSubmit, sender, exchan
         </span>
         <span className="text-xl sm:text-2xl font-bold text-allness-orange">
           {exchangeRate
-            ? `${new Intl.NumberFormat('fr-FR').format(received)} ${CURRENCY_SYMBOLS[receiverCurrency] ?? receiverCurrency}`
+            ? `${new Intl.NumberFormat('fr-FR').format(received)} ${CURRENCY_SYMBOLS[effectiveReceiverCurrency] ?? effectiveReceiverCurrency}`
             : '—'}
         </span>
       </div>
+
+      {!isReceiverManaged && !managedLoading && (
+        <div className="mb-4 p-3 rounded-lg bg-yellow-50 border border-yellow-100 text-sm text-yellow-800">
+          La devise du bénéficiaire ({receiverCurrency}) n'est pas prise en charge par AllnessPay — envoi en {senderCurrency}.
+        </div>
+      )}
 
       <button
         onClick={() => {

@@ -143,7 +143,14 @@ export class AdminService {
 
     const qb = this.transactionsRepository
       .createQueryBuilder('tx')
-      .leftJoinAndSelect('tx.wallet', 'wallet');
+      .leftJoinAndSelect('tx.wallet', 'wallet')
+      // charger l'utilisateur du wallet (expéditeur)
+      .leftJoin('wallet.user', 'user')
+      .addSelect(['user.nom', 'user.prenom', 'user.email'])
+      // charger le wallet lié (pour transferts) et son utilisateur (destinataire)
+      .leftJoinAndSelect('tx.relatedWallet', 'relatedWallet')
+      .leftJoin('relatedWallet.user', 'relatedUser')
+      .addSelect(['relatedUser.nom', 'relatedUser.prenom']);
 
     if (filters?.status) {
       qb.andWhere('tx.status = :status', { status: filters.status.toLowerCase() });
@@ -155,14 +162,42 @@ export class AdminService {
       qb.andWhere('tx.provider = :provider', { provider: filters.provider });
     }
 
-    const [data, totalItems] = await qb
-      .orderBy('tx.createdAt', 'DESC')
-      .skip(skip)
-      .take(pageSize)
-      .getManyAndCount();
+    const [data, totalItems] = await qb.orderBy('tx.createdAt', 'DESC').skip(skip).take(pageSize).getManyAndCount();
+
+    // Mapper les entités vers un format plat attendu par le frontend
+    type TxWithUsers = WalletTransaction & {
+      wallet?: Wallet & { user?: { prenom?: string; nom?: string; email?: string } };
+      relatedWallet?: Wallet & { user?: { prenom?: string; nom?: string } } | null;
+    };
+
+    const mapped = data.map((txEntity) => {
+      const tx = txEntity as unknown as TxWithUsers;
+
+      const senderName = tx.wallet?.user ? `${tx.wallet.user.prenom ?? ''} ${tx.wallet.user.nom ?? ''}`.trim() : '';
+      const relatedUserName = tx.relatedWallet && tx.relatedWallet.user
+        ? `${tx.relatedWallet.user.prenom ?? ''} ${tx.relatedWallet.user.nom ?? ''}`.trim()
+        : '';
+
+      return {
+        id: tx.id,
+        reference: tx.reference ?? tx.id,
+        user: senderName || '',
+        email: tx.wallet?.user?.email ?? null,
+        type: tx.type,
+        amount: Number(tx.amount),
+        status: tx.status,
+        description: tx.description ?? null,
+        provider: tx.provider ?? null,
+        phoneNumber: tx.phoneNumber ?? null,
+        relatedWalletId: tx.relatedWallet ? tx.relatedWallet.id : null,
+        // si transfert, privilégier le nom du wallet lié comme destinataire
+        beneficiaryName: relatedUserName || null,
+        createdAt: tx.createdAt.toISOString(),
+      };
+    });
 
     return {
-      data,
+      data: mapped,
       totalItems,
       page,
       pageSize,

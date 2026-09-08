@@ -21,6 +21,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { BeneficiairesModule } from './modules/beneficiaire/beneficiaire.module';
 import { TranzakModule } from './payments/tranzak/tranzak.module';
 import { CampayModule } from './payments/campay/campay.module';
+import { StripeModule } from './payments/stripe/stripe.module';
 
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 import { CurrencyModule } from './modules/currency/currency.module';
@@ -57,6 +58,7 @@ import { CurrencyModule } from './modules/currency/currency.module';
     BeneficiairesModule,
     TranzakModule,
     CampayModule,
+    StripeModule,
 
     LinkedAccountModule,
     CurrencyModule,

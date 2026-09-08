@@ -13,7 +13,7 @@ export default function PhoneConfirmationPage() {
 
   // Card deposits skip phone confirmation entirely
   useEffect(() => {
-    if (deposit.method === 'card') {
+    if (deposit.method === 'bank') {
       navigate('/deposit/processing', { replace: true });
     }
   }, [deposit.method, navigate]);

@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Copy,
   Edit2,
-  User,
+  // User,
   Ban,
 } from 'lucide-react';
 import { Badge } from '../../components/ui';
@@ -90,7 +90,7 @@ export function TransactionDetailModal({
     label: transaction.status,
   };
   const typeLabel = TYPE_LABELS[transaction.type] ?? transaction.type;
-  const fees = Math.round(transaction.amount * 0.01);
+  const fees = Math.round(transaction.amount * 0.00);
   const platformFees = Math.round(transaction.amount * 0.006);
   const totalDebit = transaction.amount + fees;
 
@@ -104,7 +104,7 @@ export function TransactionDetailModal({
         <div className="px-6 py-4 border-b border-gray-100 flex items-start justify-between shrink-0">
           <div>
             <h2 className="text-base font-bold text-allness-dark mb-1">
-              TRANSACTION #{transaction.reference ?? transaction.id.slice(0, 16)}
+              TRANSACTION {transaction.reference ?? transaction.id.slice(0, 16)}
             </h2>
             <div className="flex items-center gap-3">
               <Badge tone={status.tone} dot>
@@ -185,12 +185,12 @@ export function TransactionDetailModal({
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-allness-orange/20 flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold text-allness-orange">
-                    {transaction.type === 'transfer_out' ? getInitials(null) : getInitials(transaction.user)}
+                    {getInitials(transaction.beneficiaryName ?? (transaction.type === 'transfer_out' ? null : transaction.user))}
                   </span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-allness-dark truncate">
-                    {transaction.type === 'transfer_out' ? '—' : transaction.user ?? '—'}
+                    {transaction.beneficiaryName ?? (transaction.type === 'transfer_out' ? '—' : transaction.user ?? '—')}
                   </p>
                   <p className="text-[11px] text-gray-400">
                     {transaction.phoneNumber ?? '—'}
@@ -374,10 +374,10 @@ export function TransactionDetailModal({
             <Ban className="w-3.5 h-3.5" />
             Rembourser la transaction
           </button>
-          <button className="h-9 px-4 rounded-lg border border-red-200 text-xs font-medium text-red-600 flex items-center gap-1.5 hover:bg-red-50 transition-colors">
+          {/* <button className="h-9 px-4 rounded-lg border border-red-200 text-xs font-medium text-red-600 flex items-center gap-1.5 hover:bg-red-50 transition-colors">
             <User className="w-3.5 h-3.5" />
             Bloquer l&apos;utilisateur
-          </button>
+          </button> */}
           <div className="flex-1" />
           <button
             onClick={onClose}

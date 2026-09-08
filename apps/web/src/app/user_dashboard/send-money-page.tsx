@@ -17,6 +17,7 @@ import { walletService } from '@/lib/api/wallet.service';
 import { currencyService } from '@/lib/api/currency.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { getCountryByCode } from '@/data/countries';
+import useManagedCurrencies from '@/lib/hooks/use-managed-currencies';
 
 const getSteps = (t: (key: string) => string) => [
   { label: t('send.stepBeneficiary') },
@@ -94,11 +95,15 @@ export default function SendMoneyPage() {
     return COUNTRY_TO_CURRENCY[form.country] ?? 'XAF';
   }, [form.country, form.receptionMode, beneficiaryInfo?.currency]);
 
+  const { set: managedSet, isLoading: managedLoading } = useManagedCurrencies();
+  const isReceiverManaged = managedLoading ? true : managedSet.has(receiverCurrency);
+  const effectiveReceiverCurrency = isReceiverManaged ? receiverCurrency : senderCurrency;
+
   const hasBeneficiary = !!form.beneficiaryContact;
   const { data: exchangeRate, isLoading: exchangeRateLoading } = useQuery({
     queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
-    queryFn: () => currencyService.getExchangeRate(senderCurrency, receiverCurrency),
-    enabled: hasBeneficiary && senderCurrency !== receiverCurrency,
+    queryFn: () => currencyService.getExchangeRate(senderCurrency, effectiveReceiverCurrency),
+    enabled: hasBeneficiary && senderCurrency !== effectiveReceiverCurrency,
   });
 
   const senderInfo = profile

@@ -7,6 +7,7 @@ import { walletService } from '@/lib/api/wallet.service';
 import { currencyService } from '@/lib/api/currency.service';
 import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { PinConfirmModal } from './send/pin-confirm-modal';
+import useManagedCurrencies from '@/lib/hooks/use-managed-currencies';
 
 interface QuickSendContact {
   id: string | number;
@@ -41,6 +42,9 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
   const senderCurrency = wallet?.currency ?? 'XAF';
   const receiverCurrency = selectedContact?.currency ?? null;
   const amountNumber = parseFloat(amount) || 0;
+
+  const { set: managedSet, isLoading: managedLoading } = useManagedCurrencies();
+  const visibleContacts = managedLoading ? contacts : contacts.filter((c) => managedSet.has(c.currency));
 
   const hasContact = !!selectedContact;
   const { data: exchangeRate } = useQuery({
@@ -156,7 +160,7 @@ export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
           </div>
         ) : (
           <>
-            {contacts.map((c) => (
+            {visibleContacts.map((c) => (
               <button
                 key={c.id}
                 type="button"

@@ -130,6 +130,8 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const submitDepositRequest = useCallback(async (): Promise<boolean> => {
+    clearPendingDeposit();
+
     if (deposit.method === 'bank') {
       const pending = { ...deposit, reference: crypto.randomUUID(), status: 'pending' as const, createdAt: new Date() };
       setDeposit(pending);

@@ -70,6 +70,7 @@ export default function LoginPage() {
             icon={Mail}
             type="email"
             placeholder="naouel@entreprise.com"
+            autoComplete="off"
             {...register('email')}
           />
           {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -81,6 +82,7 @@ export default function LoginPage() {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
             <input
               type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
               className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               {...register('password')}
             />

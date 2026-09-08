@@ -55,7 +55,8 @@
     "nodemailer": "^9.0.3",
     "passport-local": "^1.0.0",
     "qrcode": "^1.5.4",
-    "redis": "^5.12.1"
+    "redis": "^5.12.1",
+    "stripe": "^22.6.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.4"

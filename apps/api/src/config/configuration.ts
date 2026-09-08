@@ -86,6 +86,11 @@ export const providersConfig = registerAs('providers', () => ({
     password: process.env.PAYMENT_PASSWORD ?? '',
     webhookKey: process.env.PAYMENT_WEBHOOK_SECRET ?? '',
   },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY ?? '',
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY ?? '',
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
+  },
 }));
 
 export const mailConfig = registerAs('mail', () => ({

@@ -543,6 +543,7 @@ export default function SignupPage() {
               icon={Mail}
               type="email"
               placeholder="jean.dupont@entreprise.com"
+              autoComplete="off"
               value={form.email}
               onChange={(e) => update('email', e.target.value)}
               disabled={isFromGoogle}
@@ -564,6 +565,7 @@ export default function SignupPage() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
                     className={`w-full h-11 rounded-lg border pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:ring-1 ${
                       fieldErrors.password
                         ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500'
@@ -599,6 +601,7 @@ export default function SignupPage() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
+                    autoComplete="new-password"
                     className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-9 text-sm text-gray-900 dark:text-white bg-white dark:bg-[#071418] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                     value={form.confirmPassword}
                     onChange={(e) => update('confirmPassword', e.target.value)}

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import type { Wallet as WalletType } from '@afrilinkpay/shared';
 import { CURRENCY_SYMBOLS } from '@/lib/mock/send-money-data';
+import useManagedCurrencies from '@/lib/hooks/use-managed-currencies';
 
 interface WalletSelectorProps {
   wallets: WalletType[];
@@ -14,6 +15,11 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = wallets.find((w) => w.id === selectedWalletId) ?? null;
+  const { set: managedSet, isLoading: managedLoading } = useManagedCurrencies();
+
+  const visibleWallets = managedLoading
+    ? wallets
+    : wallets.filter((w) => managedSet.has(w.currency) || w.id === selected?.id);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -62,7 +68,7 @@ export function WalletSelector({ wallets, selectedWalletId, onSelect }: WalletSe
 
         {open && (
           <div className="absolute left-0 right-0 top-full mt-1 rounded-xl border border-gray-200 bg-white shadow-lg z-20 overflow-hidden">
-            {wallets.map((wallet) => {
+            {visibleWallets.map((wallet) => {
               const isSelected = wallet.id === selected.id;
               return (
                 <button

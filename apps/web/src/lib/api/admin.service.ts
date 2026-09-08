@@ -83,6 +83,7 @@ export interface AdminTransaction {
   id: string;
   reference: string;
   user: string;
+  beneficiaryName?: string | null;
   email: string | null;
   type: string;
   amount: number;

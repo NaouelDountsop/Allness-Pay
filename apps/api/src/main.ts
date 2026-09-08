@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import * as bodyParser from 'body-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -29,6 +30,16 @@ async function bootstrap(): Promise<void> {
       crossOriginResourcePolicy: false,
     }),
   );
+
+  // --- Capture raw body for webhook verification (Stripe expects exact bytes)
+  // Disable the default NestJS body parser so we can control raw capture ourselves.
+  // This ensures req.rawBody is always populated for Stripe signature verification.
+  app.use(bodyParser.json({
+    verify: (req: any, _res, buf: Buffer) => {
+      req.rawBody = buf;
+    },
+    type: ['application/json', 'application/*+json'],
+  }));
 
   app.enableCors({
     origin: appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins : false,

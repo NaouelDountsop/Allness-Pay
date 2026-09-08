@@ -79,5 +79,18 @@ export const envValidationSchema = Joi.object({
   PAYMENT_PASSWORD: Joi.string().allow('').optional(),
   PAYMENT_WEBHOOK_SECRET: Joi.string().allow('').optional(),
 
+  STRIPE_SECRET_KEY: Joi.string().allow('').optional(),
+  STRIPE_PUBLISHABLE_KEY: Joi.string().allow('').optional(),
+  STRIPE_WEBHOOK_SECRET: Joi.string()
+    .allow('')
+    .when('STRIPE_SECRET_KEY', {
+      is: Joi.string().min(1),
+      then: Joi.required().messages({
+        'any.required':
+          'STRIPE_WEBHOOK_SECRET est requis quand STRIPE_SECRET_KEY est renseigne. ' +
+          'Sans lui, chaque webhook Stripe echoue silencieusement (500) et les transactions restent en PENDING.',
+      }),
+    }),
+
   LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
 });

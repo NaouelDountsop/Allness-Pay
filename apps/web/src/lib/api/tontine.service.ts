@@ -183,12 +183,26 @@ export const tontineService = {
 
   contribute: async (
     tontineId: string,
-    payload: { amount: string; walletId: string; pin: string },
+    payload: {
+      amount: string;
+      walletId: string;
+      pin: string;
+      method?: string;
+      phoneNumber?: string;
+      cardNumber?: string;
+    },
   ): Promise<{ id: string; status: string }> => {
     const res = await apiClient.post<{ id: string; status: string }>(
       `${basePath}/${tontineId}/contribute`,
       payload,
     );
+    return res.data;
+  },
+
+  exportContributions: async (tontineId: string): Promise<Blob> => {
+    const res = await apiClient.get(`${basePath}/${tontineId}/contributions/export`, {
+      responseType: 'blob',
+    });
     return res.data;
   },
 

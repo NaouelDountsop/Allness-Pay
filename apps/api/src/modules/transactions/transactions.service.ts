@@ -103,6 +103,19 @@ export class TransactionsService {
     });
   }
 
+  async findExternalPaymentStatus(
+    provider: string,
+    providerRequestId: string,
+  ): Promise<WalletTransactionStatus | null> {
+    const transaction = await this.dataSource
+      .getRepository(WalletTransaction)
+      .findOne({
+        where: { provider, providerRequestId },
+        select: ['status'],
+      });
+    return transaction?.status ?? null;
+  }
+
   async transfer(
     fromId: string,
     userId: number,

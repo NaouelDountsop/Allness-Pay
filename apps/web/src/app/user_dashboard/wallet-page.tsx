@@ -9,7 +9,7 @@ import { AccountList } from '@/components/user_dashboard/wallet/account-list';
 import { QuickActionsGrid } from '@/components/user_dashboard/wallet/quick-actions-grid';
 import { MonthlySummary } from '@/components/user_dashboard/spending-charts';
 import { SecurityCard } from '@/components/user_dashboard/wallet/security-card';
-import { AddLinkedAccountModal } from '@/components/user_dashboard/wallet/add-linked-account-modal';
+
 import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { campayService } from '@/lib/api/campay.service';
@@ -20,7 +20,6 @@ import { Loader2, CheckCircle2, XCircle, X } from 'lucide-react';
 
 export default function WalletPage() {
   const { t } = useTranslation();
-  const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [depositStatus, setDepositStatus] = useState<'pending' | 'success' | 'failed'>('pending');
@@ -46,17 +45,21 @@ export default function WalletPage() {
         if (res.status === 'completed') {
           clearInterval(interval);
           setDepositStatus('success');
+          clearPendingDeposit();
         } else if (res.status === 'failed') {
           clearInterval(interval);
           setDepositStatus('failed');
+          clearPendingDeposit();
         } else if (attemptsRef.current >= 20) {
           clearInterval(interval);
           setDepositStatus('failed');
+          clearPendingDeposit();
         }
       }).catch(() => {
         if (attemptsRef.current >= 20) {
           clearInterval(interval);
           setDepositStatus('failed');
+          clearPendingDeposit();
         }
       });
     }, 3000);
@@ -69,6 +72,15 @@ export default function WalletPage() {
     clearPendingDeposit();
     setPendingDeposit(null);
   };
+
+  useEffect(() => {
+    if (depositStatus === 'success' || depositStatus === 'failed') {
+      const timer = setTimeout(() => {
+        handleDismissBanner();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [depositStatus]);
 
   const { data: wallets = [], isLoading: walletsLoading } = useQuery({
     queryKey: ['wallets'],
@@ -184,7 +196,7 @@ export default function WalletPage() {
                 walletNumber={displayWallet?.walletNumber ?? '—'}
                 walletInternalId={displayWallet?.id ?? ''}
                 balance={selectedWalletId ? Number(displayWallet?.balance ?? 0) : totalBalance}
-                currency={displayWallet?.currency ?? 'FCFA'}
+                currency={displayWallet?.currency ?? 'XAF'}
                 status={displayWallet?.status === 'active' ? t('wallet.statusActive') : t('wallet.statusPending')}
                 kycApproved={kyc?.status === 'APPROVED'}
                 visible={visible}
@@ -194,15 +206,10 @@ export default function WalletPage() {
             </div>
             <AccountList
               wallets={wallets}
-              onAddAccount={() => setAddAccountOpen(true)}
+              onAddAccount={() => {/* désactivé temporairement */}}
               onSelectWallet={(w) => setSelectedWalletId(w.id)}
               selectedWalletId={selectedWalletId}
               visible={visible}
-            />
-            <AddLinkedAccountModal
-              open={addAccountOpen}
-              onOpenChange={setAddAccountOpen}
-              wallets={wallets}
             />
           </div>
 

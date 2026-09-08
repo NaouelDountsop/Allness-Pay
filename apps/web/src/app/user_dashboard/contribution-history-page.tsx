@@ -9,7 +9,6 @@ import { CycleSelector } from '@/components/user_dashboard/tontines/cycle-select
 import { ContributionsTable } from '@/components/user_dashboard/tontines/contributions-table';
 import { tontineService, type Tontine } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
-import { apiClient } from '@/lib/api-client';
 import {
   Dialog,
   DialogContent,
@@ -182,12 +181,7 @@ export default function ContributionHistoryPage() {
             <button
               onClick={async () => {
                 if (!id || !tontine) return;
-                const response = await apiClient.get(`/tontines/${id}/contributions/export`, {
-                  responseType: 'blob',
-                });
-                const blob = new Blob([response.data], {
-                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                });
+                const blob = await tontineService.exportContributions(id);
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;

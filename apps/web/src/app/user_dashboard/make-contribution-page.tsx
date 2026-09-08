@@ -14,6 +14,7 @@ import { PinConfirmModal } from '@/components/user_dashboard/send/pin-confirm-mo
 import { tontineService } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
 import { currencyService } from '@/lib/api/currency.service';
+import { useUserProfile } from '@/hooks/use-user-profile';
 
 const contributionSchema = z.object({
   amount: z.string().refine((val) => {
@@ -36,6 +37,7 @@ export default function MakeContributionPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { profile } = useUserProfile();
 
   const {
     data: tontine,
@@ -106,6 +108,9 @@ export default function MakeContributionPage() {
         amount: effectiveAmount,
         walletId: wallet!.id,
         pin,
+        method: PAYMENT_TO_METHOD[method],
+        phoneNumber: method === 'mobile_money' || method === 'orange_money' ? phoneNumber : undefined,
+        cardNumber: method === 'card' ? cardNumber : undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tontine', id] });
@@ -156,7 +161,7 @@ export default function MakeContributionPage() {
     return (
       <DashboardLayout>
         <DashboardHeader />
-        <div className="px-4 sm:px-8 pb-10">
+        <div>
           <button
             onClick={() => navigate('/dashboard/tontines')}
             className="flex items-center gap-2 text-lg font-semibold text-allness-dark mb-1"
@@ -174,7 +179,7 @@ export default function MakeContributionPage() {
     return (
       <DashboardLayout>
         <DashboardHeader />
-        <div className="px-4 sm:px-8 pb-10">
+        <div>
           <div className="max-w-md mx-auto text-center py-16">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
               <CheckCircle className="w-10 h-10 text-allness-green" />
@@ -214,7 +219,7 @@ export default function MakeContributionPage() {
     return (
       <DashboardLayout>
         <DashboardHeader />
-        <div className="px-4 sm:px-8 pb-10">
+        <div>
           <div className="max-w-md mx-auto text-center py-16">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-500/10">
               <CircleCheck className="w-10 h-10 text-allness-green" />
@@ -260,7 +265,7 @@ export default function MakeContributionPage() {
     <DashboardLayout>
       <DashboardHeader />
 
-      <div className="px-4 sm:px-8 pb-10">
+      <div className="pb-10">
         <button
           onClick={() => navigate(`/dashboard/tontines/${id}`)}
           className="flex items-center gap-2 text-lg font-semibold text-allness-dark mb-1"
@@ -297,7 +302,7 @@ export default function MakeContributionPage() {
               <label className="text-xs font-medium text-gray-500 mb-2 block">
                 Mode de paiement
               </label>
-              <PaymentMethodsGrid selected={method} onSelect={setMethod} />
+              <PaymentMethodsGrid selected={method} onSelect={setMethod} countryCode={profile?.pays} />
             </div>
 
             {method === 'mobile_money' && (

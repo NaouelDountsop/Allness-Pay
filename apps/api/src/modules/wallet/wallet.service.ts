@@ -152,6 +152,17 @@ export class WalletsService {
     return wallet;
   }
 
+  /**
+   * Trouve un wallet par son id sans vérifier l'appartenance (usage interne serveur).
+   */
+  async findById(id: string): Promise<Wallet> {
+    const wallet = await this.walletRepo.findOne({ where: { id }, relations: ['user'] });
+    if (!wallet) {
+      throw new NotFoundException('Wallet introuvable');
+    }
+    return wallet;
+  }
+
   async update(id: string, userId: number, dto: UpdateWalletDto): Promise<Wallet> {
     const wallet = await this.findOne(id, userId);
     Object.assign(wallet, dto);

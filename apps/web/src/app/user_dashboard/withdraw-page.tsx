@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Smartphone,
-  Building2,
+  CreditCard,
   ArrowRight,
   ArrowLeft,
   Check,
-  ChevronDown,
   Info,
   Loader2,
 } from 'lucide-react';
@@ -21,10 +20,9 @@ import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { getFlagUrl, getCountryByCode, type Country } from '@/data/countries';
 import { CountrySelect } from '@/components/common/country-select';
 import { PhoneInput, validatePhone } from '@/components/common/phone-input';
+import { hasMobileMoney } from '@/utils/country-currency';
 
 type DestinationType = 'mobile' | 'bank';
-
-const MOBILE_SUPPORTED_COUNTRIES = ['CM', 'SN', 'CI', 'GA', 'CG', 'NE', 'ML', 'BF', 'TG', 'BJ'];
 
 const BANKS_BY_COUNTRY: Record<string, { value: string; label: string }[]> = {
   CM: [
@@ -70,12 +68,6 @@ const BANKS_BY_COUNTRY: Record<string, { value: string; label: string }[]> = {
   ],
 };
 
-const WITHDRAWAL_FEES: Record<string, number> = {
-  CM: 500, SN: 1000, CI: 500, GA: 2000, CG: 2000,
-  NE: 500, ML: 500, BF: 500, TG: 500, BJ: 500,
-  FR: 1, CA: 2,
-};
-
 const CURRENCY_BY_COUNTRY: Record<string, string> = {
   CM: 'XAF', SN: 'XAF', CI: 'XAF', GA: 'XAF', CG: 'XAF',
   NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
@@ -94,7 +86,6 @@ export default function WithdrawPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [destinationType, setDestinationType] = useState<DestinationType>('mobile');
   const [country, setCountry] = useState('CM');
-  const [bankName, setBankName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -113,13 +104,11 @@ export default function WithdrawPage() {
   });
 
   const selectedCountry: Country = getCountryByCode(country) ?? getCountryByCode('CM')!;
-  const hasMobile = MOBILE_SUPPORTED_COUNTRIES.includes(country);
+  const hasMobile = hasMobileMoney(country);
   const banks = BANKS_BY_COUNTRY[country] ?? [];
   const currency = CURRENCY_BY_COUNTRY[country] ?? 'XAF';
-  const fees = WITHDRAWAL_FEES[country] ?? 500;
 
   const amountNumber = parseFloat(amount) || 0;
-  const totalDebit = amountNumber + fees;
   const receivedEstimate = amountNumber;
 
   const phoneError = destinationType === 'mobile' ? validatePhone(phoneNumber, selectedCountry) : null;
@@ -128,8 +117,8 @@ export default function WithdrawPage() {
     if (destinationType === 'mobile') {
       return phoneError === null && amountNumber > 0;
     }
-    return bankName !== '' && amountNumber > 0;
-  }, [destinationType, phoneError, bankName, amountNumber]);
+    return amountNumber > 0;
+  }, [destinationType, phoneError, amountNumber]);
 
   const canSubmitStep1 = amountNumber > 0;
   const canSubmitStep2 = canSubmitStep1 && wallet?.walletNumber;
@@ -181,7 +170,7 @@ export default function WithdrawPage() {
           </h1>
         </div>
         <p className="text-sm sm:text-base md:text-lg text-gray-500 mb-5 sm:mb-8 ml-[52px]">
-          Retirez vos fonds vers un opérateur mobile ou un compte bancaire.
+          Retirez vos fonds vers un opérateur mobile ou une carte bancaire.
         </p>
 
         <div
@@ -242,12 +231,10 @@ export default function WithdrawPage() {
                         value={country}
                         onChange={(c: Country) => {
                           setCountry(c.code);
-                          setBankName('');
                           setPhoneNumber('');
-                          const countryHasMobile = MOBILE_SUPPORTED_COUNTRIES.includes(c.code);
-                          const newBanks = BANKS_BY_COUNTRY[c.code] ?? [];
+                          const countryHasMobile = hasMobileMoney(c.code);
                           if (!countryHasMobile) setDestinationType('bank');
-                          else if (newBanks.length === 0) setDestinationType('mobile');
+                          else setDestinationType('mobile');
                         }}
                       />
                     </div>
@@ -289,11 +276,11 @@ export default function WithdrawPage() {
                             : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
                       >
-                        <Building2
+                        <CreditCard
                           className={`w-5 h-5 ${destinationType === 'bank' ? 'text-allness-green' : 'text-gray-400'}`}
                         />
                         <span className={`text-sm font-medium ${destinationType === 'bank' ? 'text-allness-dark' : 'text-gray-600'}`}>
-                          Compte bancaire
+                          Carte bancaire
                         </span>
                       </button>
                     )}
@@ -325,31 +312,11 @@ export default function WithdrawPage() {
                         <>
                           <div className="space-y-2">
                             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                              Banque
-                            </label>
-                            <div className="relative">
-                              <select
-                                value={bankName}
-                                onChange={(e) => setBankName(e.target.value)}
-                                className="w-full h-12 px-4 pr-10 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange appearance-none bg-white"
-                              >
-                                <option value="">Sélectionnez une banque</option>
-                                {banks.map((b) => (
-                                  <option key={b.value} value={b.value}>
-                                    {b.label}
-                                  </option>
-                                ))}
-                              </select>
-                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                              Numéro de compte
+                              Numéro de carte
                             </label>
                             <input
                               type="text"
-                              placeholder="IBAN ou numéro de compte"
+                              placeholder="Numéro de carte bancaire"
                               className="w-full h-12 px-4 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange uppercase"
                             />
                           </div>
@@ -357,7 +324,7 @@ export default function WithdrawPage() {
                       ) : (
                         <div className="rounded-lg bg-orange-50 border border-orange-200 p-4 text-center">
                           <p className="text-sm text-gray-600">
-                            Le retrait par compte bancaire n&apos;est pas encore disponible pour {selectedCountry.name}.
+                            Le retrait par carte bancaire n&apos;est pas encore disponible pour {selectedCountry.name}.
                           </p>
                         </div>
                       )}
@@ -403,9 +370,9 @@ export default function WithdrawPage() {
                         Frais de retrait
                       </label>
                       <div className="flex items-center h-12 px-4 rounded-lg border border-gray-200 bg-gray-50">
-                        <span className="text-lg font-semibold text-allness-dark">{formatAmount(fees, currency)}</span>
+                        <span className="text-lg font-semibold text-allness-green">0</span>
                         <span className="ml-2 px-2 py-0.5 rounded-full bg-allness-green/10 text-allness-green text-[10px] font-semibold">
-                          Fixe
+                          (gratuit)
                         </span>
                       </div>
                     </div>
@@ -467,7 +434,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Frais de retrait</span>
-                      <span className="text-sm font-semibold">{formatAmount(fees, currency)}</span>
+                      <span className="text-sm font-semibold text-allness-green">0 (gratuit)</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous recevez (estimation)</span>
@@ -477,7 +444,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="border-t border-gray-200 pt-4 flex justify-between">
                       <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-                      <span className="text-lg font-bold text-allness-dark">{formatAmount(totalDebit, currency)}</span>
+                      <span className="text-lg font-bold text-allness-dark">{formatAmount(amountNumber, currency)}</span>
                     </div>
                   </div>
                 </div>
@@ -509,9 +476,7 @@ export default function WithdrawPage() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Destination</span>
                       <span className="text-sm font-medium">
-                        {destinationType === 'mobile'
-                          ? 'Mobile Money'
-                          : banks.find((b) => b.value === bankName)?.label}
+                        {destinationType === 'mobile' ? 'Mobile Money' : 'Carte bancaire'}
                       </span>
                     </div>
                   {destinationType === 'mobile' && hasMobile && (
@@ -533,7 +498,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Frais</span>
-                      <span className="text-sm font-semibold">{formatAmount(fees, currency)}</span>
+                      <span className="text-sm font-semibold text-allness-green">0 (gratuiy)</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous recevez (estimation)</span>
@@ -543,7 +508,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="border-t border-gray-200 pt-4 flex justify-between">
                       <span className="text-sm font-semibold text-allness-dark">Total débité</span>
-                      <span className="text-lg font-bold text-allness-dark">{formatAmount(totalDebit, currency)}</span>
+                      <span className="text-lg font-bold text-allness-dark">{formatAmount(amountNumber, currency)}</span>
                     </div>
                   </div>
                 </div>

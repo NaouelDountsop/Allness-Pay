@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { AdminProtectedRoute } from "@/components/common/admin-protected-route";
 import { UserProtectedRoute } from "@/components/common/user-protected-route";
 import LandingPage from "@/app/landing-page";
@@ -47,11 +47,17 @@ import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
 import PartnersPage from "@/app/admin-dashboard/partners-page";
 import AdminSettingsPage from "@/app/admin-dashboard/admin-settings-page";
 import { DepositFlowProvider } from './context/deposit-flow-context';
+import { CardDepositFlowProvider } from './context/card-deposit-flow-context';
+import { StripeProvider } from '@/components/stripe/stripe-provider';
 import InitiateDepositPage from '@/app/user_dashboard/initiate-deposit-page';
 import RequestSentPage from '@/app/user_dashboard/request-sent-page';
 import PhoneConfirmationPage from '@/app/user_dashboard/phone-confirmation-page';
 import ProcessingPage from '@/app/user_dashboard/processing-page';
 import DepositSuccessPage from '@/app/user_dashboard/deposit-success-page';
+import CardDepositRedirectPage from '@/app/user_dashboard/card-deposit-redirect-page';
+import CardDepositCardInfoPage from '@/app/user_dashboard/card-deposit-card-info-page';
+import CardDepositProcessingPage from '@/app/user_dashboard/card-deposit-processing-page';
+import CardDepositSuccessPage from '@/app/user_dashboard/card-deposit-success-page';
 import BeneficiariesPage from './app/user_dashboard/beneficiary-page';
 import AcceptInvitationPage from '@/app/accept-invitation-page';
 
@@ -261,6 +267,27 @@ export function App() {
             </DepositFlowProvider>
           }
         />
+
+        <Route
+          path="/deposit/card"
+          element={
+            <CardDepositFlowProvider>
+              <Outlet />
+            </CardDepositFlowProvider>
+          }
+        >
+          <Route path="redirect" element={<CardDepositRedirectPage />} />
+          <Route
+            path="card-info"
+            element={
+              <StripeProvider>
+                <CardDepositCardInfoPage />
+              </StripeProvider>
+            }
+          />
+          <Route path="processing" element={<CardDepositProcessingPage />} />
+          <Route path="success" element={<CardDepositSuccessPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

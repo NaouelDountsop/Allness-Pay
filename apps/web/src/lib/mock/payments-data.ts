@@ -20,6 +20,7 @@ export interface RecentPayment {
   date: string;
   time: string;
   amount: number;
+  currency?: string;
   status: 'paid' | 'pending';
 }
 
@@ -77,6 +78,7 @@ export const mockRecentPayments: RecentPayment[] = [
     date: '01/02/2026',
     time: '14:32',
     amount: 25400,
+    currency: 'XAF',
     status: 'paid',
   },
   {
@@ -86,6 +88,7 @@ export const mockRecentPayments: RecentPayment[] = [
     date: '30/01/2026',
     time: '09:15',
     amount: 6000,
+    currency: 'XAF',
     status: 'paid',
   },
   {
@@ -95,6 +98,7 @@ export const mockRecentPayments: RecentPayment[] = [
     date: '28/01/2026',
     time: '16:20',
     amount: 15000,
+    currency: 'XAF',
     status: 'pending',
   },
 ];

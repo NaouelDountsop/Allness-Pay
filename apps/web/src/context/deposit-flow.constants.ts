@@ -2,6 +2,8 @@ export type MobileMoneyOperator = "mtn" | "orange";
 export type DepositMethod = "mobile_money" | "bank";
 export type Currency = "XAF" | "XOF" | "CAD" | "EUR";
 
+export type PaymentMethodType = "wallet" | "mobile_money" | "orange_money" | "card";
+
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   XAF: "FCFA",
   XOF: "CFA",

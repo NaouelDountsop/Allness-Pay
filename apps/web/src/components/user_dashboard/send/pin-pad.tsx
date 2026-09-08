@@ -1,4 +1,5 @@
 import { Delete } from 'lucide-react';
+import { useState } from 'react';
 
 interface PinPadProps {
   value: string;
@@ -7,9 +8,26 @@ interface PinPadProps {
   error?: boolean;
 }
 
-const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
+// Mélange les chiffres 0-9 (Fisher-Yates), "del" reste toujours en dernière position.
+function shuffleDigits(): string[] {
+  const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  for (let i = digits.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = digits[i]!;
+    digits[i] = digits[j]!;
+    digits[j] = temp;
+  }
+  return digits;
+}
 
 export function PinPad({ value, length = 4, onChange, error }: PinPadProps) {
+  // Le mélange est calculé une seule fois au montage du composant,
+  // puis reste constant (ne change pas à chaque frappe ou rendu).
+  const [keys] = useState<string[]>(() => {
+  const digits = shuffleDigits();
+  return [...digits.slice(0, 9), '', digits[9]!, 'del'];
+});
+
   const handlePress = (key: string) => {
     if (key === 'del') {
       onChange(value.slice(0, -1));
@@ -46,6 +64,7 @@ export function PinPad({ value, length = 4, onChange, error }: PinPadProps) {
               key={i}
               type="button"
               onClick={() => handlePress(key)}
+              aria-label={key === 'del' ? 'Supprimer' : `Chiffre ${key}`}
               className="h-14 rounded-xl bg-allness-dark hover:bg-allness-darker text-white flex items-center justify-center text-lg font-medium transition-colors"
             >
               {key === 'del' ? <Delete className="w-4 h-4 text-allness-orange" /> : key}

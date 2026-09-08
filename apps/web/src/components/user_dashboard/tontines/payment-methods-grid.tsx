@@ -1,18 +1,17 @@
-export type PaymentMethod = 'wallet' | 'card' | 'mobile_money' | 'orange_money';
+import type { PaymentMethodType } from '@/context/deposit-flow.constants';
+import { getAvailableTontineMethods } from '@/utils/payment-methods';
+
+export type { PaymentMethodType as PaymentMethod };
 
 interface PaymentMethodsGridProps {
-  selected: PaymentMethod;
-  onSelect: (method: PaymentMethod) => void;
+  selected: PaymentMethodType;
+  onSelect: (method: PaymentMethodType) => void;
+  countryCode?: string;
 }
 
-const methods: { key: PaymentMethod; label: string; image: string }[] = [
-  { key: 'wallet', label: 'Portefeuille Allness', image: '/allnesspay_logo2.png' },
-  { key: 'mobile_money', label: 'MTN Mobile Money', image: '/mtn-momo.png' },
-  { key: 'orange_money', label: 'Orange Money', image: '/orange-money.png' },
-  { key: 'card', label: 'Carte Bancaire', image: '/bank.png' },
-];
+export function PaymentMethodsGrid({ selected, onSelect, countryCode }: PaymentMethodsGridProps) {
+  const methods = getAvailableTontineMethods(countryCode ?? 'CM');
 
-export function PaymentMethodsGrid({ selected, onSelect }: PaymentMethodsGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {methods.map(({ key, label, image }) => {

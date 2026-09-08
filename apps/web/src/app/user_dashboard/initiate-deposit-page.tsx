@@ -1,30 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, ArrowLeft, Phone, ShieldCheck, Landmark, Loader2, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Phone, CreditCard, Loader2 } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import {
-  type DepositMethod,
   type Currency,
   CURRENCY_SYMBOLS,
   useDepositFlow,
 } from '../../context/deposit-flow-context';
-import { useUserProfile } from '../../hooks/use-user-profile';
 import { walletService } from '@/lib/api/wallet.service';
-import { getCurrenciesForCountry } from '../../utils/country-currency';
-
-const DEPOSIT_METHODS: { key: DepositMethod; labelKey: string; icon: React.ReactNode }[] = [
-  { key: 'mobile_money', labelKey: 'deposit.mobileMoney', icon: <Phone className="w-5 h-5" /> },
-  { key: 'bank', labelKey: 'deposit.bankAccount', icon: <Landmark className="w-5 h-5" /> },
-];
-
-const MOBILE_OPERATORS = [
-  { key: 'mtn' as const, label: 'MTN Mobile Money', image: '/mtn-momo.png' },
-  { key: 'orange' as const, label: 'Orange Money', image: '/orange-money.png' },
-];
+import { useUserProfile } from '@/hooks/use-user-profile';
+import { getCountryCode } from '@/utils/country-currency';
+import { getAvailableDepositMethods, getAvailableMobileOperators } from '@/utils/payment-methods';
 
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
+const MIN_DEPOSIT_AMOUNT = 10;
 
 function isValidPhoneForOperator(phone: string, operator: string): boolean {
   const digits = phone.replace(/\s/g, '');
@@ -56,9 +47,6 @@ export default function InitiateDepositPage() {
     setMethod,
     setOperator,
     setPhoneNumber,
-    setBankName,
-    setIban,
-    setAccountHolder,
     setAmount,
     setCurrency,
     setDescription,
@@ -66,16 +54,42 @@ export default function InitiateDepositPage() {
     submitDepositRequest,
   } = useDepositFlow();
 
+  const countryCode = getCountryCode(profile?.pays ?? 'CM');
+  const depositMethods = getAvailableDepositMethods(countryCode);
+  const mobileOperators = getAvailableMobileOperators(countryCode);
+
+  const DEPOSIT_METHOD_ICONS: Record<string, React.ReactNode> = {
+    mobile_money: <Phone className="w-5 h-5" />,
+    card: <CreditCard className="w-5 h-5" />,
+  };
+
   const [submitting, setSubmitting] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
+  const mmAvailable = mobileOperators.length > 0;
+  const [selectedMethod, setSelectedMethod] = useState<'mobile_money' | 'card'>(mmAvailable ? 'mobile_money' : 'card');
+
+  const isMobileMoney = selectedMethod === 'mobile_money';
 
   useEffect(() => {
     walletService.getPrimary().then((w) => {
       if (w?.walletNumber) setWalletNumber(w.walletNumber);
+      if (w?.currency) setCurrency(w.currency as Currency);
     });
-  }, [setWalletNumber]);
+  }, [setWalletNumber, setCurrency]);
 
-  const isMobileMoney = deposit.method === 'mobile_money';
+  useEffect(() => {
+    if (!mmAvailable && selectedMethod === 'mobile_money') {
+      setSelectedMethod('card');
+    }
+  }, [mmAvailable, selectedMethod]);
+
+  useEffect(() => {
+    const firstOp = mobileOperators[0];
+    if (isMobileMoney && firstOp && !deposit.operator) {
+      setOperator(firstOp.key);
+    }
+  }, [isMobileMoney, mobileOperators, deposit.operator, setOperator]);
+
   const phoneDigits = deposit.phoneNumber.replace(/\s/g, '');
   const phoneValid =
     phoneDigits.length === 9 && /^\d{9}$/.test(phoneDigits)
@@ -83,20 +97,27 @@ export default function InitiateDepositPage() {
       : false;
   const phoneTouched = deposit.phoneNumber.trim().length > 0;
 
+  const amountValue = Number(deposit.amount);
   const canSubmit = isMobileMoney
-    ? deposit.operator && phoneValid && Number(deposit.amount) > 0
-    : deposit.bankName &&
-      deposit.iban.trim().length >= 8 &&
-      deposit.accountHolder.trim().length >= 2 &&
-      Number(deposit.amount) > 0;
+    ? deposit.operator && phoneValid && amountValue >= MIN_DEPOSIT_AMOUNT
+    : amountValue > 0;
 
-  const countryCode = profile?.pays || 'CM';
-  const currencies = getCurrenciesForCountry(countryCode);
-  const currencySymbol = CURRENCY_SYMBOLS[deposit.currency];
+  const currencySymbol = CURRENCY_SYMBOLS[deposit.currency] || deposit.currency;
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
+
+    if (!isMobileMoney) {
+      setMethod('bank');
+      navigate('/deposit/card/redirect', {
+        state: { amount: deposit.amount, description: deposit.description, currency: deposit.currency, walletNumber: deposit.walletNumber },
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    setMethod('mobile_money');
     const success = await submitDepositRequest();
     setSubmitting(false);
     if (success) {
@@ -123,15 +144,23 @@ export default function InitiateDepositPage() {
         </p>
 
         {deposit.error && !errorDismissed && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 p-4 flex items-start gap-3">
-            <span className="text-red-500 text-lg shrink-0">⚠</span>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-red-800 dark:text-red-300">{deposit.error}</p>
+          <div className="mb-4 rounded-2xl border border-red-100 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/20 dark:border-red-800/50 p-5 flex items-start gap-4 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-800/40 flex items-center justify-center shrink-0">
+              <span className="text-red-500 text-lg">!</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-red-800 dark:text-red-200 mb-0.5">
+                {t('deposit.errorTitle')}
+              </p>
+              <p className="text-xs text-red-600/80 dark:text-red-300/70 leading-relaxed">
+                {deposit.error}
+              </p>
               <button
                 onClick={() => setErrorDismissed(true)}
-                className="text-xs text-red-600 dark:text-red-400 mt-1 hover:underline"
+                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 transition-colors"
               >
                 {t('deposit.dismiss')}
+                <span className="text-[10px]">→</span>
               </button>
             </div>
           </div>
@@ -146,30 +175,29 @@ export default function InitiateDepositPage() {
               </span>
             </div>
 
-            {/* Sélecteur de méthode */}
             <div className="mb-6">
               <div className="grid grid-cols-2 gap-3">
-                {DEPOSIT_METHODS.map((m) => (
+                {depositMethods.map((m) => (
                   <button
                     key={m.key}
-                    onClick={() => setMethod(m.key)}
+                    onClick={() => setSelectedMethod(m.key)}
                     className={`relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                      deposit.method === m.key
+                      selectedMethod === m.key
                         ? 'border-allness-green bg-allness-green/5 shadow-sm'
                         : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
                     }`}
                   >
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        deposit.method === m.key
+                        selectedMethod === m.key
                           ? 'bg-allness-green/10 text-allness-green'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                       }`}
                     >
-                      {m.icon}
+                      {DEPOSIT_METHOD_ICONS[m.key]}
                     </div>
                     <span className="text-sm font-medium text-allness-dark dark:text-white">{t(m.labelKey)}</span>
-                    {deposit.method === m.key && (
+                    {selectedMethod === m.key && (
                       <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-allness-green" />
                     )}
                   </button>
@@ -177,17 +205,6 @@ export default function InitiateDepositPage() {
               </div>
             </div>
 
-            {/* Sécurité */}
-            <div className="flex items-start gap-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 p-4 mb-6">
-              <div className="w-7 h-7 rounded-full bg-white dark:bg-green-900/50 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-4 h-4 text-allness-green" />
-              </div>
-              <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed">
-                {t('deposit.securityNotice')}
-              </p>
-            </div>
-
-            {/* Champs selon la méthode */}
             {isMobileMoney ? (
               <div className="space-y-4 mb-6">
                 <div>
@@ -195,7 +212,7 @@ export default function InitiateDepositPage() {
                     {t('deposit.operator')}
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {MOBILE_OPERATORS.map((op) => (
+                    {mobileOperators.map((op) => (
                       <button
                         key={op.key}
                         onClick={() => setOperator(op.key)}
@@ -270,60 +287,21 @@ export default function InitiateDepositPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                    {t('deposit.bank')}
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={deposit.bankName}
-                      onChange={(e) => setBankName(e.target.value)}
-                      className="w-full h-12 px-4 pr-10 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white dark:bg-gray-800 appearance-none"
-                    >
-                      <option value="">{t('deposit.selectBank')}</option>
-                      <option value="sgbc">SGBC (Société Générale Cameroun)</option>
-                      <option value="uba">UBA Cameroun</option>
-                      <option value="afriland">Afriland First Bank</option>
-                      <option value="beac">BEAC</option>
-                      <option value="ecobank">Ecobank Cameroun</option>
-                      <option value="bicec">BICEC</option>
-                      <option value="btc">BTCI (Banque Camerounaise des Travailleurs)</option>
-                      <option value="autres">Autres</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <div className="mb-6">
+                <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
+                  <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-1">
+                      {t('deposit.cardNoticeTitle')}
+                    </p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                      {t('deposit.cardNoticeDescription')}
+                    </p>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                    {t('deposit.iban')}
-                  </label>
-                  <input
-                    type="text"
-                    value={deposit.iban}
-                    onChange={(e) => setIban(e.target.value)}
-                    placeholder={t('deposit.ibanPlaceholder')}
-                    className="w-full h-12 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all uppercase bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                    {t('deposit.accountHolder')}
-                  </label>
-                  <input
-                    type="text"
-                    value={deposit.accountHolder}
-                    onChange={(e) => setAccountHolder(e.target.value)}
-                    placeholder={t('deposit.accountHolderPlaceholder')}
-                    className="w-full h-12 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-allness-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-allness-orange/30 focus:border-allness-orange transition-all bg-white dark:bg-gray-800"
-                  />
                 </div>
               </div>
             )}
 
-            {/* Montant à déposer */}
             <div className="mb-6">
               <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 {t('deposit.amountLabel')}
@@ -336,17 +314,9 @@ export default function InitiateDepositPage() {
                   placeholder={t('deposit.amountPlaceholder')}
                   className="flex-1 h-full px-4 text-base font-semibold text-allness-dark dark:text-white focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange bg-white dark:bg-gray-800"
                 />
-                <select
-                  value={deposit.currency}
-                  onChange={(e) => setCurrency(e.target.value as Currency)}
-                  className="h-full px-2 text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange cursor-pointer"
-                >
-                  {currencies.map((c) => (
-                    <option key={c.key} value={c.key}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
+                <span className="h-full px-3 text-xs font-medium text-gray-500 border-l border-gray-200 bg-gray-50 flex items-center shrink-0">
+                  {currencySymbol}
+                </span>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {QUICK_AMOUNTS.map((amt) => (
@@ -363,9 +333,13 @@ export default function InitiateDepositPage() {
                   </button>
                 ))}
               </div>
+              {isMobileMoney && amountValue > 0 && amountValue < MIN_DEPOSIT_AMOUNT && (
+                <p className="text-[11px] text-red-500 mt-1.5 ml-1">
+                  {t('deposit.minimumAmount', { min: MIN_DEPOSIT_AMOUNT, currency: currencySymbol })}
+                </p>
+              )}
             </div>
 
-            {/* Description */}
             <div className="mb-6">
               <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 {t('deposit.description')} <span className="text-gray-400 dark:text-gray-500 font-normal">{t('deposit.descriptionOptional')}</span>
@@ -379,10 +353,8 @@ export default function InitiateDepositPage() {
               />
             </div>
 
-            {/* Récapitulatif */}
-            {(isMobileMoney
-              ? deposit.operator && Number(deposit.amount) > 0
-              : deposit.bankName && Number(deposit.amount) > 0) && (
+            {((isMobileMoney && deposit.operator && Number(deposit.amount) > 0) ||
+              (!isMobileMoney && Number(deposit.amount) > 0)) && (
               <div className="rounded-2xl bg-allness-dark dark:bg-gray-800 text-white px-5 py-4 mb-6">
                 <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wide mb-2">
                   {t('deposit.summary')}
@@ -398,14 +370,13 @@ export default function InitiateDepositPage() {
                   <span className="text-white/60">{t('deposit.summaryMethod')}</span>
                   <span className="font-medium text-white">
                     {isMobileMoney
-                      ? MOBILE_OPERATORS.find((o) => o.key === deposit.operator)?.label
-                      : deposit.bankName}
+                      ? mobileOperators.find((o) => o.key === deposit.operator)?.label
+                      : t('deposit.bankCard')}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Bouton vert */}
             <button
               onClick={handleSubmit}
               disabled={!canSubmit || submitting}
@@ -418,7 +389,7 @@ export default function InitiateDepositPage() {
                 </>
               ) : (
                 <>
-                  {t('deposit.submit')}
+                  {isMobileMoney ? t('deposit.submit') : t('deposit.confirmByCard')}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
