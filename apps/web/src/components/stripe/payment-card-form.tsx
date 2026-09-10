@@ -118,9 +118,9 @@ export function PaymentCardForm({
           <span className="text-[9px] font-bold text-gray-400 border border-gray-200 rounded px-1.5 py-0.5">MasterCard SecureCode</span>
         </div>
         <div className="flex items-center gap-3 mt-3">
-          <img src="/OIP%20(2).webp" alt="Badge 1" className="h-6 w-auto" />
-          <img src="/2026-09-08_113011.png" alt="Badge 2" className="h-6 w-auto" />
-          <img src="/R.jpg" alt="Badge 3" className="h-6 w-auto" />
+          <img src="/OIP%20(2).webp" alt="Badge 1" className="h-10 w-auto" />
+          <img src="/2026-09-08_113011.png" alt="Badge 2" className="h-10 w-90" />
+          <img src="/R.jpg" alt="Badge 3" className="h-10 w-auto" />
         </div>
       </div>
 

@@ -118,6 +118,53 @@ Pages pertinentes :
 6. Stripe envoie un webhook `payment_intent.succeeded` : notre backend le reçoit, vérifie la signature (`STRIPE_WEBHOOK_SECRET`) et lit `paymentIntent.metadata.walletId` pour savoir quel wallet créditer.
 7. Si tout est valide, backend appelle `TransactionsService.confirmExternalPayment(...)` pour marquer la transaction COMPLETED et mettre à jour le solde.
 
+## Stripe Link — activation et intégration (optionnel)
+
+Stripe Link est un moyen de paiement côté client qui permet aux utilisateurs d'enregistrer leurs informations et de payer plus rapidement. Voici comment l'activer et l'intégrer dans notre flow :
+
+- Backend — PaymentIntent
+  - Option 1 (simple) : utiliser `automatic_payment_methods: { enabled: true }` lors de la création du PaymentIntent pour laisser Stripe proposer Link automatiquement quand disponible.
+  - Option 2 (explicite) : ajouter `payment_method_types: ['card','link']` pour forcer la disponibilité de Link.
+  - Exemple (extrait de `apps/api/src/payments/stripe/stripe.service.ts`):
+
+```ts
+const paymentIntent = await stripe.paymentIntents.create({
+  amount: amountInStripeUnits,
+  currency,
+  // soit automatique :
+  automatic_payment_methods: { enabled: true },
+  // soit explicite : payment_method_types: ['card','link'],
+  description: `Dépôt wallet ${wallet.walletNumber}`,
+  metadata: { walletId: wallet.id, walletNumber: wallet.walletNumber, userId: String(userId) },
+  ...(userEmail ? { receipt_email: userEmail } : {}),
+});
+```
+
+- Frontend — éléments Stripe recommandés
+  - Pour proposer Link au client, utilisez `PaymentElement` (ou `LinkAuthenticationElement` + `PaymentElement`) plutôt que `CardElement` + `confirmCardPayment`.
+  - Exemple minimal (React + `@stripe/react-stripe-js`) :
+
+```tsx
+// Après avoir obtenu clientSecret depuis le backend
+<Elements stripe={stripePromise} options={{ clientSecret }}>
+  <LinkAuthenticationElement />
+  <PaymentElement />
+</Elements>
+
+// Confirmer le paiement
+const { error } = await stripe.confirmPayment({
+  elements,
+  confirmParams: { return_url: 'https://votre-app/return' },
+});
+if (error) { /* gérer l'erreur */ }
+```
+
+- Remarques pratiques
+  - `automatic_payment_methods` est la manière la plus simple d'activer Link quand Stripe le juge approprié.
+  - Si vous conservez `confirmCardPayment`, Link ne sera pas proposé automatiquement ; migrez vers `PaymentElement` pour en profiter.
+  - Test local : Link dépend de la configuration Stripe et de la région ; vérifiez l'activation dans le Dashboard et utilisez `stripe-cli` pour les tests.
+
+
 ## Exemples de commandes pour tester localement
 - Lancer Stripe CLI et récupérer `whsec_...` :
 ```bash

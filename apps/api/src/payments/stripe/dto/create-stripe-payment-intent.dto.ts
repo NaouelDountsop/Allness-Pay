@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, Matches } from 'class-validator';
+
+const AMOUNT_REGEX = /^(?!0*(\.0+)?$)\d+(\.\d{1,2})?$/;
 
 export class CreateStripePaymentIntentDto {
   @IsNotEmpty()
@@ -7,6 +9,9 @@ export class CreateStripePaymentIntentDto {
 
   @IsNotEmpty()
   @IsString()
+  @Matches(AMOUNT_REGEX, {
+    message: 'amount doit être un nombre strictement positif avec 2 décimales max',
+  })
   amount: string;
 
   @IsOptional()
@@ -16,4 +21,8 @@ export class CreateStripePaymentIntentDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  tontineId?: string;
 }

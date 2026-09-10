@@ -35,7 +35,7 @@ export const mockWalletAccounts: WalletAccount[] = [
     id: '4',
     label: 'Carte Bancaire',
     type: 'card',
-    logoUrl: '/card.png',
+    logoUrl: '/carte.webp',
     balance: 1500000,
   },
 ];

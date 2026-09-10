@@ -32,19 +32,19 @@ export class CampayController {
     };
   }
 
-  @Post('test-payment')
-  @ApiOperation({ summary: 'Tester la création de paiement Campay' })
-  async testPayment() {
-    return this.campayService.requestPayment(
-      {
-        walletNumber: 'WLT0000000000',
-        amount: '1000',
-        phone_number: '237680657567',
-        description: 'Test dépôt AllnessPay',
-      },
-      0,
-    );
-  }
+  // @Post('test-payment')
+  // @ApiOperation({ summary: 'Tester la création de paiement Campay' })
+  // async testPayment() {
+  //   return this.campayService.requestPayment(
+  //     {
+  //       walletNumber: 'WLT0000000000',
+  //       amount: '1000',
+  //       phone_number: '237680657567',
+  //       description: 'Test dépôt AllnessPay',
+  //     },
+  //     0,
+  //   );
+  // }
 
   @Post('payment')
   @UseGuards(JwtAuthGuard)

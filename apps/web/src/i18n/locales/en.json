@@ -990,5 +990,20 @@
     "lateFeePercent": "Late fee",
     "gracePeriodDays": "Grace period days",
     "settingsInfo": "Changes will be applied immediately to the entire platform. Make sure to save your changes."
+  },
+  "helpCenter": {
+    "title": "Help Center",
+    "subtitle": "Allness Pay Assistant",
+    "welcome": "Hello {name} 👋\nHow can I help you today?",
+    "online": "Online",
+    "responseTime": "Response in a few minutes",
+    "inputPlaceholder": "Type your message...",
+    "send": "Send",
+    "attachFile": "Attach a file",
+    "close": "Close",
+    "paymentRefused": "Why was my payment refused?",
+    "sendMoney": "How to send money?",
+    "viewTransactions": "View my transactions",
+    "talkToAgent": "Talk to an agent"
   }
 }

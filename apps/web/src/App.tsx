@@ -87,7 +87,16 @@ export function App() {
         <Route path="/dashboard/tontines/:id" element={<UserProtectedRoute><TontineDetailPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/:id/members" element={<UserProtectedRoute><TontineMembersPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/:id/history" element={<UserProtectedRoute><ContributionHistoryPage /></UserProtectedRoute>} />
-        <Route path="/dashboard/tontines/:id/contribute" element={<UserProtectedRoute><MakeContributionPage /></UserProtectedRoute>} />
+        <Route
+          path="/dashboard/tontines/:id/contribute"
+          element={
+            <UserProtectedRoute>
+              <CardDepositFlowProvider>
+                <MakeContributionPage />
+              </CardDepositFlowProvider>
+            </UserProtectedRoute>
+          }
+        />
         <Route path="/dashboard/tontines/:id/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/invitations" element={<UserProtectedRoute><TontinesInvitationsPage /></UserProtectedRoute>} />

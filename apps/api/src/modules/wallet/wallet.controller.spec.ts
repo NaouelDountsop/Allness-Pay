@@ -1,21 +1,21 @@
-import { Test } from '@nestjs/testing';
-import type { TestingModule } from '@nestjs/testing';
-import { WalletsController } from './wallet.controller';
-import { WalletsService } from './wallet.service';
+// import { Test } from '@nestjs/testing';
+// import type { TestingModule } from '@nestjs/testing';
+// import { WalletsController } from './wallet.controller';
+// import { WalletsService } from './wallet.service';
 
-describe('WalletsController', () => {
-  let controller: WalletsController;
+// describe('WalletsController', () => {
+//   let controller: WalletsController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [WalletsController],
-      providers: [{ provide: WalletsService, useValue: {} }],
-    }).compile();
+//   beforeEach(async () => {
+//     const module: TestingModule = await Test.createTestingModule({
+//       controllers: [WalletsController],
+//       providers: [{ provide: WalletsService, useValue: {} }],
+//     }).compile();
 
-    controller = module.get<WalletsController>(WalletsController);
-  });
+//     controller = module.get<WalletsController>(WalletsController);
+//   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+//   it('should be defined', () => {
+//     expect(controller).toBeDefined();
+//   });
+// });

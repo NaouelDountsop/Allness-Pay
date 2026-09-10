@@ -443,4 +443,4 @@ CAMPAY_WEBHOOK_KEY=xxx                        # Clé de vérification des webhoo
 
 4. **Les montants sont en string** : Campay attend `"1000"` (string), pas `1000` (number). C'est pourquoi le DTO validate avec une regex et le service convertit avec `parseInt()`.
 
-5. **Le callback est public** :任何人都 peut appeler `/callback` avec une fausse référence. La sécurité repose sur le fait que `confirmExternalPayment()` vérifie que la référence existe bien dans notre DB.
+5. **Le callback est public** : peut appeler `/callback` avec une fausse référence. La sécurité repose sur le fait que `confirmExternalPayment()` vérifie que la référence existe bien dans notre DB.

@@ -16,6 +16,7 @@ import { getAvailableDepositMethods, getAvailableMobileOperators } from '@/utils
 
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
 const MIN_DEPOSIT_AMOUNT = 10;
+const MIN_STRIPE_DEPOSIT_AMOUNT = 500;
 
 function isValidPhoneForOperator(phone: string, operator: string): boolean {
   const digits = phone.replace(/\s/g, '');
@@ -60,7 +61,7 @@ export default function InitiateDepositPage() {
 
   const DEPOSIT_METHOD_ICONS: Record<string, React.ReactNode> = {
     mobile_money: <Phone className="w-5 h-5" />,
-    card: <CreditCard className="w-5 h-5" />,
+    card: <img src="/carte.webp" alt="Carte bancaire" className="w-8 h-8 object-contain rounded" />,
   };
 
   const [submitting, setSubmitting] = useState(false);
@@ -98,9 +99,10 @@ export default function InitiateDepositPage() {
   const phoneTouched = deposit.phoneNumber.trim().length > 0;
 
   const amountValue = Number(deposit.amount);
+  const isFCFA = deposit.currency === 'XAF';
   const canSubmit = isMobileMoney
     ? deposit.operator && phoneValid && amountValue >= MIN_DEPOSIT_AMOUNT
-    : amountValue > 0;
+    : isFCFA ? amountValue >= MIN_STRIPE_DEPOSIT_AMOUNT : amountValue > 0;
 
   const currencySymbol = CURRENCY_SYMBOLS[deposit.currency] || deposit.currency;
 
@@ -336,6 +338,11 @@ export default function InitiateDepositPage() {
               {isMobileMoney && amountValue > 0 && amountValue < MIN_DEPOSIT_AMOUNT && (
                 <p className="text-[11px] text-red-500 mt-1.5 ml-1">
                   {t('deposit.minimumAmount', { min: MIN_DEPOSIT_AMOUNT, currency: currencySymbol })}
+                </p>
+              )}
+              {!isMobileMoney && deposit.currency === 'XAF' && amountValue > 0 && amountValue < MIN_STRIPE_DEPOSIT_AMOUNT && (
+                <p className="text-[11px] text-red-500 mt-1.5 ml-1">
+                  {t('deposit.minimumAmount', { min: MIN_STRIPE_DEPOSIT_AMOUNT, currency: CURRENCY_SYMBOLS['XAF'] })}
                 </p>
               )}
             </div>

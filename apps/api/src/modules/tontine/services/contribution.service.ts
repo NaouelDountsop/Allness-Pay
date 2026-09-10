@@ -13,6 +13,7 @@ import {
 } from '../../transactions/entities/wallet-transaction.entity';
 import { WalletsService } from '../../wallet/wallet.service';
 import { PinService } from '../../pin/pin.service';
+import { CurrencyService } from '../../currency/currency.service';
 import { ContributeDto } from '../dto/contribute.dto';
 import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
 import { TontineContributionStatus } from '../enums/tontine-contribution-status.enum';
@@ -30,6 +31,7 @@ export class ContributionService {
     private readonly memberRepo: Repository<TontineMember>,
     private readonly walletsService: WalletsService,
     private readonly pinService: PinService,
+    private readonly currencyService: CurrencyService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
@@ -72,7 +74,17 @@ export class ContributionService {
       this.walletsService.assertOwnership(memberWallet, member.userId);
       this.walletsService.assertActive(memberWallet);
 
-      if (Number(memberWallet.balance) < providedAmount) {
+      let debitAmount = providedAmount;
+      if (memberWallet.currency !== tontine.currency) {
+        const conversion = await this.currencyService.convertAmount(
+          providedAmount,
+          tontine.currency,
+          memberWallet.currency,
+        );
+        debitAmount = Math.round(conversion.amount * 100) / 100;
+      }
+
+      if (Number(memberWallet.balance) < debitAmount) {
         throw new BadRequestException('Solde wallet insuffisant');
       }
 
@@ -85,7 +97,7 @@ export class ContributionService {
       const debitEntry = manager.create(WalletTransaction, {
         walletId: dto.walletId,
         type: WalletTransactionType.TRANSFER_OUT,
-        amount: providedAmount,
+        amount: debitAmount,
         relatedWalletId: tontineWallet.id,
         description: `Contribution tontine cycle ${cycle.cycleNumber}`,
       });
@@ -105,6 +117,97 @@ export class ContributionService {
         recalculateBalance(manager, tontineWallet.id),
       ]);
       await manager.update(Wallet, { id: dto.walletId }, { balance: newMemberBalance });
+      await manager.update(Wallet, { id: tontineWallet.id }, { balance: newTontineBalance });
+
+      contribution.status = TontineContributionStatus.PAID;
+      contribution.paidAt = new Date();
+      contribution.walletTransactionId = debitEntry.id;
+      await manager.save(contribution);
+
+      const paidAmount = Number(cycle.collectedAmount) + providedAmount;
+      cycle.collectedAmount = paidAmount.toString();
+      await manager.save(cycle);
+
+      return contribution;
+    });
+  }
+
+  async recordCardContribution(
+    tontineId: string,
+    walletId: string,
+    userId: number,
+    amount: string,
+  ): Promise<TontineContribution> {
+    return this.dataSource.transaction(async (manager) => {
+      const member = await manager.findOneOrFail(TontineMember, {
+        where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },
+      });
+
+      const tontine = await manager.findOneOrFail(Tontine, {
+        where: { id: tontineId },
+      });
+
+      const cycle = await manager.findOneOrFail(TontineCycle, {
+        where: { tontineId, status: TontineCycleStatus.ACTIVE },
+        relations: ['contributions'],
+      });
+
+      const contribution = cycle.contributions.find((c) => c.memberId === member.id);
+      if (!contribution) {
+        throw new NotFoundException('Contribution introuvable pour ce membre et ce cycle');
+      }
+
+      if (contribution.status === TontineContributionStatus.PAID) {
+        throw new BadRequestException('Contribution déjà payée');
+      }
+
+      const providedAmount = Number(amount);
+      const expectedAmount = Number(cycle.totalPot) / cycle.contributions.length;
+      if (providedAmount < expectedAmount) {
+        throw new BadRequestException(`Montant insuffisant. Attendu: ${expectedAmount}`);
+      }
+
+      const memberWallet = await manager.findOneOrFail(Wallet, {
+        where: { id: walletId },
+      });
+
+      const tontineWallet = await manager.findOneOrFail(Wallet, {
+        where: { walletNumber: tontine.walletNumber },
+      });
+
+      let debitAmount = providedAmount;
+      if (memberWallet.currency !== tontine.currency) {
+        const conversion = await this.currencyService.convertAmount(
+          providedAmount,
+          tontine.currency,
+          memberWallet.currency,
+        );
+        debitAmount = Math.round(conversion.amount * 100) / 100;
+      }
+
+      const debitEntry = manager.create(WalletTransaction, {
+        walletId: memberWallet.id,
+        type: WalletTransactionType.TRANSFER_OUT,
+        amount: debitAmount,
+        relatedWalletId: tontineWallet.id,
+        description: `Contribution tontine cycle ${cycle.cycleNumber} (carte)`,
+      });
+      await manager.save(debitEntry);
+
+      const creditEntry = manager.create(WalletTransaction, {
+        walletId: tontineWallet.id,
+        type: WalletTransactionType.TRANSFER_IN,
+        amount: providedAmount,
+        relatedWalletId: memberWallet.id,
+        description: `Cotisation membre cycle ${cycle.cycleNumber} (carte)`,
+      });
+      await manager.save(creditEntry);
+
+      const [newMemberBalance, newTontineBalance] = await Promise.all([
+        recalculateBalance(manager, memberWallet.id),
+        recalculateBalance(manager, tontineWallet.id),
+      ]);
+      await manager.update(Wallet, { id: memberWallet.id }, { balance: newMemberBalance });
       await manager.update(Wallet, { id: tontineWallet.id }, { balance: newTontineBalance });
 
       contribution.status = TontineContributionStatus.PAID;

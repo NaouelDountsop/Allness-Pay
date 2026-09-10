@@ -7,7 +7,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Check,
-  Info,
   Loader2,
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -18,9 +17,8 @@ import { walletService } from '@/lib/api/wallet.service';
 import { transactionService } from '@/lib/api/transaction.service';
 import { formatAmount, getCurrencySymbol } from '@/lib/utils';
 import { getFlagUrl, getCountryByCode, type Country } from '@/data/countries';
-import { CountrySelect } from '@/components/common/country-select';
 import { PhoneInput, validatePhone } from '@/components/common/phone-input';
-import { hasMobileMoney } from '@/utils/country-currency';
+import { hasMobileMoney, getCountryCode, COUNTRY_CURRENCIES } from '@/utils/country-currency';
 
 type DestinationType = 'mobile' | 'bank';
 
@@ -68,12 +66,6 @@ const BANKS_BY_COUNTRY: Record<string, { value: string; label: string }[]> = {
   ],
 };
 
-const CURRENCY_BY_COUNTRY: Record<string, string> = {
-  CM: 'XAF', SN: 'XAF', CI: 'XAF', GA: 'XAF', CG: 'XAF',
-  NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
-  FR: 'EUR', CA: 'CAD',
-};
-
 const STEPS = [
   'Informations de réception',
   'Montant et frais',
@@ -84,8 +76,6 @@ const STEPS = [
 export default function WithdrawPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [destinationType, setDestinationType] = useState<DestinationType>('mobile');
-  const [country, setCountry] = useState('CM');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -103,10 +93,14 @@ export default function WithdrawPage() {
     queryFn: walletService.getPrimary,
   });
 
-  const selectedCountry: Country = getCountryByCode(country) ?? getCountryByCode('CM')!;
-  const hasMobile = hasMobileMoney(country);
-  const banks = BANKS_BY_COUNTRY[country] ?? [];
-  const currency = CURRENCY_BY_COUNTRY[country] ?? 'XAF';
+  const countryCode = getCountryCode(user?.pays ?? 'CM');
+  const selectedCountry: Country = getCountryByCode(countryCode) ?? getCountryByCode('CM')!;
+  const hasMobile = hasMobileMoney(countryCode);
+  const banks = BANKS_BY_COUNTRY[countryCode] ?? [];
+  const currency = COUNTRY_CURRENCIES.find((c) => c.countryCode === countryCode)?.currency ?? 'XAF';
+
+  const defaultDestination: DestinationType = hasMobile ? 'mobile' : banks.length > 0 ? 'bank' : 'mobile';
+  const [destinationType, setDestinationType] = useState<DestinationType>(defaultDestination);
 
   const amountNumber = parseFloat(amount) || 0;
   const receivedEstimate = amountNumber;
@@ -206,41 +200,6 @@ export default function WithdrawPage() {
             {/* Step 0: Informations de réception */}
             {currentStep === 0 && (
               <>
-                <div className="mb-6">
-                  <h2 className="text-sm font-semibold text-allness-dark mb-4 flex items-center gap-2">
-                    <span className="text-lg">👤</span>
-                    Informations supplémentaires
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div className="rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                        Expéditeur (vous)
-                      </p>
-                      <p className="text-sm font-medium text-allness-dark">
-                        {user ? `${user.prenom} ${user.nom}` : '---'}
-                      </p>
-                      {/* <p className="text-xs text-gray-500 mt-1">
-                        {user?.walletNumber || '---'}
-                      </p> */}
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        Pays de réception
-                      </label>
-                      <CountrySelect
-                        value={country}
-                        onChange={(c: Country) => {
-                          setCountry(c.code);
-                          setPhoneNumber('');
-                          const countryHasMobile = hasMobileMoney(c.code);
-                          if (!countryHasMobile) setDestinationType('bank');
-                          else setDestinationType('mobile');
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 <div className="mb-6">
                   <h2 className="text-sm font-semibold text-allness-dark mb-1 flex items-center gap-2">
                     <Smartphone className="w-4 h-4 text-allness-orange" />
@@ -360,7 +319,7 @@ export default function WithdrawPage() {
                           className="flex-1 h-full px-4 text-lg font-semibold text-allness-dark focus:outline-none"
                         />
                         <span className="px-3 h-full flex items-center text-sm font-medium text-gray-500 border-l border-gray-200 bg-gray-50 shrink-0 gap-1.5">
-                          <img src={getFlagUrl(country)} alt="" className="w-4 h-auto rounded-sm object-cover" />
+                          <img src={getFlagUrl(countryCode)} alt="" className="w-4 h-auto rounded-sm object-cover" />
                           {getCurrencySymbol(currency)}
                         </span>
                       </div>
@@ -402,12 +361,7 @@ export default function WithdrawPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-start gap-2 text-xs text-gray-500">
-                    <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-gray-400" />
-                    <p>
-                      Le montant reçu est une estimation. Le montant final peut varier légèrement selon l&apos;opérateur.
-                    </p>
-                  </div>
+                  
                 </div>
 
                 <div className="flex justify-end pt-2">
@@ -488,7 +442,7 @@ export default function WithdrawPage() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Pays</span>
                       <span className="text-sm font-medium flex items-center gap-2">
-                        <img src={getFlagUrl(country)} alt="" className="w-5 h-auto rounded-sm object-cover" />
+                        <img src={getFlagUrl(countryCode)} alt="" className="w-5 h-auto rounded-sm object-cover" />
                         {selectedCountry.name}
                       </span>
                     </div>

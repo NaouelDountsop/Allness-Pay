@@ -992,5 +992,20 @@
     "lateFeePercent": "Frais de retard",
     "gracePeriodDays": "Jours de grâce",
     "settingsInfo": "Les modifications seront appliquées immédiatement à l'ensemble de la plateforme. Assurez-vous de sauvegarder vos changements."
+  },
+  "helpCenter": {
+    "title": "Centre d'aide",
+    "subtitle": "Assistant Allness Pay",
+    "welcome": "Bonjour {name} 👋\nComment puis-je vous aider aujourd'hui ?",
+    "online": "En ligne",
+    "responseTime": "Réponse en quelques minutes",
+    "inputPlaceholder": "Écrivez votre message...",
+    "send": "Envoyer",
+    "attachFile": "Joindre un fichier",
+    "close": "Fermer",
+    "paymentRefused": "Pourquoi mon paiement est refusé ?",
+    "sendMoney": "Comment envoyer de l'argent ?",
+    "viewTransactions": "Voir mes transactions",
+    "talkToAgent": "Parler à un conseiller"
   }
 }

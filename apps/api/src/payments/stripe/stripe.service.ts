@@ -11,6 +11,7 @@ import { WalletsService } from '../../modules/wallet/wallet.service';
 import { TransactionsService } from '../../modules/transactions/transactions.service';
 import { UsersService } from '../../modules/users/users.service';
 import { MailService } from '../../modules/mail/mail.service';
+import { ContributionService } from '../../modules/tontine/services/contribution.service';
 import { WalletTransactionStatus } from '../../modules/transactions/entities/wallet-transaction.entity';
 
 export interface CreateStripePaymentIntentInput {
@@ -18,8 +19,10 @@ export interface CreateStripePaymentIntentInput {
   amount: string;
   currency?: string;
   description?: string;
-  
+  tontineId?: string;
 }
+
+const MIN_STRIPE_DEPOSIT_AMOUNT = 500;
 
 @Injectable()
 export class StripeService {
@@ -33,6 +36,7 @@ export class StripeService {
     private readonly transactionsService: TransactionsService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
+    private readonly contributionService: ContributionService,
   ) {
     const stripeConfig = this.configService.getOrThrow<{
       secretKey: string;
@@ -61,6 +65,10 @@ export class StripeService {
     }
 
     const currency = (wallet.currency ?? dto.currency ?? 'XAF').toLowerCase();
+
+    if (currency === 'xaf' && amountValue < MIN_STRIPE_DEPOSIT_AMOUNT) {
+      throw new BadRequestException(`Le montant minimum pour un dépôt par carte est de ${MIN_STRIPE_DEPOSIT_AMOUNT} FCFA`);
+    }
     // Stripe attend les montants en plus petite unité monétaire.
     // XAF et XOF sont des devises à zéro décimale (pas de centimes).
     const ZERO_DECIMAL_CURRENCIES = new Set(['xaf', 'xof', 'mga', 'bif', 'vnd', 'jpy', 'krw', 'ugx', 'rwf', 'xaf', 'xpf']);
@@ -87,6 +95,7 @@ export class StripeService {
         walletNumber: wallet.walletNumber,
         userId: String(userId),
         currency: wallet.currency ?? 'XAF',
+        ...(dto.tontineId ? { tontineId: dto.tontineId } : {}),
       },
       ...(userEmail ? { receipt_email: userEmail } : {}),
     });
@@ -209,6 +218,20 @@ export class StripeService {
         }
 
         this.logger.log(`Confirmation Stripe OK: paymentIntent=${paymentIntentId}, tx=${tx.id}`);
+
+        // Enregistrer la cotisation tontine si applicable
+        const tontineId = paymentIntent.metadata?.tontineId;
+        if (tontineId) {
+          try {
+            const wallet = await this.walletsService.findById(tx.walletId);
+            const userId = Number(paymentIntent.metadata?.userId);
+            await this.contributionService.recordCardContribution(tontineId, wallet.id, userId, String(amount / 100));
+            this.logger.log(`Cotisation tontine enregistrée: tontine=${tontineId}, wallet=${wallet.id}`);
+          } catch (err) {
+            this.logger.error(`Échec enregistrement cotisation tontine: ${(err as Error).message}`);
+          }
+        }
+
         return { received: true, status: 'processed' };
     }
 

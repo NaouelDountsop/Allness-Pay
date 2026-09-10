@@ -5,6 +5,7 @@ export interface CreatePaymentIntentPayload {
   amount: string;
   currency?: string;
   description?: string;
+  tontineId?: string;
 }
 
 export interface CreatePaymentIntentResponse {

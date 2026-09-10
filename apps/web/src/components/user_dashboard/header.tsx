@@ -10,6 +10,7 @@ import { getFlagUrl, getCountryCodeByName } from '@/data/countries';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useSidebar } from '@/components/user_dashboard/sidebar-context';
+import { HelpCenterPanel } from '@/components/user_dashboard/help-center-panel';
 
 export function DashboardHeader() {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ export function DashboardHeader() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
@@ -164,9 +166,13 @@ export function DashboardHeader() {
           >
             {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
-          <button className="text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8" aria-label={t('header.help')}>
-          <HelpCircle className="w-5 h-5" />
-        </button>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8"
+            aria-label={t('header.help')}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
           <div className="w-8 h-8 rounded-full bg-brand-sidebar dark:bg-brand-sidebar overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {userName.charAt(0)}
           </div>
@@ -254,6 +260,8 @@ export function DashboardHeader() {
         variant="danger"
         onConfirm={handleLogout}
       />
+
+      <HelpCenterPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </header>
   );
 }

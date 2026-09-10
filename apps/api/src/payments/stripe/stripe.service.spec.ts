@@ -21,6 +21,7 @@ describe('StripeService', () => {
   let configService: { getOrThrow: jest.Mock };
   let walletsService: {
     findByWalletNumber: jest.Mock;
+    findById?: jest.Mock;
     assertOwnership: jest.Mock;
     assertActive: jest.Mock;
   };
@@ -30,6 +31,7 @@ describe('StripeService', () => {
   };
   let usersService: { findOne: jest.Mock };
   let mailService: { sendDepositNotification: jest.Mock };
+  let contributionService: { recordCardContribution: jest.Mock };
 
   beforeEach(() => {
     configService = {
@@ -42,6 +44,13 @@ describe('StripeService', () => {
 
     walletsService = {
       findByWalletNumber: jest.fn(),
+      findById: jest.fn().mockResolvedValue({
+        id: 'wallet-1',
+        walletNumber: 'WLT-123',
+        user: { email: 'user@example.com', prenom: 'John', nom: 'Doe' },
+        balance: 1000,
+        currency: 'CAD',
+      }),
       assertOwnership: jest.fn(),
       assertActive: jest.fn(),
     };
@@ -59,12 +68,17 @@ describe('StripeService', () => {
       sendDepositNotification: jest.fn().mockResolvedValue(undefined),
     };
 
+    contributionService = {
+      recordCardContribution: jest.fn().mockResolvedValue({ id: 'contrib-1', status: 'PAID' }),
+    };
+
     service = new StripeService(
       configService as unknown as ConfigService,
       walletsService as any,
       transactionsService as any,
       usersService as any,
       mailService as any,
+      contributionService as any,
     );
   });
 

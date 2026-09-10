@@ -28,7 +28,8 @@
     "migration:run": "npm run migration:run --workspace @afrilinkpay/api",
     "migration:generate": "npm run migration:generate --workspace @afrilinkpay/api",
     "prepare": "husky || true",
-    "seed:permissions": "ts-node src/database/seed-permissions.ts"
+    "seed:permissions": "ts-node src/database/seed-permissions.ts",
+  "seed:currencies": "ts-node apps/api/src/database/seed-currencies.ts"
   },
   "devDependencies": {
     "@types/passport-local": "^1.0.38",

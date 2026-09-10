@@ -7,6 +7,8 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { useCardDepositFlow } from '../../context/card-deposit-flow-context';
 import { CURRENCY_SYMBOLS, type Currency } from '../../context/deposit-flow.constants';
 
+const MIN_STRIPE_DEPOSIT_AMOUNT = 500;
+
 export default function CardDepositInitiationPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +28,9 @@ export default function CardDepositInitiationPage() {
   }, [routeState, setAmount, setDescription]);
 
   const displayAmount = state.amount || routeState?.amount || '';
-  const canSubmit = Number(displayAmount) > 0;
+  const amountValue = Number(displayAmount);
+  const isFCFA = routeState?.currency === 'XAF';
+  const canSubmit = isFCFA ? amountValue >= MIN_STRIPE_DEPOSIT_AMOUNT : amountValue > 0;
 
   const handleSubmit = () => {
     if (!canSubmit || submitting) return;
@@ -101,6 +105,12 @@ export default function CardDepositInitiationPage() {
                 <span className="font-medium text-white">{t('cardDeposit.bankCard')}</span>
               </div>
             </div>
+
+            {routeState?.currency === 'XAF' && amountValue > 0 && amountValue < MIN_STRIPE_DEPOSIT_AMOUNT && (
+              <p className="text-[11px] text-red-500 mb-4 ml-1">
+                {t('deposit.minimumAmount', { min: MIN_STRIPE_DEPOSIT_AMOUNT, currency: CURRENCY_SYMBOLS['XAF'] })}
+              </p>
+            )}
 
             <button
               onClick={handleSubmit}

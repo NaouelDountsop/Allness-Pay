@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   UserRound,
@@ -7,30 +6,14 @@ import {
   Copy,
   MapPin,
   Calendar,
-  ShieldCheck,
-  Wallet,
-  Activity,
-  History,
   FileText,
-  CircleDollarSign,
-  Smartphone,
   X,
   Loader2,
 } from "lucide-react";
 import { Dialog, DialogContent } from "../../components/ui/dialog";
 import { adminService } from "../../lib/api/admin.service";
 
-const TABS = [
-  { key: "info", label: "Informations personnelles", icon: UserRound },
-  { key: "kyc", label: "Vérification KYC", icon: ShieldCheck },
-  { key: "wallets", label: "Comptes & Portefeuilles", icon: Wallet },
-  { key: "activity", label: "Activité récente", icon: Activity },
-  { key: "history", label: "Historique", icon: History },
-  { key: "notes", label: "Notes", icon: FileText },
-];
-
 export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?: () => void }) {
-  const [tab, setTab] = useState("info");
   const open = !!userId;
 
   const { data: user, isLoading } = useQuery({
@@ -103,48 +86,21 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
               <div className="flex items-center gap-8 shrink-0">
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Solde principal</p>
-                  <p className="text-sm font-bold text-allness-dark">245 750 XAF</p>
-                  <a href="#" className="text-[11px] text-allness-green font-medium flex items-center gap-1 justify-center">
-                    Voir le portefeuille
-                  </a>
+                  <p className="text-sm font-bold text-allness-dark">—</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Dernière activité</p>
-                  <p className="text-sm font-medium text-gray-700">Aujourd'hui à 09:42</p>
-                  <p className="text-[11px] text-allness-green font-medium">En ligne</p>
+                  <p className="text-sm font-medium text-gray-700">—</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] text-gray-400 mb-0.5">Statut</p>
-                  <p className="text-sm font-medium text-allness-green">Actif</p>
+                  <p className="text-sm font-medium text-allness-dark">{user?.statut ?? '—'}</p>
                 </div>
               </div>
             </div>
 
-            {/* TABS */}
-            <div className="flex items-center gap-1 px-6 border-b border-gray-100">
-              {TABS.map(({ key, label, icon: Icon }) => {
-                const active = tab === key;
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setTab(key)}
-                    className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${
-                      active ? "text-allness-green" : "text-gray-500 hover:text-allness-dark"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {label}
-                    {active && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-allness-green rounded-full" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
             {/* CONTENT */}
-            {tab === "info" && (
-              <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div className="lg:col-span-2 space-y-5">
                   <Card icon={UserRound} title="Informations personnelles">
                     <div className="grid grid-cols-3 gap-4">
@@ -175,12 +131,9 @@ export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?
                 </div>
 
                 <div className="space-y-5">
-                  <ComplianceCard />
                   <StatsCard />
-                  <SecurityCard />
                 </div>
               </div>
-            )}
           </div>
         )}
       </DialogContent>
@@ -226,47 +179,6 @@ function Field({ label, value, badge }: { label: string; value: string; badge?: 
   );
 }
 
-function ComplianceCard() {
-  const items = [
-    { icon: ShieldCheck, label: "Vérification d'identité", status: "Approuvée", style: "bg-allness-green text-white" },
-    { icon: MapPin, label: "Justificatif de domicile", status: "Validé", sub: "15/03/2023", style: "text-gray-600 font-semibold" },
-    { icon: CircleDollarSign, label: "Origine des fonds", status: "Auto-déclaré", style: "bg-blue-50 text-blue-600" },
-    { icon: ShieldCheck, label: "Vérification AML", status: "Aucun signal", style: "bg-green-50 text-allness-green" },
-    { icon: Activity, label: "Score de risque", status: "Faible", style: "bg-green-50 text-allness-green" },
-  ];
-
-  return (
-    <div className="rounded-lg border border-gray-100 p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <ShieldCheck className="w-4 h-4 text-allness-green" />
-        <p className="text-sm font-semibold text-allness-dark">Résumé de conformité</p>
-      </div>
-      <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
-                <item.icon className="w-3.5 h-3.5 text-allness-green" />
-              </span>
-              <span className="text-xs text-gray-600">{item.label}</span>
-            </div>
-            {item.sub ? (
-              <div className="text-right">
-                <p className="text-xs font-medium text-gray-700">{item.status}</p>
-                <p className="text-[10px] text-gray-400">{item.sub}</p>
-              </div>
-            ) : (
-              <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${item.style}`}>
-                {item.status}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function StatsCard() {
   return (
     <div className="rounded-lg border border-gray-100 p-4">
@@ -274,52 +186,23 @@ function StatsCard() {
       <div className="grid grid-cols-2 gap-y-4 text-sm">
         <div>
           <p className="text-[11px] text-gray-400">Total des transactions</p>
-          <p className="font-semibold text-allness-dark">128</p>
+          <p className="font-semibold text-allness-dark">0</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Volume total</p>
-          <p className="font-semibold text-allness-dark">4 250 000 XAF</p>
+          <p className="font-semibold text-allness-dark">0 XAF</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Tontines créées</p>
-          <p className="font-semibold text-allness-dark">2</p>
+          <p className="font-semibold text-allness-dark">0</p>
         </div>
         <div>
           <p className="text-[11px] text-gray-400">Tontines rejointes</p>
-          <p className="font-semibold text-allness-dark">5</p>
+          <p className="font-semibold text-allness-dark">0</p>
         </div>
       </div>
     </div>
   );
 }
 
-function SecurityCard() {
-  return (
-    <div className="rounded-lg border border-gray-100 p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Smartphone className="w-4 h-4 text-allness-green" />
-        <p className="text-sm font-semibold text-allness-dark">Appareils &amp; sécurité</p>
-      </div>
-      <div className="space-y-3 text-sm">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">Appareils enregistrés</span>
-          <span className="font-medium text-allness-dark">2</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">Dernière connexion</span>
-          <span className="font-medium text-allness-dark">Aujourd'hui à 09:42</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">Adresse IP</span>
-          <span className="font-medium text-allness-dark">197.210.14.23</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">Authentification 2FA</span>
-          <span className="text-[10px] font-semibold text-allness-green bg-green-50 px-2 py-1 rounded-full">
-            Activée
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+

@@ -22,6 +22,7 @@ import { MessagingModule } from '../messaging/messaging.module';
 import { Wallet } from '../wallet/entities/wallet.entity';
 import { PinModule } from '../pin/pin.module';
 import { MailModule } from '../mail/mail.module';
+import { CurrencyModule } from '../currency/currency.module';
 import { User } from '../users/entities/user.entity';
 import { Kyc } from '../kyc/entities/kyc.entity';
 
@@ -40,6 +41,7 @@ import { Kyc } from '../kyc/entities/kyc.entity';
     WalletsModule,
     PinModule,
     MailModule,
+    CurrencyModule,
     MessagingModule,
   ],
   controllers: [TontineController, TontineInvitationController],

@@ -19,7 +19,7 @@ export enum WalletTransactionType {
 }
 
 export enum WalletTransactionStatus {
-  PENDING = 'pending',
+   PENDING = 'pending',
   COMPLETED = 'completed',
   FAILED = 'failed',
   CANCELLED = 'cancelled',
