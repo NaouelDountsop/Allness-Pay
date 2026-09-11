@@ -12,7 +12,7 @@ const SERVICES = [
 
 export default function Services() {
   return (
-    <section className="bg-white dark:bg-[#071418] py-20 lg:py-28">
+    <section className="bg-white dark:bg-[#071418] py-10 lg:py-14">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <h2 className="font-heading font-extrabold text-[clamp(1.75rem,3.5vw,2.75rem)] text-allness-dark dark:text-white text-balance">

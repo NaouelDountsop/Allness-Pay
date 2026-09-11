@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Lock, Info, Loader2, CheckCircle, CircleCheck } from 'lucide-react';
+import { ArrowLeft, Lock, Info, Loader2, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { CardNumberElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -303,6 +303,8 @@ export default function MakeContributionPage() {
   const hasExternalInfo = !needsExternalInfo || (phoneNumber.trim().length > 0 && !networkMismatch);
 
   const handleConfirm = () => {
+    if (!contributionStatus) return;
+    if (contributionStatus.hasPaid) return;
     if (!isFormValid) return;
     if (method === 'wallet' && !wallet) return;
     if (method === 'card') {
@@ -325,7 +327,7 @@ export default function MakeContributionPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || statusLoading) {
     return (
       <DashboardLayout>
         <DashboardHeader />
@@ -371,49 +373,6 @@ export default function MakeContributionPage() {
               </span>{' '}
               ({new Intl.NumberFormat('fr-FR').format(walletAmountNeeded)} {walletDisplayCurrency})
               a été débitée de votre portefeuille.
-            </p>
-            <button
-              onClick={() => navigate(`/dashboard/tontines/${id}`)}
-              className="h-11 px-6 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              Retour à la tontine
-            </button>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (statusLoading) {
-    return (
-      <DashboardLayout>
-        <DashboardHeader />
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (contributionStatus?.hasPaid) {
-    return (
-      <DashboardLayout>
-        <DashboardHeader />
-        <div>
-          <div className="max-w-md mx-auto text-center py-16">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-500/10">
-              <CircleCheck className="w-10 h-10 text-allness-green" />
-            </div>
-            <h2 className="text-xl font-bold text-allness-dark dark:text-[#F1F5F5] mb-2">Déjà cotisé</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-              Vous avez déjà cotisé pour le tour {contributionStatus.cycleNumber}.
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-              Montant :{' '}
-              <span className="font-semibold text-allness-dark dark:text-[#F1F5F5]">
-                {new Intl.NumberFormat('fr-FR').format(Number(contributionStatus.amount))}{' '}
-                {contributionStatus.currency ?? 'XAF'}
-              </span>
             </p>
             <button
               onClick={() => navigate(`/dashboard/tontines/${id}`)}
@@ -637,10 +596,20 @@ export default function MakeContributionPage() {
               </p>
             )}
 
+            {contributionStatus?.hasPaid && (
+              <div className="flex items-start gap-2 rounded-lg bg-orange-50 border border-orange-200 p-3 text-xs text-orange-700">
+                <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                <p>
+                  Vous avez déjà cotisé pour le tour <span className="font-semibold">{contributionStatus.cycleNumber}</span>.
+                  Le prochain tour sera bientôt disponible.
+                </p>
+              </div>
+            )}
+
             {method !== 'card' && (
               <button
                 onClick={handleConfirm}
-                disabled={!isFormValid || contributionMutation.isPending || insufficientBalance || (method === 'wallet' && !wallet) || (needsExternalInfo && !hasExternalInfo)}
+                disabled={!isFormValid || contributionMutation.isPending || insufficientBalance || !contributionStatus || contributionStatus?.hasPaid || (method === 'wallet' && !wallet) || (needsExternalInfo && !hasExternalInfo)}
                 className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed disabled:bg-green-200"
               >
                 {contributionMutation.isPending ? (

@@ -13,15 +13,16 @@ interface RotationOrderListProps {
   members: RotationMember[];
   onInvite?: () => void;
   onReorder?: (reorderedIds: string[]) => void;
+  disabled?: boolean;
 }
 
-export function RotationOrderList({ members, onInvite, onReorder }: RotationOrderListProps) {
+export function RotationOrderList({ members, onInvite, onReorder, disabled }: RotationOrderListProps) {
   const { t } = useTranslation();
   const [items, setItems] = useState<RotationMember[]>(members);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleMoveUp = (index: number) => {
-    if (index === 0) return;
+    if (disabled || index === 0) return;
     const newItems = [...items];
     const prev = newItems[index - 1];
     const curr = newItems[index];
@@ -34,7 +35,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
   };
 
   const handleMoveDown = (index: number) => {
-    if (index === items.length - 1) return;
+    if (disabled || index === items.length - 1) return;
     const newItems = [...items];
     const curr = newItems[index];
     const next = newItems[index + 1];
@@ -47,6 +48,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
   };
 
   const handleSelect = (id: string) => {
+    if (disabled) return;
     if (selectedId === null) {
       setSelectedId(id);
     } else if (selectedId === id) {
@@ -74,7 +76,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.rotationOrder')}</h3>
-      {selectedId && (
+      {selectedId && !disabled && (
         <p className="text-[11px] text-allness-orange mb-2">
           {t('tontines.clickToMove')}
         </p>
@@ -85,14 +87,16 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
           return (
             <div
               key={m.id}
-              onClick={() => handleSelect(m.id)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
-                selectedId === m.id
-                  ? 'bg-allness-orange/10 border border-allness-orange/30'
-                  : 'bg-blue-50/60 hover:bg-blue-50'
+              onClick={() => !disabled && handleSelect(m.id)}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
+                disabled
+                  ? 'cursor-default bg-blue-50/60'
+                  : selectedId === m.id
+                    ? 'cursor-pointer bg-allness-orange/10 border border-allness-orange/30'
+                    : 'cursor-pointer bg-blue-50/60 hover:bg-blue-50'
               }`}
             >
-              <GripVertical className="w-4 h-4 text-gray-300" />
+              <GripVertical className={`w-4 h-4 ${disabled ? 'text-gray-200' : 'text-gray-300'}`} />
               <span className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-medium text-blue-700">
                 {m.name
                   .split(' ')
@@ -105,6 +109,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
                   {t('tontines.turnNumber', { number: i + 1 })} - {m.month}
                 </p>
               </div>
+              {!disabled && (
               <div className="flex flex-col gap-0.5">
                 <button
                   type="button"
@@ -129,6 +134,7 @@ export function RotationOrderList({ members, onInvite, onReorder }: RotationOrde
                   <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
                 </button>
               </div>
+              )}
             </div>
           );
         })}

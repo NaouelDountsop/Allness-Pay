@@ -15,7 +15,7 @@ const FLAGS = [
 
 export default function Trust() {
   return (
-    <section className="bg-muted dark:bg-[#0B2026] py-16 lg:py-20">
+    <section className="bg-muted dark:bg-[#0B2026] py-8 lg:py-10">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center">
         <h2 className="font-heading font-extrabold text-[clamp(1.5rem,3vw,2.25rem)] text-allness-dark dark:text-white">
           Ils nous font confiance

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
@@ -9,59 +9,62 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDarkBg, setIsDarkBg] = useState(true);
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mq.matches || document.documentElement.classList.contains('dark'));
-    const onChange = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
+  const checkBg = useCallback(() => {
+    const heroEl = document.getElementById('accueil');
+    if (!heroEl) {
+      setIsDarkBg(true);
+      return;
+    }
+    const heroBottom = heroEl.getBoundingClientRect().bottom;
+    const docH = document.documentElement.scrollHeight;
+    const winH = window.innerHeight;
+    const atBottom = window.scrollY + winH >= docH - 400;
+    setIsDarkBg(heroBottom > 80 || atBottom);
   }, []);
 
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    checkBg();
+    window.addEventListener('scroll', checkBg, { passive: true });
+    window.addEventListener('resize', checkBg);
+    return () => {
+      window.removeEventListener('scroll', checkBg);
+      window.removeEventListener('resize', checkBg);
+    };
+  }, [checkBg]);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
   }, [menuOpen]);
 
+  const headerBg = isDarkBg
+    ? 'linear-gradient(160deg, #0f2e33 0%, #14382e 40%, #0f2e33 100%)'
+    : '#ffffff';
+  const linkColor = isDarkBg
+    ? 'text-white/85 hover:text-allness-orange'
+    : 'text-allness-green hover:text-allness-orange';
+  const btnBg = isDarkBg
+    ? 'bg-allness-orange text-allness-dark hover:bg-allness-orange/90'
+    : 'bg-allness-dark text-white hover:bg-allness-darker';
+  const logoSrc = isDarkBg ? '/allnesspay_logo1.png' : '/allnesspay_logo1.png';
+  const hamburgerColor = isDarkBg ? 'text-white' : 'text-allness-dark';
+
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'bg-white/95 dark:bg-[#0B2026]/95 backdrop-blur-md shadow-lg'
-            : 'bg-transparent'
-        }`}
+        className="fixed top-0 inset-x-0 z-50 shadow-md transition-colors duration-300"
+        style={{ background: headerBg }}
       >
         <nav className="mx-auto max-w-7xl px-5 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
           <a href="#accueil" className="flex items-center gap-0 group shrink-0">
             <img
-              src={isDark || !scrolled ? '/allnesspay_logo1.png' : '/allnesspay_logo2.png'}
+              src={logoSrc}
               alt="Allness Pay"
-              className="h-10 lg:h-12 w-auto transition-all duration-500"
+              className="h-10 lg:h-12 w-auto transition-all duration-300"
             />
-            <p
-              className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                scrolled
-                  ? 'text-allness-dark/70 dark:text-white/70 hover:text-allness-orange'
-                  : 'text-white/85 hover:text-allness-orange'
-              }`}
-            >
+            <p className={`text-sm font-medium transition-colors duration-300 hover:scale-105 ${linkColor}`}>
               Allness <span className="text-allness-orange">Pay</span>{' '}
             </p>
           </a>
@@ -71,11 +74,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                  scrolled
-                    ? 'text-allness-dark/70 dark:text-white/70 hover:text-allness-orange'
-                    : 'text-white/85 hover:text-allness-orange'
-                }`}
+                className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${linkColor}`}
               >
                 {link.label}
               </a>
@@ -85,11 +84,7 @@ export default function Navbar() {
           <div className="hidden md:block">
             <a
               href="/login"
-              className={`text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 ${
-                scrolled
-                  ? 'bg-allness-dark dark:bg-allness-orange text-white dark:text-allness-dark hover:bg-allness-darker dark:hover:bg-allness-orange/90'
-                  : 'bg-allness-orange text-allness-dark hover:bg-allness-orange/90'
-              }`}
+              className={`text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 ${btnBg}`}
             >
               Se connecter
             </a>
@@ -97,9 +92,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setMenuOpen(true)}
-            className={`md:hidden p-2 -mr-2 transition-colors duration-500 ${
-              scrolled ? 'text-allness-dark dark:text-white' : 'text-white'
-            }`}
+            className={`md:hidden p-2 -mr-2 transition-colors duration-300 ${hamburgerColor}`}
             aria-label="Ouvrir le menu"
           >
             <Menu className="h-6 w-6" />

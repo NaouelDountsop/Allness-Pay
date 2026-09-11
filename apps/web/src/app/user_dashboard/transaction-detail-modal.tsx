@@ -1,480 +1,362 @@
-import { useState } from 'react';
-import { jsPDF } from 'jspdf';
 import {
   X,
-  Copy,
-  Check,
-  Wallet,
-  Tag,
-  FileText,
-  MessageSquare,
-  Users,
-  CreditCard,
   Download,
+  ArrowLeftRight,
+  CreditCard,
+  Info,
+  CheckCircle2,
   Calendar,
-  Loader2,
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+
+import { Dialog, DialogContent, DialogFooter } from '../../components/ui/dialog';
 import type { WalletTransaction } from '../../lib/api/transaction.service';
 import { transactionService } from '../../lib/api/transaction.service';
-import { formatAmount, getCurrencySymbol } from '../../lib/utils';
+import { formatAmount } from '../../lib/utils';
 
-// Champs optionnels liés aux tontines / à la source wallet.
-// À terme, ces champs devraient être ajoutés directement à l'interface
-// WalletTransaction dans transaction.service.ts si l'API les renvoie systématiquement.
-interface TontineTransactionFields {
-  tontineName?: string;
-  tontineCycle?: string | number;
-  walletName?: string;
-  walletNumber?: string;
-  fees?: number;
+function downloadPdf(
+  transaction: WalletTransaction,
+  currency: string | undefined,
+  senderName: string,
+  recipientName: string,
+  statusLabel: string,
+) {
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const ref = transaction.reference ?? transaction.id.slice(0, 12);
+  const date = new Date(transaction.createdAt);
+  const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const pageW = 210;
+  const margin = 20;
+  const contentW = pageW - margin * 2;
+  const center = pageW / 2;
+
+  // Brand colors
+  const dark = [13, 52, 58] as const;
+  const orange = [210, 142, 47] as const;
+  const green = [0, 132, 90] as const;
+  const white = [255, 255, 255] as const;
+  const grayBg = [246, 247, 249] as const;
+  const grayText = [120, 120, 120] as const;
+  const darkText = [30, 30, 30] as const;
+
+  let y = 0;
+
+  // ── HEADER ──
+  doc.setFillColor(...dark);
+  doc.roundedRect(0, 0, pageW, 38, 0, 0, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...orange);
+  doc.text('ALLNESS PAY', margin, 10);
+
+  doc.setFontSize(18);
+  doc.setTextColor(...white);
+  doc.text('Transaction', margin, 20);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(180, 180, 180);
+  doc.text(`${dateStr} a ${timeStr}`, margin, 27);
+
+  // Status badge
+  const statusW = doc.getStringUnitWidth(statusLabel) * 9 * 0.352778 + 8;
+  doc.setFillColor(...green);
+  doc.roundedRect(margin, 30, statusW, 5.5, 2.75, 2.75, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...white);
+  doc.text(statusLabel, margin + 4, 33.5);
+
+  y = 44;
+
+  // ── MONTANT SECTION ──
+  doc.setDrawColor(200);
+  doc.setLineDashPattern([1.5, 1.5], 0);
+  doc.roundedRect(margin, y, contentW, 20, 2, 2, 'S');
+  doc.setLineDashPattern([], 0);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...orange);
+  doc.text('MONTANT', margin + 6, y + 7);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...grayText);
+  doc.text('Montant', margin + 6, y + 14);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...darkText);
+  doc.text(formatAmount(transaction.amount, currency), margin + 6, y + 18);
+
+  if (transaction.description) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...grayText);
+    doc.text('Description', center + 5, y + 14);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...darkText);
+    doc.text(transaction.description, center + 5, y + 18);
+  }
+
+  y += 26;
+
+  // ── EXPEDITEUR & BENEFICIAIRE SECTION ──
+  const senderVal = senderName;
+  const recipientVal = `${recipientName}${transaction.phoneNumber ? ` (${transaction.phoneNumber})` : ''}`;
+  const fields = [
+    { label: 'Expediteur', value: senderVal },
+    { label: 'Beneficiaire', value: recipientVal },
+    { label: 'Mode de reception', value: (transaction.type === 'transfer_in' || transaction.type === 'transfer_out') ? 'Allness Pay' : (transaction.provider ?? 'Mobile Money') },
+  ];
+  const sectionH = 28;
+  doc.setDrawColor(30, 30, 30);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(margin, y, contentW, sectionH, 2, 2, 'S');
+  doc.setLineWidth(0.2);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...orange);
+  doc.text('EXPEDITEUR & BENEFICIAIRE', margin + 6, y + 7);
+
+  let fy = y + 13;
+  for (const f of fields) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...grayText);
+    doc.text(f.label, margin + 6, fy);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...darkText);
+    doc.text(f.value, margin + 50, fy);
+    fy += 5;
+  }
+
+  y += sectionH + 6;
+
+  // ── HISTORIQUE DU STATUT ──
+  const histH = 32;
+  doc.setFillColor(236, 253, 245);
+  doc.roundedRect(margin, y, contentW, histH, 2, 2, 'F');
+  doc.setDrawColor(209, 250, 229);
+  doc.roundedRect(margin, y, contentW, histH, 2, 2, 'S');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(79, 70, 229);
+  doc.text('HISTORIQUE DU STATUT', margin + 6, y + 7);
+
+  const isCompleted = transaction.status === 'completed';
+  const history = [
+    { label: 'Initie', time: timeStr },
+    { label: 'Fonds envoyes', time: timeStr },
+    { label: isCompleted ? 'Recu par le beneficiaire' : statusLabel, time: timeStr },
+  ];
+  let hy = y + 13;
+  for (const h of history) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...darkText);
+    doc.text(h.label, margin + 6, hy);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...grayText);
+    doc.text(h.time, pageW - margin - 10, hy, { align: 'right' });
+    hy += 6;
+  }
+
+  y += histH + 8;
+
+  // ── FOOTER ──
+  doc.setFillColor(...grayBg);
+  doc.roundedRect(0, y, pageW, 14, 0, 0, 'F');
+  doc.setDrawColor(220);
+  doc.line(0, y, pageW, y);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...grayText);
+  doc.text(`Recu genere automatiquement par Allness Pay`, margin, y + 6);
+  doc.text(`ID: ${transaction.id}`, margin, y + 10);
+
+  doc.save(`recu-${ref}.pdf`);
 }
 
-type ExtendedWalletTransaction = WalletTransaction & TontineTransactionFields;
+const STATUS_LABELS: Record<string, string> = {
+  COMPLETED: 'COMPLÉTÉ',
+  completed: 'COMPLÉTÉ',
+  PENDING: 'EN ATTENTE',
+  pending: 'EN ATTENTE',
+  FAILED: 'ÉCHOUÉE',
+  failed: 'ÉCHOUÉE',
+  CANCELLED: 'ANNULÉE',
+  cancelled: 'ANNULÉE',
+};
 
-function fmt(amount: number, currency?: string): string {
-  return formatAmount(amount, currency);
+function fmtDateTime(iso: string): string {
+  const d = new Date(iso);
+  return (
+    d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) +
+    ', ' +
+    d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  );
 }
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join('');
+function fmtTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
-// Petits points décoratifs dans le header, comme sur la maquette
-const CONFETTI = [
-  { top: '10%', left: '8%', size: 5, color: '#22c55e', opacity: 0.5 },
-  { top: '65%', left: '5%', size: 4, color: '#f59e0b', opacity: 0.5 },
-  { top: '20%', left: '88%', size: 4, color: '#f59e0b', opacity: 0.6 },
-  { top: '55%', left: '92%', size: 6, color: '#22c55e', opacity: 0.4 },
-  { top: '80%', left: '18%', size: 3, color: '#ffffff', opacity: 0.3 },
-  { top: '15%', left: '45%', size: 3, color: '#ffffff', opacity: 0.25 },
-  { top: '75%', left: '78%', size: 3, color: '#f59e0b', opacity: 0.4 },
-];
+function SectionTitle({ icon: Icon, children }: { icon: typeof ArrowLeftRight; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <Icon className="w-4 h-4 text-allness-orange shrink-0" />
+      <p className="text-[11px] font-bold uppercase tracking-wide text-allness-orange">{children}</p>
+    </div>
+  );
+}
+
+function Field({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className={`text-sm text-allness-dark break-words ${bold ? 'font-bold' : 'font-semibold'}`}>{value}</p>
+    </div>
+  );
+}
 
 export function TransactionDetailModal({
   transaction,
   currency,
   onClose,
-  onDownloadReceipt,
 }: {
-  transaction: ExtendedWalletTransaction;
-  currency?: string;
+  transaction: WalletTransaction;
+  currency?: string | null;
   onClose: () => void;
-  onDownloadReceipt?: () => void;
 }) {
-  const [copied, setCopied] = useState(false);
-  const [downloading, setDownloading] = useState(false);
-  const credit = transactionService.isCredit(transaction.type);
-  const typeLabel = transactionService.getTypeLabel(transaction.type);
-  const ok = transaction.status === 'completed';
-  const fail = transaction.status === 'failed';
-  const dt = new Date(transaction.createdAt);
-  const dateStr = dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const statusLabel = STATUS_LABELS[transaction.status] ?? transaction.status;
+  const isCompleted = transaction.status === 'completed';
+  const curr = currency ?? undefined;
 
-  // Champs optionnels (tontine / source wallet)
-  const { tontineName, tontineCycle, walletName, walletNumber, fees } = transaction;
-
-  const handleCopy = () => {
-    const text = transaction.reference ?? transaction.id;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const getPartyInfo = () => {
-    if (credit) {
-      if (transaction.type === 'deposit') {
-        return {
-          label: 'EXPÉDITEUR',
-          name: transactionService.getOperatorLabel(transaction.operator) || 'Mobile Money',
-          phone: transaction.phoneNumber ?? '—',
-        };
-      }
-      if (transaction.type === 'transfer_in') {
-        return {
-          label: 'EXPÉDITEUR',
-          name: transaction.counterpartyName ?? 'Expéditeur inconnu',
-          phone: transaction.counterpartyPhone ?? '—',
-        };
-      }
-    } else {
-      if (transaction.type === 'transfer_out') {
-        return {
-          label: 'DESTINATAIRE',
-          name: transaction.counterpartyName ?? 'Bénéficiaire inconnu',
-          phone: transaction.counterpartyPhone ?? '—',
-        };
-      }
-      if (transaction.type === 'withdrawal') {
-        return {
-          label: 'DESTINATAIRE',
-          name: transactionService.getOperatorLabel(transaction.operator) || 'Mobile Money',
-          phone: transaction.phoneNumber ?? '—',
-        };
-      }
-    }
-    return null;
-  };
-
-  const party = getPartyInfo();
-  const total = transaction.amount + (fees ?? 0);
-
-  // Génère le PDF du reçu côté client et déclenche le téléchargement
-  const buildReceiptPdf = () => {
-    const doc = new jsPDF({ unit: 'mm', format: [80, 190] });
-    const pageWidth = 80;
-    const centerX = pageWidth / 2;
-    const DARK: [number, number, number] = [15, 42, 46];
-    const GREEN: [number, number, number] = [16, 185, 129];
-    const RED: [number, number, number] = [239, 68, 68];
-    const GRAY: [number, number, number] = [156, 163, 175];
-    const TEXT: [number, number, number] = [17, 24, 39];
-
-    // Bandeau d'en-tête
-    doc.setFillColor(...DARK);
-    doc.rect(0, 0, pageWidth, 55, 'F');
-
-    doc.setFillColor(...(fail ? RED : GREEN));
-    doc.circle(centerX, 14, 5, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.text(fail ? 'X' : '✓', centerX, 15.5, { align: 'center' });
-
-    doc.setFontSize(9);
-    doc.setTextColor(...(fail ? RED : GREEN));
-    doc.text(ok ? 'Réussie' : transaction.status === 'pending' ? 'En attente' : 'Échouée', centerX, 24, {
-      align: 'center',
-    });
-
-    doc.setFontSize(18);
-    doc.setTextColor(255, 255, 255);
-    doc.text(
-      `${ok ? (credit ? '+' : '-') : ''}${fmt(transaction.amount, currency)} ${getCurrencySymbol(currency)}`,
-      centerX,
-      32,
-      { align: 'center' },
-    );
-
-    doc.setFontSize(9);
-    doc.setTextColor(220, 220, 220);
-    doc.text(typeLabel, centerX, 38, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(180, 180, 180);
-    doc.text(`${dateStr} à ${timeStr}`, centerX, 43, { align: 'center' });
-
-    // Corps du reçu
-    let y = 63;
-    const left = 6;
-    const right = pageWidth - 6;
-    doc.setTextColor(...TEXT);
-
-    const addRow = (label: string, value: string, opts?: { bold?: boolean; valueColor?: [number, number, number] }) => {
-      doc.setFontSize(9);
-      doc.setFont('helvetica', opts?.bold ? 'bold' : 'normal');
-      doc.setTextColor(...TEXT);
-      doc.text(label, left, y);
-      doc.setTextColor(...(opts?.valueColor ?? TEXT));
-      doc.text(value, right, y, { align: 'right' });
-      y += 6;
-    };
-
-    const addSeparator = () => {
-      doc.setDrawColor(230, 230, 230);
-      doc.line(left, y, right, y);
-      y += 5;
-    };
-
-    const addSectionLabel = (label: string) => {
-      doc.setFontSize(7.5);
-      doc.setTextColor(...GRAY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(label.toUpperCase(), left, y);
-      y += 5;
-    };
-
-    if (party) {
-      addSectionLabel(party.label);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...TEXT);
-      doc.text(party.name, left, y);
-      y += 5;
-      doc.setFontSize(8.5);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...GRAY);
-      doc.text(party.phone, left, y);
-      y += 7;
-      addSeparator();
-    }
-
-    addSectionLabel('Détail du paiement');
-    addRow('Montant', `${fmt(transaction.amount, currency)} ${getCurrencySymbol(currency)}`);
-    addRow('Frais de transaction', fees ? `${fmt(fees, currency)} ${getCurrencySymbol(currency)}` : 'Gratuit', { valueColor: GREEN });
-    addSeparator();
-
-    addRow('Total', `${fmt(total, currency)} ${getCurrencySymbol(currency)}`, { bold: true });
-    addSeparator();
-
-    addSectionLabel('Référence');
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...TEXT);
-    doc.text(transaction.reference ?? transaction.id, left, y);
-    y += 7;
-    addSeparator();
-
-    if (transaction.description) {
-      addSectionLabel('Motif');
-      doc.setFontSize(9);
-      doc.setTextColor(...TEXT);
-      doc.text(doc.splitTextToSize(transaction.description, pageWidth - 12), left, y);
-      y += 9;
-      addSeparator();
-    }
-
-    if (tontineName) {
-      addSectionLabel('Tontine');
-      addRow(tontineName, tontineCycle ? `Cycle ${tontineCycle}` : '');
-      addSeparator();
-    }
-
-    if (walletName) {
-      addSectionLabel('Source');
-      doc.setFontSize(9);
-      doc.setTextColor(...TEXT);
-      doc.text(walletName, left, y);
-      y += 5;
-      if (walletNumber) {
-        doc.setFontSize(8.5);
-        doc.setTextColor(...GRAY);
-        doc.text(walletNumber, left, y);
-        y += 6;
-      }
-    }
-
-    doc.setFontSize(7);
-    doc.setTextColor(...GRAY);
-    doc.text('', centerX, 184, { align: 'center' });
-
-    return doc;
-  };
-
-  const handleDownloadReceipt = async () => {
-    if (downloading) return;
-
-    if (onDownloadReceipt) {
-      onDownloadReceipt();
-      return;
-    }
-
-    setDownloading(true);
-    try {
-      const doc = buildReceiptPdf();
-      const filename = `recu-${(transaction.reference ?? transaction.id).slice(0, 12)}.pdf`;
-      doc.save(filename);
-    } catch (error) {
-      console.error('Erreur lors de la génération du reçu :', error);
-    } finally {
-      setDownloading(false);
-    }
-  };
+  const isCredit = transactionService.isCredit(transaction.type);
+  const senderName = isCredit
+    ? (transaction.counterpartyName ?? transactionService.getOperatorLabel(transaction.operator) ?? '—')
+    : 'Vous';
+  const recipientName = isCredit
+    ? 'Vous'
+    : (transaction.counterpartyName ?? '—');
+  const receptionMode = (transaction.type === 'transfer_in' || transaction.type === 'transfer_out')
+    ? 'Allness Pay'
+    : (transaction.provider ?? 'Mobile Money');
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="w-full max-w-sm rounded-2xl bg-white flex flex-col max-h-[90vh] overflow-hidden shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog open onOpenChange={() => onClose()}>
+      <DialogContent
+        hideHeader
+        className="w-[calc(100%-12px)] max-w-[640px] p-0 overflow-hidden rounded-2xl border-2 border-blue-600 shadow-2xl bg-white gap-0"
       >
-        {/* Header sombre : titre + statut + montant */}
-        <div className="relative bg-allness-dark px-4 pt-3 pb-9 shrink-0 overflow-hidden">
-          {/* Confettis décoratifs */}
-          <div className="absolute inset-0 pointer-events-none">
-            {CONFETTI.map((c, i) => (
-              <span
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  top: c.top,
-                  left: c.left,
-                  width: c.size,
-                  height: c.size,
-                  backgroundColor: c.color,
-                  opacity: c.opacity,
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="relative flex items-center justify-between mb-4">
-            <button onClick={onClose} className="text-white/70 hover:text-white">
-              <X className="w-5 h-5" />
-            </button>
-            <p className="text-white text-base font-semibold">Détails</p>
-            <div className="w-5" />
-          </div>
-
-          <div className="relative text-center">
-            <div
-              className={`w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center ${
-                fail ? 'bg-red-500' : 'bg-emerald-500'
-              }`}
-            >
-              {fail ? <span className="text-white text-xl">✕</span> : <Check className="w-6 h-6 text-white" strokeWidth={3} />}
-            </div>
-            <p className={`text-sm font-semibold mb-1 ${fail ? 'text-red-400' : 'text-emerald-400'}`}>
-              {ok ? 'Réussie' : transaction.status === 'pending' ? 'En attente' : 'Échouée'}
-            </p>
-            <p className="text-white text-4xl font-bold leading-tight">
-              {ok ? (credit ? '+' : '-') : ''}
-              {fmt(transaction.amount, currency)} <span className="text-lg font-medium text-white/50">{getCurrencySymbol(currency)}</span>
-            </p>
-            <p className="text-white/70 text-sm mt-1">{typeLabel}</p>
-            <p className="text-white/50 text-xs mt-2 flex items-center justify-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5" />
-              {dateStr} à {timeStr}
-            </p>
-          </div>
-        </div>
-
-        {/* Carte blanche arrondie superposée */}
-        <div className="bg-white rounded-t-3xl -mt-5 relative z-10 flex-1 overflow-y-auto px-4 pt-5 pb-2 space-y-4">
-          {/* Expéditeur / Destinataire */}
-          {party && (
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-              <div className="relative shrink-0">
-                <div className="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 text-sm font-bold">
-                  {initials(party.name)}
-                </div>
-                {ok && (
-                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{party.label}</p>
-                <p className="text-base font-semibold text-allness-dark truncate">{party.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{party.phone}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Détail du paiement */}
-          <div className="pb-4 border-b border-gray-100">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-2.5">Détail du paiement</p>
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 text-gray-500">
-                  <Wallet className="w-4 h-4 text-emerald-500" />
-                  Montant
-                </span>
-                <span className="font-medium text-allness-dark">{fmt(transaction.amount, currency)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 text-gray-500">
-                  <Tag className="w-4 h-4 text-amber-500" />
-                  Frais de transaction
-                </span>
-                <span className="font-medium text-emerald-500">{fees ? `${fmt(fees, currency)} ${getCurrencySymbol(currency)}` : 'Gratuit'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Total */}
-          {/* <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-            <span className="text-[15px] font-bold text-allness-dark">Total</span>
-            <span className="text-[15px] font-bold text-allness-dark">{fmt(total, currency)} {getCurrencySymbol(currency)}</span>
-          </div> */}
-
-          {/* Référence */}
-          <div className="pb-4 border-b border-gray-100">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-gray-500" />
-              Référence
-            </p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-allness-dark truncate">
-                {(transaction.reference ?? transaction.id).slice(0, 8)}...
-              </span>
-              <button
-                onClick={handleCopy}
-                className="w-8 h-8 shrink-0 ml-2 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50"
-                title="Copier"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Motif */}
-          {transaction.description && (
-            <div className="pb-4 border-b border-gray-100">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-                <MessageSquare className="w-3.5 h-3.5 text-gray-500" />
-                Motif
-              </p>
-              <p className="text-sm font-medium text-allness-dark">{transaction.description}</p>
-            </div>
-          )}
-
-          {/* Tontine */}
-          {tontineName && (
-            <div className="pb-4 border-b border-gray-100">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-amber-500" />
-                Tontine
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-allness-dark">{tontineName}</span>
-                {tontineCycle && (
-                  <span className="text-[10px] font-semibold text-amber-700 bg-amber-100 rounded-full px-2.5 py-1">
-                    Cycle {tontineCycle}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Source */}
-          {walletName && (
-            <div className="pb-2">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-                <CreditCard className="w-3.5 h-3.5 text-emerald-500" />
-                Source
-              </p>
-              <p className="text-sm font-medium text-allness-dark">{walletName}</p>
-              {walletNumber && <p className="text-xs text-gray-400 mt-0.5">{walletNumber}</p>}
-            </div>
-          )}
-        </div>
-
-        {/* Footer : télécharger + fermer */}
-        <div className="shrink-0 px-4 pt-3 pb-4 space-y-2.5 bg-white">
-          <button
-            onClick={handleDownloadReceipt}
-            disabled={downloading}
-            className="w-full h-11 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {downloading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
-            )}
-            {downloading ? 'Génération...' : 'Télécharger le reçu'}
-          </button>
+        {/* HEADER */}
+        <div className="relative bg-allness-dark px-4 py-3">
           <button
             onClick={onClose}
-            className="w-full h-12 rounded-xl bg-allness-dark text-white text-[15px] font-semibold hover:opacity-90 transition-opacity"
+            className="absolute right-3 top-3 w-7 h-7 rounded-md border border-dashed border-blue-400/70 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition shrink-0"
           >
-            Fermer
+            <X className="w-4 h-4" />
           </button>
+
+          <div className="border border-dashed border-white/30 rounded-lg px-3.5 py-3 pr-12 inline-block max-w-full">
+            <h2 className="text-lg font-bold text-allness-orange mb-1.5 break-words">Transaction</h2>
+
+            <div className="flex items-center gap-1.5 text-xs text-white/70 mb-2.5">
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              {fmtDateTime(transaction.createdAt)}
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-emerald-300/60 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-300">
+              <CheckCircle2 className="w-3 h-3 shrink-0" />
+              {statusLabel}
+            </span>
+          </div>
         </div>
-      </div>
-    </div>
+
+        {/* CONTENT */}
+        <div className="px-3 py-3 space-y-3 bg-white max-h-[70vh] overflow-y-auto overflow-x-hidden">
+          {/* Montant */}
+          <div className="rounded-lg border-2 border-dashed border-gray-300 px-3 py-3">
+            <SectionTitle icon={CreditCard}>Montant</SectionTitle>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-6 gap-y-3">
+              <Field label="Montant" value={formatAmount(transaction.amount, curr)} bold />
+              <Field label="Description" value={transaction.description ?? '—'} />
+            </div>
+          </div>
+
+          {/* Expéditeur & bénéficiaire */}
+          <div className="rounded-xl border-2 border-gray-800 px-3 py-3">
+            <SectionTitle icon={ArrowLeftRight}>Expéditeur & bénéficiaire</SectionTitle>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-2.5">
+              <Field label="Expéditeur" value={senderName} />
+              <Field
+                label="Bénéficiaire"
+                value={`${recipientName}${transaction.phoneNumber ? ` (${transaction.phoneNumber})` : ''}`}
+              />
+            </div>
+            <div className="pt-2.5 border-t border-gray-100">
+              <Field label="Mode de réception" value={receptionMode} />
+            </div>
+          </div>
+
+          {/* Historique du statut */}
+          <div className="rounded-xl bg-emerald-50/70 border border-emerald-100 px-3 py-3">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-600 mb-3">Historique du statut</p>
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-gray-700">Initié</span>
+                <span className="text-xs text-gray-400 shrink-0">{fmtTime(transaction.createdAt)}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-gray-700">Fonds envoyés</span>
+                <span className="text-xs text-gray-400 shrink-0">{fmtTime(transaction.createdAt)}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className={`text-sm font-semibold ${isCompleted ? 'text-allness-green' : 'text-gray-500'}`}>
+                  {isCompleted ? 'Reçu par le bénéficiaire' : statusLabel}
+                </span>
+                <span className="text-xs text-gray-400 shrink-0">{fmtTime(transaction.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FOOTER */}
+        <DialogFooter>
+          <div className="px-3 py-2.5 border-t border-gray-100 bg-slate-50 flex flex-wrap items-center gap-2 w-full">
+            <button
+              onClick={() => downloadPdf(transaction, curr, senderName, recipientName, statusLabel)}
+              className="h-9 px-3.5 rounded-lg bg-allness-green text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:opacity-90 transition flex-1 min-w-[9.5rem]"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              Télécharger le reçu
+            </button>
+
+            <button className="h-9 px-3.5 rounded-lg border border-gray-300 bg-white text-gray-600 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-gray-50 transition flex-1 min-w-[9rem]">
+              <Info className="w-3.5 h-3.5 shrink-0" />
+              Signaler un litige
+            </button>
+
+            <div className="flex-1 basis-0 hidden sm:block" />
+
+            <button
+              onClick={onClose}
+              className="h-9 px-5 rounded-lg bg-emerald-800 text-white text-xs font-semibold hover:opacity-90 transition flex-1 sm:flex-none min-w-[6rem]"
+            >
+              Fermer
+            </button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

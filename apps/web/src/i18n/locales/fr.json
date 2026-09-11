@@ -882,7 +882,7 @@
     "redirectingMessage": "Vous allez être redirigé vers la page de paiement sécurisée pour saisir les informations de votre carte de manière sécurisée.",
     "redirectInProgress": "Redirection en cours...",
     "doNotClose": "Ne fermez pas cette fenêtre.",
-    "cardInfoTitle": "Paiement sécurisé par",
+    "cardInfoTitle": "Paiement sécurisé ",
     "cardInfoDescription": "Saisissez les informations de votre carte bancaire pour finaliser le paiement.",
     "securePaymentBy": "Paiement sécurisé par",
     "cardNumber": "Numéro de carte",

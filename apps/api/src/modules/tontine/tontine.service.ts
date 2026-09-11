@@ -304,6 +304,10 @@ export class TontineService {
     const tontine = await this.findOne(tontineId, userId);
     this.assertAdmin(tontine, userId);
 
+    if (tontine.status !== TontineStatus.DRAFT) {
+      throw new BadRequestException("L'ordre des bénéficiaires ne peut être modifié qu'avant le lancement de la tontine");
+    }
+
     const activeMembers = tontine.members.filter((m) => m.status === TontineMemberStatus.ACTIVE);
     const activeIds = new Set(activeMembers.map((m) => m.id));
 

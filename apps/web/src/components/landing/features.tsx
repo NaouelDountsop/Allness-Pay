@@ -111,11 +111,11 @@ export default function Features() {
           overflow-hidden
           bg-white
           dark:bg-[#071418]
-          pt-14
-          pb-12
-          sm:pt-16
-          lg:pt-14
-          lg:pb-10
+          pt-8
+          pb-6
+          sm:pt-10
+          lg:pt-8
+          lg:pb-6
         "
       >
 
@@ -901,7 +901,7 @@ export default function Features() {
           CARTES FONCTIONNALITÉS
       ======================================================= */}
 
-      <section className="bg-white dark:bg-[#071418] pb-16 lg:pb-24">
+      <section className="bg-white dark:bg-[#071418] pb-8 lg:pb-12">
 
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
 

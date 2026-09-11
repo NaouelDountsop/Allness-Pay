@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Loader2,
-  Mail,
   Users,
   Calendar,
   Clock,
@@ -255,7 +254,7 @@ export default function TontinesInvitationsPage() {
             <div className="space-y-4">
               {filteredInvitations.length === 0 ? (
                 <div className="text-center py-16">
-                  <Mail className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                  <img src="/Messages-bro.svg" alt="Aucune invitation" className="w-80 h-80 mx-auto mb-3" />
                   <p className="text-sm font-medium text-gray-500">{t('tontines.noInvitation')}</p>
                   <p className="text-xs text-gray-400 mt-1">
                     {activeTab === 'all'

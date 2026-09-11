@@ -17,6 +17,7 @@ export interface TontineMethodOption {
   label: string;
   image: string;
   requiresMobileMoney: boolean;
+  disabled?: boolean;
 }
 
 export const ALL_DEPOSIT_METHODS: DepositMethodOption[] = [
@@ -31,9 +32,9 @@ export const ALL_MOBILE_OPERATORS: MobileOperatorOption[] = [
 
 export const ALL_TONTINE_METHODS: TontineMethodOption[] = [
   { key: 'wallet', label: 'Portefeuille Allness', image: '/allnesspay_logo2.png', requiresMobileMoney: false },
-  { key: 'mobile_money', label: 'MTN Mobile Money', image: '/mtn-momo.png', requiresMobileMoney: true },
-  { key: 'orange_money', label: 'Orange Money', image: '/orange-money.png', requiresMobileMoney: true },
-  { key: 'card', label: 'Carte Bancaire', image: '/carte.webp', requiresMobileMoney: false },
+  { key: 'mobile_money', label: 'MTN Mobile Money', image: '/mtn-momo.png', requiresMobileMoney: true, disabled: true },
+  { key: 'orange_money', label: 'Orange Money', image: '/orange-money.png', requiresMobileMoney: true, disabled: true },
+  { key: 'card', label: 'Carte Bancaire', image: '/carte.webp', requiresMobileMoney: false, disabled: true },
 ];
 
 export function getAvailableDepositMethods(countryCode: string): DepositMethodOption[] {

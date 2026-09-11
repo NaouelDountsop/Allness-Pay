@@ -244,6 +244,7 @@ export default function TontineSettingsPage() {
                   const realIds = ids.filter((id) => !id.startsWith('inv-'));
                   reorderMutation.mutate(realIds);
                 }}
+                disabled={!isDraft}
               />
             </div>
 

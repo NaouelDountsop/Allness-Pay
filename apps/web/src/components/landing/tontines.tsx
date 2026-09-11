@@ -56,7 +56,7 @@ export default function Tontines() {
   return (
     <section
       id="tontines"
-      className="relative overflow-hidden bg-white dark:bg-[#071418] py-16 sm:py-20 lg:py-24"
+      className="relative overflow-hidden bg-white dark:bg-[#071418] py-8 sm:py-10 lg:py-12"
     >
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
 
