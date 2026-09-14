@@ -18,6 +18,7 @@ import { tontineService } from '@/lib/api/tontine.service';
 import { walletService } from '@/lib/api/wallet.service';
 import { currencyService } from '@/lib/api/currency.service';
 import { stripeService } from '@/lib/api/stripe.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
 import { useUserProfile } from '@/hooks/use-user-profile';
 import { CURRENCY_SYMBOLS, type Currency } from '@/context/deposit-flow.constants';
 import { getCountryByCode } from '@/data/countries';
@@ -203,6 +204,14 @@ export default function MakeContributionPage() {
     enabled: !!id,
   });
 
+  const { data: cycles } = useQuery({
+    queryKey: ['tontine-cycles', id],
+    queryFn: () => tontineService.listCycles(id!),
+    enabled: !!id,
+  });
+
+  const activeCycle = cycles?.find((c) => c.status === 'ACTIVE') ?? null;
+
   const { data: wallet } = useQuery({
     queryKey: ['wallet-primary'],
     queryFn: walletService.getPrimary,
@@ -271,7 +280,7 @@ export default function MakeContributionPage() {
   const displayCurrency = currencyLabels[tontineCurrency] ?? tontineCurrency;
   const walletDisplayCurrency = currencyLabels[walletCurrency] ?? walletCurrency;
   const walletAmountNeeded = hasDifferentCurrencies && exchangeRate?.rate
-    ? Math.round(Number(effectiveAmount) / Number(exchangeRate.rate))
+    ? Math.round((Number(effectiveAmount) / Number(exchangeRate.rate)) * 100) / 100
     : Number(effectiveAmount);
 
   const formValidation = contributionSchema.safeParse({
@@ -386,12 +395,10 @@ export default function MakeContributionPage() {
     );
   }
 
-  const nextDueDate = tontine.nextContributionAt
-    ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
+  const nextDueDate = tontine
+    ? formatClosingDate(
+        getCycleClosingTime(tontine.frequency, activeCycle?.activatedAt, tontine.createdAt, null),
+      )
     : '—';
 
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE').length ?? 0;

@@ -100,7 +100,7 @@ export class TontineService {
 
   async update(id: string, dto: UpdateTontineDto, userId: number): Promise<Tontine> {
     const tontine = await this.findOne(id, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException('Seule une tontine en DRAFT peut être modifiée');
@@ -119,7 +119,7 @@ export class TontineService {
 
    async updateStatus(id: string, userId: number, newStatus: TontineStatus): Promise<Tontine> {
     const tontine = await this.findOne(id, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     const validTransitions: Record<TontineStatus, TontineStatus[]> = {
       [TontineStatus.DRAFT]: [TontineStatus.ACTIVE, TontineStatus.CLOSED],
@@ -144,7 +144,7 @@ export class TontineService {
 
   async remove(id: string, userId: number): Promise<void> {
     const tontine = await this.findOne(id, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException('Seule une tontine en DRAFT peut être supprimée');
@@ -155,7 +155,7 @@ export class TontineService {
 
   async addMember(tontineId: string, userId: number, memberUserId: number): Promise<TontineMember> {
     const tontine = await this.findOne(tontineId, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     const activeCount = tontine.members.filter(
       (m) => m.status === TontineMemberStatus.ACTIVE,
@@ -193,7 +193,7 @@ export class TontineService {
 
   async removeMember(tontineId: string, userId: number, memberId: string): Promise<void> {
     const tontine = await this.findOne(tontineId, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     const activeCycle = await this.cycleRepo.findOne({
       where: { tontineId, status: TontineCycleStatus.ACTIVE },
@@ -302,7 +302,7 @@ export class TontineService {
 
   async reorderMembers(tontineId: string, userId: number, memberIds: string[]): Promise<TontineMember[]> {
     const tontine = await this.findOne(tontineId, userId);
-    this.assertAdmin(tontine, userId);
+    this.assertAdminLocal(tontine, userId);
 
     if (tontine.status !== TontineStatus.DRAFT) {
       throw new BadRequestException("L'ordre des bénéficiaires ne peut être modifié qu'avant le lancement de la tontine");
@@ -334,7 +334,17 @@ export class TontineService {
     }
   }
 
-  private assertAdmin(tontine: Tontine, userId: number): void {
+  async assertAdmin(tontineId: string, userId: number): Promise<void> {
+    const tontine = await this.findOne(tontineId, userId);
+    const isAdmin = tontine.members?.some(
+      (m) => m.userId === userId && m.role === TontineMemberRole.ADMIN,
+    );
+    if (!isAdmin) {
+      throw new ForbiddenException('Seul un admin peut effectuer cette action');
+    }
+  }
+
+  private assertAdminLocal(tontine: Tontine, userId: number): void {
     const isAdmin = tontine.members?.some(
       (m) => m.userId === userId && m.role === TontineMemberRole.ADMIN,
     );

@@ -39,6 +39,14 @@ export default function TontineDetailPage() {
     enabled: !!id,
   });
 
+  const { data: cycles } = useQuery({
+    queryKey: ['tontine-cycles', id],
+    queryFn: () => tontineService.listCycles(id!),
+    enabled: !!id,
+  });
+
+  const activeCycle = cycles?.find((c) => c.status === 'ACTIVE') ?? null;
+
   const isCreator = profile && tontine && profile.idutilisateur === tontine.creatorId;
 
   const activeMembers = tontine?.members?.filter((m) => m.status === 'ACTIVE') ?? [];
@@ -167,6 +175,8 @@ export default function TontineDetailPage() {
           tontine={tontine}
           progressPercent={progressPercent}
           effectiveMemberCount={effectiveMemberCount}
+          activeCycleActivatedAt={activeCycle?.activatedAt}
+          activeCycleBeneficiaryId={activeCycle?.beneficiaryId}
         />
 
         {/* Cycle timeline */}
@@ -179,7 +189,7 @@ export default function TontineDetailPage() {
         />
 
         {/* 3 columns: versements / contribution / activité */}
-        <TontineDetailStats tontine={tontine} contributions={contributions} />
+        <TontineDetailStats tontine={tontine} contributions={contributions} cycles={cycles} activeCycleActivatedAt={activeCycle?.activatedAt} />
 
         {/* Members table */}
         <MembersTable

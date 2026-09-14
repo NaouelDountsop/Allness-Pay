@@ -12,7 +12,6 @@ import WalletPage from "@/app/user_dashboard/wallet-page";
 import SendMoneyPage from "@/app/user_dashboard/send-money-page";
 import WithdrawPage from "@/app/user_dashboard/withdraw-page";
 import PaymentsPage from "@/app/user_dashboard/payements-page";
-import BillPaymentPage from "@/app/user_dashboard/bill-payement-page";
 import QrPaymentPage from "@/app/user_dashboard/qr-payement-page";
 import QrScanPage from "@/app/user_dashboard/qr-scan-page";
 import WalletQrCodePage from "@/app/user_dashboard/wallet-qr-code-page";
@@ -81,7 +80,6 @@ export function App() {
         <Route path="/dashboard/payments/history" element={<UserProtectedRoute><PaymentHistoryPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/scan" element={<UserProtectedRoute><QrScanPage /></UserProtectedRoute>} />
         <Route path="/dashboard/payments/qr-result" element={<UserProtectedRoute><QrPaymentPage /></UserProtectedRoute>} />
-        <Route path="/dashboard/payments/:category" element={<UserProtectedRoute><BillPaymentPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines" element={<UserProtectedRoute><TontinesPage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/create" element={<UserProtectedRoute><CreateTontinePage /></UserProtectedRoute>} />
         <Route path="/dashboard/tontines/:id" element={<UserProtectedRoute><TontineDetailPage /></UserProtectedRoute>} />

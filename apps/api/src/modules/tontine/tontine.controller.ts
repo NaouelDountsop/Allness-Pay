@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TontineService } from './tontine.service';
 import { ContributionService } from './services/contribution.service';
 import { CycleService } from './services/cycle.service';
+import { PayoutService } from './services/payout.service';
 import { InvitationService } from './services/invitation.service';
 import { MessageService } from '../messaging/message.service';
 import { CreateTontineDto } from './dto/create-tontine.dto';
@@ -48,6 +49,7 @@ export class TontineController {
     private readonly tontineService: TontineService,
     private readonly contributionService: ContributionService,
     private readonly cycleService: CycleService,
+    private readonly payoutService: PayoutService,
     private readonly invitationService: InvitationService,
     private readonly messageService: MessageService,
   ) {}
@@ -128,6 +130,16 @@ export class TontineController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.messageService.markAsRead(messageId, req.user.sub);
+  }
+
+  @Get(':id/contribution-status')
+  @ApiOperation({ summary: "Vérifier si l'utilisateur a cotisé pour le cycle actuel" })
+  @ApiParam({ name: 'id', type: String })
+  async checkMyContributionStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.contributionService.checkMyContributionStatus(id, req.user.sub);
   }
 
   @Get(':id/cycles')
@@ -307,5 +319,33 @@ findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest
   @ApiParam({ name: 'id', type: String })
   listInvitations(@Param('id', ParseUUIDPipe) id: string) {
     return this.invitationService.findByTontine(id);
+  }
+
+  @Post(':id/cycles/:cycleId/complete')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Terminer manuellement un cycle (admin)' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'cycleId', type: String })
+  async completeCycle(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('cycleId', ParseUUIDPipe) cycleId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    await this.tontineService.assertAdmin(id, req.user.sub);
+    return this.cycleService.completeCycle(cycleId);
+  }
+
+  @Post(':id/cycles/:cycleId/release-payout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verser le pot au bénéficiaire (admin)' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'cycleId', type: String })
+  async releasePayout(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('cycleId', ParseUUIDPipe) cycleId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    await this.tontineService.assertAdmin(id, req.user.sub);
+    return this.payoutService.processPayout(cycleId);
   }
 }

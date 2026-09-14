@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowUpCircle, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Tontine, TontineContribution } from '@/lib/api/tontine.service';
+import type { Tontine, TontineContribution, TontineCycle } from '@/lib/api/tontine.service';
+import { getCycleClosingTime } from '@/lib/tontine-utils';
 
 function getTimeAgo(dateStr: string): string {
   const now = Date.now();
@@ -32,6 +33,8 @@ function getTimeAgo(dateStr: string): string {
 interface TontineDetailStatsProps {
   tontine: Tontine;
   contributions?: TontineContribution[];
+  cycles?: TontineCycle[];
+  activeCycleActivatedAt?: string | null;
 }
 
 function DonutChart({
@@ -122,7 +125,7 @@ function DonutChart({
   );
 }
 
-export function TontineDetailStats({ tontine, contributions = [] }: TontineDetailStatsProps) {
+export function TontineDetailStats({ tontine, contributions = [], cycles = [], activeCycleActivatedAt }: TontineDetailStatsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const activeMembers = tontine.members?.filter((m) => m.status === 'ACTIVE') ?? [];
@@ -132,18 +135,18 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
   const pending = contributions.filter((c) => c.status === 'PENDING').length;
   const late = contributions.filter((c) => c.status === 'LATE').length;
 
-  const nextDueDate = tontine.nextContributionAt
-    ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
+  const closingTime = getCycleClosingTime(tontine.frequency, activeCycleActivatedAt, tontine.createdAt, null);
+
+  const nextDueDate = closingTime
+    ? new Date(closingTime).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       })
     : '—';
 
-  const daysUntilDue = tontine.nextContributionAt
-    ? Math.ceil(
-        (new Date(tontine.nextContributionAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-      )
+  const daysUntilDue = closingTime
+    ? Math.ceil((closingTime - Date.now()) / (1000 * 60 * 60 * 24))
     : null;
 
   const recentActivities = contributions
@@ -163,6 +166,14 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
       const timeAgo = getTimeAgo(dateStr);
       const amount = new Intl.NumberFormat('fr-FR').format(Number(c.amount));
 
+      const cycle = cycles.find((cy) => cy.id === c.cycleId);
+      const closingTime = cycle
+        ? getCycleClosingTime(tontine.frequency, cycle.activatedAt, cycle.createdAt ?? null, cycle.dueDate)
+        : null;
+      const dueDateStr = closingTime
+        ? new Date(closingTime).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : new Date(c.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
       let action: string;
       let type: 'paid' | 'pending' | 'late';
       if (isPaid) {
@@ -179,7 +190,7 @@ export function TontineDetailStats({ tontine, contributions = [] }: TontineDetai
       return {
         name: memberName,
         action,
-        time: isPaid ? timeAgo : `Échéance : ${new Date(c.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+        time: isPaid ? timeAgo : `Échéance : ${dueDateStr}`,
         type,
       };
     });

@@ -1,64 +1,99 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Star, History } from 'lucide-react';
+import { History, Wallet, ArrowRight } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
-import { QrCodePanel } from '@/components/user_dashboard/payements/qr-code-panel';
-import { HowToPay } from '@/components/user_dashboard/payements/how-to-pay';
+import { ServiceSearchBar } from '@/components/user_dashboard/payements/service-search-bar';
 import { ServiceCategoriesGrid } from '@/components/user_dashboard/payements/service-categories-grid';
-import { WhyChooseCard } from '@/components/user_dashboard/payements/why-choose-card';
 import { RecentPaymentsList } from '@/components/user_dashboard/payements/recent-payements-list';
-import { ScheduledPaymentsBanner } from '@/components/user_dashboard/payements/scheduled-payements-banner';
+import { PaymentStepper } from '@/components/user_dashboard/payements/payment-stepper';
 import { serviceCategories, mockRecentPayments } from '@/lib/mock/payments-data';
 
 export default function PaymentsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const filteredCategories = serviceCategories.filter(
+    (cat) =>
+      cat.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cat.description.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div>
-        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-allness-dark mb-1">{t('payments.title')}</h1>
-            <p className="text-sm text-gray-500 line-clamp-2">
-              {t('payments.subtitle')}
-            </p>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <button className="h-9 px-3 sm:px-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-600 flex items-center gap-1.5 sm:gap-2">
-              <Star className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('payments.favorites')}</span>
-            </button>
-            <button
-              onClick={() => navigate('/dashboard/payments/history')}
-              className="h-9 px-3 sm:px-4 rounded-lg border border-allness-orange text-allness-orange text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2"
-            >
-              <History className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('payments.history')}</span>
-            </button>
-          </div>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+          {/* Left Panel - Services & Recent Payments */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Page Header */}
+            <div>
+              <h1 className="text-2xl font-bold text-allness-dark mb-1">
+                {t('payments.title')}
+              </h1>
+              <p className="text-sm text-gray-500">
+                Réglez vos factures et services en quelques secondes, en toute sécurité.
+              </p>
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            {/* Search Bar */}
+            <ServiceSearchBar value={searchQuery} onChange={setSearchQuery} />
+
+            {/* Services Grid */}
+            <ServiceCategoriesGrid
+              categories={filteredCategories}
+              onSelect={setSelectedCategory}
+              selectedKey={selectedCategory}
+            />
+
+            {/* Recent Payments */}
+            <RecentPaymentsList
+              payments={mockRecentPayments}
+              onViewAll={() => navigate('/dashboard/payments/history')}
+            />
+
+            {/* Bottom Banner */}
+            <div className="rounded-2xl bg-allness-dark text-white p-5 flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-semibold mb-1">Plus de simplicité, plus de services</h3>
+                <p className="text-xs text-white/60 leading-relaxed mb-3">
+                  Payez vos factures et services en toute sécurité avec AfriLinkPay.
+                </p>
+                <button className="text-xs text-allness-orange font-medium inline-flex items-center gap-1 hover:underline">
+                  Découvrir tous les services
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="shrink-0 w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center">
+                <Wallet className="w-10 h-10 text-allness-orange/60" />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Panel - Payment Form */}
           <div className="lg:col-span-2">
-            <QrCodePanel onScanClick={() => navigate('/dashboard/payments/scan')} />
+            <div className="lg:sticky lg:top-24">
+              {selectedCategory ? (
+                <PaymentStepper
+                  category={selectedCategory}
+                  onBack={() => setSelectedCategory(null)}
+                />
+              ) : (
+                <div className="rounded-2xl border border-gray-100 shadow-sm bg-white p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                    <History className="w-8 h-8 text-gray-300" />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Sélectionnez un service pour commencer
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-          <HowToPay />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
-          <div className="lg:col-span-2">
-            <ServiceCategoriesGrid categories={serviceCategories} />
-          </div>
-          <WhyChooseCard />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <RecentPaymentsList payments={mockRecentPayments} />
-          <ScheduledPaymentsBanner />
         </div>
       </div>
     </DashboardLayout>

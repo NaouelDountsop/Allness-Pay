@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Download, Plus, Loader2 } from 'lucide-react';
@@ -7,7 +7,8 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { ContributionStats } from '@/components/user_dashboard/tontines/contribution-stats';
 import { CycleSelector } from '@/components/user_dashboard/tontines/cycle-selector';
 import { ContributionsTable } from '@/components/user_dashboard/tontines/contributions-table';
-import { tontineService, type Tontine } from '@/lib/api/tontine.service';
+import { tontineService, type Tontine, type TontineCycle } from '@/lib/api/tontine.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
 import { walletService } from '@/lib/api/wallet.service';
 import {
   Dialog,
@@ -67,7 +68,7 @@ export default function ContributionHistoryPage() {
         range: c.status === 'COMPLETED'
           ? 'Terminé'
           : c.status === 'ACTIVE'
-            ? `Échéance: ${new Date(c.dueDate).toLocaleDateString('fr-FR')}`
+            ? `Échéance: ${formatClosingDate(getCycleClosingTime(tontine?.frequency ?? 'MONTHLY', c.activatedAt, c.createdAt ?? null, c.dueDate))}`
             : 'À venir',
         active: c.status === 'ACTIVE',
       }))
@@ -77,28 +78,44 @@ export default function ContributionHistoryPage() {
 
   const currentCycleData = apiCycles?.find((c) => c.status === 'ACTIVE');
 
+  const cycleMap = useMemo(() => {
+    const map = new Map<string, TontineCycle>();
+    for (const c of apiCycles ?? []) map.set(c.id, c);
+    return map;
+  }, [apiCycles]);
+
   const contributions = apiContributions
-    ? apiContributions.map((c) => ({
-        id: c.id,
-        date: c.paidAt
-          ? new Date(c.paidAt).toLocaleDateString('fr-FR')
-          : new Date(c.dueDate).toLocaleDateString('fr-FR'),
-        time: c.paidAt
-          ? new Date(c.paidAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-          : undefined,
-        memberName: c.member?.user
-          ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim() || `Membre ${c.member.userId}`
-          : `Membre`,
-        amount: Number(c.amount),
-        status: c.status as 'PENDING' | 'PAID' | 'LATE' | 'FAILED',
-        currency: tontine?.currency ?? 'XAF',
-      }))
+    ? apiContributions.map((c) => {
+        const cycle = cycleMap.get(c.cycleId);
+        const closingTime = cycle
+          ? getCycleClosingTime(tontine?.frequency ?? 'MONTHLY', cycle.activatedAt, cycle.createdAt ?? null, cycle.dueDate)
+          : null;
+        return {
+          id: c.id,
+          date: c.paidAt
+            ? new Date(c.paidAt).toLocaleDateString('fr-FR')
+            : closingTime
+              ? new Date(closingTime).toLocaleDateString('fr-FR')
+              : new Date(c.dueDate).toLocaleDateString('fr-FR'),
+          time: c.paidAt
+            ? new Date(c.paidAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            : undefined,
+          memberName: c.member?.user
+            ? `${c.member.user.prenom ?? ''} ${c.member.user.nom ?? ''}`.trim() || `Membre ${c.member.userId}`
+            : `Membre`,
+          amount: Number(c.amount),
+          status: c.status as 'PENDING' | 'PAID' | 'LATE' | 'FAILED',
+          currency: tontine?.currency ?? 'XAF',
+        };
+      })
     : [];
 
   const tableCycles = (apiCycles ?? []).map((c) => ({
     id: c.id,
     name: `Tour ${c.cycleNumber}`,
-    date: new Date(c.dueDate).toLocaleDateString('fr-FR'),
+    date: formatClosingDate(
+      getCycleClosingTime(tontine?.frequency ?? 'MONTHLY', c.activatedAt, c.createdAt ?? null, c.dueDate),
+    ),
   }));
 
   const memberMap = new Map<

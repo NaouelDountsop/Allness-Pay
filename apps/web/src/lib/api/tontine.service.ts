@@ -74,7 +74,9 @@ export interface TontineCycle {
   totalPot: string;
   collectedAmount: string;
   dueDate: string;
+  activatedAt?: string;
   completedAt?: string;
+  createdAt?: string;
 }
 
 export interface TontineContribution {
@@ -275,6 +277,16 @@ export const tontineService = {
 
   getUnreadCounts: async (tontineId: string): Promise<UnreadCount> => {
     const res = await apiClient.get<UnreadCount>(`${basePath}/${tontineId}/messages/unread`);
+    return res.data;
+  },
+
+  releasePayout: async (
+    tontineId: string,
+    cycleId: string,
+  ): Promise<{ beneficiaryWallet: { id: string; balance: string }; amount: string }> => {
+    const res = await apiClient.post<{ beneficiaryWallet: { id: string; balance: string }; amount: string }>(
+      `${basePath}/${tontineId}/cycles/${cycleId}/release-payout`,
+    );
     return res.data;
   },
 };

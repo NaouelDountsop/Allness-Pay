@@ -18,6 +18,7 @@ import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { tontineService, type TontineInvitation } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
 import { useTranslation } from 'react-i18next';
 
 type FilterTab = 'all' | 'pending' | 'expired' | 'declined';
@@ -113,12 +114,10 @@ function InvitationCard({
               <p className="text-[11px] text-gray-400 dark:text-gray-500">
                 {t('tontines.nextDueDate')}{' '}
                 <span className="font-medium text-allness-green">
-                  {tontine?.nextContributionAt
-                    ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })
+                  {tontine
+                    ? formatClosingDate(
+                        getCycleClosingTime(tontine.frequency, null, tontine.createdAt, null),
+                      )
                     : '---'}
                 </span>
               </p>

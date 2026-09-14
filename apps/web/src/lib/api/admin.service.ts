@@ -227,6 +227,29 @@ export const adminService = {
     return res.data;
   },
 
+  getTontineCycles: async (tontineId: string): Promise<Array<{
+    id: string;
+    cycleNumber: number;
+    status: string;
+    collectedAmount: string;
+    dueDate: string;
+    completedAt?: string;
+    contributions: Array<{ id: string; status: string; amount: string }>;
+  }>> => {
+    const res = await apiClient.get(`/tontines/${tontineId}/cycles`);
+    return res.data;
+  },
+
+  completeCycle: async (tontineId: string, cycleId: string): Promise<unknown> => {
+    const res = await apiClient.post(`/tontines/${tontineId}/cycles/${cycleId}/complete`);
+    return res.data;
+  },
+
+  releasePayout: async (tontineId: string, cycleId: string): Promise<{ beneficiaryWallet: { id: string; balance: string }; amount: string }> => {
+    const res = await apiClient.post(`/tontines/${tontineId}/cycles/${cycleId}/release-payout`);
+    return res.data;
+  },
+
   listCurrencies: async (): Promise<AdminCurrency[]> => {
     const res = await apiClient.get<AdminCurrency[]>('/currencies');
     return res.data;

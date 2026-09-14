@@ -2,7 +2,7 @@ export interface ServiceCategory {
   key: string;
   label: string;
   description: string;
-  icon: 'electricity' | 'water' | 'telecom' | 'tv' | 'education' | 'transport';
+  icon: 'electricity' | 'water' | 'internet' | 'tv' | 'airtime' | 'phone';
   favorite?: boolean;
 }
 
@@ -16,6 +16,7 @@ export interface Biller {
 export interface RecentPayment {
   id: string;
   label: string;
+  provider?: string;
   reference: string;
   date: string;
   time: string;
@@ -28,77 +29,109 @@ export const serviceCategories: ServiceCategory[] = [
   {
     key: 'electricity',
     label: 'Électricité',
-    description: "Payez vos factures d'électricité",
+    description: "Payez votre facture d'électricité",
     icon: 'electricity',
     favorite: true,
   },
   {
     key: 'water',
     label: 'Eau',
-    description: "Payez vos factures d'eau",
+    description: "Réglez votre facture d'eau",
     icon: 'water',
   },
   {
-    key: 'telecom',
-    label: 'Télécom',
-    description: 'Crédit téléphonique et abonnements',
-    icon: 'telecom',
+    key: 'internet',
+    label: 'Internet',
+    description: 'Payez votre abonnement',
+    icon: 'internet',
   },
   {
     key: 'tv',
-    label: 'Télévision',
-    description: 'Abonnements TV et bouquets',
+    label: 'TV / Canal+',
+    description: 'Renouvelez votre abonnement',
     icon: 'tv',
   },
   {
-    key: 'education',
-    label: 'Éducation',
-    description: "Frais de scolarité et examens",
-    icon: 'education',
+    key: 'airtime',
+    label: 'Airtime & Data',
+    description: 'Rechargez un numéro',
+    icon: 'airtime',
   },
   {
-    key: 'transport',
-    label: 'Transport',
-    description: 'Billets, cartes et abonnements',
-    icon: 'transport',
+    key: 'phone',
+    label: 'Téléphone',
+    description: 'Payez vos services',
+    icon: 'phone',
   },
 ];
 
 export const billersByCategory: Record<string, Biller[]> = {
   electricity: [
+    { key: 'eneo', name: 'ENEO', logoUrl: '/billers/eneo.png', category: 'electricity' },
     { key: 'socadel', name: 'SOCADEL', logoUrl: '/billers/socadel.png', category: 'electricity' },
+  ],
+  water: [
+    { key: 'camwater', name: 'CAMWATER', logoUrl: '/billers/camwater.png', category: 'water' },
+  ],
+  internet: [
+    { key: 'camtel', name: 'CAMTEL', logoUrl: '/billers/camtel.png', category: 'internet' },
+  ],
+  tv: [
+    { key: 'canalplus', name: 'Canal+', logoUrl: '/billers/canalplus.png', category: 'tv' },
+  ],
+  airtime: [
+    { key: 'mtn', name: 'MTN', logoUrl: '/billers/mtn.png', category: 'airtime' },
+    { key: 'orange', name: 'Orange', logoUrl: '/billers/orange.png', category: 'airtime' },
+  ],
+  phone: [
+    { key: 'mtn', name: 'MTN', logoUrl: '/billers/mtn.png', category: 'phone' },
+    { key: 'orange', name: 'Orange', logoUrl: '/billers/orange.png', category: 'phone' },
   ],
 };
 
 export const mockRecentPayments: RecentPayment[] = [
   {
     id: '1',
-    label: 'Facture ENEO - N° 2059485',
-    reference: '01/02/2026 · 14:32',
-    date: '01/02/2026',
+    label: 'Électricité',
+    provider: 'ENEO',
+    reference: '12 sept. 2026',
+    date: '12/09/2026',
     time: '14:32',
-    amount: 25400,
+    amount: -15000,
     currency: 'XAF',
     status: 'paid',
   },
   {
     id: '2',
-    label: 'Recharge Orange - 6 000 FCFA',
-    reference: '30/01/2026 · 09:15',
-    date: '30/01/2026',
+    label: 'Eau',
+    provider: 'CAMWATER',
+    reference: '06 sept. 2026',
+    date: '06/09/2026',
     time: '09:15',
-    amount: 6000,
+    amount: -8500,
     currency: 'XAF',
     status: 'paid',
   },
   {
     id: '3',
-    label: 'Abonnement Canal+',
-    reference: '28/01/2026 · 16:20',
-    date: '28/01/2026',
+    label: 'Abonnement',
+    provider: 'Canal+',
+    reference: '01 sept. 2026',
+    date: '01/09/2026',
     time: '16:20',
-    amount: 15000,
+    amount: -5000,
     currency: 'XAF',
-    status: 'pending',
+    status: 'paid',
+  },
+  {
+    id: '4',
+    label: 'Airtime & Data',
+    provider: 'MTN',
+    reference: '28 août 2026',
+    date: '28/08/2026',
+    time: '11:05',
+    amount: -2000,
+    currency: 'XAF',
+    status: 'paid',
   },
 ];

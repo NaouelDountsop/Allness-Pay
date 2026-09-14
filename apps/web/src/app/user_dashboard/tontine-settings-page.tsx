@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Play, Clock, CalendarDays, Mail } from 'lucide-react';
+import { ArrowLeft, Loader2, Play, Clock, CalendarDays, Mail, Timer } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
 import { RotationOrderList } from '@/components/user_dashboard/tontines/rotation-order-list';
 import { CycleSummaryPanel } from '@/components/user_dashboard/tontines/cycle-summary-panel';
+import { CycleCollectionsPanel } from '@/components/user_dashboard/tontines/cycle-collections-panel';
 import { ScheduleCalendarModal } from '@/components/user_dashboard/tontines/schedule-calendar-modal';
 import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-member-modal';
 import { tontineService } from '@/lib/api/tontine.service';
@@ -70,6 +71,53 @@ export default function TontineSettingsPage() {
     enabled: !!tontineId && isAdmin,
   });
 
+  const { data: cycles } = useQuery({
+    queryKey: ['tontine-cycles', tontineId],
+    queryFn: () => tontineService.listCycles(tontineId!),
+    enabled: !!tontineId,
+  });
+
+  const activeCycle = useMemo(
+    () => cycles?.find((c) => c.status === 'ACTIVE') ?? null,
+    [cycles],
+  );
+
+  const frequency = tontine?.frequency ?? 'MONTHLY';
+
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!activeCycle) return;
+    const interval = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(interval);
+  }, [activeCycle]);
+
+  const remaining = useMemo(() => {
+    if (!activeCycle) return null;
+
+    const getFrequencyMs = (freq: string): number => {
+      switch (freq) {
+        case 'WEEKLY': return 7 * 24 * 60 * 60 * 1000;
+        case 'BIWEEKLY': return 14 * 24 * 60 * 60 * 1000;
+        case 'MONTHLY':
+        default: return 30 * 24 * 60 * 60 * 1000;
+      }
+    };
+
+    const startReference = activeCycle.activatedAt
+      ? new Date(activeCycle.activatedAt).getTime()
+      : new Date(activeCycle.createdAt ?? activeCycle.dueDate).getTime();
+
+    const closingTime = startReference + getFrequencyMs(frequency);
+    const diff = closingTime - now;
+
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, expired: true };
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { days, hours, minutes, expired: false, closingTime };
+  }, [activeCycle, now, frequency]);
+
   const startMutation = useMutation({
     mutationFn: () => tontineService.updateStatus(tontineId!, 'ACTIVE'),
     onSuccess: () => {
@@ -87,6 +135,20 @@ export default function TontineSettingsPage() {
   });
 
   const getRotationLabel = (freq: string, index: number): string => {
+    const freqMs: Record<string, number> = {
+      WEEKLY: 7 * 24 * 60 * 60 * 1000,
+      BIWEEKLY: 14 * 24 * 60 * 60 * 1000,
+      MONTHLY: 30 * 24 * 60 * 60 * 1000,
+    };
+    const baseStart = activeCycle?.activatedAt
+      ? new Date(activeCycle.activatedAt).getTime()
+      : tontine?.createdAt
+        ? new Date(tontine.createdAt).getTime()
+        : null;
+    if (baseStart) {
+      const turnDate = new Date(baseStart + (freqMs[freq] ?? 30 * 24 * 60 * 60 * 1000) * index);
+      return `Tour ${index + 1} — ${turnDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+    }
     switch (freq) {
       case 'WEEKLY':
         return `Semaine ${index + 1}`;
@@ -94,7 +156,7 @@ export default function TontineSettingsPage() {
         return `Bimensuel ${index + 1}`;
       case 'MONTHLY':
       default:
-        return new Date(2026, index, 1).toLocaleDateString('fr-FR', { month: 'long' });
+        return `Tour ${index + 1}`;
     }
   };
 
@@ -104,8 +166,6 @@ export default function TontineSettingsPage() {
       queryClient.invalidateQueries({ queryKey: ['tontine', tontineId] });
     },
   });
-
-  const frequency = tontine?.frequency ?? 'MONTHLY';
 
   const activeRotationMembers = activeMembers
     .sort((a, b) => (a.beneficiaryOrder ?? 0) - (b.beneficiaryOrder ?? 0))
@@ -256,6 +316,96 @@ export default function TontineSettingsPage() {
               </div>
             </div>
 
+            {/* Progression & Paiements par cycle */}
+            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-900">Progression & Paiements</h3>
+                {activeCycle && (
+                  <span className="text-[11px] text-gray-400">
+                    Cycle {activeCycle.cycleNumber}
+                  </span>
+                )}
+              </div>
+
+              {activeCycle && remaining && (
+                <div className="mb-4 rounded-xl bg-allness-dark p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Timer className="w-4 h-4 text-allness-orange" />
+                    <span className="text-xs font-medium text-gray-300">
+                      {remaining.expired ? 'Échéance dépassée' : 'Temps restant'}
+                    </span>
+                  </div>
+                  {remaining.expired ? (
+                    <p className="text-lg font-bold text-red-400">Cycle en attente de clôture</p>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {remaining.days > 0 && (
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-white">{remaining.days}</p>
+                          <p className="text-[10px] text-gray-400">jour{remaining.days > 1 ? 's' : ''}</p>
+                        </div>
+                      )}
+                      {remaining.days > 0 && <span className="text-lg text-gray-500">:</span>}
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-white">{String(remaining.hours).padStart(2, '0')}</p>
+                        <p className="text-[10px] text-gray-400">heure{remaining.hours > 1 ? 's' : ''}</p>
+                      </div>
+                      <span className="text-lg text-gray-500">:</span>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-white">{String(remaining.minutes).padStart(2, '0')}</p>
+                        <p className="text-[10px] text-gray-400">min</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                      <span>Clôture prévue</span>
+                      <span>
+                        {remaining.closingTime
+                          ? new Date(remaining.closingTime).toLocaleDateString('fr-FR', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '—'}
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
+                      {(() => {
+                        if (!remaining.closingTime || !activeCycle.activatedAt) {
+                          return <div className="h-full bg-allness-orange rounded-full w-1/2" />;
+                        }
+                        const elapsed = now - new Date(activeCycle.activatedAt).getTime();
+                        const total = remaining.closingTime - new Date(activeCycle.activatedAt).getTime();
+                        const pct = total > 0 ? Math.min(100, Math.max(2, (elapsed / total) * 100)) : 100;
+                        return (
+                          <div
+                            className="h-full bg-allness-orange rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!activeCycle && (
+                <div className="mb-4 rounded-xl bg-gray-50 p-4 text-center">
+                  <Clock className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400">Aucun cycle actif pour le moment</p>
+                </div>
+              )}
+
+              <CycleCollectionsPanel
+                tontineId={tontineId!}
+                currency={tontine.currency ?? 'XAF'}
+                frequency={frequency}
+              />
+            </div>
+
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('tontines.sanctionRules')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -300,13 +450,15 @@ export default function TontineSettingsPage() {
               frequency={frequency}
               totalPot={totalPot}
               membersCount={activeMembers.length}
-              nextDrawDate={tontine.nextContributionAt
-                ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })
-                : '—'}
+              nextDrawDate={
+                remaining?.closingTime
+                  ? new Date(remaining.closingTime).toLocaleDateString('fr-FR', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  : '—'
+              }
               currency={tontine.currency ?? 'XAF'}
               onShowCalendar={() => setShowCalendar(true)}
             >
@@ -326,13 +478,13 @@ export default function TontineSettingsPage() {
                   </div>
                 )}
 
-                {!isDraft && tontine.nextContributionAt && (
+                {!isDraft && remaining?.closingTime && (
                   <div className="flex items-center gap-2 mb-3 p-2.5 rounded-lg bg-green-50 border border-green-100">
                     <CalendarDays className="w-3.5 h-3.5 text-allness-green shrink-0" />
                     <p className="text-[11px] text-green-700">
                       Prochaine cotisation le{' '}
                       <span className="font-semibold">
-                        {new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
+                        {new Date(remaining.closingTime).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'long',
                           year: 'numeric',

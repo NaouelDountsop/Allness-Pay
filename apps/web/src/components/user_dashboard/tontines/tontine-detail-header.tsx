@@ -2,17 +2,22 @@ import { RotateCcw, Trophy, Calendar, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Tontine } from '@/lib/api/tontine.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
 
 interface TontineDetailHeaderProps {
   tontine: Tontine;
   progressPercent?: number;
   effectiveMemberCount?: number;
+  activeCycleActivatedAt?: string | null;
+  activeCycleBeneficiaryId?: string | null;
 }
 
 export function TontineDetailHeader({
   tontine,
   progressPercent = 0,
   effectiveMemberCount,
+  activeCycleActivatedAt,
+  activeCycleBeneficiaryId,
 }: TontineDetailHeaderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -22,9 +27,9 @@ export function TontineDetailHeader({
     Number(tontine.contributionAmount) * memberCount;
   const formatAmount = (val: number) => new Intl.NumberFormat('fr-FR').format(val);
 
-  const currentMember = tontine.members?.find(
-    (m) => (m.beneficiaryOrder ?? 0) === tontine.currentCycle,
-  );
+  const currentMember = activeCycleBeneficiaryId
+    ? tontine.members?.find((m) => String(m.id) === String(activeCycleBeneficiaryId))
+    : tontine.members?.find((m) => m.beneficiaryOrder === tontine.currentCycle);
 
   const beneficiaryName = currentMember?.user
     ? `${currentMember.user.prenom ?? ''} ${currentMember.user.nom ?? ''}`.trim()
@@ -123,13 +128,9 @@ export function TontineDetailHeader({
           <div className="flex items-center gap-1.5 text-xs text-white/70">
             <Calendar className="w-3.5 h-3.5" />
             <span>
-              {tontine.nextContributionAt
-                ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                : '—'}
+              {formatClosingDate(
+                getCycleClosingTime(tontine.frequency, activeCycleActivatedAt, tontine.createdAt, null),
+              )}
             </span>
           </div>
         </div>

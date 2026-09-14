@@ -80,6 +80,7 @@ export class CycleService {
       });
       if (!hasActiveCycle) {
         savedCycle.status = TontineCycleStatus.ACTIVE;
+        savedCycle.activatedAt = new Date();
         await manager.save(savedCycle);
       }
 
@@ -140,6 +141,7 @@ export class CycleService {
     }
 
     nextPending.status = TontineCycleStatus.ACTIVE;
+    nextPending.activatedAt = new Date();
     return this.cycleRepo.save(nextPending);
   }
 

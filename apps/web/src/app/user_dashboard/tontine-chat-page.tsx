@@ -16,6 +16,7 @@ import { DashboardHeader } from '@/components/user_dashboard/header';
 import { Button } from '@/components/ui/button';
 import { useUserProfile } from '@/hooks/use-user-profile';
 import { tontineService, type Tontine, type TontineMessage } from '@/lib/api/tontine.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
 
 function getInitials(name: string): string {
   return name
@@ -188,11 +189,13 @@ function ChatArea({
   tontine,
   currentUserId,
   onBack,
+  closingTime,
 }: {
   tontineId: string;
   tontine?: Tontine | null;
   currentUserId?: number;
   onBack?: () => void;
+  closingTime?: number | null;
 }) {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
@@ -266,8 +269,8 @@ function ChatArea({
             </div>
             <p className="text-[11px] sm:text-xs text-gray-500 truncate">
               {tontine?.members?.length ?? 0} membres
-              {tontine?.nextContributionAt
-                ? ` · ${new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')}`
+              {closingTime
+                ? ` · ${formatClosingDate(closingTime)}`
                 : ''}
             </p>
           </div>
@@ -372,7 +375,7 @@ function ChatArea({
   );
 }
 
-function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
+function TontineAboutPanel({ tontine, closingTime }: { tontine?: Tontine | null; closingTime?: number | null }) {
   return (
     <aside className="hidden min-w-0 flex-col overflow-y-auto rounded-[2rem] border border-gray-100 bg-white p-5 shadow-sm xl:flex xl:w-full xl:max-w-[280px] xl:min-h-0 xl:border-none">
       <p className="text-sm font-semibold text-gray-900">À propos de la tontine</p>
@@ -428,11 +431,7 @@ function TontineAboutPanel({ tontine }: { tontine?: Tontine | null }) {
         <InfoRow
           icon={Users}
           label="Prochain tour"
-          value={
-            tontine?.nextContributionAt
-              ? new Date(tontine.nextContributionAt).toLocaleDateString('fr-FR')
-              : ''
-          }
+          value={closingTime ? formatClosingDate(closingTime) : ''}
         />
       </div>
 
@@ -476,6 +475,17 @@ export default function TontineChatPage() {
     queryFn: () => tontineService.getById(id!),
     enabled: !!id,
   });
+
+  const { data: cycles } = useQuery({
+    queryKey: ['tontine-cycles', id],
+    queryFn: () => tontineService.listCycles(id!),
+    enabled: !!id,
+  });
+
+  const activeCycle = cycles?.find((c) => c.status === 'ACTIVE') ?? null;
+  const closingTime = tontine
+    ? getCycleClosingTime(tontine.frequency, activeCycle?.activatedAt, tontine.createdAt, null)
+    : null;
 
   const { profile } = useUserProfile();
   const currentUserId = profile?.idutilisateur;
@@ -525,8 +535,9 @@ export default function TontineChatPage() {
             tontine={tontine}
             currentUserId={currentUserId}
             onBack={() => navigate('/dashboard/tontines')}
+            closingTime={closingTime}
           />
-          <TontineAboutPanel tontine={tontine} />
+          <TontineAboutPanel tontine={tontine} closingTime={closingTime} />
         </div>
       </DashboardLayout>
     );

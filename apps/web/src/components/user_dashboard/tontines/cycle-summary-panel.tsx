@@ -24,7 +24,7 @@ function getDurationLabel(t: (key: string, options?: Record<string, unknown>) =>
     }
     case 'MONTHLY':
     default:
-      return t('tontines.durationMonths', { count: memberCount });
+      return t('tontines.durationMonths', { months: memberCount });
   }
 }
 
