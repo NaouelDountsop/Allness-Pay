@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Play, Clock, CalendarDays, Mail, Timer } from 'lucide-react';
+import { ArrowLeft, Loader2, Play, Clock, CalendarDays, Mail, Timer, QrCode } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
@@ -10,6 +10,7 @@ import { CycleSummaryPanel } from '@/components/user_dashboard/tontines/cycle-su
 import { CycleCollectionsPanel } from '@/components/user_dashboard/tontines/cycle-collections-panel';
 import { ScheduleCalendarModal } from '@/components/user_dashboard/tontines/schedule-calendar-modal';
 import { InviteMemberModal } from '@/components/user_dashboard/tontines/invite-member-modal';
+import { TontineQrCodeInline } from '@/components/user_dashboard/tontines/tontine-qr-code-modal';
 import { tontineService } from '@/lib/api/tontine.service';
 import { authStorage } from '@/lib/auth-storage';
 
@@ -275,26 +276,45 @@ export default function TontineSettingsPage() {
           </p>
         )}
 
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mb-6 overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            <div className="px-6 py-4 bg-gradient-to-br from-allness-green/5 to-transparent border-b sm:border-b-0 sm:border-r border-gray-100">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t('tontines.tontineName')}</p>
+              <p className="text-base font-bold text-gray-900">{tontine.name}</p>
+            </div>
+            <div className="px-6 py-4 bg-gradient-to-br from-allness-orange/5 to-transparent">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                {t('tontines.contributionAmount')} ({displayCurrency})
+              </p>
+              <p className="text-base font-bold text-gray-900">
+                {new Intl.NumberFormat('fr-FR').format(contributionAmount)} <span className="text-allness-orange">{displayCurrency}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                <div>
-                  <label className="text-xs font-medium text-gray-600">{t('tontines.tontineName')}</label>
-                  <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
-                    {tontine.name}
+            {tontine.status === 'ACTIVE' && (
+              <div className="rounded-xl border-2 border-allness-green bg-gradient-to-br from-allness-green/5 to-white p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-allness-green/10 flex items-center justify-center">
+                    <QrCode className="w-5 h-5 text-allness-green" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">QR Code de cotisation</h3>
+                    <p className="text-[11px] text-gray-500">Cycle {activeCycle?.cycleNumber ?? '—'}</p>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-600">
-                    {t('tontines.contributionAmount')} ({displayCurrency})
-                  </label>
-                  <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
-                    {new Intl.NumberFormat('fr-FR').format(contributionAmount)} {displayCurrency}
-                  </div>
-                </div>
+                <p className="text-xs text-gray-600 mb-4">
+                  Affichez ce QR code lors de vos réunions de tontine. Les membres scannent et cotisent instantanément, sans chercher l'application.
+                </p>
+                <TontineQrCodeInline
+                  tontineId={tontineId!}
+                  tontineName={tontine.name}
+                />
               </div>
-            </div>
+            )}
 
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
               <RotationOrderList
@@ -314,96 +334,6 @@ export default function TontineSettingsPage() {
               <div className="w-full h-11 rounded-lg border border-gray-100 px-3 mt-1 text-sm bg-gray-50 text-gray-700 flex items-center">
                 {getFrequencyLabel(frequency)}
               </div>
-            </div>
-
-            {/* Progression & Paiements par cycle */}
-            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-gray-900">Progression & Paiements</h3>
-                {activeCycle && (
-                  <span className="text-[11px] text-gray-400">
-                    Cycle {activeCycle.cycleNumber}
-                  </span>
-                )}
-              </div>
-
-              {activeCycle && remaining && (
-                <div className="mb-4 rounded-xl bg-allness-dark p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Timer className="w-4 h-4 text-allness-orange" />
-                    <span className="text-xs font-medium text-gray-300">
-                      {remaining.expired ? 'Échéance dépassée' : 'Temps restant'}
-                    </span>
-                  </div>
-                  {remaining.expired ? (
-                    <p className="text-lg font-bold text-red-400">Cycle en attente de clôture</p>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      {remaining.days > 0 && (
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-white">{remaining.days}</p>
-                          <p className="text-[10px] text-gray-400">jour{remaining.days > 1 ? 's' : ''}</p>
-                        </div>
-                      )}
-                      {remaining.days > 0 && <span className="text-lg text-gray-500">:</span>}
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-white">{String(remaining.hours).padStart(2, '0')}</p>
-                        <p className="text-[10px] text-gray-400">heure{remaining.hours > 1 ? 's' : ''}</p>
-                      </div>
-                      <span className="text-lg text-gray-500">:</span>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-white">{String(remaining.minutes).padStart(2, '0')}</p>
-                        <p className="text-[10px] text-gray-400">min</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="mt-3">
-                    <div className="flex justify-between text-[10px] text-gray-400 mb-1">
-                      <span>Clôture prévue</span>
-                      <span>
-                        {remaining.closingTime
-                          ? new Date(remaining.closingTime).toLocaleDateString('fr-FR', {
-                              day: '2-digit',
-                              month: 'short',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
-                          : '—'}
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
-                      {(() => {
-                        if (!remaining.closingTime || !activeCycle.activatedAt) {
-                          return <div className="h-full bg-allness-orange rounded-full w-1/2" />;
-                        }
-                        const elapsed = now - new Date(activeCycle.activatedAt).getTime();
-                        const total = remaining.closingTime - new Date(activeCycle.activatedAt).getTime();
-                        const pct = total > 0 ? Math.min(100, Math.max(2, (elapsed / total) * 100)) : 100;
-                        return (
-                          <div
-                            className="h-full bg-allness-orange rounded-full transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
-                        );
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {!activeCycle && (
-                <div className="mb-4 rounded-xl bg-gray-50 p-4 text-center">
-                  <Clock className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-                  <p className="text-xs text-gray-400">Aucun cycle actif pour le moment</p>
-                </div>
-              )}
-
-              <CycleCollectionsPanel
-                tontineId={tontineId!}
-                currency={tontine.currency ?? 'XAF'}
-                frequency={frequency}
-              />
             </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -523,6 +453,96 @@ export default function TontineSettingsPage() {
                 </div>
               </div>
             </CycleSummaryPanel>
+
+            {/* Progression & Paiements par cycle */}
+            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-900">Progression & Paiements</h3>
+                {activeCycle && (
+                  <span className="text-[11px] text-gray-400">
+                    Cycle {activeCycle.cycleNumber}
+                  </span>
+                )}
+              </div>
+
+              {activeCycle && remaining && (
+                <div className="mb-4 rounded-xl bg-allness-dark p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Timer className="w-4 h-4 text-allness-orange" />
+                    <span className="text-xs font-medium text-gray-300">
+                      {remaining.expired ? 'Échéance dépassée' : 'Temps restant'}
+                    </span>
+                  </div>
+                  {remaining.expired ? (
+                    <p className="text-lg font-bold text-red-400">Cycle en attente de clôture</p>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {remaining.days > 0 && (
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-white">{remaining.days}</p>
+                          <p className="text-[10px] text-gray-400">jour{remaining.days > 1 ? 's' : ''}</p>
+                        </div>
+                      )}
+                      {remaining.days > 0 && <span className="text-lg text-gray-500">:</span>}
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-white">{String(remaining.hours).padStart(2, '0')}</p>
+                        <p className="text-[10px] text-gray-400">heure{remaining.hours > 1 ? 's' : ''}</p>
+                      </div>
+                      <span className="text-lg text-gray-500">:</span>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-white">{String(remaining.minutes).padStart(2, '0')}</p>
+                        <p className="text-[10px] text-gray-400">min</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                      <span>Clôture prévue</span>
+                      <span>
+                        {remaining.closingTime
+                          ? new Date(remaining.closingTime).toLocaleDateString('fr-FR', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '—'}
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-gray-700 overflow-hidden">
+                      {(() => {
+                        if (!remaining.closingTime || !activeCycle.activatedAt) {
+                          return <div className="h-full bg-allness-orange rounded-full w-1/2" />;
+                        }
+                        const elapsed = now - new Date(activeCycle.activatedAt).getTime();
+                        const total = remaining.closingTime - new Date(activeCycle.activatedAt).getTime();
+                        const pct = total > 0 ? Math.min(100, Math.max(2, (elapsed / total) * 100)) : 100;
+                        return (
+                          <div
+                            className="h-full bg-allness-orange rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!activeCycle && (
+                <div className="mb-4 rounded-xl bg-gray-50 p-4 text-center">
+                  <Clock className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400">Aucun cycle actif pour le moment</p>
+                </div>
+              )}
+
+              <CycleCollectionsPanel
+                tontineId={tontineId!}
+                currency={tontine.currency ?? 'XAF'}
+                frequency={frequency}
+              />
+            </div>
 
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">

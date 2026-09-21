@@ -25,6 +25,7 @@ import { StripeModule } from './payments/stripe/stripe.module';
 
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
 import { CurrencyModule } from './modules/currency/currency.module';
+import { SupportModule } from './modules/support/support.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { CurrencyModule } from './modules/currency/currency.module';
 
     LinkedAccountModule,
     CurrencyModule,
+    SupportModule,
 
     // `src/modules/README.md`.
   ],

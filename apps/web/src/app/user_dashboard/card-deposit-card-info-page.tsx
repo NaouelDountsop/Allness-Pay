@@ -183,6 +183,13 @@ export default function CardDepositCardInfoPage() {
 
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="flex justify-center mb-4">
+                <img
+                  src="/carte 2.png"
+                  alt="Card illustration"
+                  className="w-48 h-auto object-contain"
+                />
+              </div>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">
                 {t('cardDeposit.paymentDetails')}
               </p>

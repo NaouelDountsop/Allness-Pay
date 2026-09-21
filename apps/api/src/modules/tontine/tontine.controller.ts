@@ -188,6 +188,42 @@ export class TontineController {
   }
 
  
+  @Get(':id/qr-code-data')
+  @ApiOperation({ summary: 'Générer les données QR pour la cotisation en présentiel' })
+  @ApiParam({ name: 'id', type: String })
+  getQrCodeData(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.tontineService.getQrCodeData(id, req.user.sub);
+  }
+
+  @Get(':id/qr-contribute-data')
+  @ApiOperation({ summary: 'Résoudre les infos de cotisation après scan QR (pré-remplissage)' })
+  @ApiParam({ name: 'id', type: String })
+  async resolveQrContribute(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const tontine = await this.tontineService.findOne(id, req.user.sub);
+    const activeCycle = await this.contributionService.findActiveCycle(id);
+    if (!activeCycle) {
+      throw new BadRequestException('Aucun cycle actif pour cette tontine');
+    }
+
+    const activeMembers = tontine.members.filter(
+      (m) => m.status === 'ACTIVE',
+    ).length;
+
+    return {
+      tontineId: tontine.id,
+      tontineName: tontine.name,
+      cycleNumber: activeCycle.cycleNumber,
+      expectedAmount: Math.ceil(Number(activeCycle.totalPot) / activeMembers).toString(),
+      currency: tontine.currency,
+    };
+  }
+
   @Get(':id')
 @ApiOperation({ summary: 'Obtenir une tontine par ID' })
 @ApiParam({ name: 'id', type: String })

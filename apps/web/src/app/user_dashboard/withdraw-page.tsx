@@ -452,7 +452,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Frais</span>
-                      <span className="text-sm font-semibold text-allness-green">0 (gratuiy)</span>
+                      <span className="text-sm font-semibold text-allness-green">0 (gratuit)</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Vous recevez (estimation)</span>

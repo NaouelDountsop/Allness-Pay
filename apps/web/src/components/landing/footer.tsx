@@ -65,7 +65,7 @@ const LINK_MAP: Record<string, string> = {
 
 export default function Footer() {
   return (
-    <footer id="contact" className="bg-allness-dark dark:bg-[#061216] text-white">
+    <footer id="contact" className="bg-allness-dark text-white">
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-14 lg:py-16">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">

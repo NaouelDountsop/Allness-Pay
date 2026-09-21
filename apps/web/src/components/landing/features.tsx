@@ -96,7 +96,7 @@ const TRANSACTIONS = [
 
 export default function Features() {
   return (
-    <main className="min-h-screen bg-white dark:bg-[#071418] text-allness-dark dark:text-white">
+    <main className="min-h-screen bg-white text-allness-dark">
 
 
 
@@ -110,7 +110,6 @@ export default function Features() {
           relative
           overflow-hidden
           bg-white
-          dark:bg-[#071418]
           pt-8
           pb-6
           sm:pt-10
@@ -180,7 +179,6 @@ export default function Features() {
                   text-sm
                   font-semibold
                   text-allness-dark
-                  dark:text-white
                 "
               >
                 <ShieldCheck className="h-4 w-4 text-allness-orange" />
@@ -555,7 +553,7 @@ export default function Features() {
                     p-2
                     border
                     border-gray-200
-                    dark:border-gray-700
+                    border-gray-200
                     shadow-[0_30px_70px_rgba(8,43,55,0.30)]
                   "
                 >
@@ -901,7 +899,7 @@ export default function Features() {
           CARTES FONCTIONNALITÉS
       ======================================================= */}
 
-      <section className="bg-white dark:bg-[#071418] pb-8 lg:pb-12">
+      <section className="bg-white pb-8 lg:pb-12">
 
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
 

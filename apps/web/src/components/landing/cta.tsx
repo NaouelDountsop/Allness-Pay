@@ -23,7 +23,7 @@ export default function CTA() {
           </a>
           <a
             href="#fonctionnalites"
-            className="bg-white dark:bg-[#0B2026] text-allness-dark dark:text-white font-semibold px-7 py-3.5 rounded-full hover:bg-allness-orange hover:text-white transition-all duration-300 hover:scale-105 active:scale-95"
+            className="bg-white text-allness-dark font-semibold px-7 py-3.5 rounded-full hover:bg-allness-orange hover:text-white transition-all duration-300 hover:scale-105 active:scale-95"
           >
             En savoir plus
           </a>

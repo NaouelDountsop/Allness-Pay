@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     container_name: afrilinkpay-postgres
     restart: unless-stopped
     environment:
@@ -50,19 +50,31 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+
     container_name: afrilinkpay-api
     restart: unless-stopped
+
     ports:
       - '${API_PORT:-3000}:3000'
+
     env_file:
       - ./apps/api/.env
+
+    # Important :
+    # l'API tourne dans Docker, donc localhost ne désigne
+    # pas le conteneur PostgreSQL/Redis.
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+
     volumes:
-      - ./apps/api/uploads:/app/uploads
+      - ./apps/api/uploads:/app/apps/api/uploads
 
 volumes:
   postgres_data:

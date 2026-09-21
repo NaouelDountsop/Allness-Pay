@@ -56,7 +56,7 @@ export default function Tontines() {
   return (
     <section
       id="tontines"
-      className="relative overflow-hidden bg-white dark:bg-[#071418] py-8 sm:py-10 lg:py-12"
+      className="relative overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
     >
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
 
@@ -72,11 +72,11 @@ export default function Tontines() {
 
             {/* Badge */}
             <div className="inline-flex items-center gap-3 rounded-full bg-allness-green/10 px-5 py-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full text-allness-dark dark:text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full text-allness-dark">
                 <Users className="h-5 w-5" />
               </span>
 
-              <span className="text-xs font-bold uppercase tracking-wide text-allness-dark dark:text-white sm:text-sm">
+              <span className="text-xs font-bold uppercase tracking-wide text-allness-dark sm:text-sm">
                 Épargnez ensemble, réalisez plus
               </span>
             </div>
@@ -162,9 +162,7 @@ export default function Tontines() {
                       rounded-2xl
                       border
                       border-allness-dark/10
-                      dark:border-white/10
                       bg-white
-                      dark:bg-[#0B2026]
                       p-5
                       shadow-[0_8px_30px_rgba(8,43,55,0.06)]
                       transition-all
@@ -197,7 +195,6 @@ export default function Tontines() {
                         font-extrabold
                         leading-5
                         text-allness-dark
-                        dark:text-white
                       "
                     >
                       {stat.title}
@@ -264,7 +261,6 @@ export default function Tontines() {
                     text-sm
                     font-extrabold
                     text-allness-dark
-                    dark:text-white
                     sm:text-base
                   "
                 >
@@ -415,9 +411,7 @@ export default function Tontines() {
             rounded-3xl
             border
             border-allness-dark/10
-            dark:border-white/10
             bg-white
-            dark:bg-[#0B2026]
             shadow-[0_10px_35px_rgba(8,43,55,0.07)]
           "
         >
@@ -479,7 +473,6 @@ export default function Tontines() {
                         text-sm
                         font-extrabold
                         text-allness-dark
-                        dark:text-white
                       "
                     >
                       {feature.title}

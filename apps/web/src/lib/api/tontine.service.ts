@@ -280,6 +280,25 @@ export const tontineService = {
     return res.data;
   },
 
+  getQrCodeData: async (
+    tontineId: string,
+  ): Promise<{
+    deepLink: string;
+    tontineName: string;
+    cycleNumber: number;
+    expectedAmount: string;
+    currency: string;
+  }> => {
+    const res = await apiClient.get<{
+      deepLink: string;
+      tontineName: string;
+      cycleNumber: number;
+      expectedAmount: string;
+      currency: string;
+    }>(`${basePath}/${tontineId}/qr-code-data`);
+    return res.data;
+  },
+
   releasePayout: async (
     tontineId: string,
     cycleId: string,

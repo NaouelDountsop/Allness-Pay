@@ -289,6 +289,39 @@ export class TontineService {
     );
   }
 
+  async getQrCodeData(tontineId: string, userId: number): Promise<{
+    deepLink: string;
+    tontineName: string;
+    cycleNumber: number;
+    expectedAmount: string;
+    currency: string;
+  }> {
+    const tontine = await this.findOne(tontineId, userId);
+
+    const activeCycle = await this.cycleRepo.findOne({
+      where: { tontineId, status: TontineCycleStatus.ACTIVE },
+      relations: ['contributions'],
+    });
+    if (!activeCycle) {
+      throw new BadRequestException('Aucun cycle actif pour cette tontine');
+    }
+
+    const activeMembers = tontine.members.filter(
+      (m) => m.status === TontineMemberStatus.ACTIVE,
+    ).length;
+
+    const expectedAmount = Math.ceil(Number(activeCycle.totalPot) / activeMembers);
+    const deepLink = `allnesspay://tontine/contribute?t=${tontineId}&amt=${expectedAmount}&cur=${tontine.currency}`;
+
+    return {
+      deepLink,
+      tontineName: tontine.name,
+      cycleNumber: activeCycle.cycleNumber,
+      expectedAmount: expectedAmount.toString(),
+      currency: tontine.currency,
+    };
+  }
+
   async findMember(tontineId: string, userId: number): Promise<TontineMember> {
     const member = await this.memberRepo.findOne({
       where: { tontineId, userId, status: TontineMemberStatus.ACTIVE },

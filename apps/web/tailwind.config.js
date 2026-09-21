@@ -95,6 +95,15 @@ export default {
       fontFamily: {
         sans: ['Geist Variable', 'sans-serif'],
       },
+      keyframes: {
+        'scroll-left': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-33.333%)' },
+        },
+      },
+      animation: {
+        'scroll-left': 'scroll-left 8s linear infinite',
+      },
     },
   },
   plugins: [],

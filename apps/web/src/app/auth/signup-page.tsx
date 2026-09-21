@@ -382,7 +382,7 @@ export default function SignupPage() {
             <AppInput
               label="Nom"
               icon={User}
-              placeholder="Dupont"
+              placeholder="Dountsop"
               value={form.lastName}
               onChange={(e) => update('lastName', e.target.value)}
             />
@@ -492,9 +492,12 @@ export default function SignupPage() {
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Déjà inscrit ?{' '}
-            <a href="/login" className="text-allness-green font-medium">
+            <span
+              onClick={() => navigate('/login')}
+              className="text-allness-green font-medium cursor-pointer hover:underline"
+            >
               Se connecter
-            </a>
+            </span>
           </p>
 
           <SocialButtons />
@@ -542,7 +545,7 @@ export default function SignupPage() {
               label="Adresse email"
               icon={Mail}
               type="email"
-              placeholder="jean.dupont@entreprise.com"
+              placeholder="jean.dountsop@entreprise.com"
               autoComplete="off"
               value={form.email}
               onChange={(e) => update('email', e.target.value)}

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { AuthLayout } from '@/components/auth/auth-layout';
+import { LoginLayout } from '@/components/auth/login-layout';
 import { AppInput } from '@/components/common/input';
 import { AppButton } from '@/components/common/button';
 import { SocialButtons } from '@/components/auth/social-buttons';
@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout>
+    <LoginLayout>
       <h1 className="text-xl font-semibold mb-1 dark:text-white">Connexion</h1>
       <p className="text-sm text-allness-gray dark:text-gray-400 mb-6">
         Ravi de vous revoir sur l'écosystème financier de nouvelle génération
@@ -114,13 +114,16 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
           Pas encore inscrit ?{' '}
-          <a href="/signup" className="text-allness-green font-medium">
+          <span
+            onClick={() => navigate('/signup')}
+            className="text-allness-green font-medium cursor-pointer hover:underline"
+          >
             S'inscrire
-          </a>
+          </span>
         </p>
 
         <SocialButtons />
       </form>
-    </AuthLayout>
+    </LoginLayout>
   );
 }

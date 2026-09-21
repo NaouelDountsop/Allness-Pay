@@ -1,0 +1,166 @@
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { X, ScanLine, Loader2 } from 'lucide-react';
+import jsQR from 'jsqr';
+
+interface TontineQrScannerModalProps {
+  onClose: () => void;
+  onScanSuccess: (tontineId: string) => void;
+}
+
+function extractTontineId(qrData: string): string | null {
+  const match = qrData.match(/allnesspay:\/\/tontine\/contribute\?t=([a-f0-9-]+)/);
+  return match?.[1] ?? null;
+}
+
+export function TontineQrScannerModal({ onClose, onScanSuccess }: TontineQrScannerModalProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number>(0);
+  const [error, setError] = useState('');
+  const [resolving, setResolving] = useState(false);
+
+  const scanFrame = useCallback(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA || !video.videoWidth || !video.videoHeight) {
+      animFrameRef.current = requestAnimationFrame(scanFrame);
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'attemptBoth',
+    });
+
+    if (code?.data) {
+      const tontineId = extractTontineId(code.data);
+      if (tontineId) {
+        setResolving(true);
+        onScanSuccess(tontineId);
+        return;
+      }
+    }
+
+    animFrameRef.current = requestAnimationFrame(scanFrame);
+  }, [onScanSuccess]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const streamRef: { current: MediaStream | null } = { current: null };
+
+    const startCamera = async () => {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+        });
+        if (cancelled) {
+          s.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        streamRef.current = s;
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.onloadeddata = () => {
+            animFrameRef.current = requestAnimationFrame(scanFrame);
+          };
+          await videoRef.current.play();
+        }
+      } catch {
+        if (!cancelled) {
+          setError('Caméra non disponible. Autorisez l\'accès à la caméra.');
+        }
+      }
+    };
+
+    startCamera();
+
+    return () => {
+      cancelled = true;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [scanFrame]);
+
+  return (
+    <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
+              <ScanLine className="w-4 h-4 text-allness-green" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-allness-dark">Scanner une tontine</p>
+              <p className="text-[11px] text-gray-500">Pointez vers le QR code de cotisation</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            aria-label="Fermer"
+          >
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Scanner viewport */}
+        <div className="relative aspect-square bg-gray-900">
+          {error ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+              <p className="text-white/80 text-sm">{error}</p>
+            </div>
+          ) : (
+            <>
+              <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+              <canvas ref={canvasRef} className="hidden" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-56 h-56 relative">
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-allness-green rounded-tl-lg" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-allness-green rounded-tr-lg" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-allness-green rounded-bl-lg" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-allness-green rounded-br-lg" />
+                  {!resolving && (
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-allness-green/60 animate-[scan_2s_ease-in-out_infinite]" />
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-4 space-y-3">
+          {resolving && (
+            <div className="flex items-center justify-center gap-2 py-2">
+              <Loader2 className="w-4 h-4 animate-spin text-allness-green" />
+              <span className="text-sm text-gray-600">Tontine trouvée, ouverture...</span>
+            </div>
+          )}
+          {!error && !resolving && (
+            <button
+              onClick={onClose}
+              className="w-full h-10 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Annuler
+            </button>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes scan {
+          0%, 100% { transform: translateY(-50%); opacity: 0.4; }
+          50% { transform: translateY(50%); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}

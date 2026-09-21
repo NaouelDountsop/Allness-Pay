@@ -994,16 +994,23 @@
   "helpCenter": {
     "title": "Help Center",
     "subtitle": "Allness Pay Assistant",
-    "welcome": "Hello {name} 👋\nHow can I help you today?",
+    "welcome": "Hello {name} 👋\nHow can I help you today?\n\nChoose a category below:",
     "online": "Online",
     "responseTime": "Response in a few minutes",
     "inputPlaceholder": "Type your message...",
     "send": "Send",
     "attachFile": "Attach a file",
     "close": "Close",
+    "back": "← Back",
+    "backToCategories": "← Back to categories",
+    "backToQuestions": "← Back to questions",
+    "talkToAgent": "Talk to an agent",
+    "agentMessage": "I'm connecting you with an advisor. An agent will be available shortly.",
+    "noResult": "I couldn't find a specific answer. Please choose a category:",
+    "chooseCategory": "Choose a category:",
+    "chooseQuestion": "Choose your question:",
     "paymentRefused": "Why was my payment refused?",
     "sendMoney": "How to send money?",
-    "viewTransactions": "View my transactions",
-    "talkToAgent": "Talk to an agent"
+    "viewTransactions": "View my transactions"
   }
 }
