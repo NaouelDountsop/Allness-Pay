@@ -128,6 +128,7 @@ function normalizeError(error: AxiosError<ApiError>): ApiError {
 }
 
 function replay(config: RetriableConfig, accessToken: string) {
+  config._retry = true;
   config.headers.Authorization = `Bearer ${accessToken}`;
   return apiClient(config);
 }
@@ -150,83 +151,41 @@ function shouldAttemptRefresh(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiError>) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as RetriableConfig | undefined;
 
-    // On exclut les endpoints d'authentification pour ne pas interferer avec le flow de login
-    const url = originalRequest?.url ?? '';
-    const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/refresh');
+    if (!shouldAttemptRefresh(error, originalRequest)) {
+      return Promise.reject(normalizeError(error));
+    }
 
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest.headers['X-Retry'] &&
-      !isAuthEndpoint
-    ) {
-      const { isRefreshing, failedQueue, processQueue } = await import('@/lib/api/token-refresh');
-
-      // Premier 401 → on lance le refresh
-      if (!isRefreshing.value) {
-        isRefreshing.value = true;
+    try {
+      if (!isRefreshInProgress()) {
+        setRefreshInProgress(true);
         try {
-          const { handleRefreshToken } = await import('@/lib/api/token-refresh');
-          const newToken = await handleRefreshToken();
-          processQueue(null, newToken);
-          isRefreshing.value = false;
-
-          // Retry directement avec le nouveau token
-          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-          originalRequest.headers['X-Retry'] = 'true';
-          return apiClient(originalRequest);
-        } catch (refreshError) {
-          isRefreshing.value = false;
-          processQueue(refreshError);
-          const { onRefreshError } = await import('@/lib/api/token-refresh');
-          onRefreshError(() => {
-            window.location.href = '/login';
-          });
-          return Promise.reject(
-            error.response?.data ?? {
-              statusCode: 401,
-              code: 'UNAUTHORIZED',
-              message: 'Session expirée. Veuillez vous reconnecter.',
-              requestId: 'unknown',
-            },
+          const refreshToken = refreshTokenProvider();
+          if (!refreshToken) throw new Error('Aucun jeton de rafraichissement.');
+          const { access_token, refresh_token } = await requestNewTokens(
+            apiClient.defaults.baseURL ?? '',
+            refreshToken,
           );
+          tokensRenewedHandler(access_token, refresh_token);
+          resolvePendingRequests(access_token);
+          return replay(originalRequest, access_token);
+        } finally {
+          setRefreshInProgress(false);
         }
       }
 
-      // Autres 401 → on attend le refresh en cours
+      // Autres 401 simultanes : on attend la rotation en cours.
+      const newToken = await enqueuePendingRequest();
+      return replay(originalRequest, newToken);
+    } catch (refreshError) {
+      rejectPendingRequests(refreshError);
       try {
-        const newToken = await new Promise<string>((resolve, reject) => {
-          failedQueue.push({
-            resolve: resolve as (value: unknown) => void,
-            reject,
-          });
-        });
-        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-        originalRequest.headers['X-Retry'] = 'true';
-        return apiClient(originalRequest);
-      } catch {
-        return Promise.reject(
-          error.response?.data ?? {
-            statusCode: 401,
-            code: 'UNAUTHORIZED',
-            message: 'Session expirée.',
-            requestId: 'unknown',
-          },
-        );
+        sessionExpiredHandler();
+      } catch (handlerError: unknown) {
+        console.warn(handlerError);
       }
+      return Promise.reject(normalizeError(error));
     }
-
-    // On normalise ici pour que le reste de l'application n'ait jamais a
-    // distinguer une panne reseau d'une erreur applicative.
-    const normalized: ApiError = error.response?.data ?? {
-      statusCode: error.response?.status ?? 0,
-      code: error.code === 'ECONNABORTED' ? 'REQUEST_TIMEOUT' : 'NETWORK_ERROR',
-      message: 'Impossible de joindre le service. Verifiez votre connexion.',
-      requestId: 'unknown',
-    };
-
-    return Promise.reject(normalized);
   },
 );
