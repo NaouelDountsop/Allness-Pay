@@ -396,8 +396,8 @@ function PerformanceCard() {
           <AreaChart data={PERFORMANCE_DATA} margin={{ left: -20, right: 0, top: 5, bottom: 0 }}>
             <defs>
               <linearGradient id="perfGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f97316" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
+                <stop offset="0%" stopColor="#00845A" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#00845A" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
@@ -410,10 +410,10 @@ function PerformanceCard() {
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#f97316"
+              stroke="#00845A"
               strokeWidth={1.5}
               fill="url(#perfGradient)"
-              dot={{ r: 2, fill: '#f97316', strokeWidth: 0 }}
+              dot={{ r: 2, fill: '#00845A', strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>

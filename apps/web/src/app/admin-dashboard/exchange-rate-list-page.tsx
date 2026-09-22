@@ -14,7 +14,7 @@ import {
   Loader2,
   Coins,
 } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
@@ -597,10 +597,16 @@ export default function ExchangeRatesPage() {
                 </div>
                 <div className="h-32">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
+                    <AreaChart
                       data={EVOLUTION_DATA}
                       margin={{ left: -20, right: 5, top: 5, bottom: 0 }}
                     >
+                      <defs>
+                        <linearGradient id="evolutionGreenGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#00845A" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="#00845A" stopOpacity={0.02} />
+                        </linearGradient>
+                      </defs>
                       <XAxis
                         dataKey="day"
                         tick={{ fontSize: 9, fill: '#9ca3af' }}
@@ -616,15 +622,16 @@ export default function ExchangeRatesPage() {
                       <Tooltip
                         contentStyle={{ borderRadius: 8, fontSize: 11, border: '1px solid #e5e7eb' }}
                       />
-                      <Line
+                      <Area
                         type="monotone"
                         dataKey="value"
-                        stroke="#22c55e"
+                        stroke="#00845A"
                         strokeWidth={2}
+                        fill="url(#evolutionGreenGradient)"
                         dot={false}
-                        activeDot={{ r: 3, fill: '#22c55e' }}
+                        activeDot={{ r: 3, fill: '#00845A' }}
                       />
-                    </LineChart>
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>

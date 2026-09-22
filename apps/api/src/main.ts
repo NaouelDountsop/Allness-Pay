@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -9,6 +9,7 @@ import * as bodyParser from 'body-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { BusinessException } from './common/exceptions/business.exception';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestContextInterceptor } from './common/interceptors/request-context.interceptor';
 import { BigIntSerializerInterceptor } from './common/interceptors/bigint-serializer.interceptor';
@@ -42,16 +43,18 @@ async function bootstrap(): Promise<void> {
   // }));
 
   interface RawBodyRequest extends Request {
-  rawBody?: Buffer;
-}
+    rawBody?: Buffer;
+  }
 
-// ...existing code...
-app.use(bodyParser.json({
-  verify: (req: RawBodyRequest, _res: Response, buf: Buffer) => {
-    req.rawBody = buf;
-  },
-  type: ['application/json', 'application/*+json'],
-}));
+  // ...existing code...
+  app.use(
+    bodyParser.json({
+      verify: (req: RawBodyRequest, _res: Response, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+      type: ['application/json', 'application/*+json'],
+    }),
+  );
 
   app.enableCors({
     origin: appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins : false,
@@ -79,6 +82,26 @@ app.use(bodyParser.json({
       transform: true,
       transformOptions: { enableImplicitConversion: false },
       stopAtFirstError: false,
+      // Structure les erreurs de validation avec le nom du champ, pour que
+      // les clients puissent les afficher champ par champ.
+      exceptionFactory: (errors) => {
+        const details: Array<{ field: string; message: string }> = errors.map((e) => {
+          const constraints = e.constraints ?? {};
+          const first = Object.keys(constraints)[0];
+          return {
+            field: e.property,
+            message: constraints[first] ?? 'Champ invalide.',
+          };
+        });
+        return new BusinessException(
+          'VALIDATION_FAILED',
+          'Les données fournies sont invalides.',
+          HttpStatus.BAD_REQUEST,
+          {
+            errors: details,
+          },
+        );
+      },
     }),
   );
 

@@ -11,7 +11,7 @@ import {
   ArrowUpRight,
   Send,
 } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Badge } from '../../components/ui';
 import { adminService } from '../../lib/api/admin.service';
@@ -154,7 +154,13 @@ export default function DashboardPage() {
             <div className="h-48">
               {chartData && chartData.some((d) => d.value > 0) ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#00845A" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="#00845A" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
                     <XAxis
                       dataKey="day"
                       tick={{ fontSize: 10, fill: '#9ca3af' }}
@@ -169,15 +175,16 @@ export default function DashboardPage() {
                     <Tooltip
                       contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e5e7eb' }}
                     />
-                    <Line
+                    <Area
                       type="monotone"
                       dataKey="value"
-                      stroke="#006C49"
+                      stroke="#00845A"
                       strokeWidth={2}
+                      fill="url(#greenGradient)"
                       dot={false}
-                      activeDot={{ r: 4, fill: '#006C49' }}
+                      activeDot={{ r: 4, fill: '#00845A' }}
                     />
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               ) : (
                 <div className="h-full flex items-center justify-center">

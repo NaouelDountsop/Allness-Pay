@@ -12,6 +12,7 @@ import {
   UserCog,
   TrendingUp,
   LogOut,
+  MessageSquare,
 } from 'lucide-react';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { to: '/admin/marchands', label: 'Marchands', icon: Store },
   { to: '/admin/taux-de-change', label: 'Taux de change', icon: TrendingUp },
   { to: '/admin/partenaires', label: 'Partenaires', icon: Handshake },
+  { to: '/admin/support', label: 'Support', icon: MessageSquare },
 ];
 
 const adminOnlyItems: NavItem[] = [

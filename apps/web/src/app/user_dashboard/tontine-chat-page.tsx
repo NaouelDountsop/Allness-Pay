@@ -75,7 +75,7 @@ function MessageBubble({
   if (isSystem) {
     return (
       <div className="flex justify-center">
-        <span className="rounded-full bg-gray-100 px-4 py-1.5 text-xs text-gray-500">
+        <span className="rounded-full bg-allness-green/20 px-4 py-1.5 text-xs text-allness-dark">
           {message.content}
         </span>
       </div>

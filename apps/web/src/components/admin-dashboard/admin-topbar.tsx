@@ -7,6 +7,7 @@ import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { usePreferences } from '@/hooks/use-preferences';
+import { supportService } from '@/lib/api/support.service';
 
 interface AdminProfile {
   idutilisateur: number;
@@ -27,6 +28,7 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [unreadSupport, setUnreadSupport] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
 
@@ -55,6 +57,21 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Poll unread support messages every 5s
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const { totalUnread } = await supportService.getUnreadCount();
+        setUnreadSupport(totalUnread);
+      } catch {
+        // silent
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = async () => {
@@ -121,8 +138,13 @@ export function AdminTopbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           >
             {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-4 h-4" />}
           </button>
-            <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8" aria-label="Aide">
+            <button className="text-allness-orange hover:text-allness-orange/80 flex items-center justify-center w-8 h-8 relative" aria-label="Aide">
           <HelpCircle className="w-5 h-5" />
+          {unreadSupport > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+              {unreadSupport > 99 ? '99+' : unreadSupport}
+            </span>
+          )}
         </button>
           <div className="w-8 h-8 rounded-full bg-[#0D343A] dark:bg-[#0D343A] overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {initials}

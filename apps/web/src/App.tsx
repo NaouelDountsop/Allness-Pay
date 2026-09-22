@@ -45,6 +45,7 @@ import TransactionsPage from "@/app/user_dashboard/transaction-page";
 import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
 import PartnersPage from "@/app/admin-dashboard/partners-page";
 import AdminSettingsPage from "@/app/admin-dashboard/admin-settings-page";
+import SupportPage from "@/app/admin-dashboard/support-page";
 import { DepositFlowProvider } from './context/deposit-flow-context';
 import { CardDepositFlowProvider } from './context/card-deposit-flow-context';
 import { StripeProvider } from '@/components/stripe/stripe-provider';
@@ -230,6 +231,14 @@ export function App() {
           element={
             <AdminProtectedRoute>
               <AdminSettingsPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/support"
+          element={
+            <AdminProtectedRoute>
+              <SupportPage />
             </AdminProtectedRoute>
           }
         />

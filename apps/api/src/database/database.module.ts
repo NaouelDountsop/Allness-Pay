@@ -23,7 +23,7 @@ import type { DatabaseConfig } from '@/config/configuration';
           logging: db.logging,
           autoLoadEntities: true,
           entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
-          migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
+          migrations: [join(__dirname, '../migrations/*{.ts,.js}')],
           migrationsTableName: 'typeorm_migrations',
           // Les migrations ne sont pas jouees au demarrage : elles font partie
           // du processus de deploiement, ou elles peuvent etre controlees et

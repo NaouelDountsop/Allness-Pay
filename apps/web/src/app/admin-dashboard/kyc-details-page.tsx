@@ -19,6 +19,10 @@ import {
   MoreVertical,
   FileCheck2,
   ChevronRight,
+  ChevronLeft,
+  X,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Avatar, Badge } from '../../components/ui';
@@ -226,6 +230,87 @@ function HistoryItem({
   );
 }
  
+// --- Full-screen document viewer ------------------------------------------------
+
+function FullScreenViewer({
+  images,
+  index,
+  zoom,
+  onIndexChange,
+  onZoomChange,
+  onClose,
+}: {
+  images: { url: string; label: string }[];
+  index: number;
+  zoom: number;
+  onIndexChange: (i: number) => void;
+  onZoomChange: (z: number) => void;
+  onClose: () => void;
+}) {
+  const current = images[index] || images[0];
+  if (!current) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/90 backdrop-blur-sm" onClick={onClose}>
+      <div className="flex items-center justify-between px-4 py-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <p className="text-sm font-medium text-white">{current.label}</p>
+          {images.length > 1 && (
+            <span className="text-xs text-white/50">{index + 1} / {images.length}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); onIndexChange(index > 0 ? index - 1 : images.length - 1); onZoomChange(1); }}
+                className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onIndexChange(index < images.length - 1 ? index + 1 : 0); onZoomChange(1); }}
+                className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+          <div className="w-px h-5 bg-white/20 mx-1" />
+          <button
+            onClick={(e) => { e.stopPropagation(); onZoomChange(Math.max(0.5, zoom - 0.25)); }}
+            className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-white/60 min-w-[3rem] text-center">{Math.round(zoom * 100)}%</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onZoomChange(Math.min(3, zoom + 0.25)); }}
+            className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors ml-2"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 flex items-center justify-center overflow-auto p-4" onClick={(e) => e.stopPropagation()}>
+        <img
+          src={current.url}
+          alt={current.label}
+          className="max-w-full max-h-full object-contain rounded-lg transition-transform duration-200"
+          style={{ transform: `scale(${zoom})` }}
+          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-doc.svg'; }}
+        />
+      </div>
+    </div>
+  );
+}
+
 // --- Page -----------------------------------------------------------------------
  
 export default function KycDetailPage() {
@@ -237,6 +322,9 @@ export default function KycDetailPage() {
   const [reviewComment, setReviewComment] = useState('');
   const [isReviewing, setIsReviewing] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [fullScreenImages, setFullScreenImages] = useState<{ url: string; label: string }[] | null>(null);
+  const [fullScreenIndex, setFullScreenIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
  
   useEffect(() => {
     if (!id) return;
@@ -397,7 +485,16 @@ export default function KycDetailPage() {
               title="Pièce d'Identité"
               icon={IdCard}
               action={
-                <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50">
+                <button
+                  onClick={() => {
+                    const images = [{ url: fileUrl(record.documentFrontUrl), label: 'Recto' }];
+                    if (record.documentBackUrl) images.push({ url: fileUrl(record.documentBackUrl), label: 'Verso' });
+                    setFullScreenImages(images);
+                    setFullScreenIndex(0);
+                    setZoom(1);
+                  }}
+                  className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50"
+                >
                   Voir en plein écran ↗
                 </button>
               }
@@ -451,7 +548,17 @@ export default function KycDetailPage() {
               title="Vérification Biométrique"
               icon={ScanFace}
               action={
-                <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50">
+                <button
+                  onClick={() => {
+                    setFullScreenImages([
+                      { url: fileUrl(record.selfieUrl), label: 'Selfie de vérification' },
+                      { url: fileUrl(record.documentFrontUrl), label: 'Photo pièce d\'identité' },
+                    ]);
+                    setFullScreenIndex(0);
+                    setZoom(1);
+                  }}
+                  className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50"
+                >
                   Voir la comparaison
                 </button>
               }
@@ -477,7 +584,7 @@ export default function KycDetailPage() {
                     <p className="text-xs text-gray-500 mb-0.5">Selfie de vérification</p>
                     <p className="text-sm font-medium text-allness-dark">Soumis le {formatDate(record.createdAt)}</p>
                     <p className="text-xs font-semibold text-emerald-500 mt-0.5">
-                      Correspondance : {record.biometricScore ?? 98}%
+                     
                     </p>
                   </div>
                 </div>
@@ -517,7 +624,14 @@ export default function KycDetailPage() {
               title="Justificatif de Domicile"
               icon={Home}
               action={
-                <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50">
+                <button
+                  onClick={() => {
+                    setFullScreenImages([{ url: fileUrl(record.proofOfAddressUrl), label: 'Justificatif de domicile' }]);
+                    setFullScreenIndex(0);
+                    setZoom(1);
+                  }}
+                  className="h-8 px-3 rounded-lg border border-gray-200 text-xs font-medium text-allness-dark hover:bg-gray-50"
+                >
                   Voir en plein écran ↗
                 </button>
               }
@@ -673,6 +787,18 @@ export default function KycDetailPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Full-screen document viewer */}
+      {fullScreenImages && fullScreenImages.length > 0 && (
+        <FullScreenViewer
+          images={fullScreenImages}
+          index={fullScreenIndex}
+          zoom={zoom}
+          onIndexChange={setFullScreenIndex}
+          onZoomChange={setZoom}
+          onClose={() => setFullScreenImages(null)}
+        />
+      )}
     </AdminLayout>
   );
 }

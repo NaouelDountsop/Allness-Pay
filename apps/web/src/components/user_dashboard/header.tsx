@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useSidebar } from '@/components/user_dashboard/sidebar-context';
 import { HelpCenterPanel } from '@/components/user_dashboard/help-center-panel';
+import { supportService } from '@/lib/api/support.service';
 
 export function DashboardHeader() {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export function DashboardHeader() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [unreadSupport, setUnreadSupport] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const { langLabel, toggleLanguage, toggleTheme, theme } = usePreferences();
@@ -62,6 +64,27 @@ export function DashboardHeader() {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Poll unread support messages every 5s
+  useEffect(() => {
+    if (helpOpen) return;
+    const fetchUnread = async () => {
+      try {
+        const { totalUnread } = await supportService.getUnreadCount();
+        setUnreadSupport(totalUnread);
+      } catch {
+        // silent
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000);
+    return () => clearInterval(interval);
+  }, [helpOpen]);
+
+  const handleOpenHelp = useCallback(() => {
+    setUnreadSupport(0);
+    setHelpOpen(true);
   }, []);
 
   const handleLogout = async () => {
@@ -167,11 +190,16 @@ export function DashboardHeader() {
             {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
           <button
-            onClick={() => setHelpOpen(true)}
-            className="text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8"
+            onClick={handleOpenHelp}
+            className="text-brand-orange hover:text-brand-orange/80 flex items-center justify-center w-8 h-8 relative"
             aria-label={t('header.help')}
           >
             <HelpCircle className="w-5 h-5" />
+            {unreadSupport > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+                {unreadSupport > 99 ? '99+' : unreadSupport}
+              </span>
+            )}
           </button>
           <div className="w-8 h-8 rounded-full bg-brand-sidebar dark:bg-brand-sidebar overflow-hidden flex items-center justify-center text-xs font-medium text-white">
             {userName.charAt(0)}

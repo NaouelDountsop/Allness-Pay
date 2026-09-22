@@ -22,7 +22,7 @@ export const dataSourceOptions = {
   synchronize: false,
   logging: process.env.DB_LOGGING === 'true',
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
-  migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
+  migrations: [join(__dirname, '../migrations/*{.ts,.js}')],
   migrationsTableName: 'typeorm_migrations',
   extra: {
     max: 5,

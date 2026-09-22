@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { UserProfile } from '@afrilinkpay/shared';
 import {
@@ -51,6 +51,8 @@ export default function ProfilePage() {
     queryFn: userService.getProfile,
   });
 
+  const queryClient = useQueryClient();
+
   const fullName = useMemo(
     () => (profile ? `${profile.prenom} ${profile.nom}` : t('profile.defaultName')),
     [profile, t],
@@ -64,8 +66,14 @@ export default function ProfilePage() {
   // --- État des pop-ups ---
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [editContactOpen, setEditContactOpen] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingContact, setSavingContact] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
 
-  // --- État local des formulaires (initialisé depuis le profil, à brancher sur userService) ---
+  // --- État local des formulaires ---
   const [prenom, setPrenom] = useState(profile?.prenom ?? '');
   const [nom, setNom] = useState(profile?.nom ?? '');
   const [dateNaissance, setDateNaissance] = useState(profile?.datenaissance ?? '');
@@ -77,6 +85,76 @@ export default function ProfilePage() {
   const [telephone, setTelephone] = useState(profile?.telephone ?? '');
   const [ville, setVille] = useState(profile?.ville ?? '');
   const [pays, setPays] = useState(profile?.pays ?? '');
+
+  // Sync form state when profile loads/updates
+  useEffect(() => {
+    if (profile) {
+      setPrenom(profile.prenom ?? '');
+      setNom(profile.nom ?? '');
+      setDateNaissance(profile.datenaissance ?? '');
+      setSexe(profile.sexe ?? '');
+      setProfession(profile.profession ?? '');
+      setAdresse(profile.adresse ?? '');
+      setEmail(profile.email ?? '');
+      setTelephone(profile.telephone ?? '');
+      setVille(profile.ville ?? '');
+      setPays(profile.pays ?? '');
+    }
+  }, [profile]);
+
+  const invalidateProfile = () => queryClient.invalidateQueries({ queryKey: ['profile'] });
+
+  const handleSaveProfile = async () => {
+    if (!profile) return;
+    setSavingProfile(true);
+    setProfileError(null);
+    setProfileSuccess(false);
+    try {
+      await userService.update(profile.idutilisateur, {
+        prenom,
+        nom,
+        datenaissance: dateNaissance,
+        sexe,
+        profession,
+        adresse,
+      });
+      await invalidateProfile();
+      setProfileSuccess(true);
+      setTimeout(() => {
+        setEditProfileOpen(false);
+        setProfileSuccess(false);
+      }, 1200);
+    } catch (err) {
+      setProfileError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleSaveContact = async () => {
+    if (!profile) return;
+    setSavingContact(true);
+    setContactError(null);
+    setContactSuccess(false);
+    try {
+      await userService.update(profile.idutilisateur, {
+        email,
+        telephone,
+        ville,
+        pays,
+      });
+      await invalidateProfile();
+      setContactSuccess(true);
+      setTimeout(() => {
+        setEditContactOpen(false);
+        setContactSuccess(false);
+      }, 1200);
+    } catch (err) {
+      setContactError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+    } finally {
+      setSavingContact(false);
+    }
+  };
 
   // --- Photo de profil ---
   // NB: si votre UserProfile expose déjà un champ avatar (ex: avatarUrl), remplacez
@@ -442,15 +520,14 @@ export default function ProfilePage() {
               {t('profile.cancel')}
             </Button>
             <Button
-              onClick={() => {
-                // TODO: brancher sur userService.updateProfile({ prenom, nom, datenaissance: dateNaissance, sexe, profession, adresse })
-                // Si avatarFile est défini et n'a pas encore été envoyé, l'inclure ici via FormData.
-                setEditProfileOpen(false);
-              }}
+              onClick={handleSaveProfile}
+              disabled={savingProfile}
             >
-              {t('profile.save')}
+              {savingProfile ? '...' : profileSuccess ? '✓' : t('profile.save')}
             </Button>
           </DialogFooter>
+          {profileError && <p className="text-xs text-red-500 mt-2">{profileError}</p>}
+          {profileSuccess && <p className="text-xs text-allness-green mt-2">Profil mis à jour</p>}
         </DialogContent>
       </Dialog>
 
@@ -500,14 +577,14 @@ export default function ProfilePage() {
               {t('profile.cancel')}
             </Button>
             <Button
-              onClick={() => {
-                // TODO: brancher sur userService.updateProfile({ email, telephone, ville, pays })
-                setEditContactOpen(false);
-              }}
+              onClick={handleSaveContact}
+              disabled={savingContact}
             >
-              {t('profile.save')}
+              {savingContact ? '...' : contactSuccess ? '✓' : t('profile.save')}
             </Button>
           </DialogFooter>
+          {contactError && <p className="text-xs text-red-500 mt-2">{contactError}</p>}
+          {contactSuccess && <p className="text-xs text-allness-green mt-2">Coordonnées mises à jour</p>}
         </DialogContent>
       </Dialog>
     </DashboardLayout>

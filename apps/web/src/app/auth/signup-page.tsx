@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
-import { User, Calendar, Mail, Lock, Eye, EyeOff, Briefcase, ArrowLeft, AlertCircle } from 'lucide-react';
+import {
+  User,
+  Calendar,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Briefcase,
+  ArrowLeft,
+  AlertCircle,
+} from 'lucide-react';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { AppInput } from '@/components/common/input';
 import { AppButton } from '@/components/common/button';
@@ -60,20 +70,24 @@ const step1Schema = z.object({
   birthDate: z.string().min(1, 'La date de naissance est requise'),
   gender: z.string().min(1, 'Le sexe est requis'),
   country: z.string().min(1, 'Le pays est requis'),
-  city: z.string().min(1, 'La ville est requise'),
+  city: z.string().min(3, 'La ville doit contenir au moins 3 caractères'),
 });
 
 const step2Schema = z.object({
   profession: z
     .string()
-    .min(1, 'La profession est requise')
-    .regex(nameRegex, 'La profession ne doit contenir que des lettres, espaces, tirets ou apostrophes'),
+    .min(3, 'La profession doit contenir au moins 3 caractères')
+    .regex(
+      nameRegex,
+      'La profession ne doit contenir que des lettres, espaces, tirets ou apostrophes',
+    ),
   phone: z.string().min(1, 'Le numéro de téléphone est requis'),
-  address: z.string().min(1, "L'adresse est requise"),
+  address: z.string().min(3, "L'adresse doit contenir au moins 3 caractères"),
   email: z.string().min(1, "L'email est requis").email('Adresse email invalide'),
   password: z
     .string()
     .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+    .max(32, 'Le mot de passe ne doit pas dépasser 32 caractères')
     .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
     .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
     .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
@@ -193,7 +207,9 @@ export default function SignupPage() {
     return (
       <AuthLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Chargement des informations Google...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Chargement des informations Google...
+          </p>
         </div>
       </AuthLayout>
     );
@@ -310,6 +326,8 @@ export default function SignupPage() {
           country: selectedCountry?.name ?? '',
           city: form.city,
           profession: form.profession,
+          gender: form.gender,
+          address: form.address || form.city,
         });
 
         navigate('/verify-email', {
@@ -340,7 +358,9 @@ export default function SignupPage() {
           type="button"
           onClick={() => setStep(1)}
           className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-            step === 1 ? 'text-allness-green' : 'text-allness-gray dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            step === 1
+              ? 'text-allness-green'
+              : 'text-allness-gray dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           {step === 2 && <ArrowLeft className="w-3.5 h-3.5" />}
@@ -367,7 +387,9 @@ export default function SignupPage() {
         >
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
-              step === 2 ? 'bg-allness-green text-white' : 'bg-gray-200 dark:bg-[#18353B] text-gray-500 dark:text-gray-400'
+              step === 2
+                ? 'bg-allness-green text-white'
+                : 'bg-gray-200 dark:bg-[#18353B] text-gray-500 dark:text-gray-400'
             }`}
           >
             2
@@ -563,7 +585,9 @@ export default function SignupPage() {
             //!isFromGoogle && (
             <>
               <div className="w-full space-y-1">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Créer un mot de passe</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Créer un mot de passe
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                   <input

@@ -12,12 +12,10 @@ const CATEGORIES = [
   { name: 'Dépôt', code: 'DEPOSIT', description: 'Questions sur les dépôts' },
   { name: 'Retrait', code: 'WITHDRAWAL', description: 'Questions sur les retraits' },
   { name: 'Compte', code: 'ACCOUNT', description: 'Gestion du compte et paramètres' },
-  { name: 'Sécurité', code: 'SECURITY', description: 'Sécurité et PIN' },
   { name: 'KYC', code: 'KYC', description: 'Vérification d\'identité' },
   { name: 'Tontine', code: 'TONTINE', description: 'Questions sur les tontines' },
   { name: 'Frais', code: 'FEES', description: 'Frais et tarifs' },
   { name: 'Transaction', code: 'TRANSACTION', description: 'Suivi des transactions' },
-  { name: 'Technique', code: 'TECHNICAL', description: 'Problèmes techniques' },
 ];
 
 const ARTICLES = [
@@ -120,26 +118,6 @@ const ARTICLES = [
     ],
   },
 
-  // SECURITY
-  {
-    categoryCode: 'SECURITY',
-    title: 'Comment réinitialiser mon PIN ?',
-    content: 'Pour réinitialiser votre PIN, allez dans "Profil" > "Paramètres" > "PIN" > "Réinitialiser". Vous devrez vérifier votre identité par OTP.',
-    questions: [
-      { question: 'réinitialiser PIN', keywords: ['réinitialiser', 'pin', 'code', 'oublié'] },
-      { question: 'pin bloqué', keywords: ['bloqué', 'pin', 'code', 'erroné'] },
-    ],
-  },
-  {
-    categoryCode: 'SECURITY',
-    title: 'Mon compte est bloqué, que faire ?',
-    content: 'Si votre compte est bloqué, contactez le support avec votre numéro de téléphone et une pièce d\'identité. Le déblocage prend 24-48 heures.',
-    questions: [
-      { question: 'compte bloqué', keywords: ['bloqué', 'compte', 'suspendu', 'verrouillé'] },
-      { question: 'compte suspendu', keywords: ['suspendu', 'compte', 'désactivé'] },
-    ],
-  },
-
   // KYC
   {
     categoryCode: 'KYC',
@@ -218,24 +196,6 @@ const ARTICLES = [
     ],
   },
 
-  // TECHNICAL
-  {
-    categoryCode: 'TECHNICAL',
-    title: 'L\'application ne fonctionne pas, que faire ?',
-    content: 'Vérifiez votre connexion internet, mettez à jour l\'application, puis redémarrez-la. Si le problème persiste, désinstallez et réinstallez l\'application.',
-    questions: [
-      { question: 'application ne marche pas', keywords: ['application', 'marche', 'bug', 'plantage'] },
-      { question: 'application bug', keywords: ['bug', 'plantage', 'erreur', 'crash'] },
-    ],
-  },
-  {
-    categoryCode: 'TECHNICAL',
-    title: 'Comment mettre à jour l\'application ?',
-    content: 'Allez dans votre store (App Store ou Google Play), cherchez AllnessPay et cliquez "Mettre à jour". Les mises à jour corrigent les bugs et ajoutent des fonctionnalités.',
-    questions: [
-      { question: 'mise à jour', keywords: ['mise', 'jour', 'update', 'version'] },
-    ],
-  },
 ];
 
 async function seed() {
