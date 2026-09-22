@@ -136,14 +136,41 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
   }
 
+  /**
+   * Code metier stable associe a un statut HTTP.
+   *
+   * La table ne couvre que les cas ou l'on veut un libelle choisi. Pour tout
+   * autre statut client, le code est derive du statut lui-meme (`CONFLICT`,
+   * `UNPROCESSABLE_ENTITY`, `LOCKED`...).
+   *
+   * C'est ce repli qui manquait : un statut absent de la table — 409 en
+   * particulier — etait etiquete `INTERNAL_ERROR`. Le client concluait a une
+   * panne serveur alors que sa requete etait simplement refusee, et le front,
+   * qui branche ses messages sur `code`, affichait « erreur technique » au lieu
+   * de « adresse deja utilisee ».
+   */
   private codeFromStatus(status: number): string {
-    const map: Record<number, string> = {
+    const explicit: Record<number, string> = {
       [HttpStatus.BAD_REQUEST]: 'VALIDATION_FAILED',
       [HttpStatus.UNAUTHORIZED]: 'UNAUTHORIZED',
       [HttpStatus.FORBIDDEN]: 'FORBIDDEN',
       [HttpStatus.NOT_FOUND]: 'RESOURCE_NOT_FOUND',
+      // Meme code que la violation de contrainte d'unicite detectee plus haut :
+      // le client n'a pas a savoir si le doublon a ete vu par le service ou par
+      // la base.
+      [HttpStatus.CONFLICT]: 'DUPLICATE_RESOURCE',
       [HttpStatus.TOO_MANY_REQUESTS]: 'RATE_LIMIT_EXCEEDED',
     };
-    return map[status] ?? 'INTERNAL_ERROR';
+
+    const known = explicit[status];
+    if (known) return known;
+
+    if (status >= 400 && status < 500) {
+      // `HttpStatus` est une enumeration numerique : la lecture inverse donne
+      // le libelle du statut.
+      return (HttpStatus[status] as string | undefined) ?? 'CLIENT_ERROR';
+    }
+
+    return 'INTERNAL_ERROR';
   }
 }

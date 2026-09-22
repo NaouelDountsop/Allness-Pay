@@ -1,0 +1,14 @@
+# Artefacts de build et dependances : jamais analyses ni reformates.
+#
+# `build:shared` s'execute avant `format:check` dans la CI : sans ce fichier,
+# Prettier analyse le code genere de `packages/shared/dist/` et l'etape echoue
+# sur des fichiers que personne n'ecrit a la main.
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+package-lock.json
+
+# Televersements KYC (ignores par git, mais Prettier les verrait quand meme).
+uploads/

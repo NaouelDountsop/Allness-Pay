@@ -6,6 +6,20 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+/**
+ * Etat du compte utilisateur.
+ *
+ * Les valeurs sont en majuscules pour rester compatibles avec la donnee
+ * existante : la colonne a pour defaut 'ACTIF' depuis la migration initiale.
+ * Seul un compte ACTIF peut s'authentifier (voir `AuthService.assertUserActive`).
+ */
+export enum UserStatut {
+  ACTIF = 'ACTIF',
+  SUSPENDU = 'SUSPENDU',
+  BLOQUE = 'BLOQUE',
+  FERME = 'FERME',
+}
+
 @Entity('utilisateur')
 export class User {
   @PrimaryGeneratedColumn()
@@ -50,8 +64,10 @@ export class User {
   @Column({ type: 'varchar', nullable: true, unique: true })
   googleId: string | null;
 
-  @Column({ default: 'ACTIF' })
-  statut: string;
+  // Le decorateur reste volontairement inchange (colonne `character varying`) :
+  // le type TypeScript est resserre sans modifier le schema, donc sans migration.
+  @Column({ default: UserStatut.ACTIF })
+  statut: UserStatut;
 
   @Column({ type: 'boolean', default: false })
   verificationotp: boolean;

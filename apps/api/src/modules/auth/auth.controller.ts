@@ -61,14 +61,16 @@ export class AuthController {
     return this.authService.refresh(dto.refreshToken);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Post('logout')
   @ApiOperation({ summary: 'Déconnexion' })
   async logout(@Request() req: ExpressRequest) {
-    const user = req.user as { sub?: number } | undefined;
-    if (user?.sub) {
-      await this.authService.logout(user.sub);
-    }
-    return { message: 'Déconnexion réussie' };
+    // La garde garantit que `req.user` est renseigné : sans elle, la révocation
+    // était silencieusement ignorée et le jeton de rafraîchissement restait
+    // valable alors que l'utilisateur se croyait déconnecté.
+    const user = req.user as { sub: number; role?: string };
+    return this.authService.logout(user.sub, user.role);
   }
 
   @Get('google')

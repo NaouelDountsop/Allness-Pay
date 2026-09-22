@@ -20,6 +20,12 @@ export default defineConfig({
       },
     },
   },
+  test: {
+    globals: true,
+    // La logique de session manipule `sessionStorage` et `window.location` :
+    // elle a besoin d'un environnement navigateur.
+    environment: 'jsdom',
+  },
   build: {
     sourcemap: true,
     rollupOptions: {
