@@ -1,19 +1,21 @@
 import 'reflect-metadata';
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import * as bodyParser from 'body-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { BusinessException } from './common/exceptions/business.exception';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestContextInterceptor } from './common/interceptors/request-context.interceptor';
 import { BigIntSerializerInterceptor } from './common/interceptors/bigint-serializer.interceptor';
 import type { AppConfig } from './config/configuration';
 import { KYC_UPLOADS_DIR } from './common/config/uploads.config';
-
+import type { Request, Response } from 'express';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
   const config = app.get(ConfigService);
@@ -27,6 +29,30 @@ async function bootstrap(): Promise<void> {
       crossOriginEmbedderPolicy: false,
       crossOriginOpenerPolicy: false,
       crossOriginResourcePolicy: false,
+    }),
+  );
+
+  // --- Capture raw body for webhook verification (Stripe expects exact bytes)
+  // Disable the default NestJS body parser so we can control raw capture ourselves.
+  // This ensures req.rawBody is always populated for Stripe signature verification.
+  // app.use(bodyParser.json({
+  //   verify: (req: any, _res, buf: Buffer) => {
+  //     req.rawBody = buf;
+  //   },
+  //   type: ['application/json', 'application/*+json'],
+  // }));
+
+  interface RawBodyRequest extends Request {
+    rawBody?: Buffer;
+  }
+
+  // ...existing code...
+  app.use(
+    bodyParser.json({
+      verify: (req: RawBodyRequest, _res: Response, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+      type: ['application/json', 'application/*+json'],
     }),
   );
 
@@ -56,6 +82,26 @@ async function bootstrap(): Promise<void> {
       transform: true,
       transformOptions: { enableImplicitConversion: false },
       stopAtFirstError: false,
+      // Structure les erreurs de validation avec le nom du champ, pour que
+      // les clients puissent les afficher champ par champ.
+      exceptionFactory: (errors) => {
+        const details: Array<{ field: string; message: string }> = errors.map((e) => {
+          const constraints = e.constraints ?? {};
+          const first = Object.keys(constraints)[0];
+          return {
+            field: e.property,
+            message: constraints[first] ?? 'Champ invalide.',
+          };
+        });
+        return new BusinessException(
+          'VALIDATION_FAILED',
+          'Les données fournies sont invalides.',
+          HttpStatus.BAD_REQUEST,
+          {
+            errors: details,
+          },
+        );
+      },
     }),
   );
 
@@ -72,7 +118,7 @@ async function bootstrap(): Promise<void> {
     const document = SwaggerModule.createDocument(
       app,
       new DocumentBuilder()
-        .setTitle('AfriLinkPay API')
+        .setTitle('AllnessPay API')
         .setDescription(
           "API de la plateforme de transfert d'argent avec portefeuille electronique.",
         )

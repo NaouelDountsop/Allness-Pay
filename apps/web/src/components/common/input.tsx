@@ -16,7 +16,7 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <div className="relative">
           {Icon && (
-            <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+            <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
           )}
           <ShadInput
             ref={ref}

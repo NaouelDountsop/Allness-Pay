@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../role/guards/permissions.guards';
 import { RequirePermissions } from '../role/decorators/permissions.decorator';
@@ -12,11 +13,25 @@ import { AdminService } from './admin.service';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
+  @Get()
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Activités récentes' })
+  getRecentActivities() {
+    return this.adminService.getRecentActivities();
+  }
+
   @Get('dashboard/stats')
   @RequirePermissions('kyc:review')
   @ApiOperation({ summary: 'Statistiques du tableau de bord admin' })
   getDashboardStats() {
     return this.adminService.getDashboardStats();
+  }
+
+  @Get('dashboard/chart')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Données graphique hebdomadaire' })
+  getChartWeekly() {
+    return this.adminService.getChartWeekly();
   }
 
   @Get('users')
@@ -39,6 +54,13 @@ export class AdminController {
   @ApiQuery({ name: 'status', required: false, enum: ['PENDING', 'APPROVED', 'REJECTED'] })
   findAllKyc(@Query('status') status?: string) {
     return this.adminService.findAllKyc(status);
+  }
+
+  @Get('kyc/pending')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'KYC en attente (top 4)' })
+  findKycPending() {
+    return this.adminService.getKycPending();
   }
 
   @Get('kyc/:id')
@@ -85,5 +107,35 @@ export class AdminController {
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
     });
+  }
+
+  @Get('transactions/export')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Exporter les transactions en Excel' })
+  async exportTransactions(@Res() res: Response) {
+    const buffer = await this.adminService.exportTransactionsXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="transactions.xlsx"');
+    res.send(buffer);
+  }
+
+  @Get('users/export')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Exporter les utilisateurs en Excel' })
+  async exportUsers(@Res() res: Response) {
+    const buffer = await this.adminService.exportUsersXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="utilisateurs.xlsx"');
+    res.send(buffer);
+  }
+
+  @Get('tontines/export')
+  @RequirePermissions('kyc:review')
+  @ApiOperation({ summary: 'Exporter les tontines en Excel' })
+  async exportTontines(@Res() res: Response) {
+    const buffer = await this.adminService.exportTontinesXlsx();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="tontines.xlsx"');
+    res.send(buffer);
   }
 }

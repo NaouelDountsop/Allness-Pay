@@ -12,6 +12,7 @@ export interface RegisterPayload {
   city?: string;
   profession?: string;
   address?: string;
+  gender?: string;
   googleId?: string;
 }
 
@@ -44,7 +45,7 @@ export const authService = {
       nom,
       prenom,
       datenaissance,
-      sexe: 'N/A',
+      sexe: data.gender || 'N/A',
       pays,
       ville: city || 'N/A',
       telephone,

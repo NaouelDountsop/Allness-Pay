@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatAmount } from '../../../lib/utils';
 
 interface TrendPoint {
   label: string; // ex: "Avr", "Mai", "Juin", "Juil"
@@ -13,6 +14,7 @@ interface MonthlySummaryProps {
   incomePercent: number;
   expensePercent: number;
   netAmount: number;
+  currency?: string;
   data: TrendPoint[];
 }
 
@@ -46,6 +48,7 @@ export function MonthlySummary({
   incomePercent,
   expensePercent,
   netAmount,
+  currency,
   data,
 }: MonthlySummaryProps) {
   const { seriesPaths, seriesPoints, gridX, gridY, tickLabels } = useMemo(() => {
@@ -179,12 +182,12 @@ export function MonthlySummary({
       </div>
 
       <div className="flex items-center justify-between text-xs mb-1">
-        <span className="text-afrilink-green font-semibold">+{incomePercent}%</span>
+        <span className="text-allness-green font-semibold">+{incomePercent}%</span>
         <span className="text-gray-400 font-semibold">-{expensePercent}%</span>
       </div>
 
       <p className="text-sm font-semibold text-gray-800 mt-3">
-        {new Intl.NumberFormat('fr-FR').format(netAmount)} FCFA
+        {formatAmount(netAmount, currency)}
       </p>
     </div>
   );

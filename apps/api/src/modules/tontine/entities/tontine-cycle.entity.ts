@@ -43,6 +43,9 @@ export class TontineCycle {
   @Column({ type: 'timestamptz', nullable: true })
   completedAt?: Date;
 
+  @Column({ type: 'timestamptz', nullable: true })
+  activatedAt?: Date;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

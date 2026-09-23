@@ -12,7 +12,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange"
     />
   );
 }
@@ -25,12 +25,12 @@ export default function AddMerchantPage() {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <button
           onClick={() => navigate('/admin/marchands')}
-          className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
+          className="flex items-center gap-2 text-sm font-semibold text-allness-dark"
         >
           <ArrowLeft className="w-4 h-4" />
           Ajouter un nouveau marchand
         </button>
-        <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
+        <button className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
           Enregistrer
         </button>
       </div>
@@ -52,7 +52,7 @@ export default function AddMerchantPage() {
             <textarea
               rows={3}
               placeholder="Brève description de l'activité du marchand"
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange resize-none"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange resize-none"
             />
           </div>
           <div>
@@ -118,7 +118,7 @@ export default function AddMerchantPage() {
         <SectionCard title="Validation" icon={ShieldCheck}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-afrilink-dark">
+              <p className="text-xs font-medium text-allness-dark">
                 Activer le compte immédiatement
               </p>
               <p className="text-[11px] text-gray-400">
@@ -136,7 +136,7 @@ export default function AddMerchantPage() {
           >
             Annuler
           </button>
-          <button className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity">
+          <button className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity">
             Enregistrer le marchand
           </button>
         </div>

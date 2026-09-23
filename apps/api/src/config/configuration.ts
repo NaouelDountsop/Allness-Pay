@@ -66,11 +66,30 @@ export const providersConfig = registerAs('providers', () => ({
     callbackUrl:
       process.env.GOOGLE_CALLBACK_URL ?? 'http://localhost:3000/api/v1/auth/google/callback',
   },
+  // tranzak: {
+  //   baseUrl: process.env.TRANZAK_BASE_URL ?? '',
+  //   appId: process.env.TRANZAK_APP_ID ?? '',
+  //   appKey: process.env.TRANZAK_APP_KEY ?? '',
+  //   callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+  // },
+
   tranzak: {
     baseUrl: process.env.TRANZAK_BASE_URL ?? '',
     appId: process.env.TRANZAK_APP_ID ?? '',
     appKey: process.env.TRANZAK_APP_KEY ?? '',
     callbackUrl: process.env.TRANZAK_CALLBACK_URL ?? '',
+    returnUrl: process.env.TRANZAK_RETURN_URL ?? '',
+  },
+  campay: {
+    baseUrl: process.env.PAYMENT_API_BASE_URL ?? '',
+    username: process.env.PAYMENT_USERNAME ?? '',
+    password: process.env.PAYMENT_PASSWORD ?? '',
+    webhookKey: process.env.PAYMENT_WEBHOOK_SECRET ?? '',
+  },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY ?? '',
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY ?? '',
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
   },
 }));
 
@@ -80,7 +99,7 @@ export const mailConfig = registerAs('mail', () => ({
   secure: process.env.SMTP_SECURE === 'true',
   user: process.env.SMTP_USER ?? '',
   pass: process.env.SMTP_PASS ?? '',
-  from: process.env.SMTP_FROM ?? 'noreply@afrilinkpay.com',
+  from: process.env.SMTP_FROM ?? 'noreply@allnesspay.com',
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
 }));
 

@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { Wallet } from '../../wallet/entities/wallet.entity';
-import { bigintTransformer } from '../../../common/transformers/bigint.transformer';
+
 import { LinkedAccountOperator } from '../../linked-account/enums/linked-account-operator.enum';
 
 export enum WalletTransactionType {
@@ -19,7 +19,7 @@ export enum WalletTransactionType {
 }
 
 export enum WalletTransactionStatus {
-  PENDING = 'pending',
+   PENDING = 'pending',
   COMPLETED = 'completed',
   FAILED = 'failed',
   CANCELLED = 'cancelled',
@@ -43,9 +43,9 @@ export class WalletTransaction {
   @Column({ type: 'enum', enum: WalletTransactionType })
   type: WalletTransactionType;
 
-  /** Montant en centimes FCFA, toujours positif. */
-  @Column({ type: 'bigint', transformer: bigintTransformer })
-  amount: bigint;
+  /** Montant en devise (ex: 0.35 CAD, 500 XAF), toujours positif. */
+  @Column({ type: 'decimal', precision: 18, scale: 2, default: 0 })
+  amount: number;
 
   /** Wallet lié pour les transferts (source ou destination). */
   @Column({ type: 'varchar', nullable: true })

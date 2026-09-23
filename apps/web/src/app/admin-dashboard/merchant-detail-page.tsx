@@ -18,7 +18,7 @@ export default function MerchantDetailPage() {
     <AdminLayout active="marchands">
       <button
         onClick={() => navigate('/admin/marchands')}
-        className="flex items-center gap-2 text-xs text-gray-400 hover:text-afrilink-dark mb-4"
+        className="flex items-center gap-2 text-xs text-gray-400 hover:text-allness-dark mb-4"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Détails Marchand
@@ -26,12 +26,12 @@ export default function MerchantDetailPage() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5 flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <span className="w-12 h-12 rounded-xl bg-afrilink-dark flex items-center justify-center">
+          <span className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center">
             <Store className="w-5 h-5 text-white" />
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-bold text-afrilink-dark">Boutique Horizon</p>
+              <p className="text-sm font-bold text-allness-dark">Boutique Horizon</p>
               <Badge tone="green" dot>
                 Actif
               </Badge>

@@ -1,20 +1,7 @@
 import { apiClient } from '@/lib/api-client';
 import type { Wallet } from '@afrilinkpay/shared';
 
-export interface CreateWalletPayload {
-  currency?: string;
-  label?: string;
-}
-
 export const walletService = {
-  /**
-   * Créer un nouveau portefeuille.
-   */
-  create: async (data: CreateWalletPayload = {}): Promise<Wallet> => {
-    const res = await apiClient.post<Wallet>('/wallets', data);
-    return res.data;
-  },
-
   /**
    * Récupérer tous les portefeuilles de l'utilisateur connecté.
    */
@@ -39,6 +26,30 @@ export const walletService = {
    */
   getById: async (id: string): Promise<Wallet> => {
     const res = await apiClient.get<Wallet>(`/wallets/${id}`);
+    return res.data;
+  },
+
+  /**
+   * Valider qu'un wallet bénéficiaire existe et est actif.
+   */
+  validateByNumber: async (walletNumber: string): Promise<{ valid: boolean; message?: string; ownerName?: string; currency?: string }> => {
+    const res = await apiClient.get<{ valid: boolean; message?: string; ownerName?: string; currency?: string }>(`/wallets/validate/${walletNumber}`);
+    return res.data;
+  },
+
+  /**
+   * Récupérer les données QR Code d'un wallet.
+   */
+  getQrCode: async (walletId: string): Promise<{ walletId: string; qrCodeData: string }> => {
+    const res = await apiClient.get<{ walletId: string; qrCodeData: string }>(`/wallets/${walletId}/qr-code`);
+    return res.data;
+  },
+
+  /**
+   * Résoudre un numéro de wallet QR Code en informations de wallet.
+   */
+  resolveQr: async (walletNumber: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> => {
+    const res = await apiClient.post<{ walletId: string; walletNumber: string; currency: string; ownerName: string }>('/wallets/resolve-qr', { walletNumber });
     return res.data;
   },
 };

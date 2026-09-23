@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Param, Body, Req, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
-import { DepositDto, WithdrawDto, TransferDto } from './dto/wallet-operation.dto';
+import { TransferDto } from './dto/transfer.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface AuthenticatedRequest extends Request {
@@ -21,24 +21,10 @@ export class TransactionsController {
     return this.transactionsService.listByWallet(id);
   }
 
-  @Post('deposit')
-  @ApiOperation({ summary: 'Déposer sur un portefeuille' })
-  deposit(
-    @Req() req: AuthenticatedRequest,
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: DepositDto,
-  ) {
-    return this.transactionsService.deposit(id, req.user.id, dto);
-  }
-
-  @Post('withdraw')
-  @ApiOperation({ summary: "Retirer d'un portefeuille" })
-  withdraw(
-    @Req() req: AuthenticatedRequest,
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: WithdrawDto,
-  ) {
-    return this.transactionsService.withdraw(id, req.user.id, dto);
+  @Get('transactions/monthly-summary')
+  @ApiOperation({ summary: 'Résumé mensuel des transactions' })
+  getMonthlySummary(@Param('id', ParseUUIDPipe) id: string) {
+    return this.transactionsService.getMonthlySummary(id);
   }
 
   @Post('transfer')

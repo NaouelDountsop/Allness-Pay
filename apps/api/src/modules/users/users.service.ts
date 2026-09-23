@@ -31,16 +31,33 @@ export class UsersService {
     const { email, telephone, motdepasse, datenaissance, profession, googleId, pays, ...rest } =
       createUserDto;
 
-    // `find` et non `findOne` : l'adresse et le numero peuvent appartenir a
-    // deux comptes differents. Les remonter d'un coup evite a l'utilisateur de
-    // corriger un champ pour buter aussitot sur le suivant.
-    const conflits = await this.usersRepository.find({
-      where: [{ email }, { telephone }, ...(googleId ? [{ googleId }] : [])],
-      select: ['idutilisateur', 'email', 'telephone', 'googleId'],
-    });
+    const existingByEmail = await this.usersRepository.findOne({ where: { email } });
+    if (existingByEmail) {
+      throw new ConflictException({
+        code: 'DUPLICATE_EMAIL',
+        message: 'Cet email est déjà utilisé par un autre compte.',
+        field: 'email',
+      });
+    }
 
-    if (conflits.length > 0) {
-      this.assertNoConflict(conflits, { email, telephone, googleId });
+    const existingByPhone = await this.usersRepository.findOne({ where: { telephone } });
+    if (existingByPhone) {
+      throw new ConflictException({
+        code: 'DUPLICATE_PHONE',
+        message: 'Ce numéro de téléphone est déjà utilisé par un autre compte.',
+        field: 'telephone',
+      });
+    }
+
+    if (googleId) {
+      const existingByGoogle = await this.usersRepository.findOne({ where: { googleId } });
+      if (existingByGoogle) {
+        throw new ConflictException({
+          code: 'DUPLICATE_GOOGLE',
+          message: 'Ce compte Google est déjà associé à un compte AllnessPay.',
+          field: 'googleId',
+        });
+      }
     }
 
     const hashedPassword = motdepasse ? await hash(motdepasse) : await hash(randomUUID());

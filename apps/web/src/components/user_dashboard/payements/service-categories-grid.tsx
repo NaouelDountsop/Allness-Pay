@@ -1,55 +1,73 @@
 import { useNavigate } from 'react-router-dom';
-import { Zap, Droplet, Phone, Tv, GraduationCap, Bus, Star } from 'lucide-react';
+import { Zap, Droplet, Wifi, Tv, Smartphone, Phone, Star, ChevronRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/mock/payments-data';
 
 const iconMap = {
   electricity: Zap,
   water: Droplet,
-  telecom: Phone,
+  internet: Wifi,
   tv: Tv,
-  education: GraduationCap,
-  transport: Bus,
+  airtime: Smartphone,
+  phone: Phone,
 };
 
 const colorMap = {
   electricity: 'bg-yellow-50 text-yellow-600',
   water: 'bg-blue-50 text-blue-600',
-  telecom: 'bg-purple-50 text-purple-600',
-  tv: 'bg-pink-50 text-pink-600',
-  education: 'bg-green-50 text-green-600',
-  transport: 'bg-orange-50 text-orange-600',
+  internet: 'bg-cyan-50 text-cyan-600',
+  tv: 'bg-red-50 text-red-600',
+  airtime: 'bg-green-50 text-green-600',
+  phone: 'bg-purple-50 text-purple-600',
 };
 
 interface ServiceCategoriesGridProps {
   categories: ServiceCategory[];
+  onSelect?: (key: string) => void;
+  selectedKey?: string | null;
 }
 
-export function ServiceCategoriesGrid({ categories }: ServiceCategoriesGridProps) {
+export function ServiceCategoriesGrid({ categories, onSelect, selectedKey }: ServiceCategoriesGridProps) {
   const navigate = useNavigate();
-
   return (
     <div>
-      <h3 className="text-base font-semibold text-afrilink-dark mb-4">Catégories de services</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-semibold text-allness-dark">Nos services</h3>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {categories.map((cat) => {
           const Icon = iconMap[cat.icon];
+          const isSelected = selectedKey === cat.key;
           return (
             <button
               key={cat.key}
-              onClick={() => navigate(`/dashboard/payments/${cat.key}`)}
-              className="relative rounded-xl border border-gray-100 bg-white p-3 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 hover:border-afrilink-green/40 hover:shadow-sm transition-all"
+              onClick={() => {
+                if (onSelect) {
+                  onSelect(cat.key);
+                } else {
+                  navigate(`/dashboard/payments/${cat.key}`);
+                }
+              }}
+              className={`relative rounded-xl border p-4 flex items-center gap-3 hover:shadow-sm transition-all text-left ${
+                isSelected
+                  ? 'border-allness-green bg-allness-green/5'
+                  : 'border-gray-100 bg-white hover:border-allness-green/40'
+              }`}
             >
-              {cat.favorite && (
-                <Star className="w-3.5 h-3.5 text-afrilink-orange fill-afrilink-orange absolute top-2 sm:top-3 right-2 sm:right-3" />
-              )}
               <span
-                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${colorMap[cat.icon]}`}
+                className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${colorMap[cat.icon]}`}
               >
-                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Icon className="w-5 h-5" />
               </span>
-              <span className="text-xs sm:text-sm font-medium text-gray-700 text-center leading-tight">
-                {cat.label}
-              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium text-gray-900">{cat.label}</span>
+                  {cat.favorite && (
+                    <Star className="w-3 h-3 text-allness-orange fill-allness-orange" />
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-0.5 truncate">{cat.description}</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
             </button>
           );
         })}

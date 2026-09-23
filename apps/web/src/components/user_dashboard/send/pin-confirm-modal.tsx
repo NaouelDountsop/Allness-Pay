@@ -1,38 +1,57 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { PinPad } from './pin-pad';
+import { ForgotPinModal } from './forgot-pin-modal';
 
 interface PinConfirmModalProps {
-  onConfirm: (pin: string) => boolean; // retourne true si le PIN est correct
+  walletId: string;
+  onConfirm: (pin: string) => Promise<string | null>;
   onClose: () => void;
 }
 
-export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
+export function PinConfirmModal({ walletId, onConfirm, onClose }: PinConfirmModalProps) {
   const [pin, setPin] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showForgotPin, setShowForgotPin] = useState(false);
 
   const handleChange = (value: string) => {
     setPin(value);
-    setError(false);
+    setError(null);
   };
 
-  const handleConfirm = () => {
-    if (pin.length < 4) return;
-    const ok = onConfirm(pin);
-    if (!ok) {
-      setError(true);
-      setPin('');
+  const handleConfirm = async () => {
+    if (pin.length < 4 || loading) return;
+    setLoading(true);
+    try {
+      const errorMsg = await onConfirm(pin);
+      if (errorMsg) {
+        setError(errorMsg);
+        setPin('');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (showForgotPin) {
+    return (
+      <ForgotPinModal
+        walletId={walletId}
+        onClose={() => setShowForgotPin(false)}
+        onSuccess={onClose}
+      />
+    );
+  }
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden bg-white">
-        <div className="bg-afrilink-dark px-6 py-5 flex items-center justify-between relative">
+        <div className="bg-allness-dark px-6 py-5 flex items-center justify-between relative">
           <div className="flex flex-col items-center w-full">
-            <img src="/afrilinkpay_logo2.svg" alt="" className="w-8 h-8 object-contain mb-1" />
+            <img src="/allnesspay_logo1.png" alt="" className="w-8 h-8 object-contain mb-1" />
             <span className="text-white text-sm font-semibold">
-              Afrilink<span className="text-afrilink-orange">Pay</span>
+              Allness<span className="text-allness-orange">Pay</span>
             </span>
           </div>
           <button
@@ -45,23 +64,31 @@ export function PinConfirmModal({ onConfirm, onClose }: PinConfirmModalProps) {
         </div>
 
         <div className="p-6 text-center">
-          <h3 className="text-base font-semibold text-afrilink-dark mb-1">
-            Confirmer la transaction
+          <h3 className="text-base font-semibold text-allness-dark mb-1">
+            Confirmer L'operation
           </h3>
-          <p className="text-xs text-gray-500 mb-6">
-            Veuillez saisir votre code PIN à 4 chiffres pour valider le transfert.
+          <p className="text-xs text-orange-500 mb-6">
+            Veuillez saisir votre code PIN à 4 chiffres.
           </p>
 
-          <PinPad value={pin} onChange={handleChange} error={error} />
+          <PinPad value={pin} onChange={handleChange} error={!!error} />
 
-          {error && <p className="text-xs text-red-500 mt-4">Code PIN incorrect, réessayez.</p>}
+          {error && <p className="text-xs text-red-500 mt-4">{error}</p>}
 
           <button
             onClick={handleConfirm}
-            disabled={pin.length < 4}
-            className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium mt-6 transition-colors disabled:opacity-50"
+            disabled={pin.length < 4 || loading}
+            className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium mt-6 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            Confirmer
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {loading ? 'Vérification...' : 'Confirmer'}
+          </button>
+
+          <button
+            onClick={() => setShowForgotPin(true)}
+            className="mt-3 text-xs text-allness-orange hover:underline"
+          >
+            PIN oublié ?
           </button>
         </div>
       </div>

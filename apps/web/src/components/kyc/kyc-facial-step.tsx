@@ -97,10 +97,10 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
 
   return (
     <div>
-      <div className="rounded-2xl bg-afrilink-dark/5 border border-afrilink-dark/10 p-6">
+      <div className="rounded-2xl bg-allness-dark/5 border border-allness-dark/10 p-6">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           {/* Caméra live */}
-          <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-afrilink-dark/20 flex items-center justify-center relative overflow-hidden bg-black shrink-0">
+          <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-allness-dark/20 flex items-center justify-center relative overflow-hidden bg-black shrink-0">
             <video
               ref={videoRef}
               className={`w-full h-full object-cover ${captured ? 'hidden' : ''}`}
@@ -127,7 +127,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
           </div>
 
           {/* Photo capturée */}
-          <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-afrilink-dark/20 flex items-center justify-center relative overflow-hidden bg-gray-100 shrink-0">
+          <div className="w-full max-w-xs aspect-square rounded-3xl border-4 border-dashed border-allness-dark/20 flex items-center justify-center relative overflow-hidden bg-gray-100 shrink-0">
             {captured && capturedUrl ? (
               <>
                 <img
@@ -167,7 +167,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
             </button>
             <button
               onClick={handleConfirm}
-              className="h-11 px-6 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
+              className="h-11 px-6 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <Check className="w-4 h-4" />
               Confirmer
@@ -177,7 +177,7 @@ export function KycFacialStep({ onNext }: KycFacialStepProps) {
           <button
             onClick={handleCapture}
             disabled={!stream}
-            className="h-11 px-6 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-11 px-6 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Camera className="w-4 h-4" />
             Prendre un selfie

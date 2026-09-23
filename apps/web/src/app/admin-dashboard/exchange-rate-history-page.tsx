@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Download, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
 import { AdminLayout } from '../../components/admin-dashboard/admin-layout';
 import { Pagination } from '../../components/ui';
 import { useState } from 'react';
@@ -55,6 +55,8 @@ const HISTORY = [
 export default function ExchangeRateHistoryPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [pairFilter, setPairFilter] = useState('all');
+  const [periodFilter, setPeriodFilter] = useState('all');
 
   return (
     <AdminLayout active="parametres">
@@ -62,28 +64,67 @@ export default function ExchangeRateHistoryPage() {
         <div>
           <button
             onClick={() => navigate('/admin/taux-de-change')}
-            className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark"
+            className="flex items-center gap-2 text-sm font-semibold text-allness-dark"
           >
             <ArrowLeft className="w-4 h-4" />
             Historique des mises à jour
           </button>
           <p className="text-[11px] text-gray-400 mt-1 ml-6">Taux de change &gt; Historique</p>
         </div>
-        <button className="h-9 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity">
+        <button
+          onClick={() => {
+            const rows = [['Date / Heure', 'Ancien Taux', 'Nouveau Taux', 'Variation', 'Ajouté par', 'Utilisateur']];
+            HISTORY.forEach((h) => {
+              rows.push([h.date, h.old, h.next, h.change, h.by, h.user]);
+            });
+            const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `historique_taux_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
           <Download className="w-3.5 h-3.5" />
           Exporter
         </button>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center gap-3 mb-5">
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Paire de devise: USD/XAF
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          <button className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-2">
-            Période: 7 derniers jours
-            <ChevronDown className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          <select
+            value={pairFilter}
+            onChange={(e) => setPairFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+          >
+            <option value="all">Toutes les paires</option>
+            <option value="USD/XAF">USD/XAF</option>
+            <option value="EUR/XAF">EUR/XAF</option>
+            <option value="GBP/XAF">GBP/XAF</option>
+            <option value="EUR/USD">EUR/USD</option>
+          </select>
+          <select
+            value={periodFilter}
+            onChange={(e) => setPeriodFilter(e.target.value)}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+          >
+            <option value="all">Toutes les périodes</option>
+            <option value="7d">7 derniers jours</option>
+            <option value="30d">30 derniers jours</option>
+            <option value="90d">90 derniers jours</option>
+          </select>
+          <button
+            onClick={() => {
+              setPairFilter('all');
+              setPeriodFilter('all');
+            }}
+            className="h-9 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Réinitialiser
           </button>
         </div>
 
@@ -103,7 +144,7 @@ export default function ExchangeRateHistoryPage() {
               <tr key={i} className="border-b border-gray-50 last:border-0">
                 <td className="py-3 text-xs text-gray-500">{h.date}</td>
                 <td className="text-xs text-gray-600">{h.old}</td>
-                <td className="text-xs font-medium text-afrilink-dark">{h.next}</td>
+                <td className="text-xs font-medium text-allness-dark">{h.next}</td>
                 <td>
                   <span
                     className={`inline-flex items-center gap-1 text-[11px] font-semibold ${

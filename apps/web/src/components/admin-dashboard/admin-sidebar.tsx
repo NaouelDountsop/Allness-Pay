@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -11,9 +12,11 @@ import {
   UserCog,
   TrendingUp,
   LogOut,
+  MessageSquare,
 } from 'lucide-react';
 import { authService } from '@/lib/api/auth.service';
 import { authStorage } from '@/lib/auth-storage';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
@@ -26,6 +29,7 @@ const navItems: NavItem[] = [
   { to: '/admin/marchands', label: 'Marchands', icon: Store },
   { to: '/admin/taux-de-change', label: 'Taux de change', icon: TrendingUp },
   { to: '/admin/partenaires', label: 'Partenaires', icon: Handshake },
+  { to: '/admin/support', label: 'Support', icon: MessageSquare },
 ];
 
 const adminOnlyItems: NavItem[] = [
@@ -36,8 +40,17 @@ const superAdminItems: NavItem[] = [
   { to: '/admin/administrateurs', label: 'Gestion des Admins', icon: UserCog },
 ];
 
-export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin' }) {
+export function AdminSidebar({
+  role = 'admin',
+  mobile = false,
+  onClose,
+}: {
+  role?: 'admin' | 'super-admin';
+  mobile?: boolean;
+  onClose?: () => void;
+}) {
   const navigate = useNavigate();
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const items = [...navItems, ...(role === 'super-admin' ? superAdminItems : adminOnlyItems)];
 
   const handleLogout = async () => {
@@ -52,18 +65,29 @@ export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin
   };
 
   return (
-    <aside className="hidden md:flex sticky top-0 h-screen shrink-0 w-72 max-w-full bg-afrilink-dark text-white flex-col">
+    <aside
+      className={`${
+        mobile ? 'flex h-full' : 'hidden md:flex sticky top-0 h-screen'
+      } shrink-0 w-72 max-w-full bg-[#0D343A] dark:bg-[#061216] text-white flex-col border-r border-white/10 shadow-lg`}
+    >
       <div className="flex items-center justify-between gap-2 px-6 py-9 md:justify-start">
         <div className="flex items-center gap-2">
           <img
-            src="/afrilinkpay_logo1.svg"
-            alt="AfrilinkPay"
+            src="/allnesspay_logo1.png"
+            alt="AllnessPay"
             className="w-12 h-17 object-contain"
           />
           <span className="font-bold text-md">
-            Afrilink<span className="text-afrilink-orange">Pay</span>
+            Allness<span className="text-allness-orange">Pay</span>
           </span>
         </div>
+        {mobile && onClose && (
+          <button onClick={onClose} className="text-white/70 hover:text-white md:hidden">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 px-3 space-y-3 overflow-y-auto pb-6">
@@ -72,10 +96,11 @@ export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin
             key={to}
             to={to}
             end={end}
+            onClick={() => mobile && onClose?.()}
             className={({ isActive }) =>
               `flex items-center gap-5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? 'bg-white text-afrilink-orange font-medium'
+                  ? 'bg-white text-allness-orange font-medium'
                   : 'text-white hover:bg-white/5'
               }`
             }
@@ -88,13 +113,24 @@ export function AdminSidebar({ role = 'admin' }: { role?: 'admin' | 'super-admin
 
       <div className="p-3">
         <button
-          onClick={handleLogout}
+          onClick={() => setLogoutOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#6B1120] hover:bg-[#7C1526] shadow-sm transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Se déconnecter
         </button>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Se déconnecter"
+        description="Voulez-vous vraiment vous déconnecter de l'interface administrateur ?"
+        confirmLabel="Se déconnecter"
+        cancelLabel="Rester"
+        variant="danger"
+        onConfirm={handleLogout}
+      />
     </aside>
   );
 }

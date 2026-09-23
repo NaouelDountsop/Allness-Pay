@@ -22,7 +22,7 @@ export const countries: Country[] = [
   },
   {
     code: 'SN',
-    name: 'S\u00e9n\u00e9gal',
+    name: 'Sénégal',
     dialCode: '+221',
     phonePattern: /^(\+221)?[77]\d{8}$/,
     phonePlaceholder: '7X XXX XX XX',
@@ -30,7 +30,7 @@ export const countries: Country[] = [
   },
   {
     code: 'CI',
-    name: "C\u00f4te d'Ivoire",
+    name: "Côte d'Ivoire",
     dialCode: '+225',
     phonePattern: /^(\+225)?[0-9]\d{9,10}$/,
     phonePlaceholder: '0X XX XX XX XX',
@@ -50,14 +50,6 @@ export const countries: Country[] = [
     dialCode: '+242',
     phonePattern: /^(\+242)?[06]\d{8}$/,
     phonePlaceholder: '0X XXXX XXX',
-    phoneDigits: 9,
-  },
-  {
-    code: 'CD',
-    name: 'R\u00e9p. D\u00e9m. du Congo',
-    dialCode: '+243',
-    phonePattern: /^(\+243)?[89]\d{8}$/,
-    phonePlaceholder: '8X XXX XXXX',
     phoneDigits: 9,
   },
   {
@@ -94,59 +86,11 @@ export const countries: Country[] = [
   },
   {
     code: 'BJ',
-    name: 'B\u00e9nin',
+    name: 'Bénin',
     dialCode: '+229',
     phonePattern: /^(\+229)?[69]\d{7}$/,
     phonePlaceholder: '6X XX XX XX',
     phoneDigits: 8,
-  },
-  {
-    code: 'GN',
-    name: 'Guin\u00e9e',
-    dialCode: '+224',
-    phonePattern: /^(\+224)?[66]\d{8}$/,
-    phonePlaceholder: '6XX XXX XXX',
-    phoneDigits: 9,
-  },
-  {
-    code: 'RW',
-    name: 'Rwanda',
-    dialCode: '+250',
-    phonePattern: /^(\+250)?[7]\d{8}$/,
-    phonePlaceholder: '7XX XXX XXX',
-    phoneDigits: 9,
-  },
-  {
-    code: 'KE',
-    name: 'Kenya',
-    dialCode: '+254',
-    phonePattern: /^(\+254)?[17]\d{8,9}$/,
-    phonePlaceholder: '7XX XXX XXX',
-    phoneDigits: 9,
-  },
-  {
-    code: 'GH',
-    name: 'Ghana',
-    dialCode: '+233',
-    phonePattern: /^(\+233)?[25]\d{8}$/,
-    phonePlaceholder: '2X XXX XXXX',
-    phoneDigits: 9,
-  },
-  {
-    code: 'NG',
-    name: 'Nigeria',
-    dialCode: '+234',
-    phonePattern: /^(\+234)?[789]\d{9}$/,
-    phonePlaceholder: '80X XXX XXXX',
-    phoneDigits: 10,
-  },
-  {
-    code: 'ZA',
-    name: 'Afrique du Sud',
-    dialCode: '+27',
-    phonePattern: /^(\+27)?[6-8]\d{8}$/,
-    phonePlaceholder: '6XX XXX XXXX',
-    phoneDigits: 9,
   },
   {
     code: 'FR',
@@ -164,18 +108,17 @@ export const countries: Country[] = [
     phonePlaceholder: '(XXX) XXX-XXXX',
     phoneDigits: 10,
   },
-  {
-    code: 'US',
-    name: '\u00c9tats-Unis',
-    dialCode: '+1',
-    phonePattern: /^(\+1)?[2-9]\d{9}$/,
-    phonePlaceholder: '(XXX) XXX-XXXX',
-    phoneDigits: 10,
-  },
 ];
 
 export function getCountryByCode(code: string): Country | undefined {
   return countries.find((c) => c.code === code);
+}
+
+export function getCountryCodeByName(name: string): string | undefined {
+  const country = countries.find(
+    (c) => c.name.toLowerCase() === name.toLowerCase(),
+  );
+  return country?.code;
 }
 
 export function formatLocalPhone(phone: string, country: Country): string {

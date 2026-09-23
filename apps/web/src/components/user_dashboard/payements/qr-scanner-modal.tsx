@@ -1,81 +1,173 @@
-import { useEffect, useRef, useState } from 'react';
-import { X, ScanLine } from 'lucide-react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { X, ScanLine, Loader2 } from 'lucide-react';
+import jsQR from 'jsqr';
+import { walletService } from '@/lib/api/wallet.service';
 
 interface QrScannerModalProps {
   onClose: () => void;
-  onScanSuccess: (data: { merchant: string; reference: string; amount: number }) => void;
+  onScanSuccess: (data: { walletId: string; walletNumber: string; ownerName: string; currency: string }) => void;
+}
+
+function extractWalletNumber(qrData: string): string | null {
+  const match = qrData.match(/allnesspay:\/\/transfer\?w=([A-Za-z0-9]+)/);
+  return match?.[1] ?? null;
 }
 
 export function QrScannerModal({ onClose, onScanSuccess }: QrScannerModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number>(0);
   const [error, setError] = useState('');
-  const [scanning, setScanning] = useState(true);
+  const [resolving, setResolving] = useState(false);
+
+  const scanFrame = useCallback(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA || !video.videoWidth || !video.videoHeight) {
+      animFrameRef.current = requestAnimationFrame(scanFrame);
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'attemptBoth',
+    });
+
+    if (code?.data) {
+      const walletNumber = extractWalletNumber(code.data);
+      if (walletNumber) {
+        setResolving(true);
+        walletService.resolveQr(walletNumber)
+          .then(onScanSuccess)
+          .catch(() => {
+            setResolving(false);
+            setError('QR Code invalide ou portefeuille introuvable.');
+          });
+        return;
+      }
+    }
+
+    animFrameRef.current = requestAnimationFrame(scanFrame);
+  }, [onScanSuccess]);
 
   useEffect(() => {
-    let stream: MediaStream;
+    let cancelled = false;
+    const streamRef: { current: MediaStream | null } = { current: null };
 
     const startCamera = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
+        const s = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' },
         });
-        if (videoRef.current) videoRef.current.srcObject = stream;
+        if (cancelled) {
+          s.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        streamRef.current = s;
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.onloadeddata = () => {
+            animFrameRef.current = requestAnimationFrame(scanFrame);
+          };
+          // Force play on iOS
+          await videoRef.current.play();
+        }
       } catch {
-        setError("Impossible d'accéder à la caméra. Vérifiez les autorisations.");
+        if (!cancelled) {
+          setError('Caméra non disponible. Autorisez l\'accès à la caméra.');
+        }
       }
     };
 
     startCamera();
 
     return () => {
-      stream?.getTracks().forEach((track) => track.stop());
+      cancelled = true;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      cancelAnimationFrame(animFrameRef.current);
     };
-  }, []);
-
-  const handleSimulateScan = () => {
-    setScanning(false);
-    // Simule la lecture d'un QR code marchand.
-    // À remplacer par une vraie librairie de décodage (ex: jsQR) branchée
-    // sur les frames vidéo pour une lecture automatique en production.
-    onScanSuccess({
-      merchant: 'SuperMarket Bafoussam',
-      reference: 'CMD123456',
-      amount: 15000,
-    });
-  };
+  }, [scanFrame]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
-      <button
-        onClick={onClose}
-        className="absolute top-5 right-5 text-white/80 hover:text-white"
-        aria-label="Fermer"
-      >
-        <X className="w-6 h-6" />
-      </button>
-
-      {error ? (
-        <p className="text-white text-sm text-center max-w-xs">{error}</p>
-      ) : (
-        <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-gray-900">
-          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-          <div className="absolute inset-8 border-2 border-afrilink-orange rounded-xl" />
+    <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-allness-orange/10 flex items-center justify-center">
+              <ScanLine className="w-4 h-4 text-allness-orange" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-allness-dark">Scanner un wallet</p>
+              <p className="text-[11px] text-gray-500">Pointez vers le QR code du destinataire</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            aria-label="Fermer"
+          >
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
         </div>
-      )}
 
-      <p className="text-white/70 text-sm mt-6 text-center">
-        Placez le QR code du marchand dans le cadre
-      </p>
+        {/* Scanner viewport */}
+        <div className="relative aspect-square bg-gray-900">
+          {error ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+              <p className="text-white/80 text-sm">{error}</p>
+            </div>
+          ) : (
+            <>
+              <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+              <canvas ref={canvasRef} className="hidden" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-56 h-56 relative">
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-allness-orange rounded-tl-lg" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-allness-orange rounded-tr-lg" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-allness-orange rounded-bl-lg" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-allness-orange rounded-br-lg" />
+                  {!resolving && (
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-allness-orange/60 animate-[scan_2s_ease-in-out_infinite]" />
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
-      {scanning && !error && (
-        <button
-          onClick={handleSimulateScan}
-          className="mt-6 h-11 px-6 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium flex items-center gap-2"
-        >
-          <ScanLine className="w-4 h-4" />
-          Simuler la lecture (démo)
-        </button>
-      )}
+        {/* Footer */}
+        <div className="px-5 py-4 space-y-3">
+          {resolving && (
+            <div className="flex items-center justify-center gap-2 py-2">
+              <Loader2 className="w-4 h-4 animate-spin text-allness-orange" />
+              <span className="text-sm text-gray-600">Wallet trouvé, vérification...</span>
+            </div>
+          )}
+          {!error && !resolving && (
+            <button
+              onClick={onClose}
+              className="w-full h-10 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Annuler
+            </button>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes scan {
+          0%, 100% { transform: translateY(-50%); opacity: 0.4; }
+          50% { transform: translateY(50%); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

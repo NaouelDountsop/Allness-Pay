@@ -1,4 +1,5 @@
 import { Wallet, Repeat, Activity } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ContributionStatsProps {
   totalContributed: number;
@@ -15,33 +16,46 @@ export function ContributionStats({
   currentTurn,
   totalTurns,
 }: ContributionStatsProps) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <div className="rounded-xl border border-gray-100 bg-white p-4">
-        <Wallet className="w-4 h-4 text-gray-400 mb-2" />
-        <p className="text-[11px] text-gray-400">Total Cotisé</p>
-        <p className="text-lg font-bold text-gray-900">
+      <div className="bg-allness-dark rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+            <Wallet className="w-5 h-5 text-green-400" />
+          </span>
+          <span className="text-sm text-gray-300">{t('tontines.totalContributed')}</span>
+        </div>
+        <p className="text-2xl font-bold text-white mb-2">
           {new Intl.NumberFormat('fr-FR').format(totalContributed)} {currency}
         </p>
-        <p className="text-[11px] text-afrilink-green mt-1">+12% par rapport au mois dernier</p>
+        <p className="text-xs text-green-400">{t('tontines.percentChange')}</p>
       </div>
-      <div className="rounded-xl border border-gray-100 bg-white p-4">
-        <Repeat className="w-4 h-4 text-blue-500 mb-2" />
-        <p className="text-[11px] text-gray-400">Nombre de Versements</p>
-        <p className="text-lg font-bold text-gray-900">{contributionsCount}</p>
-        <p className="text-[11px] text-gray-400 mt-1">Total depuis le début de la session</p>
-      </div>
-      <div className="rounded-xl border border-gray-100 bg-white p-4">
-        <div className="flex items-center justify-between mb-2">
-          <Activity className="w-4 h-4 text-afrilink-orange" />
-          <span className="text-[10px] font-medium bg-green-50 text-afrilink-green px-2 py-0.5 rounded-full">
-            ACTIVE
+
+      <div className="bg-allness-dark rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <Repeat className="w-5 h-5 text-blue-400" />
           </span>
+          <span className="text-sm text-gray-300">{t('tontines.numberOfPayments')}</span>
         </div>
-        <p className="text-[11px] text-gray-400">Progression du cycle</p>
-        <p className="text-lg font-bold text-gray-900">
-          Tour actuel: {currentTurn} / {totalTurns}
+        <p className="text-2xl font-bold text-white mb-2">{contributionsCount}</p>
+        <p className="text-xs text-gray-400">{t('tontines.totalSinceSessionStart')}</p>
+      </div>
+
+      <div className="bg-allness-dark rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-10 h-10 rounded-full bg-allness-orange/20 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-allness-orange" />
+          </span>
+          <span className="text-sm text-gray-300">{t('tontines.cycleProgression')}</span>
+        </div>
+        <p className="text-2xl font-bold text-white mb-2">
+          {t('tontines.currentTurn', { current: currentTurn, total: totalTurns })}
         </p>
+        <span className="inline-block text-[11px] font-medium bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">
+          ACTIVE
+        </span>
       </div>
     </div>
   );

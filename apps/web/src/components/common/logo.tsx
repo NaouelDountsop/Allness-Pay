@@ -6,13 +6,13 @@ interface LogoProps {
 export function Logo({ variant = 'light', className = '' }: LogoProps) {
   return (
     <div className={`flex flex-col items-center gap-1 ${className}`}>
-      <img src="/logo-afrilinkpay.svg" alt="AfrilinkPay" className="w-24 h-24 object-contain" />
+      <img src="/allnesspay_logo1.png" alt="AllnessPay" className="w-24 h-24 object-contain" />
       <span
         className={`text-2xl font-bold ${
-          variant === 'light' ? 'text-white' : 'text-afrilink-dark'
+          variant === 'light' ? 'text-white' : 'text-allness-dark'
         }`}
       >
-        Afrilink <span className="text-afrilink-orange">Pay</span>
+        Allness <span className="text-allness-orange">Pay</span>
       </span>
     </div>
   );

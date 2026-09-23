@@ -86,10 +86,10 @@ export function AddressInput({ countryCode, city, value, onChange, error }: Addr
     <div className="w-full space-y-1">
       <label className="text-sm font-medium text-gray-700">Adresse complète</label>
       <div ref={ref} className="relative">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray z-10" />
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray z-10" />
         <input
           type="text"
-          className={`w-full h-11 rounded-lg border pl-9 pr-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-afrilink-green ${
+          className={`w-full h-11 rounded-lg border pl-9 pr-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange ${
             error ? '!border-destructive' : 'border-gray-200'
           }`}
           placeholder={
@@ -124,7 +124,7 @@ export function AddressInput({ countryCode, city, value, onChange, error }: Addr
                   onClick={() => handleSelect(s)}
                   className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors flex items-start gap-2"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-afrilink-gray mt-0.5 shrink-0" />
+                  <MapPin className="w-3.5 h-3.5 text-allness-gray mt-0.5 shrink-0" />
                   <span className="text-gray-700 line-clamp-2">
                     {s.address?.neighbourhood || s.address?.suburb || s.address?.quarter}
                   </span>

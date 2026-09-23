@@ -1,14 +1,30 @@
 import { LinkedAccountOperator } from '../../modules/linked-account/enums/linked-account-operator.enum';
 
-const MTN_PREFIXES = ['650', '651', '652', '653', '654', '655', '656', '657', '658', '659'];
-const ORANGE_PREFIXES = ['690', '691', '692', '693', '694', '695', '696', '697', '698', '699'];
+/**
+ * Préfixes nationaux camerounais par opérateur.
+ *
+ * MTN Mobile Money  : 650-654, 670-679, 680-683
+ * Orange Money      : 640, 655-659, 686-689, 690-699
+ */
+const MTN_PREFIXES = [
+  '650', '651', '652', '653', '654',
+  '670', '671', '672', '673', '674', '675', '676', '677', '678', '679',
+  '680', '681', '682', '683',
+];
+
+const ORANGE_PREFIXES = [
+  '640',
+  '655', '656', '657', '658', '659',
+  '686', '687', '688', '689',
+  '690', '691', '692', '693', '694', '695', '696', '697', '698', '699',
+];
 
 /**
- * Extrait le préfixe national (6 chiffres) d'un numéro camerounais.
+ * Extrait le préfixe national (3 chiffres) d'un numéro camerounais.
  * Gère les formats :
- *  - 6XXYYYZZ   (national brut)
- *  - 237 6XXYYYZZ (avec indicatif pays)
- *  - +237 6XXYYYZZ (avec indicatif pays +)
+ *  - 6XXYYYZZ   (national brut, 9 chiffres)
+ *  - 237 6XXYYYZZ (avec indicatif pays, 12 chiffres)
+ *  - +237 6XXYYYZZ (avec indicatif pays +, 12 chiffres après suppression du +)
  */
 function extractNationalPrefix(phone: string): string | null {
   const digits = phone.replace(/\D/g, '');
@@ -46,4 +62,31 @@ export function detectOperator(phoneNumber: string): LinkedAccountOperator | nul
   }
 
   return null;
+}
+
+/**
+ * Normalise un numéro camerounais au format Campay : `237XXXXXXXXX` (digits only).
+ *
+ * Gère les formats :
+ *  - 6XXYYYZZ       → 2376XXYYYZZ
+ *  - 2376XXYYYZZ    → 2376XXYYYZZ
+ *  - +2376XXYYYZZ   → 2376XXYYYZZ
+ *  - 237 6XXYYYZZ   → 2376XXYYYZZ
+ */
+export function normalizePhoneForCampay(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+
+  if (digits.length === 9) {
+    return `237${digits}`;
+  }
+
+  if (digits.length === 12 && digits.startsWith('237')) {
+    return digits;
+  }
+
+  if (digits.length === 12 && !digits.startsWith('237')) {
+    return `237${digits.substring(digits.length - 9)}`;
+  }
+
+  return `237${digits}`;
 }

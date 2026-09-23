@@ -7,8 +7,8 @@ interface DayEvent {
 }
 
 const dotColor: Record<DayEvent['type'], string> = {
-  collecte: 'bg-afrilink-green',
-  levee: 'bg-afrilink-orange',
+  collecte: 'bg-allness-green',
+  levee: 'bg-allness-orange',
   retard: 'bg-red-500',
 };
 
@@ -94,7 +94,7 @@ export function ScheduleCalendarModal({
     .slice(0, 5);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-900">Calendrier des Échéances</h3>
@@ -158,10 +158,10 @@ export function ScheduleCalendarModal({
 
         <div className="flex items-center gap-4 text-[10px] text-gray-500 mb-4">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-afrilink-green" /> Cotisation
+            <span className="w-2 h-2 rounded-full bg-allness-green" /> Cotisation
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-afrilink-orange" /> Levée
+            <span className="w-2 h-2 rounded-full bg-allness-orange" /> Levée
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-red-500" /> Retard
@@ -177,9 +177,9 @@ export function ScheduleCalendarModal({
                   e.type === 'collecte' ? 'Cotisation' : e.type === 'levee' ? 'Levée' : 'Retard';
                 const color =
                   e.type === 'collecte'
-                    ? 'text-afrilink-green'
+                    ? 'text-allness-green'
                     : e.type === 'levee'
-                      ? 'text-afrilink-orange'
+                      ? 'text-allness-orange'
                       : 'text-red-500';
                 return (
                   <div
@@ -199,7 +199,7 @@ export function ScheduleCalendarModal({
 
         <button
           onClick={onClose}
-          className="w-full h-11 rounded-lg bg-afrilink-green hover:bg-afrilink-greenHover text-white text-sm font-medium transition-colors"
+          className="w-full h-11 rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-sm font-medium transition-colors"
         >
           Fermer le calendrier
         </button>

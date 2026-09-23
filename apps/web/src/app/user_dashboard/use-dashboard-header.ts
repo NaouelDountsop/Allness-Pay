@@ -10,7 +10,7 @@ export function useDashboardHeader() {
   });
 
   const firstName = user?.prenom ?? 'Utilisateur';
-  const fullName = user ? `${user.prenom} ${user.nom}` : 'Utilisateur Afrilink';
+  const fullName = user ? `${user.prenom} ${user.nom}` : 'Utilisateur Allness';
   const memberLabel = user?.profession || 'Membre';
 
   return { user, firstName, fullName, memberLabel };

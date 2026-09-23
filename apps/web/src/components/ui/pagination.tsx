@@ -20,7 +20,7 @@ export function Pagination({
     <div className="flex items-center justify-between pt-4">
       <button
         onClick={() => onChange?.(Math.max(1, page - 1))}
-        className="text-xs text-gray-500 hover:text-afrilink-dark disabled:opacity-40"
+        className="text-xs text-gray-500 hover:text-allness-dark disabled:opacity-40"
         disabled={page === 1}
       >
         Précédent
@@ -36,7 +36,7 @@ export function Pagination({
               key={p}
               onClick={() => onChange?.(p)}
               className={`w-6 h-6 rounded text-xs font-medium flex items-center justify-center transition-colors ${
-                p === page ? 'bg-afrilink-orange text-white' : 'text-gray-500 hover:bg-gray-100'
+                p === page ? 'bg-allness-orange text-white' : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
               {p}
@@ -46,7 +46,7 @@ export function Pagination({
       </div>
       <button
         onClick={() => onChange?.(Math.min(totalPages, page + 1))}
-        className="text-xs text-gray-500 hover:text-afrilink-dark disabled:opacity-40"
+        className="text-xs text-gray-500 hover:text-allness-dark disabled:opacity-40"
         disabled={page === totalPages}
       >
         Suivant

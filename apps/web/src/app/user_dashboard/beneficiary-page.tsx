@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   UserPlus,
@@ -10,184 +13,281 @@ import {
   ChevronDown,
   RotateCcw,
   MoreVertical,
-  ShieldCheck as SecureIcon,
   Link2,
+  Loader2,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 
 import { DashboardLayout } from '../../components/user_dashboard/dash-layout';
 import { DashboardHeader } from '../../components/user_dashboard/header';
-import { Badge } from '../../components/ui/badge';
+//import { Badge } from '../../components/ui/badge';
 import { Pagination } from '../../components/ui/pagination';
 import { AddBeneficiaryModal } from '../../components/user_dashboard/beneficiary/add-beneficiary-modal';
+import { beneficiaryService, type Beneficiary } from '../../lib/api/beneficiary.service';
+import { getFlagUrl } from '../../data/countries';
 
-interface Beneficiary {
-  initials: string;
-  avatarBg: string;
-  name: string;
-  favorite: boolean;
-  phone: string;
-  network: 'MTN Mobile Money' | 'Orange Money';
-  country: string;
-  nickname: string;
-  status: 'Vérifié' | 'En attente';
-  addedOn: string;
+const COUNTRY_MAP: Record<string, string> = {
+  CM: 'Cameroun',
+  SN: 'Sénégal',
+  CI: "Côte d'Ivoire",
+  GA: 'Gabon',
+  CG: 'Congo',
+  CD: 'Rép. Dém. du Congo',
+  NE: 'Niger',
+  ML: 'Mali',
+  BF: 'Burkina Faso',
+  TG: 'Togo',
+  BJ: 'Bénin',
+  GN: 'Guinée',
+  RW: 'Rwanda',
+  KE: 'Kenya',
+  GH: 'Ghana',
+  NG: 'Nigeria',
+  ZA: 'Afrique du Sud',
+  FR: 'France',
+  CA: 'Canada',
+  US: 'États-Unis',
+};
+
+function BeneficiaryActionsMenu({
+  beneficiary,
+  onEdit,
+  onDelete,
+  onToggleFavorite,
+}: {
+  beneficiary: Beneficiary;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggleFavorite: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node) && buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleToggle = () => {
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({ top: rect.bottom + 4, left: rect.right - 160 });
+    }
+    setOpen(!open);
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        onClick={handleToggle}
+        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-allness-dark"
+        aria-label={t('beneficiaries.moreOptions')}
+      >
+        <MoreVertical className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <div
+          ref={menuRef}
+          className="fixed w-40 rounded-lg border border-gray-100 bg-white shadow-lg overflow-hidden z-[9999]"
+          style={{ top: position.top, left: position.left }}
+        >
+          <button
+            onClick={() => {
+              onEdit();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            {t('beneficiaries.edit')}
+          </button>
+          <button
+            onClick={() => {
+              onDelete();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            {t('beneficiaries.delete')}
+          </button>
+          <button
+            onClick={() => {
+              onToggleFavorite();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Star className={`w-3.5 h-3.5 ${beneficiary.isFavorite ? 'text-yellow-400 fill-yellow-400' : ''}`} />
+            {beneficiary.isFavorite ? t('beneficiaries.removeFavorite') : t('beneficiaries.addFavorite')}
+          </button>
+        </div>
+      )}
+    </>
+  );
 }
 
-const BENEFICIARIES: Beneficiary[] = [
-  {
-    initials: 'AB',
-    avatarBg: 'bg-green-100 text-green-700',
-    name: 'Alain Belibi',
-    favorite: true,
-    phone: '+237 6 70 11 22 33',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Frère',
-    status: 'Vérifié',
-    addedOn: '12 mai 2024',
-  },
-  {
-    initials: 'FS',
-    avatarBg: 'bg-blue-100 text-blue-700',
-    name: 'Françoise Simo',
-    favorite: true,
-    phone: '+237 6 71 44 55 66',
-    network: 'Orange Money',
-    country: 'Cameroun',
-    nickname: 'Maman',
-    status: 'Vérifié',
-    addedOn: '08 mai 2024',
-  },
-  {
-    initials: 'JN',
-    avatarBg: 'bg-purple-100 text-purple-700',
-    name: 'Jean Nkodo',
-    favorite: false,
-    phone: '+237 6 72 77 88 99',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Collègue',
-    status: 'En attente',
-    addedOn: '05 mai 2024',
-  },
-  {
-    initials: 'CD',
-    avatarBg: 'bg-cyan-100 text-cyan-700',
-    name: 'Cédric Djoumessi',
-    favorite: false,
-    phone: '+237 6 73 10 20 30',
-    network: 'Orange Money',
-    country: 'Cameroun',
-    nickname: "Ami d'enfance",
-    status: 'Vérifié',
-    addedOn: '01 mai 2024',
-  },
-  {
-    initials: 'ML',
-    avatarBg: 'bg-pink-100 text-pink-700',
-    name: 'Marie Lontchi',
-    favorite: false,
-    phone: '+237 6 74 33 44 55',
-    network: 'MTN Mobile Money',
-    country: 'Cameroun',
-    nickname: 'Sœur',
-    status: 'Vérifié',
-    addedOn: '28 avr. 2024',
-  },
-];
+const NETWORK_LABELS: Record<string, string> = {
+  MTN_MOMO: 'MTN Mobile Money',
+  ORANGE_MONEY: 'Orange Money',
+  WAVE: 'Wave',
+  MOOV_MONEY: 'Moov Money',
+  AFRILINKPAY: 'AllnessPay',
+  AUTRE: 'Autre',
+};
 
-function NetworkBadge({ network }: { network: Beneficiary['network'] }) {
-  const isMtn = network === 'MTN Mobile Money';
+function NetworkBadge({ network }: { network: string }) {
+  const isMtn = network === 'MTN_MOMO';
+  const isOrange = network === 'ORANGE_MONEY';
+  const label = NETWORK_LABELS[network] ?? network;
   return (
     <div className="flex items-center gap-2">
       <span
         className={`w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold shrink-0 ${
-          isMtn ? 'bg-yellow-400 text-afrilink-dark' : 'bg-afrilink-orange text-white'
+          isMtn ? 'bg-yellow-400 text-allness-dark' : isOrange ? 'bg-orange-500 text-white' : 'bg-gray-400 text-white'
         }`}
       >
-        {isMtn ? 'MTN' : 'OM'}
+        {isMtn ? 'MTN' : isOrange ? 'OM' : label.slice(0, 2).toUpperCase()}
       </span>
-      <span className="text-xs text-gray-600">{network}</span>
+      <span className="text-xs text-gray-600">{label}</span>
     </div>
   );
 }
 
 export default function BeneficiariesPage() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const PAGE_SIZE = 5;
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ['beneficiaries'],
+    queryFn: beneficiaryService.list,
+  });
+
+  const beneficiaries = response?.data ?? [];
+  const filtered = beneficiaries.filter(
+    (b) =>
+      b.name.toLowerCase().includes(search.toLowerCase()) ||
+      b.phone.includes(search)
+  );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const handleSend = (b: Beneficiary) => {
+    const params = new URLSearchParams({
+      name: b.name,
+      walletNumber: b.phone,
+    });
+    navigate(`/dashboard/send?${params.toString()}`);
+  };
+
+  const stats = {
+    total: beneficiaries.length,
+    verified: beneficiaries.filter((b) => b.status === 'verified').length,
+    favorites: beneficiaries.filter((b) => b.isFavorite).length,
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <DashboardHeader />
 
       <div>
-        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-afrilink-dark mb-1">
-              Gestion des Bénéficiaires
+            <h1 className="text-xl sm:text-2xl font-bold text-allness-dark mb-1">
+              {t('beneficiaries.pageTitle')}
             </h1>
             <p className="text-sm text-gray-400">
-              Ajoutez, gérez et transférez de l'argent à vos bénéficiaires en toute simplicité.
+              {t('beneficiaries.pageDescription')}
             </p>
           </div>
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setAddModalOpen(true)}
-              className="h-10 px-4 rounded-lg bg-afrilink-green text-white text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+              className="group relative h-10 rounded-lg bg-allness-green text-white text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:opacity-90 transition-opacity"
             >
               <Plus className="w-4 h-4" />
-              Ajouter un bénéficiaire
+              <span className="hidden sm:inline ml-2">{t('beneficiaries.addBeneficiary')}</span>
+              <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                {t('beneficiaries.add')}
+              </span>
             </button>
-            <button className="h-9 px-4 rounded-lg border border-afrilink-green bg-white text-gray-600 text-xs font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors">
-              <UserPlus className="w-3.5 h-3.5" />
-              Importer depuis les contacts
+            <button className="group relative h-10 rounded-lg border border-allness-green bg-white text-gray-600 text-sm font-medium flex items-center justify-center sm:px-4 px-0 w-10 sm:w-auto hover:bg-gray-50 transition-colors">
+              <UserPlus className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">{t('beneficiaries.importFromContacts')}</span>
+              <span className="sm:hidden absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#082B37] text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                {t('beneficiaries.import')}
+              </span>
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <Users className="w-5 h-5 text-blue-400" />
               </span>
-              <span className="text-sm text-gray-300">Total bénéficiaires</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.totalBeneficiaries')}</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">24</p>
-            <p className="text-xs text-green-400">↗ 12% ce mois</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.total}</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-green-400" />
               </span>
-              <span className="text-sm text-gray-300">Bénéficiaires vérifiés</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.verifiedBeneficiaries')}</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">20</p>
-            <p className="text-xs text-orange-400">83% du total</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.verified}</p>
+            <p className="text-xs text-orange-400">
+              {t('beneficiaries.percentOfTotal', { percent: stats.total > 0 ? Math.round((stats.verified / stats.total) * 100) : 0 })}
+            </p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                 <Send className="w-5 h-5 text-green-400" />
               </span>
-              <span className="text-sm text-gray-300">Transferts ce mois</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.transfersThisMonth')}</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">42</p>
-            <p className="text-xs text-gray-400">1 245 000 FCFA</p>
+            <p className="text-2xl font-bold text-white mb-2">—</p>
           </div>
 
-          <div className="bg-afrilink-dark rounded-2xl p-5">
+          <div className="bg-allness-dark rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
                 <Star className="w-5 h-5 text-amber-400" />
               </span>
-              <span className="text-sm text-gray-300">Bénéficiaires favoris</span>
+              <span className="text-sm text-gray-300">{t('beneficiaries.favoriteBeneficiaries')}</span>
             </div>
-            <p className="text-2xl font-bold text-white mb-2">8</p>
-            <p className="text-xs text-gray-400">Depuis la création</p>
+            <p className="text-2xl font-bold text-white mb-2">{stats.favorites}</p>
           </div>
         </div>
 
@@ -195,35 +295,51 @@ export default function BeneficiariesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3 items-end">
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">
-                Rechercher
+                {t('beneficiaries.search')}
               </label>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Nom, numéro..."
-                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+                  placeholder={t('beneficiaries.searchPlaceholder')}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-allness-orange"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Statut</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">{t('beneficiaries.status')}</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
+                {t('beneficiaries.all')}
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
             </div>
-            <div>
+            {/* <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Réseau</label>
+              <select
+                value={networkFilter}
+                onChange={(e) => setNetworkFilter(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+              >
+                <option value="all">Tous</option>
+                <option value="MTN_MOMO">MTN Mobile Money</option>
+                <option value="ORANGE_MONEY">Orange Money</option>
+                <option value="WAVE">Wave</option>
+                <option value="FREE_MONEY">Free Money</option>
+                <option value="MOOV_MONEY">Moov Money</option>
+                <option value="AIRTEL_MONEY">Airtel Money</option>
+              </select>
+            </div>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
                 Tous
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
-            </div>
+            </div> */}
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">Pays</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1.5">{t('beneficiaries.country')}</label>
               <button className="w-full h-10 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-                Tous
+                {t('beneficiaries.all')}
                 <ChevronDown className="w-3.5 h-3.5 text-gray-300" />
               </button>
             </div>
@@ -232,120 +348,166 @@ export default function BeneficiariesPage() {
           <div className="flex items-center justify-end gap-2 mb-5">
             <button className="h-9 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium flex items-center gap-1.5 hover:bg-gray-50 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" />
-              Réinitialiser
+              <span className="hidden sm:inline">{t('beneficiaries.reset')}</span>
             </button>
-            <button className="h-9 px-5 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
-              Filtrer
+            <button className="h-9 px-5 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90 transition-opacity">
+              {t('beneficiaries.filter')}
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full text-sm min-w-[580px]">
               <thead>
                 <tr className="text-left text-[11px] text-gray-400 border-b border-gray-100">
-                  <th className="font-medium pb-3">Bénéficiaire</th>
-                  <th className="font-medium pb-3">Numéro</th>
-                  <th className="font-medium pb-3">Réseau</th>
-                  <th className="font-medium pb-3">Pays</th>
-                  <th className="font-medium pb-3">Statut</th>
-                  <th className="font-medium pb-3">Ajouté le</th>
-                  <th className="font-medium pb-3 text-right">Actions</th>
+                  <th className="font-medium pb-3">{t('beneficiaries.beneficiary')}</th>
+                  <th className="font-medium pb-3 hidden sm:table-cell">{t('beneficiaries.walletNumber')}</th>
+                  <th className="font-medium pb-3 hidden md:table-cell">{t('beneficiaries.network')}</th>
+                  <th className="font-medium pb-3 hidden lg:table-cell">{t('beneficiaries.country')}</th>
+                  {/* <th className="font-medium pb-3">Statut</th> */}
+                  <th className="font-medium pb-3 hidden xl:table-cell">{t('beneficiaries.addedOn')}</th>
+                  <th className="font-medium pb-3 text-right">{t('beneficiaries.actions')}</th>
                 </tr>
               </thead>
               <tbody>
-                {BENEFICIARIES.map((b) => (
-                  <tr key={b.phone} className="border-b border-gray-50 last:border-0">
-                    <td>
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold ${b.avatarBg}`}
-                        >
-                          {b.initials}
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                          <p className="text-xs font-medium text-afrilink-dark">{b.name}</p>
-                          {b.favorite && (
-                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                          )}
+                {paginated.map((b) => {
+                  const countryKey = Object.entries(COUNTRY_MAP).find(
+                    ([, name]) => name === b.country,
+                  )?.[0];
+                  const initials = b.name
+                    .split(' ')
+                    .filter((w) => w.length > 0)
+                    .map((w) => w[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
+                  return (
+                    <tr key={b.id} className="border-b border-gray-50 last:border-0">
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-full bg-allness-orange/10 text-allness-orange flex items-center justify-center text-[11px] font-semibold shrink-0">
+                            {initials}
+                          </span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <p className="text-xs font-medium text-allness-dark truncate">{b.name}</p>
+                            {b.isFavorite && (
+                              <Star className="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="text-xs text-gray-600">{b.phone}</td>
-                    <td>
-                      <NetworkBadge network={b.network} />
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                        {b.country}
-                      </div>
-                    </td>
-                    <td>
-                      <Badge tone={b.status === 'Vérifié' ? 'green' : 'orange'} dot>
-                        {b.status}
-                      </Badge>
-                    </td>
-                    <td className="text-xs text-gray-500">{b.addedOn}</td>
-                    <td>
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Envoyer de l'argent"
+                      </td>
+                      <td className="text-xs text-gray-600 hidden sm:table-cell">{b.phone}</td>
+                      <td className="hidden md:table-cell">
+                        <NetworkBadge network={b.network} />
+                      </td>
+                      <td className="hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                          {countryKey && (
+                            <img
+                              src={getFlagUrl(countryKey)}
+                              alt={b.country}
+                              className="w-4 h-3 rounded-sm object-cover"
+                            />
+                          )}
+                          {b.country}
+                        </div>
+                      </td>
+                      {/* <td>
+                        <Badge
+                          tone={
+                            b.status === 'verified'
+                              ? 'green'
+                              : b.status === 'pending'
+                                ? 'orange'
+                                : 'red'
+                          }
+                          dot
                         >
-                          <Send className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-afrilink-dark"
-                          aria-label="Plus d'options"
-                        >
-                          <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                          {b.status === 'verified'
+                            ? 'Vérifié'
+                            : b.status === 'pending'
+                              ? 'En attente'
+                              : 'Rejeté'}
+                        </Badge>
+                      </td> */}
+                      <td className="text-xs text-gray-500 hidden xl:table-cell">
+                        {new Date(b.createdAt).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleSend(b)}
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-allness-green hover:bg-allness-green/10 transition-colors"
+                            aria-label={t('beneficiaries.sendMoney')}
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                          </button>
+                          <BeneficiaryActionsMenu
+                            beneficiary={b}
+                            onEdit={() => { /* TODO: open edit modal */ }}
+                            onDelete={() => { /* TODO: open delete confirm */ }}
+                            onToggleFavorite={() => { /* TODO: toggle favorite */ }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                      {t('beneficiaries.noResult')}
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="flex items-center justify-between mt-5">
-            <p className="text-xs text-gray-400">Affichage de 1 à 5 sur 24 bénéficiaires</p>
-            <Pagination page={page} totalPages={5} onChange={setPage} />
+            <p className="text-xs text-gray-400">
+              {t('beneficiaries.showingCount', { count: filtered.length })}
+            </p>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-5 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <SecureIcon className="w-4.5 h-4.5 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">Transferts sécurisés</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">{t('beneficiaries.securedTransfers')}</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Vos transferts sont protégés par un chiffrement de bout en bout.
+                {t('beneficiaries.securedTransfersDesc')}
               </p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4.5 h-4.5 text-afrilink-green" />
+              <ShieldCheck className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">
-                Vérification des bénéficiaires
+              <p className="text-xs font-semibold text-allness-dark mb-1">
+                {t('beneficiaries.beneficiaryVerification')}
               </p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Assurez-vous que les informations sont correctes avant d'effectuer un transfert.
+                {t('beneficiaries.beneficiaryVerificationDesc')}
               </p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-              <Link2 className="w-4.5 h-4.5 text-afrilink-green" />
+              <Link2 className="w-4 h-4 text-allness-green" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-afrilink-dark mb-1">Gestion simplifiée</p>
+              <p className="text-xs font-semibold text-allness-dark mb-1">{t('beneficiaries.simplifiedManagement')}</p>
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Ajoutez, modifiez ou supprimez vos bénéficiaires à tout moment.
+                {t('beneficiaries.simplifiedManagementDesc')}
               </p>
             </div>
           </div>

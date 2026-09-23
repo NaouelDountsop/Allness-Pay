@@ -1,172 +1,501 @@
-import { ArrowRight, Users, ShieldCheck, Lock, RefreshCw, Bell, TrendingUp } from 'lucide-react';
+import {
+  ArrowRight,
+  Users,
+  ShieldCheck,
+  Lock,
+  RefreshCw,
+  Bell,
+  TrendingUp,
+} from "lucide-react";
 
-const PIGGY_IMG =
-  'https://media.base44.com/images/public/6a79f10b5afc47c1eeaa932f/9f042be5e_generated_image.png';
+
+const PIGGY_IMG = "/piggy-tontine.png";
 
 const STATS = [
   {
     icon: ShieldCheck,
-    title: '100% Transparent',
-    desc: 'Suivi en temps réel de toutes les opérations',
+    title: "100% Transparent",
+    desc: "Suivi en temps réel de toutes les opérations",
   },
   {
     icon: Lock,
-    title: 'Sécurisé Garanti',
-    desc: 'Vos fonds protégés et sécurisés',
+    title: "Sécurisé Garanti",
+    desc: "Vos fonds protégés et sécurisés",
   },
   {
     icon: RefreshCw,
-    title: 'Flexible Cycle libre',
-    desc: 'Tontines adaptées à vos besoins',
+    title: "Flexible Cycle libre",
+    desc: "Tontines adaptées à vos besoins",
   },
 ];
 
 const FEATURES = [
   {
     icon: Users,
-    title: 'Créez ou rejoignez',
-    desc: 'une tontine en quelques clics',
+    title: "Créez ou rejoignez",
+    desc: "une tontine en quelques clics",
   },
   {
     icon: ShieldCheck,
-    title: 'Invitez et gérez',
-    desc: 'les membres facilement',
+    title: "Invitez et gérez",
+    desc: "les membres facilement",
   },
   {
     icon: Bell,
-    title: 'Notifications',
-    desc: 'à chaque étape clé',
+    title: "Notifications",
+    desc: "à chaque étape clé",
   },
   {
     icon: TrendingUp,
-    title: 'Réseau de confiance',
-    desc: 'pour plus de sérénité',
+    title: "Réseau de confiance",
+    desc: "pour plus de sérénité",
   },
 ];
 
 export default function Tontines() {
   return (
-    <section id="tontines" className="bg-muted py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        {/* Top part: text + image */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: text content */}
-          <div className="animate-fade-up">
-            {/* Badge */}
-            <span className="inline-flex items-center gap-2 bg-afrilink-dark text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider">
-              <Users className="h-3.5 w-3.5" />
-              Épargnez ensemble, réalisez plus
-            </span>
+    <section
+      id="tontines"
+      className="relative overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
+    >
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
 
-            {/* Headline */}
-            <h2 className="mt-6 font-heading font-extrabold text-[clamp(2rem,4.5vw,3.25rem)] text-balance leading-tight">
-              <span className="text-afrilink-dark">Tontines </span>
-              <span className="text-afrilink-orange">Digitales</span>
+        {/* =========================================================
+            HERO : TEXTE À GAUCHE / IMAGE À DROITE
+        ========================================================== */}
+        <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8">
+
+          {/* =====================================================
+              COLONNE GAUCHE
+          ====================================================== */}
+          <div className="relative z-10">
+
+            {/* Badge */}
+            <div className="inline-flex items-center gap-3 rounded-full bg-allness-green/10 px-5 py-3">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full text-allness-dark">
+                <Users className="h-5 w-5" />
+              </span>
+
+              <span className="text-xs font-bold uppercase tracking-wide text-allness-dark sm:text-sm">
+                Épargnez ensemble, réalisez plus
+              </span>
+            </div>
+
+            {/* Titre */}
+            <h2
+              className="
+                mt-7
+                max-w-xl
+                font-heading
+                text-[clamp(3rem,6vw,5.4rem)]
+                font-extrabold
+                leading-[0.95]
+                tracking-tight
+              "
+            >
+              <span className="block text-allness-dark">
+                Tontines
+              </span>
+
+              <span className="block text-allness-orange">
+                Digitales
+              </span>
             </h2>
 
             {/* Description */}
-            <p className="mt-5 text-foreground/70 text-base lg:text-lg leading-relaxed max-w-lg">
-              Épargnez à plusieurs, atteignez vos objectifs plus vite. Notre plateforme de tontines
-              digitales sécurisée et transparente vous permet de bâtir votre avenir ensemble.
+            <p
+              className="
+                mt-7
+                max-w-xl
+                text-base
+                leading-7
+                text-foreground/70
+                sm:text-lg
+                sm:leading-8
+              "
+            >
+              Épargnez à plusieurs, atteignez vos objectifs plus vite.
+              Notre plateforme de tontines digitales sécurisée et
+              transparente vous permet de bâtir votre avenir ensemble.
             </p>
 
-            {/* Button */}
+            {/* Bouton */}
             <a
               href="#tontines"
-              className="mt-8 inline-flex items-center gap-2 bg-afrilink-green text-white font-semibold px-6 py-3 rounded-full hover:bg-afrilink-greenHover transition-all duration-300 hover:scale-105 active:scale-95"
+              className="
+                mt-7
+                inline-flex
+                items-center
+                gap-3
+                rounded-full
+                bg-allness-green
+                px-7
+                py-4
+                text-sm
+                font-bold
+                text-white
+                shadow-sm
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-allness-greenHover
+                hover:shadow-lg
+              "
             >
-              En savoir plus <ArrowRight className="h-4 w-4" />
+              En savoir plus
+
+              <ArrowRight className="h-5 w-5" />
             </a>
 
-            {/* 3 stat cards */}
-            <div className="mt-10 grid grid-cols-3 gap-4 max-w-lg">
-              {STATS.map((s) => {
-                const Icon = s.icon;
+            {/* =================================================
+                3 STATISTIQUES
+            ================================================== */}
+            <div className="mt-8 grid max-w-[680px] grid-cols-1 gap-3 sm:grid-cols-3">
+
+              {STATS.map((stat) => {
+                const Icon = stat.icon;
+
                 return (
                   <div
-                    key={s.title}
-                    className="bg-white rounded-xl p-4 border border-border hover:shadow-md transition-shadow"
+                    key={stat.title}
+                    className="
+                      rounded-2xl
+                      border
+                      border-allness-dark/10
+                      bg-white
+                      p-5
+                      shadow-[0_8px_30px_rgba(8,43,55,0.06)]
+                      transition-all
+                      duration-300
+                      hover:-translate-y-1
+                      hover:shadow-[0_15px_35px_rgba(8,43,55,0.10)]
+                    "
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-afrilink-green/10">
-                      <Icon className="h-5 w-5 text-afrilink-green" />
-                    </span>
-                    <p className="mt-3 font-heading font-bold text-sm text-afrilink-dark leading-tight">
-                      {s.title}
+                    {/* Icon */}
+                    <div
+                      className="
+                        flex
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-allness-green/10
+                      "
+                    >
+                      <Icon className="h-5 w-5 text-allness-green" />
+                    </div>
+
+                    {/* Titre */}
+                    <p
+                      className="
+                        mt-4
+                        font-heading
+                        text-sm
+                        font-extrabold
+                        leading-5
+                        text-allness-dark
+                      "
+                    >
+                      {stat.title}
                     </p>
-                    <p className="mt-1 text-[11px] text-foreground/55 leading-relaxed">{s.desc}</p>
+
+                    {/* Description */}
+                    <p
+                      className="
+                        mt-2
+                        text-xs
+                        leading-5
+                        text-foreground/60
+                      "
+                    >
+                      {stat.desc}
+                    </p>
                   </div>
                 );
               })}
             </div>
 
-            {/* Highlighted card */}
-            <div className="mt-6 bg-afrilink-green/5 border border-afrilink-green/20 rounded-xl p-4 flex items-center gap-4 max-w-lg">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-afrilink-green/10">
-                <Users className="h-5 w-5 text-afrilink-green" />
-              </span>
-              <div className="flex-1">
-                <p className="font-heading font-bold text-sm text-afrilink-dark">
+            {/* =================================================
+                CARTE RYTHME
+            ================================================== */}
+            <div
+              className="
+                mt-4
+                flex
+                max-w-[680px]
+                items-center
+                gap-4
+                rounded-2xl
+                border
+                border-allness-green/10
+                bg-allness-green/[0.045]
+                px-5
+                py-4
+                transition-all
+                duration-300
+                hover:bg-allness-green/[0.08]
+              "
+            >
+              {/* Icon */}
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-allness-green/10
+                "
+              >
+                <Users className="h-6 w-6 text-allness-dark" />
+              </div>
+
+              {/* Texte */}
+              <div className="min-w-0 flex-1">
+                <p
+                  className="
+                    font-heading
+                    text-sm
+                    font-extrabold
+                    text-allness-dark
+                    sm:text-base
+                  "
+                >
                   Tontines hebdomadaires ou mensuelles
                 </p>
-                <p className="text-xs text-foreground/55">
+
+                <p className="mt-1 text-xs text-foreground/60 sm:text-sm">
                   Choisissez le rythme qui vous convient le mieux.
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-afrilink-orange shrink-0" />
-            </div>
-          </div>
 
-          {/* Right: piggy bank image */}
-          <div className="relative animate-fade-up" style={{ animationDelay: '150ms' }}>
-            <div className="relative mx-auto max-w-md">
-              {/* Green circle background */}
-              <div className="absolute inset-4 bg-afrilink-green/10 rounded-full blur-2xl" />
-              <div className="absolute top-10 right-10 w-64 h-64 bg-afrilink-green/8 rounded-full" />
-              {/* Dotted arc decoration */}
-              <svg
-                className="absolute -top-6 -right-4 w-32 h-24 overflow-visible"
-                viewBox="0 0 120 80"
-              >
-                <path
-                  d="M10 70 Q 60 -10, 110 40"
-                  stroke="#D28E2F"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeDasharray="4 4"
-                  className="animate-dash"
-                />
-              </svg>
-              <img
-                src={PIGGY_IMG}
-                alt="Tirelire digitale avec des pièces et plantes"
-                className="relative rounded-3xl w-full animate-float"
+              {/* Arrow */}
+              <ArrowRight
+                className="
+                  h-6
+                  w-6
+                  shrink-0
+                  text-allness-orange
+                "
               />
             </div>
           </div>
+
+          {/* =====================================================
+              COLONNE DROITE : IMAGE
+          ====================================================== */}
+          <div
+            className="
+              relative
+              flex
+              min-h-[500px]
+              items-center
+              justify-center
+              lg:min-h-[680px]
+            "
+          >
+
+            {/* Grand cercle lumineux */}
+            {/* <div
+              className="
+                absolute
+                right-[3%]
+                top-[8%]
+                h-[80%]
+                w-[80%]
+                rounded-full
+                bg-allness-green/[0.07]
+                blur-[2px]
+              "
+            /> */}
+
+            {/* Halo */}
+            {/* <div
+              className="
+                absolute
+                right-[12%]
+                top-[15%]
+                h-[65%]
+                w-[65%]
+                rounded-full
+                bg-allness-green/[0.06]
+                blur-3xl
+              "
+            /> */}
+
+            {/* Cercle décoratif orange */}
+            {/* <div
+              className="
+                absolute
+                right-[7%]
+                top-[5%]
+                h-[78%]
+                w-[78%]
+                rounded-full
+                border-2
+                border-dashed
+                border-allness-orange/70
+              "
+            /> */}
+
+            {/* Petite flèche décorative */}
+            {/* <div
+              className="
+                absolute
+                right-[9%]
+                top-[4%]
+                z-10
+                rotate-[-20deg]
+                text-allness-orange
+              "
+            >
+              <ArrowRight className="h-8 w-8" />
+            </div> */}
+
+            {/* Petits points */}
+            {/* <div
+              className="
+                absolute
+                right-0
+                top-[18%]
+                grid
+                grid-cols-4
+                gap-3
+                opacity-40
+              "
+            >
+              {Array.from({ length: 20 }).map((_, index) => (
+                <span
+                  key={index}
+                  className="
+                    h-2
+                    w-2
+                    rounded-full
+                    bg-allness-green/30
+                  "
+                />
+              ))}
+            </div> */}
+
+            {/* Illustration */}
+            <img
+              src={PIGGY_IMG}
+              alt="Tirelire digitale AllnessPay"
+              className="
+                relative
+                z-10
+                w-full
+                max-w-[720px]
+                object-contain
+                drop-shadow-[0_25px_35px_rgba(8,43,55,0.12)]
+                transition-transform
+                duration-500
+                hover:scale-[1.02]
+              "
+            />
+          </div>
         </div>
 
-        {/* Bottom: 4 feature items */}
-        <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {FEATURES.map((f) => {
-            const Icon = f.icon;
-            return (
-              <div
-                key={f.title}
-                className="flex items-center gap-3 bg-white rounded-xl p-4 border border-border hover:shadow-md hover:border-afrilink-green/30 transition-all duration-300 cursor-pointer group"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-afrilink-dark group-hover:bg-afrilink-green transition-colors duration-300">
-                  <Icon className="h-5 w-5 text-afrilink-orange" />
-                </span>
-                <div>
-                  <p className="font-heading font-bold text-sm text-afrilink-dark group-hover:text-afrilink-green transition-colors duration-300">
-                    {f.title}
-                  </p>
-                  <p className="text-[11px] text-foreground/55">{f.desc}</p>
+        {/* =========================================================
+            FEATURES : GRANDE BARRE HORIZONTALE
+        ========================================================== */}
+        <div
+          className="
+            relative
+            z-20
+            mt-12
+            overflow-hidden
+            rounded-3xl
+            border
+            border-allness-dark/10
+            bg-white
+            shadow-[0_10px_35px_rgba(8,43,55,0.07)]
+          "
+        >
+          <div className="grid grid-cols-1 divide-y divide-allness-dark/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+
+            {FEATURES.map((feature) => {
+              const Icon = feature.icon;
+
+              return (
+                <div
+                  key={feature.title}
+                  className="
+                    group
+                    flex
+                    items-center
+                    gap-4
+                    px-6
+                    py-6
+                    transition-all
+                    duration-300
+                    hover:bg-allness-green/[0.035]
+                  "
+                >
+
+                  {/* Icon */}
+                  <div
+                    className="
+                      flex
+                      h-14
+                      w-14
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-allness-green/10
+                      transition-all
+                      duration-300
+                      group-hover:scale-105
+                      group-hover:bg-allness-green/15
+                    "
+                  >
+                    <Icon
+                      className="
+                        h-6
+                        w-6
+                        text-allness-dark
+                        transition-colors
+                        duration-300
+                        group-hover:text-allness-green
+                      "
+                    />
+                  </div>
+
+                  {/* Texte */}
+                  <div>
+                    <p
+                      className="
+                        font-heading
+                        text-sm
+                        font-extrabold
+                        text-allness-dark
+                      "
+                    >
+                      {feature.title}
+                    </p>
+
+                    <p
+                      className="
+                        mt-1
+                        text-xs
+                        leading-5
+                        text-foreground/60
+                        sm:text-sm
+                      "
+                    >
+                      {feature.desc}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+
       </div>
     </section>
   );

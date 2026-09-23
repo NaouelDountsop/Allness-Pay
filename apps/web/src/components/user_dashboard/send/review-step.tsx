@@ -1,6 +1,16 @@
-import { EXCHANGE_RATE_CAD_XAF, mockRecentTransfers } from '@/lib/mock/send-money-data';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { getCountryByCode, getFlagUrl } from '@/data/countries';
-import { Info, ArrowLeft } from 'lucide-react';
+import { transactionService, type WalletTransaction } from '@/lib/api/transaction.service';
+import { formatAmount, getCurrencySymbol } from '@/lib/utils';
+import { Info, ArrowLeft, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+
+const COUNTRY_TO_CURRENCY: Record<string, string> = {
+  CM: 'XAF', GA: 'XAF', CG: 'XAF', TD: 'XAF', CF: 'XAF', GQ: 'XAF',
+  SN: 'XOF', CI: 'XOF', NE: 'XOF', ML: 'XOF', BF: 'XOF', TG: 'XOF', BJ: 'XOF',
+  CA: 'CAD',
+  FR: 'EUR', BE: 'EUR', CH: 'EUR', DE: 'EUR',
+};
 
 interface ReviewStepProps {
   beneficiaryContact: string;
@@ -8,25 +18,26 @@ interface ReviewStepProps {
   countryCode: string;
   receptionMode: string;
   amount: number;
+  exchangeRate?: number | null;
   onSend: () => void;
   onBack: () => void;
+  sender?: {
+    fullName: string;
+    city?: string;
+    country?: string;
+    currency?: string;
+    walletId?: string;
+  };
+  beneficiaryName?: string;
+  beneficiaryCurrency?: string;
 }
 
 const RECEPTION_LABELS: Record<string, string> = {
-  wallet: 'Wallet AfriLinkPay',
+  wallet: 'Wallet AllnessPay',
   mtn: 'MTN Mobile Money',
   orange: 'Orange Money',
   bank: 'Compte bancaire',
 };
-
-interface ReviewStepProps {
-  beneficiaryContact: string;
-  senderCountryCode: string;
-  countryCode: string;
-  amount: number;
-  onSend: () => void;
-  onBack: () => void;
-}
 
 export function ReviewStep({
   beneficiaryContact,
@@ -34,47 +45,48 @@ export function ReviewStep({
   countryCode,
   receptionMode,
   amount,
+  exchangeRate: dbRate,
   onSend,
   onBack,
+  sender,
+  beneficiaryName,
+  beneficiaryCurrency,
 }: ReviewStepProps) {
-  const received = amount * EXCHANGE_RATE_CAD_XAF;
+  const { t } = useTranslation();
+  const senderCurrency = sender?.currency ?? 'CAD';
+  const receiverCurrency = beneficiaryCurrency ?? (COUNTRY_TO_CURRENCY[countryCode] ?? 'XAF');
+  const exchangeRate = dbRate != null ? Number(dbRate) : (senderCurrency === receiverCurrency ? 1 : null);
+  const totalDebit = amount;
+  const received = exchangeRate ? amount * exchangeRate : 0;
+
   const senderCountry = getCountryByCode(senderCountryCode);
-  const senderCountryName = senderCountry?.name?.toUpperCase() ?? 'EXPÉDITEUR';
+  const senderCountryName = senderCountry?.name ?? 'Expéditeur';
   const country = getCountryByCode(countryCode);
-  const countryName = country?.name?.toUpperCase() ?? 'PAYS INCONNU';
-  const currency =
-    countryCode === 'CM' || countryCode === 'GA' || countryCode === 'CG' || countryCode === 'CD'
-      ? 'XAF'
-      : countryCode === 'SN' ||
-          countryCode === 'CI' ||
-          countryCode === 'NE' ||
-          countryCode === 'ML' ||
-          countryCode === 'BF' ||
-          countryCode === 'TG' ||
-          countryCode === 'BJ'
-        ? 'XOF'
-        : countryCode === 'FR'
-          ? 'EUR'
-          : countryCode === 'US' || countryCode === 'CA'
-            ? 'USD'
-            : 'XAF';
+  const countryName = country?.name ?? 'Pays inconnu';
+
+  const { data: recentTransactions = [] } = useQuery({
+    queryKey: ['transactions-review', sender?.walletId],
+    queryFn: () => transactionService.listByWallet(sender!.walletId!),
+    enabled: !!sender?.walletId,
+    retry: false,
+  });
+
+  const lastFive = recentTransactions.slice(0, 5);
 
   return (
     <div className="text-base">
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark hover:text-afrilink-orange transition-colors mb-5"
+        className="flex items-center gap-2 text-sm font-semibold text-allness-dark hover:text-allness-orange transition-colors mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
-        Retour
+        {t('tontines.back')}
       </button>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
-        <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-500" />
+      <div className="flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 text-orange-800 p-5 mb-6 text-sm md:text-base leading-relaxed">
+        <Info className="w-5 h-5 shrink-0 mt-0.5 text-allness-orange" />
         <p>
-          <span className="font-semibold">L'expéditeur doit vérifier</span> l'exactitude des
-          informations du bénéficiaire (nom, numéro) avant de valider l'opération. Aucun
-          remboursement ne sera effectué si les fonds sont envoyés à un tiers par erreur.
+          <span className="font-semibold">{t('tontines.senderMustVerify')}</span> {t('tontines.verifyInfoDescription')}
         </p>
       </div>
 
@@ -87,117 +99,147 @@ export function ReviewStep({
               <img
                 src={getFlagUrl(senderCountry.code)}
                 alt={senderCountry.name}
-                className="w-8 h-auto rounded-sm object-cover"
+                className="w-8 h-6 rounded-sm object-cover"
               />
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
-                Expéditeur
+                {t('tontines.sender')}
               </p>
-              <p className="text-sm text-gray-500">{senderCountryName}</p>
+              <p className="text-sm font-medium text-gray-700">{senderCountryName}</p>
             </div>
           </div>
-          <p className="text-lg font-semibold text-gray-800">Jean Dupont</p>
-          <p className="text-sm text-gray-500">CAD · Toronto, ON</p>
+          <p className="text-lg font-semibold text-gray-800">
+            {sender?.fullName ?? 'Utilisateur'}
+          </p>
+          <p className="text-sm text-gray-500">
+            {senderCurrency} · {sender?.city ?? ''}
+          </p>
         </div>
 
         {/* Bénéficiaire */}
-        <div className="rounded-2xl border-2 border-afrilink-green/30 p-5 bg-afrilink-green/[0.02]">
+        <div className="rounded-2xl border-2 border-allness-green/30 p-5 bg-allness-green/[0.02]">
           <div className="flex items-center gap-3 mb-3">
             {country && (
               <img
                 src={getFlagUrl(country.code)}
                 alt={country.name}
-                className="w-8 h-auto rounded-sm object-cover"
+                className="w-8 h-6 rounded-sm object-cover"
               />
             )}
             <div>
               <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
-                Bénéficiaire
+                {t('tontines.beneficiary')}
               </p>
-              <p className="text-sm text-gray-500">{countryName}</p>
+              <p className="text-sm font-medium text-gray-700">{countryName}</p>
             </div>
           </div>
           <p className="text-lg font-semibold text-gray-800">
-            {beneficiaryContact || 'Marie-Thérèse Ngono'}
+            {beneficiaryName || beneficiaryContact || 'Bénéficiaire'}
           </p>
-          <p className="text-sm text-gray-500">{currency}</p>
+          {beneficiaryName && beneficiaryContact && (
+            <p className="text-sm text-gray-500">{beneficiaryContact}</p>
+          )}
+          <p className="text-sm text-gray-500">{receiverCurrency}</p>
         </div>
       </div>
 
       {/* Mode de réception */}
-      <div className="mb-5 rounded-xl border-2 border-afrilink-green/20 bg-afrilink-green/[0.03] p-4">
+      <div className="mb-5 rounded-xl border-2 border-allness-green/20 bg-allness-green/[0.03] p-4">
         <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1">
-          Mode de réception
+          {t('tontines.receptionMode')}
         </p>
-        <p className="text-base font-semibold text-afrilink-dark">
-          {RECEPTION_LABELS[receptionMode] ?? 'Wallet AfriLinkPay'}
+        <p className="text-base font-semibold text-allness-dark">
+          {RECEPTION_LABELS[receptionMode] ?? 'Wallet AllnessPay'}
         </p>
       </div>
 
+      {/* Vous envoyez */}
       <div className="mb-4">
-        <p className="text-sm text-gray-500 mb-1">Vous envoyez</p>
-        <p className="text-2xl md:text-3xl font-bold text-gray-800">{amount.toFixed(2)} CAD</p>
+        <p className="text-sm text-gray-500 mb-1">{t('tontines.youSend')}</p>
+        <p className="text-2xl md:text-3xl font-bold text-gray-800">
+          {formatAmount(amount, senderCurrency)}
+        </p>
       </div>
 
-      <div className="space-y-3 mb-6 text-base">
-        <div className="flex items-center justify-between text-gray-600">
-          <span className="font-medium">Taux de change</span>
-          <span>
-            1 CAD = {EXCHANGE_RATE_CAD_XAF.toFixed(2)} {currency}
+      {/* Taux + Frais + Total */}
+      <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 mb-4 space-y-3">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <span className="font-medium">{t('tontines.exchangeRate')}</span>
+          <span className="text-allness-dark dark:text-white font-semibold">
+            {exchangeRate
+              ? `1 ${getCurrencySymbol(senderCurrency)} = ${exchangeRate.toFixed(4)} ${getCurrencySymbol(receiverCurrency)}`
+              : t('tontines.notAvailable')}
           </span>
         </div>
-        <div className="flex items-center justify-between text-gray-600">
-          <span className="font-medium">Frais de transfert (AfriLink Pay)</span>
-          <span className="text-afrilink-green font-semibold">Gratuit (Promo)</span>
+        
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-allness-dark dark:text-white">{t('tontines.totalDebited')}</span>
+            <span className="text-xl font-bold text-allness-dark dark:text-white">
+              {formatAmount(totalDebit, senderCurrency)}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl bg-afrilink-dark text-white px-5 py-4 mb-6">
-        <span className="text-base font-medium">Le bénéficiaire reçoit</span>
-        <span className="text-2xl font-bold">
-          {new Intl.NumberFormat('fr-FR').format(received)} {currency}
+      {/* Le bénéficiaire reçoit — design cohérent avec les autres pages */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 rounded-2xl bg-gray-900 dark:bg-gray-800 text-white px-5 py-4 mb-6">
+        <span className="text-sm sm:text-base font-medium text-white/80">
+          {t('tontines.beneficiaryReceives')}
+        </span>
+        <span className="text-xl sm:text-2xl font-bold text-allness-orange">
+          {formatAmount(received, receiverCurrency)}
         </span>
       </div>
 
       <button
         onClick={onSend}
-        className="w-full h-14 rounded-2xl bg-afrilink-green hover:bg-afrilink-greenHover text-white text-base font-semibold transition-colors mb-6"
+        className="w-full h-14 rounded-2xl bg-allness-green hover:bg-allness-greenHover text-white text-base font-semibold transition-colors mb-6"
       >
-        Envoyer
+        {t('tontines.send')}
       </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-gray-100 p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-3">Transferts Récents</p>
+      {/* Transferts récents — données réelles */}
+      {lastFive.length > 0 && (
+        <div className="rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+          <p className="text-sm font-semibold text-gray-800 dark:text-white mb-3">{t('tontines.recentTransfers')}</p>
           <ul className="space-y-2">
-            {mockRecentTransfers.map((t) => (
-              <li key={t.id} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-medium text-gray-500">
-                    {t.name.charAt(0)}
-                  </span>
-                  <div>
-                    <p className="text-gray-700">{t.name}</p>
-                    <p className="text-gray-400">{t.location}</p>
+            {lastFive.map((t: WalletTransaction) => {
+              const credit = transactionService.isCredit(t.type);
+              return (
+                <li key={t.id} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      credit ? 'bg-green-50' : 'bg-red-50'
+                    }`}>
+                      {credit ? (
+                        <ArrowDownLeft className="w-3 h-3 text-allness-green" />
+                      ) : (
+                        <ArrowUpRight className="w-3 h-3 text-red-500" />
+                      )}
+                    </span>
+                    <div>
+                      <p className="text-gray-700 font-medium">
+                        {t.reference || transactionService.getTypeLabel(t.type)}
+                      </p>
+                      <p className="text-gray-400">
+                        {new Date(t.createdAt).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'short',
+                        })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <span className="text-gray-600 font-medium">
-                  {t.amount} {t.currency}
-                </span>
-              </li>
-            ))}
+                  <span className={`font-semibold ${credit ? 'text-allness-green' : 'text-red-500'}`}>
+                    {credit ? '+' : '-'}{new Intl.NumberFormat('fr-FR').format(t.amount)} {senderCurrency}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
-
-        <div className="rounded-xl bg-afrilink-dark text-white p-4">
-          <p className="text-xs text-white/60 mb-1">Taux en temps réel</p>
-          <p className="text-sm font-semibold mb-2">CAD/{currency} Boosté</p>
-          <span className="inline-block text-[11px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">
-            +0.4% au fixé
-          </span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

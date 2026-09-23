@@ -1,0 +1,325 @@
+@startuml AfriLinkPay Component Diagram
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 15
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam component {
+  BackgroundColor #F0F9FF
+  BorderColor #1E40AF
+  FontColor #1E3A5F
+  ArrowColor #374151
+}
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #D1D5DB
+  FontSize 13
+}
+
+skinparam database {
+  BackgroundColor #F3E5F5
+  BorderColor #7B1FA2
+  FontColor #4A148C
+}
+
+skinparam cloud {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+  FontColor #BF360C
+}
+
+skinparam note {
+  BackgroundColor #F0FDF4
+  BorderColor #22C55E
+  FontColor #166534
+}
+
+skinparam interface {
+  BackgroundColor #FEF3C7
+  BorderColor #F59E0B
+}
+
+title **Diagramme de Composants — AfriLinkPay**
+
+' ═══════════════════════════════════════════════════════════
+' COMPOSANT WEB (Frontend React)
+' ═══════════════════════════════════════════════════════════
+
+package "COMPONENT: Web\n(React/Vite — Port 5173)" as WEB_PKG #E8F5E9 {
+
+  component "Pages\n(57 routes)" as WEB_PAGES #C8E6C9 {
+    portin " " as WP_IN
+    portout " " as WP_OUT
+  }
+
+  component "UI Components\n(shadcn + Tailwind)" as WEB_UI #C8E6C9
+
+  component "API Services\n(14 domaines)" as WEB_SERVICES #A5D6A7 {
+    portin " " as WS_IN
+    portout "HTTP\nREST" as WS_OUT
+  }
+
+  component "State Management" as WEB_STATE #A5D6A7 {
+    component "React Query\n(server state)" as RQ
+    component "Zustand\n(UI state)" as ZUSTAND
+    component "React Context\n(deposit flow)" as RCTX
+  }
+
+  component "apiClient\n(Axios + interceptors)" as WEB_CLIENT #81C784 {
+    portin " " as WC_IN
+    portout "→ API" as WC_OUT
+  }
+
+  WEB_PAGES --> WEB_UI
+  WEB_PAGES --> WEB_SERVICES
+  WEB_SERVICES --> WEB_CLIENT
+  WEB_STATE ..> WEB_SERVICES : observe
+}
+
+' ═══════════════════════════════════════════════════════════
+' COMPOSANT API (Backend NestJS)
+' ═══════════════════════════════════════════════════════════
+
+package "COMPONENT: API\n(NestJS — Port 3000)" as API_PKG #E3F2FD {
+
+  ' --- Controllers ---
+  package "Controllers\n(HTTP Layer)" as API_CTRL #BBDEFB {
+    component "AuthController" as C_AUTH
+    component "UsersController" as C_USERS
+    component "WalletsController" as C_WALLET
+    component "TransactionsController" as C_TX
+    component "PinController" as C_PIN
+    component "TontineController" as C_TONTINE
+    component "KycController" as C_KYC
+    component "CurrencyController" as CURRENCY
+    component "LinkedAccountsController" as C_LINKED
+    component "BeneficiairesController" as C_BENEF
+    component "MessageController" as C_MSG
+    component "RolesController" as C_ROLE
+    component "AdministrateursController" as C_ADMIN
+    component "AdminController" as C_ADMIN_DASH
+    component "TranzakController" as C_TRANZAK
+    component "CampayController" as C_CAMPAY
+  }
+
+  ' --- Services ---
+  package "Services\n(Business Layer)" as API_SVC #90CAF9 {
+    component "AuthService" as S_AUTH
+    component "UsersService" as S_USERS
+    component "WalletsService" as S_WALLET
+    component "TransactionsService" as S_TX
+    component "PinService" as S_PIN
+    component "TontineService\n+ CycleService\n+ ContributionService\n+ InvitationService\n+ PayoutService" as S_TONTINE
+    component "KycService" as S_KYC
+    component "CurrencyService" as S_CURRENCY
+    component "LinkedAccountsService" as S_LINKED
+    component "BeneficiairesService" as S_BENEF
+    component "MessageService" as S_MSG
+    component "RolesService" as S_ROLE
+    component "AdministrateursService" as S_ADMIN
+    component "AdminService" as S_ADMIN_DASH
+    component "TranzakService" as S_TRANZAK
+    component "CampayService" as S_CAMPAY
+    component "MailService" as S_MAIL
+    component "RedisService" as S_REDIS
+  }
+
+  ' --- Guards ---
+  package "Guards & Interceptors\n(Security)" as API_GUARDS #64B5F6 {
+    component "JwtAuthGuard" as G_JWT
+    component "PermissionsGuard\n(RBAC)" as G_PERM
+    component "ThrottlerGuard\n(rate limiting)" as G_THROTTLE
+    component "LocalAuthGuard" as G_LOCAL
+    component "GoogleAuthGuard" as G_GOOGLE
+  }
+
+  ' --- Strategies ---
+  package "Strategies\n(Authentication)" as API_STRAT #42A5F5 {
+    component "JwtStrategy" as ST_JWT
+    component "LocalStrategy" as ST_LOCAL
+    component "GoogleStrategy" as ST_GOOGLE
+  }
+
+  ' --- Jobs ---
+  package "Background Jobs\n(Tontine Automation)" as API_JOBS #2196F3 {
+    component "GenerateCycleJob" as J_GEN
+    component "LatePenaltyJob" as J_LATE
+    component "PayoutJob" as J_PAYOUT
+    component "ContributionReminderJob" as J_REMIND
+    component "CompleteCycleJob" as J_COMPLETE
+  }
+
+  ' --- Controllers -> Services ---
+  C_AUTH --> S_AUTH
+  C_USERS --> S_USERS
+  C_WALLET --> S_WALLET
+  C_TX --> S_TX
+  C_PIN --> S_PIN
+  C_TONTINE --> S_TONTINE
+  C_KYC --> S_KYC
+  CURRENCY --> S_CURRENCY
+  C_LINKED --> S_LINKED
+  C_BENEF --> S_BENEF
+  C_MSG --> S_MSG
+  C_ROLE --> S_ROLE
+  C_ADMIN --> S_ADMIN
+  C_ADMIN_DASH --> S_ADMIN_DASH
+  C_TRANZAK --> S_TRANZAK
+  C_CAMPAY --> S_CAMPAY
+
+  ' --- Services -> Guards ---
+  S_AUTH --> G_JWT
+  S_AUTH --> G_LOCAL
+  S_AUTH --> G_GOOGLE
+  S_AUTH --> ST_JWT
+  S_AUTH --> ST_LOCAL
+  S_AUTH --> ST_GOOGLE
+
+  ' --- Services dependencies ---
+  S_AUTH ..> S_USERS : <<forwardRef>>
+  S_AUTH ..> S_REDIS : refresh tokens
+  S_USERS ..> S_REDIS : OTP storage
+  S_USERS ..> S_MAIL : envoie OTP
+  S_USERS ..> S_WALLET : crée wallet au signup
+  S_PIN ..> S_REDIS : reset OTP
+  S_PIN ..> S_MAIL : notification
+  S_PIN ..> S_WALLET : vérifie propriétaire
+  S_TX ..> S_WALLET : débit/crédit
+  S_TX ..> S_PIN : vérifie PIN
+  S_TX ..> S_CURRENCY : conversion devises
+  S_TONTINE ..> S_WALLET : contributions/payouts
+  S_TONTINE ..> S_PIN : vérifie PIN
+  S_TONTINE ..> S_MAIL : invitations
+  S_TONTINE ..> S_MSG : chat tontine
+  S_KYC ..> S_MAIL : statut KYC
+  S_KYC ..> S_ROLE : permissions
+  S_LINKED ..> S_REDIS : vérification OTP
+  S_TRANZAK ..> S_TX : crée transactions
+  S_TRANZAK ..> S_WALLET : crédite portefeuille
+  S_CAMPAY ..> S_TX : crée transactions
+  S_CAMPAY ..> S_WALLET : crédite/débite
+
+  ' --- Jobs -> Services ---
+  J_GEN ..> S_TONTINE
+  J_LATE ..> S_TONTINE
+  J_PAYOUT ..> S_TONTINE
+  J_PAYOUT ..> S_WALLET
+  J_REMIND ..> S_TONTINE
+  J_COMPLETE ..> S_TONTINE
+}
+
+' ═══════════════════════════════════════════════════════════
+' COMPOSANT SHARED (Contrats)
+' ═══════════════════════════════════════════════════════════
+
+package "COMPONENT: Shared\n(packages/shared)" as SHARED_PKG #FFFDE7 {
+  component "KYC Contracts\n(Zod schemas)" as SH_KYC #FFF9C4
+  component "User/Wallet Types\n(interfaces)" as SH_USER #FFF9C4
+  component "Campay Types\n(API request/response)" as SH_CAMPAY #FFF9C4
+  component "Tranzak Types\n(API request/response)" as SH_TRANZAK #FFF9C4
+  component "Enums\n(WalletType, KycStatus, etc.)" as SH_ENUMS #FFF9C4
+}
+
+' ═══════════════════════════════════════════════════════════
+' INFRASTRUCTURE
+' ═══════════════════════════════════════════════════════════
+
+package "INFRASTRUCTURE" as INFRA_PKG #F3E5F5 {
+  database "PostgreSQL 16\n(TypeORM)\nPort: 5432" as PG #E1BEE7
+  database "Redis 7\n(ioredis)\nPort: 6379" as REDIS #E1BEE7
+  cloud "SMTP Server\n(Nodemailer)\nPort: 587" as SMTP #E1BEE7
+}
+
+' ═══════════════════════════════════════════════════════════
+' SERVICES EXTERNES
+' ═══════════════════════════════════════════════════════════
+
+package "SERVICES EXTERNES" as EXTERNAL_PKG #FFF3E0 {
+  cloud "Google OAuth 2.0\n(Passport)" as GOOGLE #FFE0B2
+  cloud "Tranzak API\n(Mobile Money — USSD Push)" as TRANZAK_EXT #FFE0B2
+  cloud "Campay API\n(Mobile Money — Collect/Withdraw)" as CAMPAY_EXT #FFE0B2
+}
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES INTER-COMPOSANTS
+' ═══════════════════════════════════════════════════════════
+
+' Web -> API
+WEB_CLIENT --> C_AUTH : JWT Login
+WEB_CLIENT --> C_WALLET : CRUD Wallets
+WEB_CLIENT --> C_TX : Transactions
+WEB_CLIENT --> C_TONTINE : Tontines
+WEB_CLIENT --> C_KYC : KYC
+WEB_CLIENT --> C_BENEF : Bénéficiaires
+WEB_CLIENT --> C_LINKED : Comptes liés
+WEB_CLIENT --> CURRENCY : Devises
+WEB_CLIENT --> C_TRANZAK : Paiements
+WEB_CLIENT --> C_CAMPAY : Paiements
+WEB_CLIENT --> C_ADMIN_DASH : Dashboard admin
+
+' Web -> Shared
+WEB_SERVICES ..> SHARED_PKG : importe contrats
+
+' API -> Infrastructure
+API_SVC --> PG : TypeORM\nTCP:5432
+API_SVC --> REDIS : ioredis\nTCP:6379
+API_SVC --> SMTP : Nodemailer\nSMTP:587
+
+' API -> Externes
+S_AUTH --> GOOGLE : OAuth 2.0\nHTTPS
+S_TRANZAK --> TRANZAK_EXT : REST API\nHTTPS
+S_CAMPAY --> CAMPAY_EXT : REST API\nHTTPS
+
+' ═══════════════════════════════════════════════════════════
+' NOTES
+' ═══════════════════════════════════════════════════════════
+
+note top of WEB_PKG
+  **Frontend SPA** — React 19 + Vite
+  - 57 routes (react-router-dom v7)
+  - 14 services API (Axios)
+  - State: React Query + Zustand
+  - UI: shadcn + Tailwind CSS
+end note
+
+note top of API_PKG
+  **Backend REST API** — NestJS
+  - 16 controllers (prefixed /api/v1/)
+  - 18 services métier
+  - 5 guards (JWT, RBAC, Throttler)
+  - 3 Passport strategies
+  - 5 background jobs (tontine)
+end note
+
+note right of SHARED_PKG
+  **Contrats partagés**
+  Source de vérité unique
+  pour les types et enums
+  Utilisé par API + Web
+end note
+
+note bottom of PG
+  **Données** :
+  21 entités TypeORM
+  Migrations manuelles
+  Pool: 20 connexions max
+end note
+
+note bottom of REDIS
+  **Utilisations** :
+  - OTP (5min TTL)
+  - Refresh tokens (30j)
+  - Google pending (15min)
+  - PIN reset OTP
+end note
+
+note as N1
+  **Architecture 3-tiers**
+  Client (React) →
+  Serveur (NestJS) →
+  Data (PostgreSQL + Redis)
+end note
+
+@enduml

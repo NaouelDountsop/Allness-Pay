@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { UserProfile } from '@afrilinkpay/shared';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, CreditCard, Users, LifeBuoy, ShieldAlert, Plus, Trash2 } from 'lucide-react';
 import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
 import { DashboardHeader } from '@/components/user_dashboard/header';
@@ -18,6 +19,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { userService } from '@/lib/api/user.service';
+import { usePreferences } from '@/hooks/use-preferences';
 
 function SettingCard({
   title,
@@ -38,7 +40,7 @@ function SettingCard({
           <p className="mt-1 text-xs text-gray-500">{description}</p>
         </div>
         {badge ? (
-          <span className="rounded-full bg-afrilink-green/10 px-3 py-1 text-[11px] font-semibold text-afrilink-green">
+          <span className="rounded-full bg-allness-green/10 px-3 py-1 text-[11px] font-semibold text-allness-green">
             {badge}
           </span>
         ) : null}
@@ -59,6 +61,7 @@ function ToggleRow({
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between rounded-2xl bg-gray-50 p-4">
       <div>
@@ -66,7 +69,7 @@ function ToggleRow({
         <p className="text-xs text-gray-500">{hint}</p>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500">{checked ? 'Activé' : 'Désactivé'}</span>
+        <span className="text-xs text-gray-500">{checked ? t('settings.activated') : t('settings.deactivated')}</span>
         <Toggle checked={checked} onChange={onCheckedChange} />
       </div>
     </div>
@@ -80,14 +83,15 @@ interface PaymentMethod {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { data: profile } = useQuery<UserProfile>({
     queryKey: ['profile'],
     queryFn: userService.getProfile,
   });
 
   const fullName = useMemo(
-    () => (profile ? `${profile.prenom} ${profile.nom}` : 'Utilisateur Afrilink'),
-    [profile],
+    () => (profile ? `${profile.prenom} ${profile.nom}` : t('settings.defaultUser')),
+    [profile, t],
   );
 
   // --- État des pop-ups ---
@@ -114,8 +118,7 @@ export default function SettingsPage() {
 
   // --- Préférences de compte ---
   const [currency, setCurrency] = useState('CFA');
-  const [theme, setTheme] = useState('Clair');
-  const [language, setLanguage] = useState('Français');
+  const { language, theme, setLanguage, setTheme } = usePreferences();
   const [timezone, setTimezone] = useState('Afrique/Douala (GMT+1)');
 
   // --- Moyens de paiement ---
@@ -132,12 +135,10 @@ export default function SettingsPage() {
       { id: crypto.randomUUID(), type: newMethodType, identifier: newMethodIdentifier },
     ]);
     setNewMethodIdentifier('');
-    // TODO: brancher sur userService.addPaymentMethod({ type: newMethodType, identifier: newMethodIdentifier })
   };
 
   const removePaymentMethod = (id: string) => {
     setPaymentMethods((prev) => prev.filter((m) => m.id !== id));
-    // TODO: brancher sur userService.removePaymentMethod(id)
   };
 
   // --- Préférences tontine ---
@@ -156,7 +157,7 @@ export default function SettingsPage() {
           <aside className="space-y-6 xl:w-1/3">
             <div className="rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-afrilink-dark text-3xl font-semibold text-white">
+                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-allness-dark text-3xl font-semibold text-white">
                   {fullName
                     .split(' ')
                     .map((part) => part[0])
@@ -164,42 +165,42 @@ export default function SettingsPage() {
                     .join('')}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-afrilink-orange">
-                    Paramètres
+                  <p className="text-xs uppercase tracking-[0.24em] text-allness-orange">
+                    {t('settings.title')}
                   </p>
-                  <h1 className="mt-3 text-2xl font-semibold text-afrilink-dark">
-                    Compte Afrilink
+                  <h1 className="mt-3 text-2xl font-semibold text-gray-900">
+                    {t('settings.accountTitle')}
                   </h1>
                 </div>
               </div>
 
               <div className="mt-6 space-y-5">
-                <div className="rounded-3xl bg-afrilink-orange/5 p-5">
+                <div className="rounded-3xl bg-allness-orange/5 p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-                    Email principal
+                    {t('settings.emailPrincipal')}
                   </p>
                   <p className="mt-3 text-sm font-medium text-gray-900">{profile?.email ?? '-'}</p>
                 </div>
-                <div className="rounded-3xl bg-afrilink-green/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">2FA</p>
+                <div className="rounded-3xl bg-allness-green/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">{t('settings.twoFA')}</p>
                   <p className="mt-3 text-sm font-medium text-gray-900">
-                    {twoFaEnabled ? 'Activée' : 'Désactivée'}
+                    {twoFaEnabled ? t('settings.enabled') : t('settings.disabled')}
                   </p>
                 </div>
               </div>
 
               <div className="mt-6 rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-4 h-4 text-afrilink-orange" />
-                  <p className="text-sm font-semibold text-afrilink-dark">Préférences rapides</p>
+                  <Sparkles className="w-4 h-4 text-allness-orange" />
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.quickPrefs')}</p>
                 </div>
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.language')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Devise</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.currency')}</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
                   </div>
                 </div>
@@ -210,33 +211,33 @@ export default function SettingsPage() {
           <main className="space-y-6 xl:w-2/3">
             <div className="grid gap-4 lg:grid-cols-1">
               <SettingCard
-                title="Sécurité du compte"
-                description="Mot de passe, 2FA, PIN transactionnel et biométrie"
-                badge={twoFaEnabled ? 'Activée' : 'Désactivée'}
+                title={t('settings.security')}
+                description={t('settings.securityDescription')}
+                badge={twoFaEnabled ? t('settings.enabled') : t('settings.disabled')}
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                      Authentification
+                      {t('settings.authentication')}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-green">
-                      {twoFaEnabled ? '2FA activée' : '2FA désactivée'}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                      PIN transactionnel
-                    </p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">
-                      {pinEnabled ? 'Configuré' : 'Non configuré'}
+                    <p className="mt-2 text-sm font-medium text-allness-green">
+                      {twoFaEnabled ? t('settings.twoFAEnabled') : t('settings.twoFADisabled')}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                      Historique de connexion
+                      {t('settings.pinTransactionnel')}
                     </p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      Dernière connexion aujourd'hui
+                      {pinEnabled ? t('settings.configured') : t('settings.notConfigured')}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
+                      {t('settings.loginHistory')}
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {t('settings.lastLogin')}
                     </p>
                   </div>
                   <Button
@@ -245,7 +246,7 @@ export default function SettingsPage() {
                     className="rounded-full w-full"
                     onClick={() => setSecurityOpen(true)}
                   >
-                    Gérer la sécurité
+                    {t('settings.manageSecurity')}
                   </Button>
                 </div>
               </SettingCard>
@@ -253,26 +254,26 @@ export default function SettingsPage() {
 
             <div className="grid gap-4 lg:grid-cols-2">
               <SettingCard
-                title="Préférences de notifications"
-                description="Email, SMS, push et alertes par type d'événement"
+                title={t('settings.notificationsPrefs')}
+                description={t('settings.notificationsDescription')}
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Email</p>
-                    <p className="mt-2 text-sm font-medium text-afrilink-dark">
-                      {emailNotifs ? 'Activées' : 'Désactivées'}
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.email')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {emailNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">SMS</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.sms')}</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      {smsNotifs ? 'Activées' : 'Désactivées'}
+                      {smsNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Push</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.push')}</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">
-                      {pushNotifs ? 'Activées' : 'Désactivées'}
+                      {pushNotifs ? t('settings.activatedShort') : t('settings.deactivatedShort')}
                     </p>
                   </div>
                   <Button
@@ -281,27 +282,27 @@ export default function SettingsPage() {
                     className="rounded-full w-full"
                     onClick={() => setNotificationsOpen(true)}
                   >
-                    Modifier mes notifications
+                    {t('settings.modifyNotifications')}
                   </Button>
                 </div>
               </SettingCard>
 
               <SettingCard
-                title="Préférences de compte"
-                description="Devise, langue, thème et fuseau horaire"
+                title={t('settings.accountPrefs')}
+                description={t('settings.accountPrefsDescription')}
               >
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Devise</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.currency')}</p>
                     <p className="mt-2 text-sm font-medium text-gray-900">{currency}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Langue</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{language}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.language')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{language === 'fr' ? t('settings.french') : t('settings.english')}</p>
                   </div>
                   <div className="rounded-3xl bg-gray-50 p-4">
-                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">Thème</p>
-                    <p className="mt-2 text-sm font-medium text-gray-900">{theme}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-gray-400">{t('settings.theme')}</p>
+                    <p className="mt-2 text-sm font-medium text-gray-900">{theme === 'light' ? t('settings.light') : t('settings.dark')}</p>
                   </div>
                   <Button
                     variant="outline"
@@ -309,7 +310,7 @@ export default function SettingsPage() {
                     className="rounded-full w-full"
                     onClick={() => setPreferencesOpen(true)}
                   >
-                    Modifier mes préférences
+                    {t('settings.modifyPrefs')}
                   </Button>
                 </div>
               </SettingCard>
@@ -317,19 +318,18 @@ export default function SettingsPage() {
 
             <div className="grid gap-4 lg:grid-cols-2">
               <SettingCard
-                title="Moyens de paiement"
-                description="Comptes mobile money et bancaires liés à votre compte"
+                title={t('settings.paymentMethods')}
+                description={t('settings.paymentMethodsDescription')}
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <CreditCard className="w-4 h-4 text-afrilink-orange shrink-0" />
+                    <CreditCard className="w-4 h-4 text-allness-orange shrink-0" />
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                        Moyens liés
+                        {t('settings.linkedMethods')}
                       </p>
-                      <p className="mt-2 text-sm font-medium text-gray-900">
-                        {paymentMethods.length} moyen{paymentMethods.length > 1 ? 's' : ''} de
-                        paiement
+                      <p className="mt-2 text-sm font-medium text-brand-text dark:text-brand-text">
+                        {paymentMethods.length} {paymentMethods.length > 1 ? t('settings.paymentMethodsPlural') : t('settings.paymentMethodsSingular')}
                       </p>
                     </div>
                   </div>
@@ -339,24 +339,24 @@ export default function SettingsPage() {
                     className="rounded-full w-full"
                     onClick={() => setPaymentMethodsOpen(true)}
                   >
-                    Gérer mes moyens de paiement
+                    {t('settings.managePaymentMethods')}
                   </Button>
                 </div>
               </SettingCard>
 
               <SettingCard
-                title="Préférences tontines"
-                description="Rappels et visibilité de votre profil dans les groupes"
+                title={t('settings.tontinePrefs')}
+                description={t('settings.tontinePrefsDescription')}
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <Users className="w-4 h-4 text-afrilink-green shrink-0" />
+                    <Users className="w-4 h-4 text-allness-green shrink-0" />
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                        Rappel avant mon tour
+                        {t('settings.reminderBeforeTurn')}
                       </p>
                       <p className="mt-2 text-sm font-medium text-gray-900">
-                        {reminderDays} jour(s) avant
+                        {reminderDays} {t('settings.daysBefore')}
                       </p>
                     </div>
                   </div>
@@ -366,7 +366,7 @@ export default function SettingsPage() {
                     className="rounded-full w-full"
                     onClick={() => setTontinePrefsOpen(true)}
                   >
-                    Modifier mes préférences tontines
+                    {t('settings.modifyTontinePrefs')}
                   </Button>
                 </div>
               </SettingCard>
@@ -374,41 +374,71 @@ export default function SettingsPage() {
 
             <div className="grid gap-4 lg:grid-cols-2">
               <SettingCard
-                title="Support"
-                description="Besoin d'aide ? Contactez-nous ou consultez la FAQ"
+                title={t('settings.support')}
+                description={t('settings.supportDescription')}
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-3xl bg-gray-50 p-4">
-                    <LifeBuoy className="w-4 h-4 text-afrilink-orange shrink-0" />
-                    <p className="text-sm font-medium text-gray-900">Une question, un problème ?</p>
+                    <LifeBuoy className="w-4 h-4 text-allness-orange shrink-0" />
+                    <p className="text-sm font-medium text-gray-900">{t('settings.needHelp')}</p>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Button variant="outline" size="sm" className="rounded-full w-full">
-                      Contacter le support
+                      {t('settings.contactSupport')}
                     </Button>
                     <Button variant="outline" size="sm" className="rounded-full w-full">
-                      Consulter la FAQ
+                      {t('settings.viewFAQ')}
                     </Button>
                   </div>
                 </div>
               </SettingCard>
 
               <SettingCard
-                title="Confidentialité & compte"
-                description="Export de vos données et suppression du compte"
+                title={t('settings.privacy')}
+                description={t('settings.privacyDescription')}
               >
                 <div className="space-y-3">
-                  <Button variant="outline" size="sm" className="rounded-full w-full">
-                    Exporter mes données
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full"
+                    onClick={() => {
+                      const rows = [
+                        ['Paramètre', 'Valeur'],
+                        ['Nom complet', fullName],
+                        ['Email', profile?.email ?? '—'],
+                        ['Téléphone', profile?.telephone ?? '—'],
+                        ['Ville', profile?.ville ?? '—'],
+                        ['Pays', profile?.pays ?? '—'],
+                        ['Langue', language],
+                        ['Thème', theme],
+                        ['Notifications email', emailNotifs ? 'Oui' : 'Non'],
+                        ['Notifications SMS', smsNotifs ? 'Oui' : 'Non'],
+                        ['Notifications push', pushNotifs ? 'Oui' : 'Non'],
+                        ['2FA', twoFaEnabled ? 'Activé' : 'Désactivé'],
+                        ['PIN', pinEnabled ? 'Activé' : 'Désactivé'],
+                        ['Biométrie', biometricEnabled ? 'Activé' : 'Désactivé'],
+                      ];
+                      const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `parametres_${fullName.replace(/\s+/g, '_')}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    {t('settings.exportData')}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-full w-full border-red-200 text-red-600 hover:bg-red-50"
+                    className="rounded-full w-full border-red-200 text-red-500 hover:bg-red-50"
                     onClick={() => setDeleteAccountOpen(true)}
                   >
                     <ShieldAlert className="mr-2 h-4 w-4" />
-                    Supprimer mon compte
+                    {t('settings.deleteAccount')}
                   </Button>
                 </div>
               </SettingCard>
@@ -422,36 +452,36 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setSecurityOpen} />
           <DialogHeader>
-            <DialogTitle>Gérer la sécurité</DialogTitle>
+            <DialogTitle>{t('settings.manageSecurityTitle')}</DialogTitle>
             <DialogDescription>
-              Modifiez votre mot de passe et vos options d'authentification.
+              {t('settings.manageSecurityDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <ToggleRow
-              label="Authentification à deux facteurs"
-              hint="Sécurise vos connexions avec un code supplémentaire"
+              label={t('settings.twoFALabel')}
+              hint={t('settings.twoFAHint')}
               checked={twoFaEnabled}
               onCheckedChange={setTwoFaEnabled}
             />
             <ToggleRow
-              label="Biométrie"
-              hint="Déverrouillez l'app avec votre empreinte ou Face ID"
+              label={t('settings.biometricLabel')}
+              hint={t('settings.biometricHint')}
               checked={biometricEnabled}
               onCheckedChange={setBiometricEnabled}
             />
 
             <div className="space-y-2">
-              <Label htmlFor="current-password">Mot de passe actuel</Label>
+              <Label htmlFor="current-password">{t('settings.currentPassword')}</Label>
               <Input id="current-password" type="password" placeholder="••••••••" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-password">Nouveau mot de passe</Label>
+              <Label htmlFor="new-password">{t('settings.newPassword')}</Label>
               <Input id="new-password" type="password" placeholder="••••••••" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pin">PIN transactionnel (4 chiffres)</Label>
+              <Label htmlFor="pin">{t('settings.pinLabel')}</Label>
               <Input
                 id="pin"
                 type="password"
@@ -460,21 +490,20 @@ export default function SettingsPage() {
                 placeholder="••••"
                 onChange={() => setPinEnabled(true)}
               />
-              <p className="text-xs text-gray-400">Requis pour valider vos dépôts et retraits.</p>
+              <p className="text-xs text-gray-400">{t('settings.pinHint')}</p>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setSecurityOpen(false)}>
-              Annuler
+              {t('settings.cancel')}
             </Button>
             <Button
               onClick={() => {
-                // TODO: brancher sur userService.updateSecurity({ twoFaEnabled, biometricEnabled, pin, password })
                 setSecurityOpen(false);
               }}
             >
-              Enregistrer
+              {t('settings.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -485,59 +514,59 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setNotificationsOpen} />
           <DialogHeader>
-            <DialogTitle>Modifier mes notifications</DialogTitle>
+            <DialogTitle>{t('settings.modifyNotificationsTitle')}</DialogTitle>
             <DialogDescription>
-              Choisissez les canaux et les types d'alertes que vous souhaitez recevoir.
+              {t('settings.modifyNotificationsDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-              Canaux
+              {t('settings.channels')}
             </p>
             <ToggleRow
-              label="Notifications par email"
-              hint="Recevez les alertes importantes par email"
+              label={t('settings.emailNotifs')}
+              hint={t('settings.emailNotifsHint')}
               checked={emailNotifs}
               onCheckedChange={setEmailNotifs}
             />
             <ToggleRow
-              label="Notifications par SMS"
-              hint="Recevez les alertes urgentes par SMS"
+              label={t('settings.smsNotifs')}
+              hint={t('settings.smsNotifsHint')}
               checked={smsNotifs}
               onCheckedChange={setSmsNotifs}
             />
             <ToggleRow
-              label="Notifications push"
-              hint="Recevez les alertes directement sur votre téléphone"
+              label={t('settings.pushNotifs')}
+              hint={t('settings.pushNotifsHint')}
               checked={pushNotifs}
               onCheckedChange={setPushNotifs}
             />
 
             <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-              Types d'événements
+              {t('settings.eventTypes')}
             </p>
             <ToggleRow
-              label="Dépôt reçu"
-              hint="Quand un dépôt est confirmé sur votre compte"
+              label={t('settings.depositReceived')}
+              hint={t('settings.depositReceivedHint')}
               checked={notifDeposit}
               onCheckedChange={setNotifDeposit}
             />
             <ToggleRow
-              label="Rappel de tour de tontine"
-              hint="Avant votre tour de cotisation ou de réception"
+              label={t('settings.tontineReminder')}
+              hint={t('settings.tontineReminderHint')}
               checked={notifTontineReminder}
               onCheckedChange={setNotifTontineReminder}
             />
             <ToggleRow
-              label="Invitation reçue"
-              hint="Quand quelqu'un vous invite à rejoindre une tontine"
+              label={t('settings.invitationReceived')}
+              hint={t('settings.invitationReceivedHint')}
               checked={notifInvitation}
               onCheckedChange={setNotifInvitation}
             />
             <ToggleRow
-              label="Paiement en retard"
-              hint="Quand une cotisation d'un membre est en retard"
+              label={t('settings.latePayment')}
+              hint={t('settings.latePaymentHint')}
               checked={notifLatePayment}
               onCheckedChange={setNotifLatePayment}
             />
@@ -545,15 +574,14 @@ export default function SettingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setNotificationsOpen(false)}>
-              Annuler
+              {t('settings.cancel')}
             </Button>
             <Button
               onClick={() => {
-                // TODO: brancher sur userService.updateNotificationPrefs(...)
                 setNotificationsOpen(false);
               }}
             >
-              Enregistrer
+              {t('settings.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -564,20 +592,20 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setPreferencesOpen} />
           <DialogHeader>
-            <DialogTitle>Modifier mes préférences</DialogTitle>
+            <DialogTitle>{t('settings.modifyPrefsTitle')}</DialogTitle>
             <DialogDescription>
-              Ajustez la devise, la langue, le thème et le fuseau horaire.
+              {t('settings.modifyPrefsDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currency">Devise</Label>
+              <Label htmlFor="currency">{t('settings.currency')}</Label>
               <select
                 id="currency"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="CFA">CFA</option>
                 <option value="EUR">EUR</option>
@@ -585,36 +613,36 @@ export default function SettingsPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="language">Langue</Label>
+              <Label htmlFor="language">{t('settings.language')}</Label>
               <select
                 id="language"
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                onChange={(e) => setLanguage(e.target.value as 'fr' | 'en')}
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
-                <option value="Français">Français</option>
-                <option value="English">English</option>
+                <option value="fr">{t('settings.french')}</option>
+                <option value="en">{t('settings.english')}</option>
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="theme">Thème</Label>
+              <Label htmlFor="theme">{t('settings.theme')}</Label>
               <select
                 id="theme"
                 value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
-                <option value="Clair">Clair</option>
-                <option value="Sombre">Sombre</option>
+                <option value="light">{t('settings.light')}</option>
+                <option value="dark">{t('settings.dark')}</option>
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="timezone">Fuseau horaire</Label>
+              <Label htmlFor="timezone">{t('settings.timezone')}</Label>
               <select
                 id="timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
                 <option value="Afrique/Douala (GMT+1)">Afrique/Douala (GMT+1)</option>
                 <option value="Europe/Paris (GMT+1/+2)">Europe/Paris (GMT+1/+2)</option>
@@ -625,15 +653,14 @@ export default function SettingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setPreferencesOpen(false)}>
-              Annuler
+              {t('settings.cancel')}
             </Button>
             <Button
               onClick={() => {
-                // TODO: brancher sur userService.updatePreferences({ currency, language, theme, timezone })
                 setPreferencesOpen(false);
               }}
             >
-              Enregistrer
+              {t('settings.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -644,15 +671,15 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setPaymentMethodsOpen} />
           <DialogHeader>
-            <DialogTitle>Moyens de paiement</DialogTitle>
+            <DialogTitle>{t('settings.paymentMethodsTitle')}</DialogTitle>
             <DialogDescription>
-              Gérez les comptes mobile money et bancaires liés à votre compte.
+              {t('settings.paymentMethodsDialogDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1">
             {paymentMethods.length === 0 ? (
-              <p className="text-sm text-gray-400">Aucun moyen de paiement enregistré.</p>
+              <p className="text-sm text-gray-400">{t('settings.noPaymentMethods')}</p>
             ) : (
               paymentMethods.map((method) => (
                 <div
@@ -666,8 +693,8 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => removePaymentMethod(method.id)}
-                    className="rounded-full p-2 text-red-500 hover:bg-red-50"
-                    aria-label="Supprimer"
+                    className="rounded-full p-2 text-brand-red hover:bg-brand-bg-red-light dark:hover:bg-brand-bg-red-light"
+                    aria-label={t('settings.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -676,27 +703,27 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="mt-4 space-y-3 rounded-2xl border border-dashed border-gray-200 p-4">
+          <div className="mt-4 space-y-3 rounded-2xl border border-dashed border-gray-100 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-              Ajouter un moyen de paiement
+              {t('settings.addPaymentMethod')}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="method-type">Type</Label>
+                <Label htmlFor="method-type">{t('settings.methodType')}</Label>
                 <select
                   id="method-type"
                   value={newMethodType}
                   onChange={(e) => setNewMethodType(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-900"
-                >
-                  <option value="Orange Money">Orange Money</option>
-                  <option value="MTN MoMo">MTN MoMo</option>
-                  <option value="Carte bancaire">Carte bancaire</option>
-                  <option value="Compte bancaire">Compte bancaire</option>
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
+              >
+                <option value="Orange Money">Orange Money</option>
+                <option value="MTN MoMo">MTN MoMo</option>
+                  <option value="Carte bancaire">{t('settings.creditCard')}</option>
+                  <option value="Compte bancaire">{t('settings.bankAccount')}</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="method-identifier">Numéro / IBAN</Label>
+                <Label htmlFor="method-identifier">{t('settings.methodIdentifier')}</Label>
                 <Input
                   id="method-identifier"
                   value={newMethodIdentifier}
@@ -707,12 +734,12 @@ export default function SettingsPage() {
             </div>
             <Button variant="outline" size="sm" className="rounded-full" onClick={addPaymentMethod}>
               <Plus className="mr-2 h-4 w-4" />
-              Ajouter
+              {t('settings.add')}
             </Button>
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setPaymentMethodsOpen(false)}>Fermer</Button>
+            <Button onClick={() => setPaymentMethodsOpen(false)}>{t('settings.close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -722,31 +749,31 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setTontinePrefsOpen} />
           <DialogHeader>
-            <DialogTitle>Préférences tontines</DialogTitle>
+            <DialogTitle>{t('settings.tontinePrefsDialogTitle')}</DialogTitle>
             <DialogDescription>
-              Configurez vos rappels et la visibilité de votre profil dans vos groupes.
+              {t('settings.tontinePrefsDialogDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="reminder-days">Rappel avant mon tour</Label>
+              <Label htmlFor="reminder-days">{t('settings.reminderDaysLabel')}</Label>
               <select
                 id="reminder-days"
                 value={reminderDays}
                 onChange={(e) => setReminderDays(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900"
+                className="w-full rounded-xl border border-brand-border dark:border-brand-border bg-brand-input dark:bg-brand-input p-3 text-sm text-brand-text dark:text-brand-text focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
               >
-                <option value="1">1 jour avant</option>
-                <option value="2">2 jours avant</option>
-                <option value="3">3 jours avant</option>
-                <option value="7">7 jours avant</option>
+                <option value="1">{t('settings.reminder1')}</option>
+                <option value="2">{t('settings.reminder2')}</option>
+                <option value="3">{t('settings.reminder3')}</option>
+                <option value="7">{t('settings.reminder7')}</option>
               </select>
             </div>
 
             <ToggleRow
-              label="Visible par les membres"
-              hint="Les autres membres de vos tontines peuvent voir votre profil"
+              label={t('settings.visibleToMembers')}
+              hint={t('settings.visibleToMembersHint')}
               checked={profileVisibleToMembers}
               onCheckedChange={setProfileVisibleToMembers}
             />
@@ -754,15 +781,14 @@ export default function SettingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setTontinePrefsOpen(false)}>
-              Annuler
+              {t('settings.cancel')}
             </Button>
             <Button
               onClick={() => {
-                // TODO: brancher sur userService.updateTontinePrefs({ reminderDays, profileVisibleToMembers })
                 setTontinePrefsOpen(false);
               }}
             >
-              Enregistrer
+              {t('settings.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -773,16 +799,15 @@ export default function SettingsPage() {
         <DialogContent>
           <DialogClose onOpenChange={setDeleteAccountOpen} />
           <DialogHeader>
-            <DialogTitle>Supprimer mon compte</DialogTitle>
+            <DialogTitle>{t('settings.deleteConfirm')}</DialogTitle>
             <DialogDescription>
-              Cette action est définitive. Toutes vos données, y compris l'historique de vos
-              tontines, seront supprimées et ne pourront pas être récupérées.
+              {t('settings.deleteDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
             <Label htmlFor="delete-confirm">
-              Tapez <span className="font-semibold">SUPPRIMER</span> pour confirmer
+              {t('settings.deleteHint')}
             </Label>
             <Input
               id="delete-confirm"
@@ -794,17 +819,16 @@ export default function SettingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteAccountOpen(false)}>
-              Annuler
+              {t('settings.cancel')}
             </Button>
             <Button
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-red-500 text-white hover:bg-red-600"
               disabled={deleteConfirmText !== 'SUPPRIMER'}
               onClick={() => {
-                // TODO: brancher sur userService.deleteAccount()
                 setDeleteAccountOpen(false);
               }}
             >
-              Supprimer définitivement
+              {t('settings.deletePermanent')}
             </Button>
           </DialogFooter>
         </DialogContent>

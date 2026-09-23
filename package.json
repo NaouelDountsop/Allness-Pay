@@ -28,7 +28,8 @@
     "migration:run": "npm run migration:run --workspace @afrilinkpay/api",
     "migration:generate": "npm run migration:generate --workspace @afrilinkpay/api",
     "prepare": "husky || true",
-    "seed:permissions": "ts-node src/database/seed-permissions.ts"
+    "seed:permissions": "ts-node src/database/seed-permissions.ts",
+  "seed:currencies": "ts-node apps/api/src/database/seed-currencies.ts"
   },
   "devDependencies": {
     "@types/passport-local": "^1.0.38",
@@ -48,11 +49,15 @@
   },
   "dependencies": {
     "@nestjs/mapped-types": "*",
+    "exceljs": "^4.4.0",
     "ioredis": "^5.11.1",
+    "jspdf": "^4.2.1",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
     "passport-local": "^1.0.0",
-    "redis": "^5.12.1"
+    "qrcode": "^1.5.4",
+    "redis": "^5.12.1",
+    "stripe": "^22.6.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.4"

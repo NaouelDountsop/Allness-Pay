@@ -21,18 +21,21 @@ export function PhoneInput({ country, value, onChange, error }: PhoneInputProps)
           </div>
         ) : (
           <div className="flex items-center h-11 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-3 shrink-0">
-            <Phone className="w-4 h-4 text-afrilink-gray" />
+            <Phone className="w-4 h-4 text-allness-gray" />
           </div>
         )}
         <input
           type="tel"
-          className={`flex-1 h-11 rounded-r-lg border text-sm text-gray-900 bg-white px-3 focus:outline-none focus:ring-1 focus:ring-afrilink-green ${
+          className={`flex-1 h-11 rounded-r-lg border text-sm text-gray-900 bg-white px-3 focus:outline-none focus:ring-1 focus:ring-allness-orange ${
             error ? '!border-destructive' : 'border-gray-200'
           }`}
           placeholder={country?.phonePlaceholder || 'Numéro de téléphone'}
           value={value}
+          maxLength={country ? country.phoneDigits + 4 : undefined}
           onChange={(e) => {
             const raw = e.target.value.replace(/[^\d+\s-]/g, '');
+            const digitsOnly = raw.replace(/\D/g, '');
+            if (country && digitsOnly.length > country.phoneDigits) return;
             onChange(raw);
           }}
         />

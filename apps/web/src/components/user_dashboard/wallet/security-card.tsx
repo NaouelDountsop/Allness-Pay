@@ -7,11 +7,11 @@ export function SecurityCard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-afrilink-green" />
+            <ShieldCheck className="w-4 h-4 text-allness-green" />
           </span>
           <div>
             <p className="text-xs text-gray-500">Authentification 2 facteurs</p>
-            <p className="text-xs font-medium text-afrilink-green">Activée</p>
+            <p className="text-xs font-medium text-allness-green">Activée</p>
           </div>
         </div>
       </div>

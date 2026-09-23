@@ -1,0 +1,295 @@
+@startuml AfriLinkPay Package Diagram
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 15
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #D1D5DB
+  FontSize 13
+  FontColor #1E3A5F
+  StereotypeFontSize 11
+}
+
+skinparam note {
+  BackgroundColor #F0FDF4
+  BorderColor #22C55E
+  FontColor #166534
+}
+
+skinparam arrow {
+  Color #374151
+  FontColor #374151
+  FontSize 11
+}
+
+title **Diagramme de Paquetages — AfriLinkPay**
+
+' ═══════════════════════════════════════════════════════════
+' NIVEAU 1 : MONOREPO
+' ═══════════════════════════════════════════════════════════
+
+package "AfriLinkPay (Monorepo)" as ROOT {
+
+  ' ═══════════════════════════════════════════════════════════
+  ' NIVEAU 2 : APPS
+  ' ═══════════════════════════════════════════════════════════
+
+  package "«app» api\n(NestJS — Port 3000)" as API <<app>> {
+
+    ' --- Infrastructure ---
+    package "infrastructure" as API_INFRA {
+      package "ConfigModule" as MOD_CONFIG {
+      }
+      package "DatabaseModule\n(PostgreSQL — TypeORM)" as MOD_DB {
+      }
+      package "OtpModule\n(Redis — ioredis)" as MOD_OTP {
+      }
+      package "MailModule\n(SMTP — Nodemailer)" as MOD_MAIL {
+      }
+    }
+
+    ' --- Core Business ---
+    package "core (metier)" as API_CORE {
+      package "AuthModule" as MOD_AUTH {
+      }
+      package "UsersModule" as MOD_USERS {
+      }
+      package "WalletsModule" as MOD_WALLET {
+      }
+      package "TransactionsModule" as MOD_TX {
+      }
+      package "PinModule" as MOD_PIN {
+      }
+      package "TontineModule" as MOD_TONTINE {
+      }
+      package "KycModule" as MOD_KYC {
+      }
+      package "CurrencyModule" as MOD_CURRENCY {
+      }
+      package "LinkedAccountModule" as MOD_LINKED {
+      }
+      package "BeneficiairesModule" as MOD_BENEF {
+      }
+      package "MessagingModule" as MOD_MSG {
+      }
+    }
+
+    ' --- Admin ---
+    package "admin" as API_ADMIN {
+      package "RoleModule" as MOD_ROLE {
+      }
+      package "AdminModule" as MOD_ADMIN {
+      }
+    }
+
+    ' --- Payments ---
+    package "payments (externes)" as API_PAY {
+      package "TranzakModule" as MOD_TRANZAK {
+      }
+      package "CampayModule" as MOD_CAMPAY {
+      }
+    }
+  }
+
+  package "«app» web\n(React/Vite — Port 5173)" as WEB <<app>> {
+
+    package "pages" as WEB_PAGES {
+      package "landing\n(LandingPage)" as PK_LANDING {
+      }
+      package "auth\n(login, signup, verify-email)" as PK_AUTH {
+      }
+      package "user_dashboard\n(30+ pages)" as PK_USER {
+      }
+      package "admin-dashboard\n(15+ pages)" as PK_ADMIN {
+      }
+      package "deposit-flow\n(5 pages)" as PK_DEPOSIT {
+      }
+    }
+
+    package "components" as WEB_COMP {
+      package "ui\n(shadcn + Tailwind)" as PK_UI {
+      }
+      package "common\n(inputs, popups, error)" as PK_COMMON {
+      }
+      package "auth\n(OTP input, social)" as PK_AUTH_COMP {
+      }
+      package "kyc\n(form components)" as PK_KYC {
+      }
+      package "landing\n(landing components)" as PK_LANDING_COMP {
+      }
+    }
+
+    package "lib" as WEB_LIB {
+      package "api-client\n(Axios + interceptors)" as PK_CLIENT {
+      }
+      package "api\n(14 services)" as PK_API {
+      }
+      package "auth-storage\n(token storage)" as PK_STORAGE {
+      }
+      package "query-client\n(TanStack Query)" as PK_QUERY {
+      }
+    }
+
+    package "state" as WEB_STATE {
+      package "React Query\n(server state)" as PK_RQ {
+      }
+      package "Zustand\n(UI state)" as PK_ZUSTAND {
+      }
+      package "React Context\n(deposit flow)" as PK_CTX {
+      }
+    }
+
+    package "i18n" as WEB_I18N {
+      package "i18next\n(fr, en locales)" as PK_I18N {
+      }
+    }
+  }
+
+  package "«package» shared\n(contrats)" as SHARED <<shared>> {
+
+    package "contracts" as SHARED_CONTRACTS {
+      package "kyc.ts\n(Zod schemas)" as SH_KYC {
+      }
+      package "user-wallet.ts\n(interfaces, types)" as SH_USER {
+      }
+      package "campay.ts\n(API types)" as SH_CAMPAY {
+      }
+      package "tranzak.ts\n(API types)" as SH_TRANZAK {
+      }
+    }
+
+    package "enums" as SHARED_ENUMS {
+      package "WalletType\nWalletStatus\nKycStatus\n..." as SH_ENUM {
+      }
+    }
+  }
+}
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES INTER-APPS
+' ═══════════════════════════════════════════════════════════
+
+' API -> Shared
+MOD_AUTH ..> SHARED : importe contrats
+MOD_TX ..> SHARED : importe contrats
+MOD_CAMPAY ..> SHARED : importe contrats
+MOD_TRANZAK ..> SHARED : importe contrats
+
+' Web -> Shared
+PK_API ..> SHARED : importe contrats
+PK_RQ ..> SHARED : importe contrats
+
+' Web -> API
+PK_CLIENT --> MOD_AUTH : HTTP REST
+PK_CLIENT --> MOD_WALLET : HTTP REST
+PK_CLIENT --> MOD_TX : HTTP REST
+PK_CLIENT --> MOD_TONTINE : HTTP REST
+PK_CLIENT --> MOD_KYC : HTTP REST
+PK_CLIENT --> MOD_BENEF : HTTP REST
+PK_CLIENT --> MOD_LINKED : HTTP REST
+PK_CLIENT --> MOD_CURRENCY : HTTP REST
+PK_CLIENT --> MOD_TRANZAK : HTTP REST
+PK_CLIENT --> MOD_CAMPAY : HTTP REST
+PK_CLIENT --> MOD_ADMIN : HTTP REST
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES INFRASTRUCTURE
+' ═══════════════════════════════════════════════════════════
+
+MOD_AUTH ..> MOD_OTP : stocke refresh tokens
+MOD_AUTH ..> MOD_USERS : <<forwardRef>>
+MOD_USERS ..> MOD_OTP : genere OTP
+MOD_USERS ..> MOD_MAIL : envoie OTP email
+MOD_USERS ..> MOD_WALLET : cree wallet au signup
+MOD_PIN ..> MOD_OTP : reset PIN via OTP
+MOD_PIN ..> MOD_MAIL : notifie changement PIN
+MOD_PIN ..> MOD_WALLET : verifie proprietaire
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES CORE
+' ═══════════════════════════════════════════════════════════
+
+MOD_TX ..> MOD_WALLET : debit/credit
+MOD_TX ..> MOD_PIN : verifie PIN dans transaction
+MOD_TX ..> MOD_CURRENCY : conversion devises
+MOD_TONTINE ..> MOD_WALLET : contributions/payouts
+MOD_TONTINE ..> MOD_PIN : verifie PIN
+MOD_TONTINE ..> MOD_MAIL : invitations
+MOD_TONTINE ..> MOD_MSG : chat tontine
+MOD_KYC ..> MOD_USERS : informations utilisateur
+MOD_KYC ..> MOD_MAIL : statut KYC
+MOD_KYC ..> MOD_ROLE : permissions review
+MOD_LINKED ..> MOD_OTP : verification OTP
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES ADMIN
+' ═══════════════════════════════════════════════════════════
+
+MOD_ADMIN ..> MOD_ROLE : RBAC
+MOD_ADMIN ..> MOD_USERS : gestion utilisateurs
+
+' ═══════════════════════════════════════════════════════════
+' DÉPENDANCES PAYMENTS
+' ═══════════════════════════════════════════════════════════
+
+MOD_TRANZAK ..> MOD_TX : cree transactions
+MOD_TRANZAK ..> MOD_WALLET : credite portefeuille
+MOD_CAMPAY ..> MOD_TX : cree transactions
+MOD_CAMPAY ..> MOD_WALLET : credite/debite
+
+' ═══════════════════════════════════════════════════════════
+' NOTES
+' ═══════════════════════════════════════════════════════════
+
+note top of API
+  **Backend REST API** — NestJS 11
+  - 16 modules NestJS
+  - Prefixed: /api/v1/
+  - ValidationPipe globale
+  - Swagger auto-genere
+end note
+
+note top of WEB
+  **Frontend SPA** — React 19 + Vite
+  - 57 routes (react-router-dom v7)
+  - 14 services API (Axios)
+  - State: React Query + Zustand
+  - UI: shadcn + Tailwind CSS
+end note
+
+note right of SHARED
+  **Contrats partages**
+  Source de verite unique
+  Builds avant API + Web
+  Zod pour validation runtime
+end note
+
+note bottom of MOD_OTP
+  **Redis** — Stockage temporaire
+  - OTP: 5min TTL
+  - Refresh tokens: 30j
+  - Google pending: 15min
+end note
+
+note bottom of MOD_DB
+  **PostgreSQL 16**
+  - 21 entites TypeORM
+  - Migrations manuelles
+  - Pool: 20 connexions
+end note
+
+note as LEGEND
+  **Legende**
+  ═══════════════════════
+  --> Dependance directe
+  ..> Dependance import
+  <<app>> Application
+  <<package>> Package partage
+  **Ordre de build:**
+  shared -> api -> web
+end note
+
+@enduml

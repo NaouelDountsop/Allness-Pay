@@ -47,7 +47,7 @@ export class MailService {
   }
 
   /**
-   * Template principal des emails AfriLinkPay.
+   * Template principal des emails AllnessPay.
    */
   private buildTemplate(
     content: string,
@@ -68,7 +68,7 @@ export class MailService {
   />
   <meta name="x-apple-disable-message-reformatting" />
 
-  <title>AfriLinkPay</title>
+  <title>AllnessPay</title>
 
   <style>
     body {
@@ -170,24 +170,19 @@ export class MailService {
                       color:#ffffff;
                     "
                   >
-                    <span
+                    <img
+                      src="https://res.cloudinary.com/dnlnzgqzu/image/upload/v1754929257/afrilinkpay-logo-white_l7gx3o.png"
+                      alt="AllnessPay"
+                      height="34"
                       style="
                         display:inline-block;
-                        background:#D28E2F;
-                        color:#082B37;
-                        width:34px;
                         height:34px;
-                        line-height:34px;
-                        text-align:center;
-                        border-radius:9px;
-                        font-weight:800;
                         margin-right:8px;
+                        vertical-align:middle;
                       "
-                    >
-                      A
-                    </span>
+                    />
 
-                    AfriLink
+                    Allness
                     <span style="color:#D28E2F;">
                       Pay
                     </span>
@@ -228,7 +223,7 @@ export class MailService {
                   text-align:center;
                 "
               >
-                Cet email a été envoyé automatiquement par AfriLinkPay.
+                Cet email a été envoyé automatiquement par AllnessPay.
               </p>
 
               <p
@@ -239,7 +234,7 @@ export class MailService {
                   text-align:center;
                 "
               >
-                © ${new Date().getFullYear()} AfriLinkPay.
+                © ${new Date().getFullYear()} AllnessPay.
                 Tous droits réservés.
               </p>
 
@@ -257,6 +252,264 @@ export class MailService {
 `;
   }
 
+  // ============================================================
+  // COMPOSANTS EMAIL CENTRALISÉS
+  // ============================================================
+
+  /**
+   * Titre principal (h1).
+   */
+  private heading(text: string, opts?: { align?: 'left' | 'center' }): string {
+    const align = opts?.align ?? 'left';
+    return `
+      <h1
+        style="
+          margin:0 0 16px;
+          font-size:26px;
+          line-height:1.3;
+          text-align:${align};
+          color:#082B37;
+        "
+      >
+        ${text}
+      </h1>
+    `;
+  }
+
+  /**
+   * Paragraphe de corps.
+   */
+  private paragraph(
+    text: string,
+    opts?: { bold?: boolean; align?: 'left' | 'center'; mt?: number; mb?: number },
+  ): string {
+    const align = opts?.align ?? 'left';
+    const mt = opts?.mt ?? 0;
+    const mb = opts?.mb ?? 24;
+    return `
+      <p
+        style="
+          margin:${mt}px 0 ${mb}px;
+          font-size:15px;
+          line-height:1.7;
+          text-align:${align};
+          color:#52666c;
+        "
+      >
+        ${text}
+      </p>
+    `;
+  }
+
+  /**
+   * Paragraphe secondaire (plus petit, gris).
+   */
+  private smallText(
+    text: string,
+    opts?: { align?: 'left' | 'center'; mt?: number; mb?: number },
+  ): string {
+    const align = opts?.align ?? 'left';
+    const mt = opts?.mt ?? 0;
+    const mb = opts?.mb ?? 8;
+    return `
+      <p
+        style="
+          margin:${mt}px 0 ${mb}px;
+          font-size:13px;
+          line-height:1.6;
+          color:#64777c;
+          text-align:${align};
+        "
+      >
+        ${text}
+      </p>
+    `;
+  }
+
+  /**
+   * Boîte de statut colorée (gauche barrée).
+   * type: 'success' | 'warning' | 'error' | 'info'
+   */
+  private statusBox(
+    type: 'success' | 'warning' | 'error' | 'info',
+    title: string,
+    description?: string,
+  ): string {
+    const colors = {
+      success: { bg: '#eef8f4', border: '#1FAF74', title: '#08734b', text: '#527069' },
+      warning: { bg: '#fff8e8', border: '#D28E2F', title: '#956313', text: '#746346' },
+      error: { bg: '#fff5f5', border: '#dc2626', title: '#991b1b', text: '#7f1d1d' },
+      info: { bg: '#f4f7f6', border: '#082B37', title: '#082B37', text: '#52666c' },
+    };
+    const c = colors[type];
+
+    const descHtml = description
+      ? `
+        <p
+          style="
+            margin:8px 0 0;
+            font-size:13px;
+            line-height:1.6;
+            color:${c.text};
+          "
+        >
+          ${description}
+        </p>
+      `
+      : '';
+
+    return `
+      <div
+        style="
+          background:${c.bg};
+          border-left:4px solid ${c.border};
+          border-radius:8px;
+          padding:16px;
+          margin:24px 0;
+        "
+      >
+        <strong style="color:${c.title};">
+          ${title}
+        </strong>
+        ${descHtml}
+      </div>
+    `;
+  }
+
+  /**
+   * Boîte centrée avec label + valeur (pour les invitations tontine, résumés, etc.).
+   */
+  private infoCard(label: string, value: string): string {
+    return `
+      <div
+        style="
+          background:#f7faf9;
+          border:1px solid #e3ebe8;
+          border-radius:14px;
+          padding:24px;
+          margin:24px 0;
+          text-align:center;
+        "
+      >
+        <p
+          style="
+            margin:0 0 8px;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+            color:#829297;
+          "
+        >
+          ${label}
+        </p>
+        <p
+          style="
+            margin:0;
+            font-size:21px;
+            font-weight:700;
+            color:#082B37;
+          "
+        >
+          ${value}
+        </p>
+      </div>
+    `;
+  }
+
+  /**
+   * Bouton CTA centré.
+   */
+  private ctaButton(text: string, url: string): string {
+    return `
+      <div style="text-align:center; margin:30px 0;">
+        <a
+          href="${url}"
+          class="button"
+          style="
+            display:inline-block;
+            background:#0D3A47;
+            color:#ffffff;
+            padding:15px 28px;
+            border-radius:10px;
+            text-decoration:none;
+            font-weight:700;
+            font-size:14px;
+          "
+        >
+          ${text}
+          <span style="color:#D28E2F;">→</span>
+        </a>
+      </div>
+    `;
+  }
+
+  /**
+   * Séparateur horizontal.
+   */
+  private divider(): string {
+    return `
+      <div
+        style="
+          border-top:1px solid #edf1f0;
+          padding-top:20px;
+          margin-top:28px;
+        "
+      ></div>
+    `;
+  }
+
+  /**
+   * Badge centré (ex: "INVITATION À UNE TONTINE").
+   */
+  private badge(text: string, color?: { bg?: string; fg?: string }): string {
+    const bg = color?.bg ?? '#eef8f4';
+    const fg = color?.fg ?? '#08734b';
+    return `
+      <div style="text-align:center; margin-bottom:28px;">
+        <div
+          style="
+            display:inline-block;
+            background:${bg};
+            color:${fg};
+            padding:8px 14px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+          "
+        >
+          ${text}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Encart gris avec texte centré (ex: "Connectez-vous...").
+   */
+  private hintBox(text: string): string {
+    return `
+      <div
+        style="
+          background:#f4f7f6;
+          border-radius:10px;
+          padding:16px;
+          margin:24px 0;
+        "
+      >
+        <p
+          style="
+            margin:0;
+            font-size:13px;
+            line-height:1.6;
+            color:#52666c;
+          "
+        >
+          ${text}
+        </p>
+      </div>
+    `;
+  }
+
   /**
    * Envoi centralisé des emails.
    */
@@ -269,7 +522,7 @@ export class MailService {
     try {
       await this.transporter.sendMail({
         from: {
-          name: 'AfriLinkPay',
+          name: 'AllnessPay',
           address: this.from,
         },
 
@@ -307,27 +560,11 @@ export class MailService {
 
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Vérifiez votre adresse email
-        </h1>
+        ${this.heading('Vérifiez votre adresse email')}
 
-        <p
-          style="
-            margin:0 0 24px;
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Utilisez le code ci-dessous pour confirmer votre adresse
-          email sur AfriLinkPay.
-        </p>
+        ${this.paragraph(
+          'Utilisez le code ci-dessous pour confirmer votre adresse email sur AllnessPay.',
+        )}
 
         <div
           style="
@@ -351,33 +588,17 @@ export class MailService {
           </div>
         </div>
 
-        <p
-          style="
-            margin:0 0 8px;
-            font-size:13px;
-            color:#64777c;
-          "
-        >
-          Ce code expire dans <strong>5 minutes</strong>.
-        </p>
+        ${this.smallText('Ce code expire dans <strong>5 minutes</strong>.', { mb: 8 })}
 
-        <p
-          style="
-            margin:0;
-            font-size:13px;
-            color:#64777c;
-          "
-        >
-          Ne partagez jamais ce code avec quelqu'un d'autre.
-        </p>
+        ${this.smallText('Ne partagez jamais ce code avec quelqu\'un d\'autre.', { mb: 0 })}
       `,
       {
-        preheader: 'Votre code de vérification AfriLinkPay',
+        preheader: 'Votre code de vérification AllnessPay',
       },
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Vérification de votre adresse email
 
@@ -389,12 +610,12 @@ Ce code expire dans 5 minutes.
 
 Ne partagez jamais ce code avec quelqu'un d'autre.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre code de vérification AfriLinkPay',
+      subject: 'Votre code de vérification AllnessPay',
       html,
       text,
     });
@@ -409,73 +630,24 @@ AfriLinkPay
 
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Dossier KYC reçu
-        </h1>
+        ${this.heading('Dossier KYC reçu')}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Bonjour <strong>${safeFirstName}</strong>,
-        </p>
+        ${this.paragraph(`Bonjour <strong>${safeFirstName}</strong>`)}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Nous avons bien reçu votre dossier de vérification
-          d'identité.
-        </p>
+        ${this.paragraph(
+          'Nous avons bien reçu votre dossier de vérification d\'identité.',
+        )}
 
-        <div
-          style="
-            background:#eef8f4;
-            border-left:4px solid #1FAF74;
-            border-radius:8px;
-            padding:16px;
-            margin:24px 0;
-          "
-        >
-          <strong style="color:#08734b;">
-            Statut : Dossier soumis
-          </strong>
+        ${this.statusBox(
+          'success',
+          'Statut : Dossier soumis',
+          'Votre dossier est maintenant en attente de vérification par nos équipes.',
+        )}
 
-          <p
-            style="
-              margin:8px 0 0;
-              font-size:13px;
-              color:#527069;
-            "
-          >
-            Votre dossier est maintenant en attente de vérification
-            par nos équipes.
-          </p>
-        </div>
-
-        <p
-          style="
-            margin:0;
-            font-size:13px;
-            line-height:1.6;
-            color:#64777c;
-          "
-        >
-          Vous recevrez une notification lorsque votre dossier
-          aura été examiné.
-        </p>
+        ${this.smallText(
+          'Vous recevrez une notification lorsque votre dossier aura été examiné.',
+          { mb: 0 },
+        )}
       `,
       {
         preheader: 'Votre dossier KYC a bien été reçu',
@@ -483,7 +655,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -495,12 +667,12 @@ Votre dossier est maintenant en attente de vérification par nos équipes.
 
 Vous recevrez une notification lorsque votre dossier aura été examiné.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre dossier KYC a été reçu — AfriLinkPay',
+      subject: 'Votre dossier KYC a été reçu — AllnessPay',
       html,
       text,
     });
@@ -515,70 +687,24 @@ AfriLinkPay
 
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Vérification en cours
-        </h1>
+        ${this.heading('Vérification en cours')}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Bonjour <strong>${safeFirstName}</strong>,
-        </p>
+        ${this.paragraph(`Bonjour <strong>${safeFirstName}</strong>`)}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Votre dossier de vérification d'identité est actuellement
-          en cours d'examen.
-        </p>
+        ${this.paragraph(
+          'Votre dossier de vérification d\'identité est actuellement en cours d\'examen.',
+        )}
 
-        <div
-          style="
-            background:#fff8e8;
-            border-left:4px solid #D28E2F;
-            border-radius:8px;
-            padding:16px;
-            margin:24px 0;
-          "
-        >
-          <strong style="color:#956313;">
-            Statut : En cours de vérification
-          </strong>
+        ${this.statusBox(
+          'warning',
+          'Statut : En cours de vérification',
+          'Nos équipes analysent actuellement vos documents.',
+        )}
 
-          <p
-            style="
-              margin:8px 0 0;
-              font-size:13px;
-              color:#746346;
-            "
-          >
-            Nos équipes analysent actuellement vos documents.
-          </p>
-        </div>
-
-        <p
-          style="
-            font-size:13px;
-            color:#64777c;
-          "
-        >
-          Vous recevrez une nouvelle notification lorsque la
-          vérification sera terminée.
-        </p>
+        ${this.smallText(
+          'Vous recevrez une nouvelle notification lorsque la vérification sera terminée.',
+          { mb: 0 },
+        )}
       `,
       {
         preheader: 'Votre vérification KYC est en cours',
@@ -586,7 +712,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -598,12 +724,12 @@ Nos équipes analysent actuellement vos documents.
 
 Vous recevrez une nouvelle notification lorsque la vérification sera terminée.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre vérification KYC est en cours — AfriLinkPay',
+      subject: 'Votre vérification KYC est en cours — AllnessPay',
       html,
       text,
     });
@@ -618,71 +744,24 @@ AfriLinkPay
 
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Vérification approuvée
-        </h1>
+        ${this.heading('Vérification approuvée')}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Bonjour <strong>${safeFirstName}</strong>,
-        </p>
+        ${this.paragraph(`Bonjour <strong>${safeFirstName}</strong>`)}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Excellente nouvelle ! Votre vérification d'identité
-          a été approuvée.
-        </p>
+        ${this.paragraph(
+          'Excellente nouvelle ! Votre vérification d\'identité a été approuvée.',
+        )}
 
-        <div
-          style="
-            background:#eef8f4;
-            border-left:4px solid #1FAF74;
-            border-radius:8px;
-            padding:16px;
-            margin:24px 0;
-          "
-        >
-          <strong style="color:#08734b;">
-            ✓ Compte vérifié
-          </strong>
+        ${this.statusBox(
+          'success',
+          '✓ Compte vérifié',
+          'Votre compte est maintenant entièrement vérifié.',
+        )}
 
-          <p
-            style="
-              margin:8px 0 0;
-              font-size:13px;
-              color:#527069;
-            "
-          >
-            Votre compte est maintenant entièrement vérifié.
-          </p>
-        </div>
-
-        <p
-          style="
-            font-size:13px;
-            line-height:1.6;
-            color:#64777c;
-          "
-        >
-          Vous pouvez maintenant accéder aux fonctionnalités
-          disponibles sur AfriLinkPay.
-        </p>
+        ${this.smallText(
+          'Vous pouvez maintenant accéder aux fonctionnalités disponibles sur AllnessPay.',
+          { mb: 0 },
+        )}
       `,
       {
         preheader: "Votre vérification d'identité a été approuvée",
@@ -690,7 +769,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -700,19 +779,60 @@ Statut : Compte vérifié.
 
 Votre compte est maintenant entièrement vérifié.
 
-Vous pouvez maintenant accéder aux fonctionnalités disponibles sur AfriLinkPay.
+Vous pouvez maintenant accéder aux fonctionnalités disponibles sur AllnessPay.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Votre compte est vérifié — AfriLinkPay',
+      subject: 'Votre compte est vérifié — AllnessPay',
       html,
       text,
     });
   }
 
+  // ============================================================
+  // DÉPÔT - NOTIFICATION
+  // ============================================================
+
+  async sendDepositNotification(
+    email: string,
+    firstName: string | undefined,
+    options: { amount: number; currency: string; reference: string; walletNumber: string; newBalance?: string },
+  ): Promise<void> {
+    const safeName = firstName ? this.escapeHtml(firstName) : 'Client';
+    const safeAmount = this.escapeHtml(String(options.amount));
+    const safeCurrency = this.escapeHtml(options.currency);
+    const safeReference = this.escapeHtml(options.reference);
+    const safeWallet = this.escapeHtml(options.walletNumber);
+
+    const html = this.buildTemplate(
+      `
+        ${this.heading('Dépôt crédité sur votre portefeuille')}
+
+        ${this.paragraph(`Bonjour <strong>${safeName}</strong>,`)}
+
+        ${this.paragraph(
+          `Nous avons crédité ${safeAmount} ${safeCurrency} sur votre portefeuille ${safeWallet}.`,
+        )}
+
+        ${this.infoCard('Référence', safeReference)}
+
+        ${this.paragraph('Si vous n’avez pas réalisé cette opération, contactez notre support immédiatement.')}
+      `,
+      { preheader: 'Votre dépôt a été crédité' },
+    );
+
+    const text = `AllnessPay\n\nBonjour ${firstName || 'client'},\n\nNous avons crédité ${options.amount} ${options.currency} sur votre portefeuille ${options.walletNumber}.\n\nRéférence: ${options.reference}\n\nSi vous n'avez pas réalisé cette opération, contactez notre support.`;
+
+    await this.sendMail({
+      to: email,
+      subject: 'Dépôt crédité — AllnessPay',
+      html,
+      text,
+    });
+  }
   // ============================================================
   // KYC - REFUSÉ
   // ============================================================
@@ -722,80 +842,24 @@ AfriLinkPay
 
     const safeReason = reason ? this.escapeHtml(reason) : undefined;
 
-    const reasonSection = safeReason
-      ? `
-        <div
-          style="
-            background:#fff5f5;
-            border-left:4px solid #dc2626;
-            border-radius:8px;
-            padding:16px;
-            margin:24px 0;
-          "
-        >
-          <strong style="color:#991b1b;">
-            Motif du refus
-          </strong>
-
-          <p
-            style="
-              margin:8px 0 0;
-              font-size:13px;
-              line-height:1.6;
-              color:#7f1d1d;
-            "
-          >
-            ${safeReason}
-          </p>
-        </div>
-      `
-      : '';
-
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Vérification KYC non approuvée
-        </h1>
+        ${this.heading('Vérification KYC non approuvée')}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Bonjour <strong>${safeFirstName}</strong>,
-        </p>
+        ${this.paragraph(`Bonjour <strong>${safeFirstName}</strong>`)}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Votre dossier de vérification d'identité n'a pas pu
-          être validé.
-        </p>
+        ${this.paragraph(
+          'Votre dossier de vérification d\'identité n\'a pas pu être validé.',
+        )}
 
-        ${reasonSection}
+        ${safeReason
+          ? this.statusBox('error', 'Motif du refus', safeReason)
+          : ''}
 
-        <p
-          style="
-            font-size:13px;
-            line-height:1.6;
-            color:#64777c;
-          "
-        >
-          Vous pouvez soumettre un nouveau dossier en corrigeant
-          les éléments demandés.
-        </p>
+        ${this.smallText(
+          'Vous pouvez soumettre un nouveau dossier en corrigeant les éléments demandés.',
+          { mb: 0 },
+        )}
       `,
       {
         preheader: 'Une action est nécessaire concernant votre KYC',
@@ -803,7 +867,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -819,12 +883,12 @@ ${reason}
 }
 Vous pouvez soumettre un nouveau dossier en corrigeant les éléments demandés.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Action requise concernant votre KYC — AfriLinkPay',
+      subject: 'Action requise concernant votre KYC — AllnessPay',
       html,
       text,
     });
@@ -838,167 +902,43 @@ AfriLinkPay
     email: string,
     inviterName: string,
     tontineName: string,
-    token: string,
+    _token: string,
   ): Promise<void> {
     const safeInviterName = this.escapeHtml(inviterName);
-
     const safeTontineName = this.escapeHtml(tontineName);
-
-    const acceptUrl = `${this.frontendUrl}/invitations/accept?token=${encodeURIComponent(token)}`;
+    const appUrl = this.frontendUrl;
 
     const html = this.buildTemplate(
       `
-        <div
-          style="
-            text-align:center;
-            margin-bottom:28px;
-          "
-        >
-          <div
-            style="
-              display:inline-block;
-              background:#eef8f4;
-              color:#08734b;
-              padding:8px 14px;
-              border-radius:999px;
-              font-size:12px;
-              font-weight:700;
-            "
-          >
-            INVITATION À UNE TONTINE
-          </div>
-        </div>
+        ${this.badge('INVITATION À UNE TONTINE')}
 
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:28px;
-            line-height:1.25;
-            text-align:center;
-            color:#082B37;
-          "
-        >
-          Vous êtes invité(e) !
-        </h1>
+        ${this.heading('Vous êtes invité(e) !', { align: 'center' })}
 
-        <p
-          style="
-            margin:0 0 24px;
-            font-size:15px;
-            line-height:1.7;
-            text-align:center;
-            color:#52666c;
-          "
-        >
-          <strong>${safeInviterName}</strong>
-          vous invite à rejoindre une tontine sur
-          <strong>AfriLinkPay</strong>.
-        </p>
+        ${this.paragraph(
+          `<strong>${safeInviterName}</strong> vous invite à rejoindre une tontine sur <strong>AllnessPay</strong>.`,
+          { align: 'center' },
+        )}
 
-        <div
-          style="
-            background:#f7faf9;
-            border:1px solid #e3ebe8;
-            border-radius:14px;
-            padding:24px;
-            margin-bottom:24px;
-            text-align:center;
-          "
-        >
-          <p
-            style="
-              margin:0 0 8px;
-              font-size:12px;
-              text-transform:uppercase;
-              letter-spacing:0.5px;
-              color:#829297;
-            "
-          >
-            Tontine
-          </p>
+        ${this.infoCard('Tontine', safeTontineName)}
 
-          <p
-            style="
-              margin:0;
-              font-size:21px;
-              font-weight:700;
-              color:#082B37;
-            "
-          >
-            ${safeTontineName}
-          </p>
-        </div>
+        ${this.paragraph(
+          'Connectez-vous ou inscrivez-vous sur AllnessPay pour voir et accepter cette invitation.',
+          { align: 'center', mb: 0 },
+        )}
 
-        <p
-          style="
-            font-size:14px;
-            line-height:1.7;
-            color:#52666c;
-            text-align:center;
-            margin-bottom:28px;
-          "
-        >
-          Rejoignez cette tontine pour participer à un système
-          d'épargne collaborative simple, transparent et sécurisé.
-        </p>
+        ${this.ctaButton('Ouvrir AllnessPay', appUrl)}
 
-        <div style="text-align:center; margin:30px 0;">
+        ${this.divider()}
 
-          <a
-            href="${acceptUrl}"
-            class="button"
-            style="
-              display:inline-block;
-              background:#0D3A47;
-              color:#ffffff;
-              padding:15px 28px;
-              border-radius:10px;
-              text-decoration:none;
-              font-weight:700;
-              font-size:14px;
-            "
-          >
-            Accepter l'invitation
-            <span style="color:#D28E2F;">
-              →
-            </span>
-          </a>
+        ${this.smallText(
+          'Cette invitation expire dans <strong>7 jours</strong>.',
+          { align: 'center', mb: 8 },
+        )}
 
-        </div>
-
-        <div
-          style="
-            border-top:1px solid #edf1f0;
-            padding-top:20px;
-            margin-top:28px;
-          "
-        >
-          <p
-            style="
-              margin:0 0 8px;
-              font-size:12px;
-              line-height:1.6;
-              color:#829297;
-              text-align:center;
-            "
-          >
-            Cette invitation expire dans
-            <strong>7 jours</strong>.
-          </p>
-
-          <p
-            style="
-              margin:0;
-              font-size:12px;
-              line-height:1.6;
-              color:#829297;
-              text-align:center;
-            "
-          >
-            Si vous n'êtes pas à l'origine de cette invitation,
-            vous pouvez simplement ignorer cet email.
-          </p>
-        </div>
+        ${this.smallText(
+          'Si vous n\'êtes pas à l\'origine de cette invitation, vous pouvez simplement ignorer cet email.',
+          { align: 'center', mb: 0 },
+        )}
       `,
       {
         preheader: `${inviterName} vous invite à rejoindre la tontine ${tontineName}`,
@@ -1006,27 +946,27 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Vous êtes invité(e) à rejoindre une tontine !
 
-${inviterName} vous invite à rejoindre la tontine "${tontineName}" sur AfriLinkPay.
+${inviterName} vous invite à rejoindre la tontine "${tontineName}" sur AllnessPay.
 
-Rejoignez cette tontine pour participer à un système d'épargne collaborative simple, transparent et sécurisé.
+Connectez-vous ou inscrivez-vous sur AllnessPay pour voir et accepter cette invitation.
 
-Accepter l'invitation :
-${acceptUrl}
+Ouvrir AllnessPay :
+${appUrl}
 
 Cette invitation expire dans 7 jours.
 
 Si vous n'êtes pas à l'origine de cette invitation, vous pouvez simplement ignorer cet email.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: `${inviterName} vous invite à rejoindre une tontine — AfriLinkPay`,
+      subject: `${inviterName} vous invite à rejoindre une tontine — AllnessPay`,
       html,
       text,
     });
@@ -1045,90 +985,23 @@ AfriLinkPay
 
     const safeRequestDetails = requestDetails ? this.escapeHtml(requestDetails) : undefined;
 
-    const detailsSection = safeRequestDetails
-      ? `
-        <div
-          style="
-            background:#fff8e8;
-            border-left:4px solid #D28E2F;
-            border-radius:8px;
-            padding:16px;
-            margin:24px 0;
-          "
-        >
-          <strong style="color:#956313;">
-            Informations demandées
-          </strong>
-
-          <p
-            style="
-              margin:8px 0 0;
-              font-size:13px;
-              line-height:1.6;
-              color:#746346;
-            "
-          >
-            ${safeRequestDetails}
-          </p>
-        </div>
-      `
-      : '';
-
     const html = this.buildTemplate(
       `
-        <h1
-          style="
-            margin:0 0 16px;
-            font-size:26px;
-            color:#082B37;
-          "
-        >
-          Informations complémentaires requises
-        </h1>
+        ${this.heading('Informations complémentaires requises')}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Bonjour <strong>${safeFirstName}</strong>,
-        </p>
+        ${this.paragraph(`Bonjour <strong>${safeFirstName}</strong>`)}
 
-        <p
-          style="
-            font-size:15px;
-            line-height:1.7;
-            color:#52666c;
-          "
-        >
-          Nous avons besoin d'informations complémentaires
-          pour poursuivre la vérification de votre identité.
-        </p>
+        ${this.paragraph(
+          'Nous avons besoin d\'informations complémentaires pour poursuivre la vérification de votre identité.',
+        )}
 
-        ${detailsSection}
+        ${safeRequestDetails
+          ? this.statusBox('warning', 'Informations demandées', safeRequestDetails)
+          : ''}
 
-        <div
-          style="
-            background:#f4f7f6;
-            border-radius:10px;
-            padding:16px;
-            margin-top:24px;
-          "
-        >
-          <p
-            style="
-              margin:0;
-              font-size:13px;
-              line-height:1.6;
-              color:#52666c;
-            "
-          >
-            Connectez-vous à votre compte AfriLinkPay afin de
-            compléter les informations demandées.
-          </p>
-        </div>
+        ${this.hintBox(
+          'Connectez-vous à votre compte AllnessPay afin de compléter les informations demandées.',
+        )}
       `,
       {
         preheader: 'Des informations complémentaires sont nécessaires pour votre KYC',
@@ -1136,7 +1009,7 @@ AfriLinkPay
     );
 
     const text = `
-AfriLinkPay
+AllnessPay
 
 Bonjour ${firstName},
 
@@ -1150,14 +1023,14 @@ ${requestDetails}
 `
     : ''
 }
-Connectez-vous à votre compte AfriLinkPay afin de compléter les informations demandées.
+Connectez-vous à votre compte AllnessPay afin de compléter les informations demandées.
 
-AfriLinkPay
+AllnessPay
     `.trim();
 
     await this.sendMail({
       to: email,
-      subject: 'Informations complémentaires requises — AfriLinkPay',
+      subject: 'Informations complémentaires requises — AllnessPay',
       html,
       text,
     });

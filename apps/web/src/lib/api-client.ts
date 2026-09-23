@@ -128,6 +128,7 @@ function normalizeError(error: AxiosError<ApiError>): ApiError {
 }
 
 function replay(config: RetriableConfig, accessToken: string) {
+  config._retry = true;
   config.headers.Authorization = `Bearer ${accessToken}`;
   return apiClient(config);
 }
@@ -150,44 +151,41 @@ function shouldAttemptRefresh(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiError>) => {
-    const original = error.config as RetriableConfig | undefined;
+    const originalRequest = error.config as RetriableConfig | undefined;
 
-    if (!shouldAttemptRefresh(error, original)) {
+    if (!shouldAttemptRefresh(error, originalRequest)) {
       return Promise.reject(normalizeError(error));
     }
 
-    original._retry = true;
-
-    // Un rafraichissement est deja en cours : on attend son issue plutot que
-    // d'en declencher un second. Sinon dix requetes simultanees feraient dix
-    // rotations, et neuf jetons seraient invalides des leur emission.
-    if (isRefreshInProgress()) {
-      try {
-        const accessToken = await enqueuePendingRequest();
-        return await replay(original, accessToken);
-      } catch {
-        return Promise.reject(normalizeError(error));
-      }
-    }
-
-    setRefreshInProgress(true);
     try {
-      const refreshToken = refreshTokenProvider();
-      if (!refreshToken) {
-        throw new Error('Aucun jeton de rafraichissement disponible');
+      if (!isRefreshInProgress()) {
+        setRefreshInProgress(true);
+        try {
+          const refreshToken = refreshTokenProvider();
+          if (!refreshToken) throw new Error('Aucun jeton de rafraichissement.');
+          const { access_token, refresh_token } = await requestNewTokens(
+            apiClient.defaults.baseURL ?? '',
+            refreshToken,
+          );
+          tokensRenewedHandler(access_token, refresh_token);
+          resolvePendingRequests(access_token);
+          return replay(originalRequest, access_token);
+        } finally {
+          setRefreshInProgress(false);
+        }
       }
 
-      const tokens = await requestNewTokens(baseURL, refreshToken);
-      tokensRenewedHandler(tokens.access_token, tokens.refresh_token);
-      resolvePendingRequests(tokens.access_token);
-
-      return await replay(original, tokens.access_token);
+      // Autres 401 simultanes : on attend la rotation en cours.
+      const newToken = await enqueuePendingRequest();
+      return replay(originalRequest, newToken);
     } catch (refreshError) {
       rejectPendingRequests(refreshError);
-      sessionExpiredHandler();
+      try {
+        sessionExpiredHandler();
+      } catch (handlerError: unknown) {
+        console.warn(handlerError);
+      }
       return Promise.reject(normalizeError(error));
-    } finally {
-      setRefreshInProgress(false);
     }
   },
 );

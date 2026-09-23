@@ -6,13 +6,32 @@
     <meta name="theme-color" content="#0f766e" />
     <meta
       name="description"
-      content="AfriLinkPay — transferez, payez et gerez votre argent depuis un portefeuille electronique unique."
+      content="AllnessPay — transferez, payez et gerez votre argent depuis un portefeuille electronique unique."
     />
-    <title>AfriLinkPay</title>
+    <title>AllnessPay</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>
   <body>
     <div id="root"></div>
     <noscript>Cette application necessite JavaScript pour fonctionner.</noscript>
+    <script>
+      (function () {
+        var key = 'afrilinkpay-preferences';
+        try {
+          var raw = localStorage.getItem(key);
+          if (raw) {
+            var prefs = JSON.parse(raw);
+            if (prefs.theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            }
+            return;
+          }
+        } catch (e) {}
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

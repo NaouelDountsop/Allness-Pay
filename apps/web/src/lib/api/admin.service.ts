@@ -22,8 +22,11 @@ export interface AdminUser {
   telephone: string;
   pays: string;
   ville: string;
+  adresse: string;
   profession: string;
   statut: string;
+  sexe: string;
+  datenaissance: string;
   verificationotp: boolean;
   dateinscription: string;
   datemodification: string;
@@ -80,11 +83,15 @@ export interface AdminTransaction {
   id: string;
   reference: string;
   user: string;
+  beneficiaryName?: string | null;
   email: string | null;
   type: string;
   amount: number;
   status: string;
   description: string | null;
+  provider: string | null;
+  phoneNumber: string | null;
+  relatedWalletId: string | null;
   createdAt: string;
 }
 
@@ -107,6 +114,31 @@ export interface AdminKycPending {
 export interface AdminChartPoint {
   day: string;
   value: number;
+}
+
+export interface AdminCurrency {
+  id: string;
+  code: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  country: string | null;
+  flag: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminExchangeRate {
+  id: string;
+  fromCurrencyCode: string;
+  toCurrencyCode: string;
+  rate: number;
+  isActive: boolean;
+  fromCurrency?: AdminCurrency;
+  toCurrency?: AdminCurrency;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const adminService = {
@@ -149,31 +181,24 @@ export const adminService = {
     return res.data;
   },
 
-  getTontineStats: async (): Promise<{
-    totalTontines: number;
-    activeTontines: number;
-    totalVolume: number;
-  }> => {
-    const res = await apiClient.get('/admin/tontines/stats');
+  getTontineStats: async (): Promise<AdminTontine[]> => {
+    const res = await apiClient.get<AdminTontine[]>('/admin/tontines');
     return res.data;
   },
 
-  listTransactions: async (): Promise<AdminTransaction[]> => {
-    const res = await apiClient.get<AdminTransaction[]>('/admin/transactions');
-    return res.data;
-  },
-
-  getTransactionStats: async (): Promise<{
-    totalTransactions: number;
-    completedCount: number;
-    totalVolume: number;
-  }> => {
-    const res = await apiClient.get('/admin/transactions/stats');
+  listTransactions: async (filters?: {
+    status?: string;
+    type?: string;
+    provider?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<{ data: AdminTransaction[]; totalItems: number; page: number; pageSize: number; pageCount: number }> => {
+    const res = await apiClient.get('/admin/transactions', { params: filters });
     return res.data;
   },
 
   getRecentActivities: async (): Promise<AdminActivity[]> => {
-    const res = await apiClient.get<AdminActivity[]>('/admin/activities');
+    const res = await apiClient.get<AdminActivity[]>("/admin");
     return res.data;
   },
 
@@ -183,7 +208,83 @@ export const adminService = {
   },
 
   getChartWeekly: async (): Promise<AdminChartPoint[]> => {
-    const res = await apiClient.get<AdminChartPoint[]>('/admin/chart/weekly');
+    const res = await apiClient.get<AdminChartPoint[]>("/admin/dashboard/chart");
     return res.data;
+  },
+
+  exportTransactions: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/transactions/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  exportUsers: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/users/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  exportTontines: async (): Promise<Blob> => {
+    const res = await apiClient.get('/admin/tontines/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  getTontineCycles: async (tontineId: string): Promise<Array<{
+    id: string;
+    cycleNumber: number;
+    status: string;
+    collectedAmount: string;
+    dueDate: string;
+    completedAt?: string;
+    contributions: Array<{ id: string; status: string; amount: string }>;
+  }>> => {
+    const res = await apiClient.get(`/tontines/${tontineId}/cycles`);
+    return res.data;
+  },
+
+  completeCycle: async (tontineId: string, cycleId: string): Promise<unknown> => {
+    const res = await apiClient.post(`/tontines/${tontineId}/cycles/${cycleId}/complete`);
+    return res.data;
+  },
+
+  releasePayout: async (tontineId: string, cycleId: string): Promise<{ beneficiaryWallet: { id: string; balance: string }; amount: string }> => {
+    const res = await apiClient.post(`/tontines/${tontineId}/cycles/${cycleId}/release-payout`);
+    return res.data;
+  },
+
+  listCurrencies: async (): Promise<AdminCurrency[]> => {
+    const res = await apiClient.get<AdminCurrency[]>('/currencies');
+    return res.data;
+  },
+
+  listExchangeRates: async (): Promise<AdminExchangeRate[]> => {
+    const res = await apiClient.get<AdminExchangeRate[]>('/currencies/exchange-rates/all');
+    return res.data;
+  },
+
+  getExchangeRate: async (from: string, to: string): Promise<AdminExchangeRate> => {
+    const res = await apiClient.get<AdminExchangeRate>(`/currencies/exchange-rate/${from}/${to}`);
+    return res.data;
+  },
+
+  createExchangeRate: async (data: {
+    fromCurrencyCode: string;
+    toCurrencyCode: string;
+    rate: number;
+    isActive?: boolean;
+  }): Promise<AdminExchangeRate> => {
+    const res = await apiClient.post<AdminExchangeRate>('/currencies/exchange-rate', data);
+    return res.data;
+  },
+
+  updateExchangeRate: async (
+    from: string,
+    to: string,
+    data: { rate?: number; isActive?: boolean },
+  ): Promise<AdminExchangeRate> => {
+    const res = await apiClient.patch<AdminExchangeRate>(`/currencies/exchange-rate/${from}/${to}`, data);
+    return res.data;
+  },
+
+  deleteExchangeRate: async (from: string, to: string): Promise<void> => {
+    await apiClient.delete(`/currencies/exchange-rate/${from}/${to}`);
   },
 };

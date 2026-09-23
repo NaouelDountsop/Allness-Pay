@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
-import { BeneficiaireService } from './beneficiaire.service';
-import { BeneficiaireController } from './beneficiaire.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Beneficiaire } from './entities/beneficiaire.entity';
+import { User } from '../users/entities/user.entity';
+import { Wallet } from '../wallet/entities/wallet.entity';
+import { BeneficiairesService } from './beneficiaire.service';
+import { BeneficiairesController } from './beneficiaire.controller';
 
 @Module({
-  controllers: [BeneficiaireController],
-  providers: [BeneficiaireService],
+  imports: [TypeOrmModule.forFeature([Beneficiaire, User, Wallet])],
+  controllers: [BeneficiairesController],
+  providers: [BeneficiairesService],
+  exports: [BeneficiairesService],
 })
-export class BeneficiaireModule {}
+export class BeneficiairesModule {}

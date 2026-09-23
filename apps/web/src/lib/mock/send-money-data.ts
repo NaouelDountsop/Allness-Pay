@@ -34,4 +34,29 @@ export const mockRecentTransfers: RecentTransfer[] = [
   },
 ];
 
-export const EXCHANGE_RATE_CAD_XAF = 442.15;
+// Table de conversion des devises (base: 1 unité de la devise source → devise cible)
+export const EXCHANGE_RATES: Record<string, Record<string, number>> = {
+  CAD: { XAF: 442.15, XOF: 442.15, EUR: 0.68 },
+  EUR: { CAD: 1.47, XAF: 654.50, XOF: 654.50 },
+  XAF: { CAD: 0.00226, EUR: 0.00153, XOF: 1.00 },
+  XOF: { CAD: 0.00226, EUR: 0.00153, XAF: 1.00 },
+};
+
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  CAD: 'CA$',
+  EUR: '€',
+  XAF: 'FCFA',
+  XOF: 'CFA',
+};
+
+export const CURRENCY_LABELS: Record<string, string> = {
+  CAD: 'Dollar canadien',
+  EUR: 'Euro',
+  XAF: 'Franc CFA (CEMAC)',
+  XOF: 'Franc CFA (UEMOA)',
+};
+
+export function getExchangeRate(from: string, to: string): number {
+  if (from === to) return 1;
+  return EXCHANGE_RATES[from]?.[to] ?? 1;
+}

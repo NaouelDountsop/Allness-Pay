@@ -18,13 +18,13 @@ export function WalletBalanceCard({
   const formatted = new Intl.NumberFormat('fr-FR').format(balance);
 
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-afrilink-dark to-afrilink-darker text-white p-6 relative overflow-hidden">
+    <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-6 relative overflow-hidden">
       {/* Watermark carte du monde en points - couvre toute la carte */}
       <div
         aria-hidden="true"
         className="pointer-events-none select-none absolute inset-0 opacity-20"
         style={{
-          backgroundImage: 'url(/word.png)',
+          backgroundImage: 'url(/world.png)',
           backgroundSize: '130%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -34,14 +34,15 @@ export function WalletBalanceCard({
 
       {/* Watermark logo en dégradé blanc/orange (masque CSS sur le SVG) */}
       <div
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-white/40 via-afrilink-orange/35 to-afrilink-orange/10"
+        aria-hidden="true" 
+        className="pointer-events-none select-none absolute -top-8 -right-8 w-56 h-56 bg-gradient-to-br from-allness-orange  to-allness-orange"
+
         style={{
-          WebkitMaskImage: 'url(/afrilinkpay_logo1.svg)',
+          WebkitMaskImage: 'url(/allnesspay_logo1.png)',
           WebkitMaskSize: 'contain',
           WebkitMaskRepeat: 'no-repeat',
           WebkitMaskPosition: 'center',
-          maskImage: 'url(/afrilinkpay_logo1.svg)',
+          maskImage: 'url(/allnesspay_logo1.png)',
           maskSize: 'contain',
           maskRepeat: 'no-repeat',
           maskPosition: 'center',
@@ -50,9 +51,9 @@ export function WalletBalanceCard({
 
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-2">
-          <img src="/afrilinkpay_logo1.svg" alt="" className="w-9 h-9 object-contain" />
+          <img src="/allnesspay_logo1.png" alt="" className="w-9 h-9 object-contain" />
           <div>
-            <p className="text-xs text-white/60 tracking-wide">AFRILINK WALLET</p>
+            <p className="text-xs text-white/60 tracking-wide">ALLNESS WALLET</p>
             <p className="text-sm font-medium">{walletId}</p>
           </div>
         </div>
@@ -65,7 +66,7 @@ export function WalletBalanceCard({
       <div className="flex items-center gap-3 relative z-10">
         <p className="text-3xl font-bold">
           {visible ? formatted : '•••••••'}{' '}
-          <span className="text-base font-medium text-afrilink-orange">{currency}</span>
+          <span className="text-base font-medium text-allness-orange">{currency}</span>
         </p>
         <button onClick={() => setVisible((v) => !v)} aria-label="Afficher/masquer le solde">
           {visible ? (

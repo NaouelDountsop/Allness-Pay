@@ -1,0 +1,358 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  ArrowLeft,
+  Loader2,
+  Users,
+  Calendar,
+  Clock,
+  Check,
+  ChevronRight,
+  HelpCircle,
+  Shield,
+  Lock,
+  Coins,
+} from 'lucide-react';
+import { DashboardLayout } from '@/components/user_dashboard/dash-layout';
+import { DashboardHeader } from '@/components/user_dashboard/header';
+import { tontineService, type TontineInvitation } from '@/lib/api/tontine.service';
+import { userService } from '@/lib/api/user.service';
+import { getCycleClosingTime, formatClosingDate } from '@/lib/tontine-utils';
+import { useTranslation } from 'react-i18next';
+
+type FilterTab = 'all' | 'pending' | 'expired' | 'declined';
+
+function InvitationUser({ userId }: { userId?: number }) {
+  const { data: user } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => userService.getById(userId!),
+    enabled: !!userId,
+  });
+
+  if (!userId) return null;
+  if (!user) return <span className="animate-pulse">...</span>;
+
+  return (
+    <span>
+      {user.prenom} {user.nom}
+    </span>
+  );
+}
+
+function InvitationCard({
+  invitation,
+  onAccept,
+  onDecline,
+  isAccepting,
+  isDeclining,
+}: {
+  invitation: TontineInvitation;
+  onAccept: (id: string) => void;
+  onDecline: (id: string) => void;
+  isAccepting: boolean;
+  isDeclining: boolean;
+}) {
+  const { t } = useTranslation();
+  const tontine = invitation.tontine;
+
+  const isPending = invitation.status === 'PENDING';
+  const isAccepted = invitation.status === 'ACCEPTED';
+  const isDeclined = invitation.status === 'DECLINED';
+  const isExpired = invitation.status === 'EXPIRED';
+
+  const frequencyMap: Record<string, string> = {
+    WEEKLY: t('tontines.weekly'),
+    BIWEEKLY: t('tontines.biweekly'),
+    MONTHLY: t('tontines.monthly'),
+  };
+
+  const statusBadge = (() => {
+    if (isPending) return <span className="inline-flex items-center text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.pendingStatus')}</span>;
+    if (isAccepted) return <span className="inline-flex items-center text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.acceptedStatus')}</span>;
+    if (isDeclined) return <span className="inline-flex items-center text-[10px] font-semibold bg-red-50 dark:bg-red-500/15 text-red-600 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.declinedStatus')}</span>;
+    if (isExpired) return <span className="inline-flex items-center text-[10px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full mb-1.5">{t('tontines.expiredStatus')}</span>;
+    return null;
+  })();
+
+  return (
+    <div className="rounded-xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4 min-w-0 flex-1">
+          <div className="w-12 h-12 rounded-xl bg-allness-dark flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5 text-allness-orange" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F5] mb-1.5">
+              {tontine?.name ?? '—'}
+            </h3>
+            {statusBadge}
+            <p className="text-xs text-allness-dark dark:text-gray-400 mt-0.5">
+              {t('tontines.invitedBy')} <span className="text-allness-orange font-semibold"> <InvitationUser userId={invitation.inviterUserId} /> </span>
+            </p>
+            {tontine ? (
+              <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <span className="inline-flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  {tontine.memberLimit} {t('tontines.membersCount')}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {frequencyMap[tontine.frequency] ?? tontine.frequency}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Coins className="w-3.5 h-3.5" />
+                  <span className="font-medium text-allness-dark dark:text-[#F1F5F5]">
+                    {new Intl.NumberFormat('fr-FR').format(Number(tontine.contributionAmount))}{' '}
+                    {tontine.currency ?? 'XAF'}
+                  </span>
+                </span>
+              </div>
+            ) : null}
+            <div className="flex items-center gap-1 mt-2">
+              <Clock className="w-3 h-3 text-gray-300 dark:text-gray-600" />
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                {t('tontines.nextDueDate')}{' '}
+                <span className="font-medium text-allness-green">
+                  {tontine
+                    ? formatClosingDate(
+                        getCycleClosingTime(tontine.frequency, null, tontine.createdAt, null),
+                      )
+                    : '---'}
+                </span>
+              </p>
+            </div>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+              {t('tontines.receivedOn')} {new Date(invitation.createdAt).toLocaleDateString('fr-FR')}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 shrink-0 w-36">
+          {isPending && (
+            <>
+              <button
+                onClick={() => onAccept(invitation.id)}
+                disabled={isAccepting}
+                className="h-9 w-full rounded-lg bg-allness-green hover:bg-allness-greenHover text-white text-xs font-medium transition-colors flex items-center justify-center disabled:opacity-50"
+              >
+                {isAccepting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('tontines.accept')}
+              </button>
+
+              <button
+                onClick={() => onDecline(invitation.id)}
+                disabled={isDeclining}
+                className="h-9 w-full rounded-lg border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center disabled:opacity-50"
+              >
+                {isDeclining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('tontines.decline')}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function TontinesInvitationsPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+
+  const { data: invitations = [], isLoading } = useQuery({
+    queryKey: ['all-my-invitations'],
+    queryFn: tontineService.listAllMyInvitations,
+  });
+
+  const acceptMutation = useMutation({
+    mutationFn: (invitationId: string) => tontineService.respondInvitation(invitationId, 'ACCEPT'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-my-invitations'] });
+      queryClient.invalidateQueries({ queryKey: ['tontines'] });
+    },
+  });
+
+  const declineMutation = useMutation({
+    mutationFn: (invitationId: string) => tontineService.respondInvitation(invitationId, 'DECLINE'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-my-invitations'] });
+    },
+  });
+
+  const pending = invitations.filter((inv) => inv.status === 'PENDING');
+  const expired = invitations.filter((inv) => inv.status === 'EXPIRED');
+  const declined = invitations.filter((inv) => inv.status === 'DECLINED');
+
+  const filteredInvitations = (() => {
+    switch (activeTab) {
+      case 'pending':
+        return pending;
+      case 'expired':
+        return expired;
+      case 'declined':
+        return declined;
+      default:
+        return invitations;
+    }
+  })();
+
+  const tabs: { key: FilterTab; label: string; count: number }[] = [
+    { key: 'all', label: t('tontines.all'), count: invitations.length },
+    { key: 'pending', label: t('tontines.pendingInvitation'), count: pending.length },
+    { key: 'expired', label: t('tontines.expired'), count: expired.length },
+    { key: 'declined', label: t('tontines.declined'), count: declined.length },
+  ];
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardHeader />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-allness-orange animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <DashboardHeader />
+
+      <div className="mx-auto">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 min-w-0">
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold text-allness-dark dark:text-[#F1F5F5]">
+                <button
+                  onClick={() => navigate('/dashboard/tontines')}
+                  className="flex items-center gap-2 text-lg font-semibold text-allness-dark dark:text-[#F1F5F5]"
+                >
+                  <ArrowLeft className="w-7 h-7" />
+                  Invitations aux tontines
+                </button>
+              </h1>
+              <p className="text-sm text-dark-500 mt-1.5"></p>
+            </div>
+
+            <div className="flex items-center gap-2 mb-6 flex-wrap">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`h-9 px-4 rounded-full text-sm font-medium transition-colors ${
+                    activeTab === tab.key
+                      ? 'bg-allness-dark dark:bg-allness-orange text-white'
+                      : 'bg-gray-100 dark:bg-[#18353B] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#1E3A3F]'
+                  }`}
+                >
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              {filteredInvitations.length === 0 ? (
+                <div className="text-center py-16">
+                  <img src="/Messages-bro.svg" alt="Aucune invitation" className="w-80 h-80 mx-auto mb-3" />
+                  <p className="text-sm font-medium text-gray-500">{t('tontines.noInvitation')}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {activeTab === 'all'
+                      ? t('tontines.noInvitationAll')
+                      : t('tontines.noInvitationFiltered', { filter: activeTab === 'pending' ? t('tontines.pendingInvitation').toLowerCase() : activeTab === 'expired' ? t('tontines.expired').toLowerCase() : t('tontines.declined').toLowerCase() })}
+                  </p>
+                </div>
+              ) : (
+                filteredInvitations.map((inv) => (
+                  <InvitationCard
+                    key={inv.id}
+                    invitation={inv}
+                    onAccept={(id) => acceptMutation.mutate(id)}
+                    onDecline={(id) => declineMutation.mutate(id)}
+                    isAccepting={acceptMutation.isPending}
+                    isDeclining={declineMutation.isPending}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="w-full lg:w-80 shrink-0 space-y-4">
+            <div className="rounded-2xl bg-gradient-to-br from-allness-dark to-allness-darker text-white p-6 relative overflow-hidden">
+              <img src="/enveloppe.png" alt="" className="w-full object-contain mb-1" />
+
+              <svg
+                aria-hidden="true"
+                className="pointer-events-none select-none absolute -top-4 -right-2 w-32 h-32 opacity-60"
+                viewBox="0 0 200 200"
+                fill="none"
+              >
+                <defs>
+                  <linearGradient id="globeGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+                    <stop offset="50%" stopColor="#D28E2F" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#D28E2F" stopOpacity="0.05" />
+                  </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r="90" stroke="url(#globeGradient2)" strokeWidth="1.5" />
+                <ellipse cx="100" cy="100" rx="35" ry="90" stroke="url(#globeGradient2)" strokeWidth="1" />
+                <ellipse cx="100" cy="100" rx="65" ry="90" stroke="url(#globeGradient2)" strokeWidth="1" />
+              </svg>
+
+              <div className="relative z-10">
+                <p className="text-sm text-white/70">{t('tontines.youHave')}</p>
+                <p className="text-4xl font-bold text-allness-orange mt-1">{pending.length}</p>
+                <p className="text-sm font-medium text-white/80 mt-0.5">
+                  {pending.length > 1 ? t('tontines.invitationsPending') : t('tontines.invitationPending')}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setActiveTab('pending')}
+                className="mt-5 w-full h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors inline-flex items-center justify-center gap-2"
+              >
+                <span className="hidden sm:inline">{t('tontines.viewAllInvitations')}</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="rounded-2xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-8 h-8 rounded-full bg-allness-green/10 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-allness-green" />
+                </span>
+                <h3 className="text-sm font-semibold text-allness-dark dark:text-[#F1F5F5]">{t('tontines.tips')}</h3>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
+                  {t('tontines.tipVerify')}
+                </li>
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  <Check className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
+                  {t('tontines.tipKnowOrganizer')}
+                </li>
+                <li className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  <Lock className="w-3.5 h-3.5 text-allness-green mt-0.5 shrink-0" />
+                  {t('tontines.tipPinSecurity')}
+                </li>
+              </ul>
+            </div>
+
+            <button className="w-full rounded-2xl border border-gray-100 dark:border-[#18353B] bg-white dark:bg-[#08191E] p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#0D2228] transition-colors text-left">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                  <HelpCircle className="w-4 h-4 text-blue-500" />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-allness-dark dark:text-[#F1F5F5]">{t('tontines.needHelpTitle')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tontines.contactSupport')}</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}

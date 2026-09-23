@@ -5,10 +5,8 @@ import {
   Handshake,
   Search,
   ChevronDown,
+  RotateCcw,
   Plus,
-  Eye,
-  MoreVertical,
-  Filter,
   Download,
   X,
   ArrowRight,
@@ -17,7 +15,7 @@ import {
 import { AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell, XAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { AdminLayout } from '@/components/admin-dashboard/admin-layout';
-//import { Avatar } from "@/components/ui/avatar";
+import { TableActions } from '@/components/common/table-actions';
 
 // Données de démonstration
 
@@ -26,7 +24,7 @@ const STATS = [
     label: 'Total partenaires',
     value: '28',
     change: '+12% vs mois dernier',
-    changeColor: 'text-afrilink-green',
+    changeColor: 'text-allness-green',
     iconBg: 'bg-blue-500/20',
     iconColor: 'text-blue-400',
     icon: Users,
@@ -35,7 +33,7 @@ const STATS = [
     label: 'Partenaires actifs',
     value: '24',
     change: '85.7% du total',
-    changeColor: 'text-afrilink-green',
+    changeColor: 'text-allness-green',
     iconBg: 'bg-green-500/20',
     iconColor: 'text-green-400',
     icon: Users,
@@ -53,7 +51,7 @@ const STATS = [
     label: 'Transactions (Janvier)',
     value: '128 540',
     change: '+21.4% vs Décembre',
-    changeColor: 'text-afrilink-orange',
+    changeColor: 'text-allness-orange',
     iconBg: 'bg-amber-500/20',
     iconColor: 'text-amber-400',
     icon: Receipt,
@@ -236,7 +234,7 @@ const DISTRIBUTION_DATA = [
 ];
 
 const STATUS_STYLES: Record<Partner['status'], string> = {
-  Actif: 'bg-afrilink-green/10 text-afrilink-green',
+  Actif: 'bg-allness-green/10 text-allness-green',
   'En maintenance': 'bg-orange-50 text-orange-500',
   Inactif: 'bg-red-50 text-red-500',
   Suspendu: 'bg-red-50 text-red-500',
@@ -245,9 +243,9 @@ const STATUS_STYLES: Record<Partner['status'], string> = {
 function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
   const Icon = stat.icon;
   return (
-    <div className="bg-afrilink-dark rounded-2xl p-3">
+    <div className="bg-allness-dark rounded-2xl p-5">
       <div className="flex items-center gap-2 mb-2">
-        <span className={`w-8 h-8 rounded-full flex items-center justify-center ${stat.iconBg}`}>
+        <span className={`w-10 h-10 rounded-full flex items-center justify-center ${stat.iconBg}`}>
           <Icon className={`w-4 h-4 ${stat.iconColor}`} />
         </span>
         <span className="text-[11px] text-gray-300">{stat.label}</span>
@@ -255,15 +253,6 @@ function StatCard({ stat }: { stat: (typeof STATS)[number] }) {
       <p className="text-xl font-bold text-white">{stat.value}</p>
       <p className={`text-[10px] mt-1 ${stat.changeColor}`}>{stat.change}</p>
     </div>
-  );
-}
-
-function FilterSelect({ label }: { label: string }) {
-  return (
-    <button className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] text-gray-600 hover:border-gray-300">
-      {label}
-      <ChevronDown className="h-3 w-3 text-gray-400" />
-    </button>
   );
 }
 
@@ -281,25 +270,25 @@ function PartnerRow({ partner, onSelect }: { partner: Partner; onSelect: () => v
       <td className="whitespace-nowrap px-3 py-2">
         <div className="flex items-center gap-2">
           <div
-            className={`flex h-6 w-6 items-center justify-center rounded-md text-[9px] font-bold ${partner.logoBg} ${partner.logoText}`}
+            className={`flex h-6 w-6 items-center justify-center rounded-md text-[9px] font-bold shrink-0 ${partner.logoBg} ${partner.logoText}`}
           >
             {partner.short}
           </div>
-          <span className="text-xs font-medium text-gray-900">{partner.name}</span>
+          <span className="text-xs font-medium text-gray-900 truncate">{partner.name}</span>
         </div>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
+      <td className="whitespace-nowrap px-3 py-2 hidden sm:table-cell">
         <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-600">
           {partner.type}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
+      <td className="whitespace-nowrap px-3 py-2 hidden md:table-cell">
         <span className="flex items-center gap-1 text-xs text-gray-700">
           {partner.flag ? partner.flag : <Globe className="h-3 w-3 text-gray-400" />}
           {partner.country}
         </span>
       </td>
-      <td className="px-3 py-2">
+      <td className="px-3 py-2 hidden lg:table-cell">
         <div className="flex flex-wrap gap-1">
           {partner.services.map((s) => (
             <ServiceTag key={s} label={s} />
@@ -313,26 +302,16 @@ function PartnerRow({ partner, onSelect }: { partner: Partner; onSelect: () => v
           {partner.status}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-gray-900">
+      <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-gray-900 hidden xl:table-cell">
         {partner.volume}
       </td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-700">{partner.transactions}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-700 hidden xl:table-cell">{partner.transactions}</td>
       <td className="whitespace-nowrap px-3 py-2">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={onSelect}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            aria-label="Voir le détail"
-          >
-            <Eye className="h-3.5 w-3.5" />
-          </button>
-          <button
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            aria-label="Plus d'options"
-          >
-            <MoreVertical className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        <TableActions
+          onView={onSelect}
+          onEdit={() => {/* TODO: edit partner */}}
+          onDelete={() => {/* TODO: delete partner */}}
+        />
       </td>
     </tr>
   );
@@ -417,8 +396,8 @@ function PerformanceCard() {
           <AreaChart data={PERFORMANCE_DATA} margin={{ left: -20, right: 0, top: 5, bottom: 0 }}>
             <defs>
               <linearGradient id="perfGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f97316" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
+                <stop offset="0%" stopColor="#00845A" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#00845A" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
@@ -431,10 +410,10 @@ function PerformanceCard() {
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#f97316"
+              stroke="#00845A"
               strokeWidth={1.5}
               fill="url(#perfGradient)"
-              dot={{ r: 2, fill: '#f97316', strokeWidth: 0 }}
+              dot={{ r: 2, fill: '#00845A', strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -485,23 +464,35 @@ function DistributionCard() {
 export default function PartnersPage() {
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(PARTNERS[0]!);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
   const totalPartners = 28;
   const pageSize = 10;
+
+  const filtered = PARTNERS.filter((p) => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.short.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = typeFilter === 'all' || p.type === typeFilter;
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    const matchesCountry = countryFilter === 'all' || p.country === countryFilter;
+    return matchesSearch && matchesType && matchesStatus && matchesCountry;
+  });
 
   return (
     <AdminLayout>
       <main className="p-0">
         {/* En-tête de page */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Gestion des Partenaires</h2>
-              <p className="text-xs text-gray-500">
-                Ajoutez, configurez et suivez vos partenaires.
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-allness-dark">Gestion des Partenaires</h2>
+            <p className="text-xs text-gray-500">
+              Ajoutez, configurez et suivez vos partenaires.
+            </p>
           </div>
-          <Button className="h-8 rounded-lg bg-afrilink-green px-3 text-xs text-white hover:bg-afrilink-green/90">
+          <Button className="h-8 rounded-lg bg-allness-green px-3 text-xs text-white hover:bg-allness-green/90 shrink-0">
             <Plus className="mr-1 h-3 w-3" />
             Ajouter un partenaire
           </Button>
@@ -524,18 +515,70 @@ export default function PartnersPage() {
                     <Search className="h-4 w-4 text-gray-400" />
                     <input
                       placeholder="Rechercher..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
                     />
                   </div>
                 </div>
-                <FilterSelect label="Type" />
-                <FilterSelect label="Statut" />
-                <FilterSelect label="Pays" />
-                <Button variant="outline" className="h-8 rounded-lg px-2 text-xs">
-                  <Filter className="mr-1 h-3 w-3" />
-                  Filtres
-                </Button>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+                >
+                  <option value="all">Type</option>
+                  <option value="Opérateur Mobile">Opérateur Mobile</option>
+                  <option value="Banque">Banque</option>
+                  <option value="Fournisseur Service">Fournisseur Service</option>
+                  <option value="Marchand">Marchand</option>
+                </select>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+                >
+                  <option value="all">Statut</option>
+                  <option value="Actif">Actif</option>
+                  <option value="En maintenance">En maintenance</option>
+                  <option value="Inactif">Inactif</option>
+                  <option value="Suspendu">Suspendu</option>
+                </select>
+                <select
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
+                  className="h-8 px-2 rounded-lg border border-gray-200 text-[11px] text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-allness-orange"
+                >
+                  <option value="all">Pays</option>
+                  <option value="Cameroun">Cameroun</option>
+                  <option value="Sénégal">Sénégal</option>
+                </select>
                 <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setTypeFilter('all');
+                    setStatusFilter('all');
+                    setCountryFilter('all');
+                  }}
+                  className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] text-gray-600 hover:bg-gray-50"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Réinitialiser
+                </button>
+                <button
+                  onClick={() => {
+                    const rows = [['Nom', 'Type', 'Pays', 'Services', 'Statut', 'Volume', 'Transactions']];
+                    filtered.forEach((p) => {
+                      rows.push([p.name, p.type, p.country, p.services.join('; '), p.status, p.volume, p.transactions]);
+                    });
+                    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `partenaires_${new Date().toISOString().slice(0, 10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
                   className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
                   aria-label="Exporter"
                 >
@@ -550,17 +593,17 @@ export default function PartnersPage() {
                   <thead>
                     <tr className="border-b border-gray-100 text-left text-[10px] font-medium text-gray-400">
                       <th className="px-3 py-2">Partenaire</th>
-                      <th className="px-3 py-2">Type</th>
-                      <th className="px-3 py-2">Pays</th>
-                      <th className="px-3 py-2">Services</th>
+                      <th className="px-3 py-2 hidden sm:table-cell">Type</th>
+                      <th className="px-3 py-2 hidden md:table-cell">Pays</th>
+                      <th className="px-3 py-2 hidden lg:table-cell">Services</th>
                       <th className="px-3 py-2">Statut</th>
-                      <th className="px-3 py-2">Volume</th>
-                      <th className="px-3 py-2">Tx</th>
+                      <th className="px-3 py-2 hidden xl:table-cell">Volume</th>
+                      <th className="px-3 py-2 hidden xl:table-cell">Tx</th>
                       <th className="px-3 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {PARTNERS.map((partner) => (
+                    {filtered.map((partner) => (
                       <PartnerRow
                         key={partner.id}
                         partner={partner}
@@ -589,7 +632,7 @@ export default function PartnersPage() {
                       onClick={() => setPage(n)}
                       className={`rounded-lg px-1.5 py-0.5 text-[10px] font-medium ${
                         page === n
-                          ? 'bg-afrilink-dark text-white'
+                          ? 'bg-allness-dark text-white'
                           : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                       }`}
                     >

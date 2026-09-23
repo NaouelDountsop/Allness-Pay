@@ -109,12 +109,12 @@ export default function KycPage() {
       <DashboardHeader />
 
       <div>
-        <h1 className="flex items-center gap-3 text-xl sm:text-3xl md:text-4xl font-bold text-afrilink-dark mb-2 sm:mb-3 leading-tight">
+        <h1 className="flex items-center gap-3 text-xl sm:text-3xl md:text-4xl font-bold text-allness-dark mb-2 sm:mb-3 leading-tight">
           <button
             onClick={handleBack}
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 hover:border-afrilink-green hover:bg-afrilink-green/5 transition-colors shrink-0"
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 hover:border-allness-green hover:bg-allness-green/5 transition-colors shrink-0"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-afrilink-dark" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-allness-dark" />
           </button>
           Compléter mon KYC
         </h1>

@@ -1,127 +1,290 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Plus, ChevronDown, Check } from 'lucide-react';
-import type { QuickContact } from '@/lib/mock/dashboard-data';
+import { Send, Plus, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { transactionService } from '@/lib/api/transaction.service';
+import { walletService } from '@/lib/api/wallet.service';
+import { currencyService } from '@/lib/api/currency.service';
+import { formatAmount, getCurrencySymbol } from '@/lib/utils';
+import { PinConfirmModal } from './send/pin-confirm-modal';
+import useManagedCurrencies from '@/lib/hooks/use-managed-currencies';
 
-interface QuickSendProps {
-  contacts: QuickContact[];
+interface QuickSendContact {
+  id: string | number;
+  name: string;
+  walletNumber: string;
+  currency: string;
+  avatarUrl?: string | null;
 }
 
-const CURRENCIES = ['USD', 'XAF', 'EUR'];
+interface QuickSendProps {
+  contacts: QuickSendContact[];
+  walletId?: string;
+  isLoading?: boolean;
+}
 
-export function QuickSend({ contacts }: QuickSendProps) {
+export function QuickSend({ contacts, walletId, isLoading }: QuickSendProps) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState(CURRENCIES[0]);
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [received, setReceived] = useState('');
+  const editingField = useRef<'sender' | 'receiver'>('sender');
+  const [selectedContact, setSelectedContact] = useState<QuickSendContact | null>(null);
+  const [showPin, setShowPin] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet-primary'],
+    queryFn: walletService.getPrimary,
+  });
+
+  const senderCurrency = wallet?.currency ?? 'XAF';
+  const receiverCurrency = selectedContact?.currency ?? null;
+  const amountNumber = parseFloat(amount) || 0;
+
+  const { set: managedSet, isLoading: managedLoading } = useManagedCurrencies();
+  const visibleContacts = managedLoading ? contacts : contacts.filter((c) => managedSet.has(c.currency));
+
+  const hasContact = !!selectedContact;
+  const { data: exchangeRate } = useQuery({
+    queryKey: ['exchange-rate', senderCurrency, receiverCurrency],
+    queryFn: () => currencyService.getExchangeRate(senderCurrency, receiverCurrency!),
+    enabled: hasContact && !!receiverCurrency && senderCurrency !== receiverCurrency,
+  });
+
+  const rate = exchangeRate?.rate ?? (hasContact && senderCurrency === receiverCurrency ? 1 : null);
+  const receivedNumber = parseFloat(received) || 0;
+  const showConversion = hasContact && receiverCurrency !== null && senderCurrency !== receiverCurrency && rate !== null;
+  const receivedAmount = hasContact && rate !== null
+    ? (editingField.current === 'sender' ? amountNumber * rate : receivedNumber)
+    : null;
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+    if (hasContact && rate && editingField.current === 'sender' && amountNumber > 0) {
+      setReceived((amountNumber * rate).toFixed(2));
+    } else if (hasContact && amountNumber === 0) {
+      setReceived('');
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [rate, hasContact, amountNumber]);
+
+  const transferMutation = useMutation({
+    mutationFn: (pin: string) =>
+      transactionService.createTransfer(walletId!, {
+        toWalletId: selectedContact!.walletNumber,
+        amount,
+        description: `Envoi rapide vers ${selectedContact!.name}`,
+        pin,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-primary'] });
+      setSuccess(true);
+      setError('');
+      setShowPin(false);
+    },
+    onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
+      const msg = err.response?.data?.message ?? err.message ?? '';
+      if (msg.includes('Solde insuffisant') || msg.includes('insufficient') || msg.includes('insuffisant')) {
+        setError(t('tontines.insufficientBalance'));
+      } else {
+        setError(msg || t('tontines.transferError'));
+      }
+      setShowPin(false);
+    },
+  });
+
+  const handleSend = () => {
+    if (!selectedContact || !amount || !walletId) return;
+    setError('');
+    setShowPin(true);
+  };
+
+  const handlePinConfirm = async (pin: string): Promise<string | null> => {
+    try {
+      await transferMutation.mutateAsync(pin);
+      return null;
+    } catch {
+      return t('tontines.transferError');
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5 bg-white dark:bg-gray-800">
+        <div className="flex flex-col items-center text-center py-6">
+          <span className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center mb-3">
+            <CheckCircle2 className="w-6 h-6 text-allness-green" />
+          </span>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t('tontines.transferSent')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            {amount} {selectedContact?.currency} envoyés à {selectedContact?.name}
+          </p>
+          <button
+            onClick={() => {
+              setSuccess(false);
+              setAmount('');
+              setReceived('');
+              setSelectedContact(null);
+            }}
+            className="h-9 px-4 rounded-lg bg-allness-green text-white text-xs font-medium hover:opacity-90"
+          >
+            {t('tontines.newTransfer')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="rounded-2xl border border-[#082B37]/10 shadow-sm p-4 sm:p-5 bg-white">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-5 bg-white dark:bg-gray-800">
       <div className="flex items-center justify-between gap-2 mb-4">
-        <h3 className="text-sm font-semibold text-[#082B37]">Envoi rapide</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('tontines.quickSend')}</h3>
         <a
           href="/dashboard/beneficiaries"
-          className="shrink-0 whitespace-nowrap text-xs text-[#D28E2F] font-semibold hover:text-[#082B37] hover:underline underline-offset-2 transition-colors"
+          className="shrink-0 whitespace-nowrap text-xs text-allness-orange font-semibold hover:underline underline-offset-2 transition-colors"
         >
-          Voir tout
+          {t('tontines.viewAll')}
         </a>
       </div>
 
-      {/* Contacts: scroll horizontal sur petits écrans au lieu de déborder ou de s'écraser */}
       <div className="flex gap-3 mb-5 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
-        {contacts.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className="flex flex-col items-center gap-1 group shrink-0 snap-start"
-          >
-            <div className="w-11 h-11 rounded-full bg-[#082B37]/10 flex items-center justify-center text-xs font-medium text-[#082B37] overflow-hidden ring-2 ring-transparent group-hover:ring-[#D28E2F]/50 transition-all">
-              {c.avatarUrl ? (
-                <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
-              ) : (
-                c.name.charAt(0)
-              )}
+        {isLoading ? (
+          <div className="flex gap-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+                <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 animate-pulse" />
+                <div className="w-8 h-2 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {visibleContacts.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => {
+                  setSelectedContact(c);
+                  setReceived('');
+                  editingField.current = 'sender';
+                }}
+                className={`flex flex-col items-center gap-1 group shrink-0 snap-start ${
+                  selectedContact?.id === c.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                <div className={`w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-200 overflow-hidden ring-2 ${
+                  selectedContact?.id === c.id ? 'ring-allness-orange' : 'ring-transparent group-hover:ring-allness-orange/50'
+                } transition-all`}>
+                  {c.avatarUrl ? (
+                    <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
+                  ) : (
+                    c.name.charAt(0)
+                  )}
+                </div>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 max-w-[52px] truncate">{c.name}</span>
+              </button>
+            ))}
+            <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
+              <button
+                type="button"
+                aria-label={t('tontines.addBeneficiary')}
+                onClick={() => { window.location.href = '/dashboard/beneficiaries'; }}
+                className="w-11 h-11 rounded-full border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 hover:border-allness-orange hover:text-allness-orange transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">{t('tontines.new')}</span>
             </div>
-            <span className="text-[11px] text-[#082B37]/60 max-w-[52px] truncate">{c.name}</span>
-          </button>
-        ))}
-        <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
-          <button
-            type="button"
-            aria-label="Ajouter un bénéficiaire"
-            className="w-11 h-11 rounded-full border border-dashed border-[#082B37]/25 flex items-center justify-center text-[#082B37]/40 hover:border-[#D28E2F] hover:text-[#D28E2F] transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-          <span className="text-[11px] text-[#082B37]/40">New</span>
-        </div>
+          </>
+        )}
       </div>
 
-      {/* Montant + devise: min-w-0 empêche l'input de forcer un débordement horizontal,
-          et le tout passe sur deux lignes plutôt que d'être coupé en dessous de ~340px */}
-      <div className="flex flex-wrap gap-2 mb-3">
+      {selectedContact && (
+        <div className="mb-3 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center text-[10px] font-medium text-gray-700 dark:text-gray-200">
+              {selectedContact.name.charAt(0)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{selectedContact.name}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">{selectedContact.walletNumber}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2 mb-3">
         <input
           type="number"
-          placeholder="Entrez le montant"
+          placeholder={t('tontines.enterAmount')}
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="flex-1 min-w-[140px] h-11 rounded-lg border border-[#082B37]/15 px-3 text-sm bg-white text-[#082B37] placeholder:text-[#082B37]/40 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 focus:border-[#D28E2F]/50"
+          onChange={(e) => {
+            editingField.current = 'sender';
+            const val = e.target.value;
+            setAmount(val);
+            const num = parseFloat(val) || 0;
+            if (showConversion && rate) {
+              setReceived(num > 0 ? (num * rate).toFixed(2) : '');
+            }
+          }}
+          className="flex-1 min-w-[140px] h-11 rounded-lg border border-gray-200 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus-visible:outline-allness-orange/60 focus:ring-2 focus:ring-allness-orange/40 focus:border-allness-orange/50"
         />
-
-        <div className="relative shrink-0" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            className="h-11 min-w-[92px] rounded-lg border border-[#082B37]/15 px-3 flex items-center justify-between gap-2 text-sm font-medium text-[#082B37] bg-white hover:border-[#D28E2F]/50 focus:outline-none focus:ring-2 focus:ring-[#D28E2F]/40 transition-colors"
-          >
-            {currency}
-            <ChevronDown
-              className={`w-4 h-4 text-[#082B37]/50 transition-transform ${
-                open ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-
-          {open && (
-            <ul
-              role="listbox"
-              className="absolute right-0 mt-1.5 w-28 rounded-lg border border-[#082B37]/10 bg-white shadow-lg overflow-hidden z-20 animate-in fade-in slide-in-from-top-1 duration-150"
-            >
-              {CURRENCIES.map((cur) => (
-                <li key={cur} role="option" aria-selected={currency === cur}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCurrency(cur);
-                      setOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-[#082B37] hover:bg-[#082B37]/[0.05] transition-colors"
-                  >
-                    {cur}
-                    {currency === cur && <Check className="w-3.5 h-3.5 text-[#D28E2F]" />}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="h-11 min-w-[72px] rounded-lg border border-gray-200 dark:border-gray-600 px-3 flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+          {senderCurrency}
         </div>
       </div>
 
-      <button className="w-full h-11 rounded-lg bg-[#082B37] hover:bg-[#082B37]/90 active:scale-[0.98] text-[#D28E2F] text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+      {selectedContact && (
+        <div className="rounded-lg bg-allness-orange/5 border border-allness-orange/20 p-2.5 mb-3">
+          {showConversion && (
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+              Taux : 1 {senderCurrency} = {formatAmount(rate!, receiverCurrency!)}
+            </p>
+          )}
+          <div className="flex gap-2 items-center">
+            <input
+              type="number"
+              placeholder="Montant reçu"
+              value={editingField.current === 'sender' ? (receivedAmount ? Number(receivedAmount).toFixed(2) : '') : received}
+              onChange={(e) => {
+                editingField.current = 'receiver';
+                const val = e.target.value;
+                setReceived(val);
+                const num = parseFloat(val) || 0;
+                if (showConversion && rate) {
+                  setAmount(num > 0 ? (num / rate).toFixed(2) : '');
+                }
+              }}
+              className="flex-1 h-9 rounded-lg border border-allness-orange/30 px-3 text-xs bg-white dark:bg-gray-800 text-allness-orange font-semibold focus:outline-none focus:ring-2 focus:ring-allness-orange/30"
+            />
+            <span className="text-xs font-medium text-allness-orange">{getCurrencySymbol(receiverCurrency)}</span>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-2.5 text-xs text-red-700 dark:text-red-400 mb-3">
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleSend}
+        disabled={!selectedContact || !amount}
+        className="w-full h-11 rounded-lg bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] text-allness-orange dark:text-gray-900 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         <Send className="w-4 h-4" />
-        Envoyer maintenant
+        {t('tontines.sendNow')}
       </button>
+
+      {showPin && walletId && (
+        <PinConfirmModal
+          walletId={walletId}
+          onConfirm={handlePinConfirm}
+          onClose={() => setShowPin(false)}
+        />
+      )}
     </div>
   );
 }

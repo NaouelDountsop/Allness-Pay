@@ -87,7 +87,10 @@ export class KycService {
   }
 
   async findByUser(userId: number) {
-    const kyc = await this.kycRepository.findOne({ where: { userId } });
+    const kyc = await this.kycRepository.findOne({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
     return kyc;
   }
 

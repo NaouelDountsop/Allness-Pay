@@ -12,14 +12,14 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange"
+      className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange"
     />
   );
 }
 
 function Select({ children }: { children: React.ReactNode }) {
   return (
-    <select className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-afrilink-dark focus:outline-none focus:ring-1 focus:ring-afrilink-orange bg-white">
+    <select className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm text-allness-dark focus:outline-none focus:ring-1 focus:ring-allness-orange bg-white">
       {children}
     </select>
   );
@@ -32,7 +32,7 @@ export default function ExchangeRateSettingsPage() {
     <AdminLayout active="parametres">
       <button
         onClick={() => navigate('/admin/taux-de-change')}
-        className="flex items-center gap-2 text-sm font-semibold text-afrilink-dark mb-6"
+        className="flex items-center gap-2 text-sm font-semibold text-allness-dark mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         Paramètres d'actualisation
@@ -89,7 +89,7 @@ export default function ExchangeRateSettingsPage() {
         <SectionCard title="Alertes & Notifications">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-medium text-afrilink-dark">
+              <p className="text-xs font-medium text-allness-dark">
                 Alerter en cas d'échec de mise à jour
               </p>
               <p className="text-[11px] text-gray-400">
@@ -100,7 +100,7 @@ export default function ExchangeRateSettingsPage() {
           </div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-medium text-afrilink-dark">
+              <p className="text-xs font-medium text-allness-dark">
                 Alerter en cas de variation anormale
               </p>
               <p className="text-[11px] text-gray-400">Seuil de variation à définir ci-dessous.</p>
@@ -113,7 +113,7 @@ export default function ExchangeRateSettingsPage() {
           </div>
         </SectionCard>
 
-        <div className="flex items-start gap-2 rounded-xl bg-blue-50 border border-blue-100 p-4">
+        <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-200 p-4">
           <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
           <p className="text-[11px] text-blue-600 leading-relaxed">
             Les paramètres de configuration affectent l'ensemble des paires de devises configurées
@@ -129,7 +129,7 @@ export default function ExchangeRateSettingsPage() {
           >
             Annuler
           </button>
-          <button className="h-10 px-5 rounded-lg bg-afrilink-green text-white text-sm font-medium hover:opacity-90 transition-opacity">
+          <button className="h-10 px-5 rounded-lg bg-allness-green text-white text-sm font-medium hover:opacity-90 transition-opacity">
             Enregistrer les paramètres
           </button>
         </div>

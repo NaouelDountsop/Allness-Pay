@@ -19,11 +19,11 @@ export default function StatsBar() {
                 key={s.label}
                 className="bg-white flex items-center gap-4 p-5 lg:p-6 hover:bg-muted/50 transition-colors"
               >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-afrilink-dark">
-                  <Icon className="h-6 w-6 text-afrilink-orange" />
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-allness-dark">
+                  <Icon className="h-6 w-6 text-allness-orange" />
                 </span>
                 <div>
-                  <div className="font-heading font-extrabold text-xl lg:text-2xl text-afrilink-dark">
+                  <div className="font-heading font-extrabold text-xl lg:text-2xl text-allness-dark">
                     {s.value}
                   </div>
                   <div className="text-xs lg:text-sm text-foreground/60">{s.label}</div>

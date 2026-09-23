@@ -18,10 +18,14 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { RolesModule } from './modules/role/role.module';
 import { TontineModule } from './modules/tontine/tontine.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { BeneficiaireModule } from './modules/beneficiaire/beneficiaire.module';
+import { BeneficiairesModule } from './modules/beneficiaire/beneficiaire.module';
 import { TranzakModule } from './payments/tranzak/tranzak.module';
+import { CampayModule } from './payments/campay/campay.module';
+import { StripeModule } from './payments/stripe/stripe.module';
 
 import { LinkedAccountModule } from './modules/linked-account/linked-account.module';
+import { CurrencyModule } from './modules/currency/currency.module';
+import { SupportModule } from './modules/support/support.module';
 
 @Module({
   imports: [
@@ -52,10 +56,14 @@ import { LinkedAccountModule } from './modules/linked-account/linked-account.mod
     RolesModule,
     TontineModule,
     AdminModule,
-    BeneficiaireModule,
+    BeneficiairesModule,
     TranzakModule,
+    CampayModule,
+    StripeModule,
 
     LinkedAccountModule,
+    CurrencyModule,
+    SupportModule,
 
     // `src/modules/README.md`.
   ],

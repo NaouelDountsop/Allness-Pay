@@ -1,101 +1,208 @@
-import { useState } from 'react';
-import { X, Fingerprint, Phone, MapPin, ShieldCheck } from 'lucide-react';
-import { Avatar, Badge, Tabs } from '../../components/ui';
-import { Field, SectionCard } from '../../components/ui/section-card';
+import { useQuery } from "@tanstack/react-query";
+import {
+  UserRound,
+  Phone,
+  Mail,
+  Copy,
+  MapPin,
+  Calendar,
+  FileText,
+  X,
+  Loader2,
+} from "lucide-react";
+import { Dialog, DialogContent } from "../../components/ui/dialog";
+import { adminService } from "../../lib/api/admin.service";
 
-export function UserDetailPanel({ onClose }: { onClose: () => void }) {
-  const [tab, setTab] = useState('Informations Personnelles');
+export function UserDetailPanel({ userId, onClose }: { userId?: number; onClose?: () => void }) {
+  const open = !!userId;
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["admin-user", userId],
+    queryFn: () => adminService.getUserById(userId!),
+    enabled: !!userId,
+  });
+
+  const fullName = user ? `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() : 'Utilisateur';
+  const initials = user
+    ? `${user.prenom?.charAt(0) ?? ''}${user.nom?.charAt(0) ?? ''}`.toUpperCase()
+    : 'U';
 
   return (
-    <div className="fixed inset-0 z-30 bg-black/40 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="p-5 pb-0">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Avatar initials="JD" size="lg" />
-              <div>
-                <p className="text-base font-bold text-afrilink-orange">John Doe</p>
-                <p className="text-[11px] text-gray-400">ID: FG-98425551-JD</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Badge tone="green" dot>
-                    Compte Actif
-                  </Badge>
-                  <Badge tone="blue">KYC Niveau 2</Badge>
+    <Dialog open={open} onOpenChange={() => onClose?.()}>
+      <DialogContent className="sm:max-w-5xl w-full max-h-[95vh] p-0 overflow-hidden">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 text-allness-orange animate-spin" />
+          </div>
+        ) : (
+          <div className="w-full bg-white">
+            {/* HEADER */}
+            <div className="flex items-start gap-5 px-6 py-5 border-b border-gray-100">
+              <div className="relative w-20 h-20 shrink-0 rounded-full overflow-hidden border-2 border-white shadow">
+                <div className="w-full h-full bg-gradient-to-b from-gray-400 to-gray-600 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{initials}</span>
+                </div>
+                <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${user?.verificationotp ? 'bg-allness-green' : 'bg-allness-orange'}`} />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-lg font-bold text-allness-dark">{fullName}</h2>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${user?.verificationotp ? 'bg-green-50 text-allness-green' : 'bg-orange-50 text-allness-orange'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${user?.verificationotp ? 'bg-allness-green' : 'bg-allness-orange'}`} />
+                    {user?.verificationotp ? 'Compte Actif' : 'En attente'}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    ID Utilisateur : {user?.idutilisateur ?? '—'}
+                    <Copy className="w-3 h-3 text-gray-400 cursor-pointer" />
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> {user?.telephone ?? '—'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> {user?.email ?? '—'}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> Membre depuis le {user?.dateinscription ? new Date(user.dateinscription).toLocaleDateString('fr-FR') : '—'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {user?.ville ?? '—'}, {user?.pays ?? ''}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-8 shrink-0">
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Solde principal</p>
+                  <p className="text-sm font-bold text-allness-dark">—</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Dernière activité</p>
+                  <p className="text-sm font-medium text-gray-700">—</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] text-gray-400 mb-0.5">Statut</p>
+                  <p className="text-sm font-medium text-allness-dark">{user?.statut ?? '—'}</p>
                 </div>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-300 hover:text-gray-500"
-              aria-label="Fermer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+
+            {/* CONTENT */}
+            <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="lg:col-span-2 space-y-5">
+                  <Card icon={UserRound} title="Informations personnelles">
+                    <div className="grid grid-cols-3 gap-4">
+                      <Field label="Nom complet" value={fullName} />
+                      <Field label="Date de naissance" value={user?.datenaissance ? new Date(user.datenaissance).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'} />
+                      <Field label="Sexe" value={user?.sexe ?? '—'} />
+                      <Field label="Nationalité" value={user?.pays ?? '—'} />
+                      <Field label="Profession" value={user?.profession ?? '—'} />
+                      <Field label="Statut" value={user?.statut ?? '—'} />
+                    </div>
+                  </Card>
+
+                  <Card icon={Phone} title="Coordonnées">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Numéro de téléphone" value={user?.telephone ?? '—'} badge="Vérifié" />
+                      <Field label="Adresse email" value={user?.email ?? '—'} badge="Vérifié" />
+                      <Field label="Adresse physique" value={user?.adresse ?? '—'} />
+                      <Field label="Ville" value={`${user?.ville ?? '—'}, ${user?.pays ?? ''}`} />
+                    </div>
+                  </Card>
+
+                  <Card icon={FileText} title="Informations complémentaires">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Profession" value={user?.profession ?? '—'} />
+                      <Field label="Dernière modification" value={user?.datemodification ? new Date(user.datemodification).toLocaleDateString('fr-FR') : '—'} />
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-5">
+                  <StatsCard />
+                </div>
+              </div>
           </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
 
-          <Tabs
-            tabs={['Informations Personnelles', 'Portefeuilles', 'Activité Récente']}
-            active={tab}
-            onChange={setTab}
-          />
+/* ---------- Sous-composants ---------- */
+
+function Card({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof UserRound;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-gray-100 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Icon className="w-4 h-4 text-allness-green" />
+        <p className="text-sm font-semibold text-allness-dark">{title}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, value, badge }: { label: string; value: string; badge?: string }) {
+  return (
+    <div>
+      <p className="text-[11px] text-gray-400 mb-1">{label}</p>
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-allness-dark whitespace-pre-line">{value}</p>
+        {badge && (
+          <span className="text-[10px] font-medium text-allness-green bg-green-50 px-1.5 py-0.5 rounded">
+            {badge}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatsCard() {
+  return (
+    <div className="rounded-lg border border-gray-100 p-4">
+      <p className="text-sm font-semibold text-allness-dark mb-4">Statistiques du compte</p>
+      <div className="grid grid-cols-2 gap-y-4 text-sm">
+        <div>
+          <p className="text-[11px] text-gray-400">Total des transactions</p>
+          <p className="font-semibold text-allness-dark">0</p>
         </div>
-
-        <div className="p-5 flex flex-col gap-4 max-h-[55vh] overflow-y-auto">
-          <SectionCard title="Identité" icon={Fingerprint} tone="orange">
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Nom complet" value="John Doe" />
-              <Field label="Date de naissance" value="12 Mai 1985" />
-              <Field label="Sexe" value="Masculin" />
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Coordonnées" icon={Phone}>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Numéro de téléphone" value="+237 670 00 00 00" />
-              <Field label="Adresse email" value="j.doe@example.com" />
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Localisation" icon={MapPin}>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Ville & Pays" value="Douala, Cameroun" />
-              <Field label="Adresse" value="BP..." />
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Résumé de conformité" icon={ShieldCheck} tone="green">
-            <div className="flex flex-col gap-3 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Vérification d'identité</span>
-                <Badge tone="green">Approuvée</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Justificatif de domicile</span>
-                <span className="text-afrilink-dark font-medium">Validé</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Origine des fonds</span>
-                <span className="text-afrilink-green font-medium">Auto-déclaré</span>
-              </div>
-            </div>
-          </SectionCard>
+        <div>
+          <p className="text-[11px] text-gray-400">Volume total</p>
+          <p className="font-semibold text-allness-dark">0 XAF</p>
         </div>
-
-        <div className="p-5 pt-3 border-t border-gray-100 flex flex-col sm:flex-row gap-2">
-          <button className="h-10 px-4 rounded-lg border border-red-200 text-red-500 text-xs font-medium hover:bg-red-50 transition-colors flex-1">
-            Suspendre le compte
-          </button>
-          <button className="h-10 px-4 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 transition-colors flex-1">
-            Réinitialiser le PIN
-          </button>
-          <button
-            onClick={onClose}
-            className="h-10 px-4 rounded-lg bg-afrilink-green text-white text-xs font-medium hover:opacity-90 transition-opacity flex-1"
-          >
-            Fermer le profil
-          </button>
+        <div>
+          <p className="text-[11px] text-gray-400">Tontines créées</p>
+          <p className="font-semibold text-allness-dark">0</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-gray-400">Tontines rejointes</p>
+          <p className="font-semibold text-allness-dark">0</p>
         </div>
       </div>
     </div>
   );
 }
+
+

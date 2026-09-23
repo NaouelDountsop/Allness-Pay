@@ -1,0 +1,101 @@
+@startuml AfriLinkPay Package Diagram - Simplified
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+
+skinparam package {
+  BackgroundColor #F8FAFC
+  BorderColor #475569
+  FontSize 12
+  FontColor #1E293B
+  StereotypeFontSize 10
+}
+
+skinparam note {
+  BackgroundColor #FFFBEB
+  BorderColor #D97706
+  FontColor #92400E
+}
+
+skinparam arrow {
+  Color #64748B
+  FontColor #64748B
+  FontSize 10
+}
+
+title **Diagramme de Paquetages — AfriLinkPay**\n//Architecture monorepo 3-tiers//
+
+package "AfriLinkPay (Monorepo)" as ROOT #F1F5F9 {
+
+  package "«app» api\nNestJS | Port 3000" as API #DBEAFE {
+    package "Infrastructure" as INFRA #E0E7FF {
+      package "Config\nModule" as C1
+      package "Database\nModule\n(PostgreSQL)" as C2
+      package "OTP/Redis\nModule" as C3
+      package "Mail\nModule\n(SMTP)" as C4
+    }
+    package "Metier" as BIZ #BFDBFE {
+      package "Auth\nModule" as M1
+      package "Users\nModule" as M2
+      package "Wallets\nModule" as M3
+      package "Transactions\nModule" as M4
+      package "Pin\nModule" as M5
+      package "Tontine\nModule" as M6
+      package "KYC\nModule" as M7
+      package "Currency\nModule" as M8
+    }
+    package "Admin & Payments" as AP #93C5FD {
+      package "Role\nModule" as A1
+      package "Admin\nModule" as A2
+      package "Tranzak\nModule" as P1
+      package "Campay\nModule" as P2
+    }
+  }
+
+  package "«app» web\nReact/Vite | Port 5173" as WEB #DCFCE7 {
+    package "Pages\n(57 routes)" as W1
+    package "Components\n(shadcn + Tailwind)" as W2
+    package "API Services\n(14 domaines)" as W3
+    package "State\n(React Query\nZustand)" as W4
+  }
+
+  package "«package» shared\nContrats" as SHARED #FEF9C3 {
+    package "KYC\nContracts" as S1
+    package "User/Wallet\nTypes" as S2
+    package "Campay\nTypes" as S3
+    package "Tranzak\nTypes" as S4
+    package "Enums" as S5
+  }
+}
+
+' DÉPENDANCES
+WEB --> API : HTTP REST
+M1 ..> M2 : forwardRef
+M2 ..> C3 : OTP
+M2 ..> C4 : Mail
+M2 ..> M3 : Wallet
+M4 ..> M3 : Debit/Credit
+M4 ..> M5 : PIN
+M5 ..> C3 : OTP
+M6 ..> M3 : Contributions
+M6 ..> C4 : Invitations
+M7 ..> C4 : Statut KYC
+P1 ..> M4 : Transactions
+P2 ..> M4 : Transactions
+
+API ..> SHARED : importe
+WEB ..> SHARED : importe
+
+note bottom of INFRA
+  PostgreSQL 16 + Redis 7
+  Docker Compose
+end note
+
+note right of SHARED
+  Build en premier
+  Zod + TypeScript
+end note
+
+@enduml

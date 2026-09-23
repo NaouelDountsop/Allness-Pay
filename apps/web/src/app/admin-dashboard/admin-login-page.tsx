@@ -48,11 +48,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4 sm:p-6">
-      <div className="w-full max-w-md rounded-2xl shadow-xl overflow-hidden bg-white">
-        <div className="bg-afrilink-dark p-6 text-center">
-          <div className="w-14 h-14 rounded-full bg-afrilink-orange/20 flex items-center justify-center mx-auto mb-3">
-            <ShieldCheck className="w-7 h-7 text-afrilink-orange" />
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#F8FAFB] dark:bg-[#071418] p-4 sm:p-6">
+      <div className="w-full max-w-md rounded-2xl shadow-xl overflow-hidden bg-white dark:bg-[#08191E]">
+        <div className="bg-allness-dark p-6 text-center">
+          <div className="w-14 h-14 rounded-full bg-allness-orange/20 flex items-center justify-center mx-auto mb-3">
+            <ShieldCheck className="w-7 h-7 text-allness-orange" />
           </div>
           <h1 className="text-xl font-bold text-white">Espace Administrateur</h1>
           <p className="text-sm text-white/60 mt-1">Accès sécurisé réservé aux administrateurs</p>
@@ -65,25 +65,25 @@ export default function AdminLoginPage() {
                 label="Adresse email"
                 icon={Mail}
                 type="email"
-                placeholder="admin@afrilinkpay.com"
+                placeholder="admin@allnesspay.com"
                 {...register('email')}
               />
               {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             <div className="w-full space-y-1">
-              <label className="text-sm font-medium text-gray-700">Mot de passe</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-[#F1F5F5]">Mot de passe</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-afrilink-gray" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-allness-gray" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full h-11 rounded-lg border border-gray-200 pl-9 pr-9 text-sm text-gray-900 bg-white focus:outline-none focus:border-afrilink-orange focus:ring-1 focus:ring-afrilink-orange"
+                  className="w-full h-11 rounded-lg border border-gray-200 dark:border-[#18353B] pl-9 pr-9 text-sm text-gray-900 dark:text-[#F1F5F5] bg-white dark:bg-[#071418] focus:outline-none focus:border-allness-orange focus:ring-1 focus:ring-allness-orange"
                   {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-afrilink-gray"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-allness-gray"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -97,8 +97,8 @@ export default function AdminLoginPage() {
               Connexion Admin →
             </AppButton>
 
-            <p className="text-center text-xs text-gray-400 mt-4">
-              <a href="/login" className="text-afrilink-green font-medium hover:underline">
+            <p className="text-center text-xs text-gray-400 dark:text-[#94A3B8] mt-4">
+              <a href="/login" className="text-allness-green font-medium hover:underline">
                 Retour à la connexion utilisateur
               </a>
             </p>

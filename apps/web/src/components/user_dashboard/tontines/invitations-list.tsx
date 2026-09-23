@@ -1,13 +1,12 @@
-import { X, Check, Mail, User } from 'lucide-react';
+import { Check, XIcon, Calendar, UserPlus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import type { TontineInvitation } from '@/lib/api/tontine.service';
 import { userService } from '@/lib/api/user.service';
-import { tontineService } from '@/lib/api/tontine.service';
 
 interface InvitationsListProps {
   invitations: TontineInvitation[];
-  onAccept?: (invitationId: number) => void;
-  onDecline?: (invitationId: number) => void;
+  onInvitationClick?: (invitation: TontineInvitation) => void;
 }
 
 function InvitationUser({ userId }: { userId?: number }) {
@@ -18,87 +17,112 @@ function InvitationUser({ userId }: { userId?: number }) {
   });
 
   if (!userId) return null;
-  if (!user) return <span className="animate-pulse">Chargement...</span>;
+  if (!user) return <span className="animate-pulse">...</span>;
 
   return (
-    <span>
-      {user.prenom} {user.nom}
-    </span>
+    <span>{user.prenom} {user.nom}</span>
   );
 }
 
-function InvitationTontine({ tontineId }: { tontineId: number }) {
-  const { data: tontine } = useQuery({
-    queryKey: ['tontine', tontineId],
-    queryFn: () => tontineService.getById(String(tontineId)),
-  });
+export function InvitationsList({ invitations, onInvitationClick }: InvitationsListProps) {
+  const { t } = useTranslation();
+  if (invitations.length === 0) return null;
 
-  if (!tontine) return <span className="animate-pulse">Chargement...</span>;
-
-  return <span>{tontine.name}</span>;
-}
-
-export function InvitationsList({ invitations, onAccept, onDecline }: InvitationsListProps) {
-  if (invitations.length === 0) {
-    return null;
-  }
+  const pending = invitations.filter((inv) => inv.status === 'PENDING');
+  const processed = invitations.filter((inv) => inv.status !== 'PENDING');
 
   return (
-    <div>
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">Invitations en attente</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {invitations.map((inv) => (
-          <div
-            key={inv.id}
-            className="rounded-xl border border-gray-100 bg-white p-4 flex items-center justify-between gap-3"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 text-gray-400 text-xs font-medium">
-                {inv.inviteeEmail ? <Mail className="w-4 h-4" /> : <User className="w-4 h-4" />}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">
-                  <InvitationTontine tontineId={inv.tontineId} />
-                </p>
-                <p className="text-[11px] text-gray-400 truncate">
-                  {inv.inviteeEmail || <InvitationUser userId={inv.inviteeUserId} />}
-                </p>
-              </div>
-            </div>
-
-            {inv.status === 'PENDING' ? (
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  aria-label="Refuser"
-                  onClick={() => onDecline?.(inv.id)}
-                  className="w-7 h-7 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => onAccept?.(inv.id)}
-                  className="h-7 px-3 rounded-lg bg-afrilink-green text-white text-xs font-medium flex items-center gap-1 hover:bg-afrilink-greenHover transition-colors"
-                >
-                  <Check className="w-3 h-3" />
-                  Accepter
-                </button>
-              </div>
-            ) : inv.status === 'ACCEPTED' ? (
-              <span className="shrink-0 text-[10px] font-medium bg-green-50 text-green-600 px-2.5 py-1 rounded-full">
-                Acceptée
-              </span>
-            ) : inv.status === 'DECLINED' ? (
-              <span className="shrink-0 text-[10px] font-medium bg-red-50 text-red-500 px-2.5 py-1 rounded-full">
-                Refusée
-              </span>
-            ) : (
-              <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-afrilink-orange px-2.5 py-1 rounded-full">
-                Expirée
-              </span>
-            )}
+    <div className="space-y-4">
+      {pending.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-6 h-6 rounded-full bg-allness-orange/10 flex items-center justify-center">
+              <UserPlus className="w-3.5 h-3.5 text-allness-orange" />
+            </span>
+            <h3 className="text-sm font-semibold text-allness-dark">
+              {t('tontines.pendingInvitations')}
+            </h3>
+            <span className="ml-auto text-[11px] font-medium bg-allness-orange/10 text-allness-orange px-2 py-0.5 rounded-full">
+              {pending.length}
+            </span>
           </div>
-        ))}
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {pending.map((inv) => (
+              <button
+                key={inv.id}
+                onClick={() => onInvitationClick?.(inv)}
+                className="rounded-xl border border-allness-orange/20 bg-allness-orange/5 p-4 flex items-center justify-between gap-3 text-left hover:bg-allness-orange/10 transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-10 h-10 rounded-xl bg-allness-orange/15 flex items-center justify-center shrink-0">
+                    <UserPlus className="w-4.5 h-4.5 text-allness-orange" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-allness-dark truncate">
+                      {inv.tontine?.name ?? '—'}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      <InvitationUser userId={inv.inviterUserId} />
+                    </p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Calendar className="w-3 h-3 text-gray-300" />
+                      <p className="text-[11px] text-gray-400">
+                        {t('tontines.expiresAt', { date: new Date(inv.expiresAt).toLocaleDateString('fr-FR') })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1">
+                  <span className="text-[10px] font-medium text-allness-orange opacity-0 group-hover:opacity-100 transition-opacity">
+                    {t('tontines.view')}
+                  </span>
+                  <Check className="w-4 h-4 text-allness-orange" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {processed.length > 0 && (
+        <div>
+          <h3 className="text-xs font-medium text-gray-400 mb-2">{t('tontines.processed')}</h3>
+          <div className="space-y-2">
+            {processed.map((inv) => (
+              <div
+                key={inv.id}
+                className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 flex items-center justify-between gap-3"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-600 truncate">
+                      {inv.tontine?.name ?? '—'}
+                    </p>
+                    <p className="text-[11px] text-gray-400 truncate">
+                      <InvitationUser userId={inv.inviterUserId} />
+                    </p>
+                  </div>
+                </div>
+                {inv.status === 'ACCEPTED' ? (
+                  <span className="shrink-0 text-[10px] font-medium bg-green-50 text-green-600 px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    {t('tontines.accepted')}
+                  </span>
+                ) : inv.status === 'DECLINED' ? (
+                  <span className="shrink-0 text-[10px] font-medium bg-red-50 text-red-500 px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <XIcon className="w-3 h-3" />
+                    {t('tontines.declined')}
+                  </span>
+                ) : (
+                  <span className="shrink-0 text-[10px] font-medium bg-orange-50 text-allness-orange px-2.5 py-1 rounded-full">
+                    {t('tontines.expired')}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

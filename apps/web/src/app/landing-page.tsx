@@ -2,6 +2,7 @@ import Navbar from '@/components/landing/navbar';
 import Hero from '@/components/landing/hero';
 import StatsBar from '@/components/landing/stats-bar';
 import Features from '@/components/landing/features';
+import { ExchangeRateFAB } from '@/components/landing/exchange-rate-card';
 import Tontines from '@/components/landing/tontines';
 import Services from '@/components/landing/services';
 import Trust from '@/components/landing/trust';
@@ -22,6 +23,7 @@ export default function Home() {
         <CTA />
         <Footer />
       </main>
+      <ExchangeRateFAB />
     </div>
   );
 }

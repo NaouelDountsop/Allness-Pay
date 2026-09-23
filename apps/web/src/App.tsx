@@ -1,52 +1,63 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AdminProtectedRoute } from '@/components/common/admin-protected-route';
-import LandingPage from '@/app/landing-page';
-import SignupPage from '@/app/auth/signup-page';
-import VerifyEmailPage from '@/app/auth/verify-email-page';
-import LoginPage from '@/app/auth/login-page';
-import AuthCallbackPage from '@/app/auth/auth-callback-page';
-import DashboardPage from '@/app/user_dashboard/u-dashboard-page';
-import KycPage from '@/app/user_dashboard/kyc-page';
-import WalletPage from '@/app/user_dashboard/wallet-page';
-import SendMoneyPage from '@/app/user_dashboard/send-money-page';
-import PaymentsPage from '@/app/user_dashboard/payements-page';
-import BillPaymentPage from '@/app/user_dashboard/bill-payement-page';
-import QrPaymentPage from '@/app/user_dashboard/qr-payement-page';
-import QrScanPage from '@/app/user_dashboard/qr-scan-page';
-import TontinesPage from '@/app/user_dashboard/tontines-page';
-import CreateTontinePage from '@/app/user_dashboard/create-tontine-page';
-import TontineDetailPage from '@/app/user_dashboard/tontine-detail-page';
-import TontineMembersPage from '@/app/user_dashboard/tontine-members-page';
-import ContributionHistoryPage from '@/app/user_dashboard/contribution-history-page';
-import MakeContributionPage from '@/app/user_dashboard/make-contribution-page';
-import TontineSettingsPage from '@/app/user_dashboard/tontine-settings-page';
-import TontineChatPage from '@/app/user_dashboard/tontine-chat-page';
-import ProfilePage from '@/app/user_dashboard/profile-page';
-import SettingsPage from '@/app/user_dashboard/settings-page';
-import AdminLoginPage from '@/app/admin-dashboard/admin-login-page';
-import AdminDashboardPage from '@/app/admin-dashboard/a-dashboard-page';
-import UsersListPage from '@/app/admin-dashboard/users-list-page';
-import TontinesSupervisionPage from '@/app/admin-dashboard/tontines-supervision-page';
-import MerchantsListPage from '@/app/admin-dashboard/merchant-list-page';
-import MerchantDetailPage from '@/app/admin-dashboard/merchant-detail-page';
-import AddMerchantPage from '@/app/admin-dashboard/add-merchant-page';
-import KycListPage from '@/app/admin-dashboard/kyc-list-page';
-import KycDetailPage from '@/app/admin-dashboard/kyc-details-page';
-import ExchangeRatesPage from './app/admin-dashboard/exchange-rate-list-page';
-import EditExchangeRatePage from '@/app/admin-dashboard/edit-exchange-rate-page';
-import AddExchangeRatePage from '@/app/admin-dashboard/add-exchange-rate-page';
-import ExchangeRateHistoryPage from '@/app/admin-dashboard/exchange-rate-history-page';
-import ExchangeRateSettingsPage from '@/app/admin-dashboard/exchange-rate-settings-page';
-import TransactionsPage from '@/app/user_dashboard/transaction-page';
-import AdminTransactionsPage from '@/app/admin-dashboard/transactions-page';
-import PartnersPage from '@/app/admin-dashboard/partners-page';
-
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { AdminProtectedRoute } from "@/components/common/admin-protected-route";
+import { UserProtectedRoute } from "@/components/common/user-protected-route";
+import LandingPage from "@/app/landing-page";
+import SignupPage from "@/app/auth/signup-page";
+import VerifyEmailPage from "@/app/auth/verify-email-page";
+import LoginPage from "@/app/auth/login-page";
+import AuthCallbackPage from "@/app/auth/auth-callback-page";
+import DashboardPage from "@/app/user_dashboard/u-dashboard-page";
+import KycPage from "@/app/user_dashboard/kyc-page";
+import WalletPage from "@/app/user_dashboard/wallet-page";
+import SendMoneyPage from "@/app/user_dashboard/send-money-page";
+import WithdrawPage from "@/app/user_dashboard/withdraw-page";
+import PaymentsPage from "@/app/user_dashboard/payements-page";
+import QrPaymentPage from "@/app/user_dashboard/qr-payement-page";
+import QrScanPage from "@/app/user_dashboard/qr-scan-page";
+import WalletQrCodePage from "@/app/user_dashboard/wallet-qr-code-page";
+import TontinesPage from "@/app/user_dashboard/tontines-page";
+import CreateTontinePage from "@/app/user_dashboard/create-tontine-page";
+import TontineDetailPage from "@/app/user_dashboard/tontine-detail-page";
+import TontineMembersPage from "@/app/user_dashboard/tontine-members-page";
+import ContributionHistoryPage from "@/app/user_dashboard/contribution-history-page";
+import MakeContributionPage from "@/app/user_dashboard/make-contribution-page";
+import TontineSettingsPage from "@/app/user_dashboard/tontine-settings-page";
+import TontineChatPage from "@/app/user_dashboard/tontine-chat-page";
+import TontinesInvitationsPage from "@/app/user_dashboard/tontines-invitations-page";
+import ProfilePage from "@/app/user_dashboard/profile-page";
+import SettingsPage from "@/app/user_dashboard/settings-page";
+import PaymentHistoryPage from "@/app/user_dashboard/payment-history-page";
+import AdminLoginPage from "@/app/admin-dashboard/admin-login-page";
+import AdminDashboardPage from "@/app/admin-dashboard/a-dashboard-page";
+import UsersListPage from "@/app/admin-dashboard/users-list-page";
+import TontinesSupervisionPage from "@/app/admin-dashboard/tontines-supervision-page";
+import MerchantsListPage from "@/app/admin-dashboard/merchant-list-page";
+import MerchantDetailPage from "@/app/admin-dashboard/merchant-detail-page";
+import AddMerchantPage from "@/app/admin-dashboard/add-merchant-page";
+import KycListPage from "@/app/admin-dashboard/kyc-list-page";
+import KycDetailPage from "@/app/admin-dashboard/kyc-details-page";
+import ExchangeRatesPage from "./app/admin-dashboard/exchange-rate-list-page";
+import EditExchangeRatePage from "@/app/admin-dashboard/edit-exchange-rate-page";
+import AddExchangeRatePage from "@/app/admin-dashboard/add-exchange-rate-page";
+import ExchangeRateHistoryPage from "@/app/admin-dashboard/exchange-rate-history-page";
+import ExchangeRateSettingsPage from "@/app/admin-dashboard/exchange-rate-settings-page";
+import TransactionsPage from "@/app/user_dashboard/transaction-page";
+import AdminTransactionsPage from "@/app/admin-dashboard/transactions-page";
+import PartnersPage from "@/app/admin-dashboard/partners-page";
+import AdminSettingsPage from "@/app/admin-dashboard/admin-settings-page";
+import SupportPage from "@/app/admin-dashboard/support-page";
 import { DepositFlowProvider } from './context/deposit-flow-context';
+import { CardDepositFlowProvider } from './context/card-deposit-flow-context';
+import { StripeProvider } from '@/components/stripe/stripe-provider';
 import InitiateDepositPage from '@/app/user_dashboard/initiate-deposit-page';
 import RequestSentPage from '@/app/user_dashboard/request-sent-page';
 import PhoneConfirmationPage from '@/app/user_dashboard/phone-confirmation-page';
 import ProcessingPage from '@/app/user_dashboard/processing-page';
 import DepositSuccessPage from '@/app/user_dashboard/deposit-success-page';
+import CardDepositRedirectPage from '@/app/user_dashboard/card-deposit-redirect-page';
+import CardDepositCardInfoPage from '@/app/user_dashboard/card-deposit-card-info-page';
+import CardDepositProcessingPage from '@/app/user_dashboard/card-deposit-processing-page';
+import CardDepositSuccessPage from '@/app/user_dashboard/card-deposit-success-page';
 import BeneficiariesPage from './app/user_dashboard/beneficiary-page';
 import AcceptInvitationPage from '@/app/accept-invitation-page';
 
@@ -60,27 +71,39 @@ export function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/invitations/accept" element={<AcceptInvitationPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/kyc" element={<KycPage />} />
-        <Route path="/dashboard/wallet" element={<WalletPage />} />
-        <Route path="/dashboard/send" element={<SendMoneyPage />} />
-        <Route path="/dashboard/payments" element={<PaymentsPage />} />
-        <Route path="/dashboard/payments/scan" element={<QrScanPage />} />
-        <Route path="/dashboard/payments/qr-result" element={<QrPaymentPage />} />
-        <Route path="/dashboard/payments/:category" element={<BillPaymentPage />} />
-        <Route path="/dashboard/tontines" element={<TontinesPage />} />
-        <Route path="/dashboard/tontines/create" element={<CreateTontinePage />} />
-        <Route path="/dashboard/tontines/:id" element={<TontineDetailPage />} />
-        <Route path="/dashboard/tontines/:id/members" element={<TontineMembersPage />} />
-        <Route path="/dashboard/tontines/:id/history" element={<ContributionHistoryPage />} />
-        <Route path="/dashboard/tontines/:id/contribute" element={<MakeContributionPage />} />
-        <Route path="/dashboard/tontines/:id/chat" element={<TontineChatPage />} />
-        <Route path="/dashboard/tontines/chat" element={<TontineChatPage />} />
-        <Route path="/dashboard/tontines/:id/settings" element={<TontineSettingsPage />} />
-        <Route path="/dashboard/transactions" element={<TransactionsPage />} />
-        <Route path="/dashboard/beneficiaries" element={<BeneficiariesPage />} />
-        <Route path="/dashboard/profile" element={<ProfilePage />} />
-        <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/dashboard" element={<UserProtectedRoute><DashboardPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/kyc" element={<UserProtectedRoute><KycPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/wallet" element={<UserProtectedRoute><WalletPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/wallets/:id/qr-code" element={<UserProtectedRoute><WalletQrCodePage /></UserProtectedRoute>} />
+        <Route path="/dashboard/send" element={<UserProtectedRoute><SendMoneyPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/withdraw" element={<UserProtectedRoute><WithdrawPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments" element={<UserProtectedRoute><PaymentsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/history" element={<UserProtectedRoute><PaymentHistoryPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/scan" element={<UserProtectedRoute><QrScanPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/payments/qr-result" element={<UserProtectedRoute><QrPaymentPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines" element={<UserProtectedRoute><TontinesPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/create" element={<UserProtectedRoute><CreateTontinePage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id" element={<UserProtectedRoute><TontineDetailPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/members" element={<UserProtectedRoute><TontineMembersPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/history" element={<UserProtectedRoute><ContributionHistoryPage /></UserProtectedRoute>} />
+        <Route
+          path="/dashboard/tontines/:id/contribute"
+          element={
+            <UserProtectedRoute>
+              <CardDepositFlowProvider>
+                <MakeContributionPage />
+              </CardDepositFlowProvider>
+            </UserProtectedRoute>
+          }
+        />
+        <Route path="/dashboard/tontines/:id/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/chat" element={<UserProtectedRoute><TontineChatPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/invitations" element={<UserProtectedRoute><TontinesInvitationsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/tontines/:id/settings" element={<UserProtectedRoute><TontineSettingsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/transactions" element={<UserProtectedRoute><TransactionsPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/beneficiaries" element={<UserProtectedRoute><BeneficiariesPage /></UserProtectedRoute>} />
+        <Route path="/dashboard/profile" element={<UserProtectedRoute><ProfilePage /></UserProtectedRoute>} />
+        <Route path="/dashboard/settings" element={<UserProtectedRoute><SettingsPage /></UserProtectedRoute>} />
 
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route
@@ -203,6 +226,22 @@ export function App() {
             </AdminProtectedRoute>
           }
         />
+        <Route
+          path="/admin/parametres"
+          element={
+            <AdminProtectedRoute>
+              <AdminSettingsPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/support"
+          element={
+            <AdminProtectedRoute>
+              <SupportPage />
+            </AdminProtectedRoute>
+          }
+        />
 
         <Route
           path="/deposit"
@@ -244,6 +283,27 @@ export function App() {
             </DepositFlowProvider>
           }
         />
+
+        <Route
+          path="/deposit/card"
+          element={
+            <CardDepositFlowProvider>
+              <Outlet />
+            </CardDepositFlowProvider>
+          }
+        >
+          <Route path="redirect" element={<CardDepositRedirectPage />} />
+          <Route
+            path="card-info"
+            element={
+              <StripeProvider>
+                <CardDepositCardInfoPage />
+              </StripeProvider>
+            }
+          />
+          <Route path="processing" element={<CardDepositProcessingPage />} />
+          <Route path="success" element={<CardDepositSuccessPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -16,7 +16,7 @@ export function DepositStepper({ current }: { current: number }) {
     <div className="flex items-center justify-between mb-6 sm:mb-8 px-4 sm:px-6 lg:px-8 flex-wrap gap-y-3">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-xs text-gray-400 hover:text-afrilink-dark shrink-0 mr-4 sm:mr-6"
+        className="flex items-center gap-2 text-xs text-gray-400 hover:text-allness-dark shrink-0 mr-4 sm:mr-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Retour
@@ -32,9 +32,9 @@ export function DepositStepper({ current }: { current: number }) {
                 <span
                   className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0 ${
                     isDone
-                      ? 'bg-afrilink-green text-white'
+                      ? 'bg-allness-green text-white'
                       : isActive
-                        ? 'bg-afrilink-orange text-white'
+                        ? 'bg-allness-orange text-white'
                         : 'bg-gray-100 text-gray-400'
                   }`}
                 >
@@ -42,7 +42,7 @@ export function DepositStepper({ current }: { current: number }) {
                 </span>
                 <span
                   className={`text-[9px] sm:text-[10px] text-center max-w-[60px] sm:max-w-[90px] leading-tight hidden sm:block ${
-                    isActive ? 'text-afrilink-dark font-medium' : 'text-gray-400'
+                    isActive ? 'text-allness-dark font-medium' : 'text-gray-400'
                   }`}
                 >
                   {s.label}
@@ -50,7 +50,7 @@ export function DepositStepper({ current }: { current: number }) {
               </div>
               {i < DEPOSIT_STEPS.length - 1 && (
                 <div
-                  className={`h-px flex-1 mx-1 sm:mx-2 mb-4 ${isDone ? 'bg-afrilink-green' : 'bg-gray-200'}`}
+                  className={`h-px flex-1 mx-1 sm:mx-2 mb-4 ${isDone ? 'bg-allness-green' : 'bg-gray-200'}`}
                 />
               )}
             </div>

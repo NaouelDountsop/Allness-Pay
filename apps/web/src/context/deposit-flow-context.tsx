@@ -1,27 +1,36 @@
 import { createContext, useContext, useState, useCallback } from 'react';
+import { campayService } from '@/lib/api/campay.service';
+import {
+  type MobileMoneyOperator,
+  type DepositMethod,
+  type Currency,
+  CURRENCY_SYMBOLS,
+  BANK_LABELS,
+} from './deposit-flow.constants';
 
-export type MobileMoneyOperator = 'mtn' | 'orange';
-export type DepositMethod = 'mobile_money' | 'bank';
-export type Currency = 'XAF' | 'EUR' | 'USD';
+export { type MobileMoneyOperator, type DepositMethod, type Currency, CURRENCY_SYMBOLS, BANK_LABELS };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  XAF: 'FCFA',
-  EUR: '€',
-  USD: '$',
-};
+const PENDING_DEPOSIT_KEY = 'afrilinkpay-pending-deposit';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const BANK_LABELS: Record<string, string> = {
-  sgbc: 'SGBC (Société Générale Cameroun)',
-  uba: 'UBA Cameroun',
-  afriland: 'Afriland First Bank',
-  beac: 'BEAC',
-  ecobank: 'Ecobank Cameroun',
-  bicec: 'BICEC',
-  btc: 'BTCI (Banque Camerounaise des Travailleurs)',
-  autres: 'Autres',
-};
+export function savePendingDeposit(deposit: DepositState) {
+  localStorage.setItem(PENDING_DEPOSIT_KEY, JSON.stringify(deposit));
+}
+
+export function getPendingDeposit(): DepositState | null {
+  const raw = localStorage.getItem(PENDING_DEPOSIT_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as DepositState;
+  } catch {
+    return null;
+  }
+}
+
+export function clearPendingDeposit() {
+  localStorage.removeItem(PENDING_DEPOSIT_KEY);
+}
+
+export type DepositStatus = 'idle' | 'submitting' | 'pending' | 'success' | 'failed';
 
 export interface DepositState {
   method: DepositMethod;
@@ -36,6 +45,9 @@ export interface DepositState {
   reference: string;
   transactionId: string;
   createdAt: Date | null;
+  walletNumber: string;
+  status: DepositStatus;
+  error: string | null;
 }
 
 interface DepositContextValue {
@@ -49,7 +61,8 @@ interface DepositContextValue {
   setAmount: (amount: string) => void;
   setCurrency: (currency: Currency) => void;
   setDescription: (description: string) => void;
-  submitDepositRequest: () => void;
+  setWalletNumber: (walletNumber: string) => void;
+  submitDepositRequest: () => Promise<boolean>;
   reset: () => void;
 }
 
@@ -66,6 +79,9 @@ const INITIAL_STATE: DepositState = {
   reference: '',
   transactionId: '',
   createdAt: null,
+  walletNumber: '',
+  status: 'idle',
+  error: null,
 };
 
 const DepositContext = createContext<DepositContextValue | null>(null);
@@ -109,16 +125,57 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
     setDeposit((d) => ({ ...d, description }));
   }, []);
 
-  const submitDepositRequest = useCallback(() => {
-    setDeposit((d) => ({
-      ...d,
-      reference: crypto.randomUUID(),
-      transactionId: crypto.randomUUID(),
-      createdAt: new Date(),
-    }));
+  const setWalletNumber = useCallback((walletNumber: string) => {
+    setDeposit((d) => ({ ...d, walletNumber }));
   }, []);
 
-  const reset = useCallback(() => setDeposit(INITIAL_STATE), []);
+  const submitDepositRequest = useCallback(async (): Promise<boolean> => {
+    clearPendingDeposit();
+
+    if (deposit.method === 'bank') {
+      const pending = { ...deposit, reference: crypto.randomUUID(), status: 'pending' as const, createdAt: new Date() };
+      setDeposit(pending);
+      savePendingDeposit(pending);
+      return true;
+    }
+
+    setDeposit((d) => ({ ...d, status: 'submitting', error: null }));
+
+    try {
+      const phone = deposit.phoneNumber.replace(/[+\s]/g, '');
+      const phoneWithPrefix = phone.startsWith('237') ? phone : `237${phone}`;
+
+      const response = await campayService.initiatePayment({
+        walletNumber: deposit.walletNumber,
+        amount: deposit.amount,
+        phone_number: phoneWithPrefix,
+        description: deposit.description || 'Dépôt AllnessPay',
+      });
+
+      const pending = {
+        ...deposit,
+        transactionId: response.transactionId,
+        reference: response.transactionId,
+        status: 'pending' as const,
+        createdAt: new Date(),
+      };
+      setDeposit(pending);
+      savePendingDeposit(pending);
+      return true;
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? (err as { message: string }).message
+          : 'Une erreur est survenue lors de la initiation du paiement.';
+      setDeposit((d) => ({ ...d, status: 'idle', error: message }));
+      return false;
+    }
+  }, [deposit.method, deposit.walletNumber, deposit.amount, deposit.phoneNumber, deposit.description]);
+
+  const reset = useCallback(() => {
+    setDeposit(INITIAL_STATE);
+    clearPendingDeposit();
+  }, []);
 
   return (
     <DepositContext.Provider
@@ -133,6 +190,7 @@ export function DepositFlowProvider({ children }: { children: React.ReactNode })
         setAmount,
         setCurrency,
         setDescription,
+        setWalletNumber,
         submitDepositRequest,
         reset,
       }}

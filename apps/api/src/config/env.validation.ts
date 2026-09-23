@@ -21,7 +21,7 @@ export const envValidationSchema = Joi.object({
   SMTP_USER: Joi.string().required(),
   SMTP_PASS: Joi.string().required(),
   SMTP_SECURE: Joi.boolean().default(false),
-  SMTP_FROM: Joi.string().default('"AfriLinkPay" <no-reply@afrilinkpay.com>'),
+  SMTP_FROM: Joi.string().default('"AllnessPay" <no-reply@allnesspay.com>'),
   FRONTEND_URL: Joi.string().uri().default('http://localhost:5173'),
 
   DB_HOST: Joi.string().required(),
@@ -54,7 +54,7 @@ export const envValidationSchema = Joi.object({
   THROTTLE_TTL: Joi.number().default(60),
   THROTTLE_LIMIT: Joi.number().default(100),
 
-  DEFAULT_CURRENCY: Joi.string().valid('XAF', 'XOF', 'EUR', 'USD').default('XAF'),
+  DEFAULT_CURRENCY: Joi.string().valid('XAF', 'XOF', 'CAD', 'EUR').default('XAF'),
   IDEMPOTENCY_TTL: Joi.number().default(86400),
 
   MTN_MOMO_BASE_URL: Joi.string().allow('').optional(),
@@ -73,6 +73,24 @@ export const envValidationSchema = Joi.object({
   TRANZAK_APP_ID: Joi.string().required(),
   TRANZAK_APP_KEY: Joi.string().required(),
   TRANZAK_CALLBACK_URL: Joi.string().uri().allow('').optional(),
+
+  PAYMENT_API_BASE_URL: Joi.string().uri().allow('').optional(),
+  PAYMENT_USERNAME: Joi.string().allow('').optional(),
+  PAYMENT_PASSWORD: Joi.string().allow('').optional(),
+  PAYMENT_WEBHOOK_SECRET: Joi.string().allow('').optional(),
+
+  STRIPE_SECRET_KEY: Joi.string().allow('').optional(),
+  STRIPE_PUBLISHABLE_KEY: Joi.string().allow('').optional(),
+  STRIPE_WEBHOOK_SECRET: Joi.string()
+    .allow('')
+    .when('STRIPE_SECRET_KEY', {
+      is: Joi.string().min(1),
+      then: Joi.required().messages({
+        'any.required':
+          'STRIPE_WEBHOOK_SECRET est requis quand STRIPE_SECRET_KEY est renseigne. ' +
+          'Sans lui, chaque webhook Stripe echoue silencieusement (500) et les transactions restent en PENDING.',
+      }),
+    }),
 
   LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
 });

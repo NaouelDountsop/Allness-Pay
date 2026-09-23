@@ -16,6 +16,7 @@ import { TontineMemberRole } from '../enums/tontine-member-role.enum';
 import { TontineMemberStatus } from '../enums/tontine-member-status.enum';
 import { MailService } from '../../mail/mail.service';
 import { User } from '../../users/entities/user.entity';
+import { Kyc, KycStatus } from '../../kyc/entities/kyc.entity';
 
 @Injectable()
 export class InvitationService {
@@ -28,8 +29,19 @@ export class InvitationService {
     private readonly tontineRepo: Repository<Tontine>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Kyc)
+    private readonly kycRepo: Repository<Kyc>,
     private readonly mailService: MailService,
   ) {}
+
+  private async assertKycApproved(userId: number): Promise<void> {
+    const kyc = await this.kycRepo.findOne({ where: { userId } });
+    if (!kyc || kyc.status !== KycStatus.APPROVED) {
+      throw new BadRequestException(
+        'Votre KYC doit être approuvé pour rejoindre une tontine. Veuillez compléter votre vérification d\'identité.',
+      );
+    }
+  }
 
   async create(
     tontineId: string,
@@ -128,11 +140,17 @@ export class InvitationService {
       throw new ForbiddenException('Cette invitation ne vous est pas destinée');
     }
 
+    if (!invitation.inviteeUserId) {
+      invitation.inviteeUserId = userId;
+    }
+
     if (dto.response === InvitationResponse.DECLINE) {
       invitation.status = 'DECLINED';
       await this.invitationRepo.save(invitation);
       return null;
     }
+
+    await this.assertKycApproved(userId);
 
     invitation.status = 'ACCEPTED';
     await this.invitationRepo.save(invitation);
@@ -164,6 +182,7 @@ export class InvitationService {
   async findByTontine(tontineId: string): Promise<TontineInvitation[]> {
     return this.invitationRepo.find({
       where: { tontineId },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -175,14 +194,81 @@ export class InvitationService {
   }
 
   async findPendingByUserId(userId: number): Promise<TontineInvitation[]> {
-    return this.invitationRepo.find({
+    const user = await this.userRepo.findOne({ where: { idutilisateur: userId } });
+    const email = user?.email;
+
+    const byUserId = await this.invitationRepo.find({
       where: { inviteeUserId: userId, status: 'PENDING' },
+      relations: ['tontine'],
       order: { createdAt: 'DESC' },
+    });
+
+    if (!email) return byUserId;
+
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email, status: 'PENDING' },
+      relations: ['tontine'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const all = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return all.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
+    });
+  }
+
+  async findPendingForUser(userId: number, email: string): Promise<TontineInvitation[]> {
+    const byUserId = await this.invitationRepo.find({
+      where: { inviteeUserId: userId, status: 'PENDING' },
+      relations: ['tontine'],
+      order: { createdAt: 'DESC' },
+    });
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email, status: 'PENDING' },
+      relations: ['tontine'],
+      order: { createdAt: 'DESC' },
+    });
+    const merged = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return merged.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
     });
   }
 
   async findByToken(token: string): Promise<TontineInvitation | null> {
     return this.invitationRepo.findOne({ where: { token } });
+  }
+
+  async findAllByUserId(userId: number): Promise<TontineInvitation[]> {
+    const user = await this.userRepo.findOne({ where: { idutilisateur: userId } });
+    const email = user?.email;
+
+    const byUserId = await this.invitationRepo.find({
+      where: { inviteeUserId: userId },
+      relations: ['tontine'],
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!email) return byUserId;
+
+    const byEmail = await this.invitationRepo.find({
+      where: { inviteeEmail: email },
+      relations: ['tontine'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const all = [...byUserId, ...byEmail];
+    const seen = new Set<string>();
+    return all.filter((inv) => {
+      if (seen.has(inv.id)) return false;
+      seen.add(inv.id);
+      return true;
+    });
   }
   async acceptByToken(token: string, userId: number): Promise<TontineMember> {
     const invitation = await this.findByToken(token);
@@ -221,6 +307,8 @@ export class InvitationService {
     if (invitation.inviteeUserId && invitation.inviteeUserId !== userId) {
       throw new ForbiddenException('Cette invitation ne vous est pas destinée');
     }
+
+    await this.assertKycApproved(userId);
 
     const tontine = await this.tontineRepo.findOne({
       where: { id: invitation.tontineId },

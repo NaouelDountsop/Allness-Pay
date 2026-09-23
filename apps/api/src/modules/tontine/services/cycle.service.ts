@@ -33,7 +33,7 @@ export class CycleService {
         where: { tontineId, status: TontineMemberStatus.ACTIVE },
       });
 
-      if (members.length < 2) {
+      if (members.length < 1) {
         throw new BadRequestException('Pas assez de membres actifs pour un cycle');
       }
 
@@ -71,7 +71,18 @@ export class CycleService {
       await manager.save(contributions);
 
       tontine.currentCycle = nextCycleNumber;
+      tontine.targetAmount = totalPot.toString();
+      tontine.nextContributionAt = dueDate;
       await manager.save(tontine);
+
+      const hasActiveCycle = await manager.findOne(TontineCycle, {
+        where: { tontineId, status: TontineCycleStatus.ACTIVE },
+      });
+      if (!hasActiveCycle) {
+        savedCycle.status = TontineCycleStatus.ACTIVE;
+        savedCycle.activatedAt = new Date();
+        await manager.save(savedCycle);
+      }
 
       return savedCycle;
     });
@@ -112,7 +123,26 @@ export class CycleService {
       await this.memberRepo.update(cycle.beneficiaryId, { hasReceivedPayout: true });
     }
 
-    return this.cycleRepo.save(cycle);
+    const saved = await this.cycleRepo.save(cycle);
+
+    await this.activateNextCycle(cycle.tontineId);
+
+    return saved;
+  }
+
+  async activateNextCycle(tontineId: string): Promise<TontineCycle | null> {
+    const nextPending = await this.cycleRepo.findOne({
+      where: { tontineId, status: TontineCycleStatus.PENDING },
+      order: { cycleNumber: 'ASC' },
+    });
+
+    if (!nextPending) {
+      return null;
+    }
+
+    nextPending.status = TontineCycleStatus.ACTIVE;
+    nextPending.activatedAt = new Date();
+    return this.cycleRepo.save(nextPending);
   }
 
   private selectBeneficiary(

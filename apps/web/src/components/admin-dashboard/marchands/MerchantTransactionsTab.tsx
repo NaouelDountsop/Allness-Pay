@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Coins, Repeat, Percent, Search, Download } from 'lucide-react';
 import { StatCard, Badge } from '../../../components/ui';
 
@@ -26,6 +27,14 @@ const TRANSACTIONS = [
 ];
 
 export function MerchantTransactionsTab() {
+  const [search, setSearch] = useState('');
+
+  const filtered = TRANSACTIONS.filter(
+    (t) =>
+      t.client.toLowerCase().includes(search.toLowerCase()) ||
+      t.amount.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div>
       <div className="flex flex-wrap gap-4 mb-5">
@@ -36,17 +45,35 @@ export function MerchantTransactionsTab() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-          <p className="text-sm font-semibold text-afrilink-dark">Historique des Transactions</p>
+          <p className="text-sm font-semibold text-allness-dark">Historique des Transactions</p>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-gray-300 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Rechercher"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="h-8 pl-8 pr-3 rounded-lg bg-gray-50 border border-gray-100 text-xs focus:outline-none"
               />
             </div>
-            <button className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                const rows = [['Date', 'Client', 'Montant', 'Statut']];
+                filtered.forEach((t) => {
+                  rows.push([t.date, t.client, t.amount, t.status]);
+                });
+                const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `transactions_marchand_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="h-8 px-3 rounded-lg border border-gray-200 text-xs text-gray-600 flex items-center gap-1.5"
+            >
               <Download className="w-3.5 h-3.5" />
               Exporter
             </button>
@@ -63,11 +90,11 @@ export function MerchantTransactionsTab() {
             </tr>
           </thead>
           <tbody>
-            {TRANSACTIONS.map((t, i) => (
+            {filtered.map((t, i) => (
               <tr key={i} className="border-b border-gray-50 last:border-0">
                 <td className="py-3 text-xs text-gray-500">{t.date}</td>
                 <td className="text-xs text-gray-600">{t.client}</td>
-                <td className="text-xs font-medium text-afrilink-dark">{t.amount}</td>
+                <td className="text-xs font-medium text-allness-dark">{t.amount}</td>
                 <td>
                   <Badge tone={t.tone} dot>
                     {t.status}

@@ -3,9 +3,11 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
+import { randomBytes } from 'crypto';
 import { Wallet, WalletStatus, WalletType } from './entities/wallet.entity';
 import { Kyc, KycStatus } from '../kyc/entities/kyc.entity';
 import { CreateWalletDto } from './dto/create-wallet.dto';
@@ -38,16 +40,26 @@ export class WalletsService {
         .where('wallet.userId = :userId', { userId })
         .getMany();
 
+      const hasPersonal = existingWallets.some((w) => w.type === WalletType.PERSONAL);
+      if (hasPersonal) {
+        throw new ConflictException({
+          code: 'WALLET_EXISTS',
+          message: 'Vous ne pouvez avoir qu\'un seul portefeuille personnel.',
+        });
+      }
+
+      const kyc = await manager.findOne(Kyc, { where: { userId } });
+      const kycApproved = kyc?.status === KycStatus.APPROVED;
+
       const wallet = manager.create(Wallet, {
         userId,
-        balance: 0n,
+        balance: '0',
         currency: dto.currency ?? 'XAF',
-        status: WalletStatus.INACTIVE,
+        status: kycApproved ? WalletStatus.ACTIVE : WalletStatus.INACTIVE,
         failedPinAttempts: 0,
         label: dto.label,
         walletNumber: await this.generateUniqueWalletNumber(),
-
-        // Le premier wallet d'un utilisateur devient automatiquement son wallet principal.
+        qrCodeToken: this.generateQrCodeToken(),
         isPrimary: existingWallets.length === 0,
       });
 
@@ -72,12 +84,13 @@ export class WalletsService {
         userId: creatorId,
         tontineId,
         type: WalletType.TONTINE,
-        balance: 0n,
+        balance: '0',
         currency,
         status: WalletStatus.ACTIVE,
         isPrimary: false,
         failedPinAttempts: 0,
         walletNumber: await this.generateUniqueWalletNumber(),
+        qrCodeToken: this.generateQrCodeToken(),
       });
       return em.save(wallet);
     };
@@ -100,12 +113,53 @@ export class WalletsService {
     return wallet;
   }
 
+  async validateByWalletNumber(walletNumber: string, userId?: number): Promise<{ valid: boolean; message?: string; ownerName?: string; currency?: string }> {
+    const wallet = await this.walletRepo.findOne({
+      where: { walletNumber },
+      select: ['id', 'status', 'type', 'currency', 'userId'],
+      relations: ['user'],
+    });
+
+    if (!wallet) {
+      return { valid: false, message: 'Wallet bénéficiaire introuvable.' };
+    }
+
+    if (wallet.status !== WalletStatus.ACTIVE) {
+      return { valid: false, message: `Ce wallet est ${wallet.status} et ne peut pas recevoir de fonds.` };
+    }
+
+    if (wallet.type === WalletType.TONTINE) {
+      return { valid: false, message: 'Les wallets tontine ne peuvent pas recevoir de transferts directs.' };
+    }
+
+    if (userId && wallet.userId === userId) {
+      return { valid: false, message: 'Vous ne pouvez pas transférer vers votre propre wallet.' };
+    }
+
+    const ownerName = wallet.user
+      ? `${wallet.user.prenom ?? ''} ${wallet.user.nom ?? ''}`.trim()
+      : undefined;
+
+    return { valid: true, ownerName, currency: wallet.currency };
+  }
+
   async findOne(id: string, userId: number): Promise<Wallet> {
     const wallet = await this.walletRepo.findOne({ where: { id } });
     if (!wallet) {
       throw new NotFoundException('Wallet introuvable');
     }
     this.assertOwnership(wallet, userId);
+    return wallet;
+  }
+
+  /**
+   * Trouve un wallet par son id sans vérifier l'appartenance (usage interne serveur).
+   */
+  async findById(id: string): Promise<Wallet> {
+    const wallet = await this.walletRepo.findOne({ where: { id }, relations: ['user'] });
+    if (!wallet) {
+      throw new NotFoundException('Wallet introuvable');
+    }
     return wallet;
   }
 
@@ -120,7 +174,7 @@ export class WalletsService {
     const wallet = await this.findOne(id, userId);
     this.assertNotTontine(wallet);
 
-    if (wallet.balance !== 0n) {
+    if (Number(wallet.balance) !== 0) {
       throw new BadRequestException("Impossible de fermer un wallet dont le solde n'est pas nul");
     }
     if (wallet.isPrimary) {
@@ -216,6 +270,48 @@ export class WalletsService {
       throw new NotFoundException('Wallet introuvable');
     }
     return wallet;
+  }
+
+  async getQrCodeData(walletId: string, userId: number): Promise<{ walletId: string; qrCodeData: string }> {
+    const wallet = await this.findOne(walletId, userId);
+    this.assertNotTontine(wallet);
+    const qrCodeData = `allnesspay://transfer?w=${wallet.walletNumber}`;
+    return { walletId: wallet.id, qrCodeData };
+  }
+
+  async resolveQrCode(walletNumber: string): Promise<{ walletId: string; walletNumber: string; currency: string; ownerName: string }> {
+    const wallet = await this.walletRepo.findOne({
+      where: { walletNumber },
+      select: ['id', 'walletNumber', 'status', 'type', 'currency'],
+      relations: ['user'],
+    });
+
+    if (!wallet) {
+      throw new NotFoundException('QR Code Allness Pay invalide.');
+    }
+
+    if (wallet.status !== WalletStatus.ACTIVE) {
+      throw new BadRequestException('Ce portefeuille n\'est pas actif.');
+    }
+
+    if (wallet.type === WalletType.TONTINE) {
+      throw new BadRequestException('Les wallets tontine ne peuvent pas recevoir de transferts directs.');
+    }
+
+    const ownerName = wallet.user
+      ? `${wallet.user.prenom ?? ''} ${wallet.user.nom ?? ''}`.trim()
+      : '';
+
+    return {
+      walletId: wallet.id,
+      walletNumber: wallet.walletNumber,
+      currency: wallet.currency,
+      ownerName,
+    };
+  }
+
+  private generateQrCodeToken(): string {
+    return randomBytes(32).toString('hex');
   }
 
   private async generateUniqueWalletNumber(): Promise<string> {
